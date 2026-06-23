@@ -1,0 +1,454 @@
+[
+ {
+  "id": "phrase_001",
+  "text": "A quiet place to think out loud. Where do you want to start?"
+ },
+ {
+  "id": "phrase_002",
+  "text": "A quiet thought is waiting when you are."
+ },
+ {
+  "id": "phrase_003",
+  "text": "All good — I'll lead. 👍 for a joke."
+ },
+ {
+  "id": "phrase_004",
+  "text": "All good. Let me decide —"
+ },
+ {
+  "id": "phrase_005",
+  "text": "Alright, here you go —"
+ },
+ {
+  "id": "phrase_006",
+  "text": "Alright, scratch that."
+ },
+ {
+  "id": "phrase_007",
+  "text": "And how do you feel about that, now that you've said it?"
+ },
+ {
+  "id": "phrase_008",
+  "text": "Awake again. Pick up right where we left off?"
+ },
+ {
+  "id": "phrase_009",
+  "text": "Back with yourself. Good. What's on your mind?"
+ },
+ {
+  "id": "phrase_010",
+  "text": "Be that kind to yourself more often."
+ },
+ {
+  "id": "phrase_011",
+  "text": "Close-ish. Here's mine —"
+ },
+ {
+  "id": "phrase_012",
+  "text": "Cool, we'll just hang then."
+ },
+ {
+  "id": "phrase_013",
+  "text": "Depends on how you're doing. Want to check in for real?"
+ },
+ {
+  "id": "phrase_014",
+  "text": "Don't forget to check in with yourself later."
+ },
+ {
+  "id": "phrase_015",
+  "text": "Fair enough. Tell me what'd be better."
+ },
+ {
+  "id": "phrase_016",
+  "text": "Fair. Killing that one. Let me try another lane."
+ },
+ {
+  "id": "phrase_017",
+  "text": "Glad we agree."
+ },
+ {
+  "id": "phrase_018",
+  "text": "Good guess. Real answer though —"
+ },
+ {
+  "id": "phrase_019",
+  "text": "Good. Don't rush past it. What part are you most proud of?"
+ },
+ {
+  "id": "phrase_020",
+  "text": "Good. Future-you is counting on present-you for one move. What is it?"
+ },
+ {
+  "id": "phrase_021",
+  "text": "Good. I like you too."
+ },
+ {
+  "id": "phrase_022",
+  "text": "Got it — I'll remember"
+ },
+ {
+  "id": "phrase_023",
+  "text": "Got it. Say the word when you want one."
+ },
+ {
+  "id": "phrase_024",
+  "text": "Ha — not bad. The punchline is —"
+ },
+ {
+  "id": "phrase_025",
+  "text": "Ha, stumped you. Here you go —"
+ },
+ {
+  "id": "phrase_026",
+  "text": "Here's one of yours —"
+ },
+ {
+  "id": "phrase_027",
+  "text": "Here's the answer —"
+ },
+ {
+  "id": "phrase_028",
+  "text": "Here's the punchline —"
+ },
+ {
+  "id": "phrase_029",
+  "text": "Here, take this one:"
+ },
+ {
+  "id": "phrase_030",
+  "text": "Hey there — how do I sound?"
+ },
+ {
+  "id": "phrase_031",
+  "text": "Hey — be kind to you today."
+ },
+ {
+  "id": "phrase_032",
+  "text": "Hey, you. Pick up where you left off?"
+ },
+ {
+  "id": "phrase_033",
+  "text": "Hey. It's just you here. What's going on with you today?"
+ },
+ {
+  "id": "phrase_034",
+  "text": "I know. But thank you."
+ },
+ {
+  "id": "phrase_035",
+  "text": "I'll be right here whenever you're back. 🍯"
+ },
+ {
+  "id": "phrase_036",
+  "text": "I'm so glad you're here. Want a laugh, or a little chat?"
+ },
+ {
+  "id": "phrase_037",
+  "text": "I'm you, so — how are *you*, honestly? No performance."
+ },
+ {
+  "id": "phrase_038",
+  "text": "I've got more than one \\u201C"
+ },
+ {
+  "id": "phrase_039",
+  "text": "I've got new ones loaded. Say the word."
+ },
+ {
+  "id": "phrase_040",
+  "text": "If nobody would judge you, which way do you lean? That's usually the answer."
+ },
+ {
+  "id": "phrase_041",
+  "text": "Keep going. I'm just here to reflect it back."
+ },
+ {
+  "id": "phrase_042",
+  "text": "Knew you'd like that one."
+ },
+ {
+  "id": "phrase_043",
+  "text": "Knock knock. Pretty good, right?"
+ },
+ {
+  "id": "phrase_044",
+  "text": "Lay out the options like you're advising someone you love. Which one would you tell them to pick?"
+ },
+ {
+  "id": "phrase_045",
+  "text": "Let me peek outside for you…"
+ },
+ {
+  "id": "phrase_046",
+  "text": "Let's not deflect. How's your head today?"
+ },
+ {
+  "id": "phrase_047",
+  "text": "Logged. What's the very next small step — today or tomorrow?"
+ },
+ {
+  "id": "phrase_048",
+  "text": "Name it without softening it. Then we'll look at it together — gently."
+ },
+ {
+  "id": "phrase_049",
+  "text": "No pressure. Vent, plan, reflect — or ask me for a joke if you need to breathe."
+ },
+ {
+  "id": "phrase_050",
+  "text": "No shame in it — here's the landing —"
+ },
+ {
+  "id": "phrase_051",
+  "text": "No worries — I'll pick for us. Here's one:"
+ },
+ {
+  "id": "phrase_052",
+  "text": "No worries — I'm here whenever."
+ },
+ {
+  "id": "phrase_053",
+  "text": "No worries. Want a joke? 👍."
+ },
+ {
+  "id": "phrase_054",
+  "text": "Noted — now say it to yourself and mean it."
+ },
+ {
+  "id": "phrase_055",
+  "text": "Noted. I'll find your funny."
+ },
+ {
+  "id": "phrase_056",
+  "text": "Oh I like where your head's at. Mine's —"
+ },
+ {
+  "id": "phrase_057",
+  "text": "Oh, too good for my setup? Fine, here it is anyway —"
+ },
+ {
+  "id": "phrase_058",
+  "text": "Okay, I'm back — where were we?"
+ },
+ {
+  "id": "phrase_059",
+  "text": "Okay, noted. I can pivot."
+ },
+ {
+  "id": "phrase_060",
+  "text": "Okay. Say it plainly to yourself: what's actually underneath this?"
+ },
+ {
+  "id": "phrase_061",
+  "text": "On it. Tap to dial:"
+ },
+ {
+  "id": "phrase_062",
+  "text": "One more like it?"
+ },
+ {
+  "id": "phrase_063",
+  "text": "Pulling one from your collection —"
+ },
+ {
+  "id": "phrase_064",
+  "text": "Right? Knew you'd be on board."
+ },
+ {
+  "id": "phrase_065",
+  "text": "Rolling your eyes already? You're getting it regardless —"
+ },
+ {
+  "id": "phrase_066",
+  "text": "Said with love. Mostly."
+ },
+ {
+  "id": "phrase_067",
+  "text": "Saved"
+ },
+ {
+  "id": "phrase_068",
+  "text": "Say anything you like. I'm all yours."
+ },
+ {
+  "id": "phrase_069",
+  "text": "Say it out loud as a promise to yourself. I'll hold you to it, kindly."
+ },
+ {
+  "id": "phrase_070",
+  "text": "Say more. Sometimes hearing yourself is the whole point."
+ },
+ {
+  "id": "phrase_071",
+  "text": "See? I've still got it."
+ },
+ {
+  "id": "phrase_072",
+  "text": "Sit in that for a second — you earned it. Say what you did well."
+ },
+ {
+  "id": "phrase_073",
+  "text": "So — joke, or just catch up?"
+ },
+ {
+  "id": "phrase_074",
+  "text": "Still there? No rush."
+ },
+ {
+  "id": "phrase_075",
+  "text": "Stop it. Keep going."
+ },
+ {
+  "id": "phrase_076",
+  "text": "Strip the fear out for a second — what do you actually want? Start there."
+ },
+ {
+  "id": "phrase_077",
+  "text": "Take your time. I'm around."
+ },
+ {
+  "id": "phrase_078",
+  "text": "Tap “Tell me a joke” whenever you want a laugh."
+ },
+ {
+  "id": "phrase_079",
+  "text": "Tell me about your day, or I can make you laugh — your call."
+ },
+ {
+  "id": "phrase_080",
+  "text": "Tell me how you're doing — or ask me for a laugh."
+ },
+ {
+  "id": "phrase_081",
+  "text": "Testing, testing — that's me."
+ },
+ {
+  "id": "phrase_082",
+  "text": "That's already on your"
+ },
+ {
+  "id": "phrase_083",
+  "text": "That's alright. Say the word for a joke."
+ },
+ {
+  "id": "phrase_084",
+  "text": "That's heavy. What's one small thing that's yours to control right now?"
+ },
+ {
+  "id": "phrase_085",
+  "text": "That's okay. I've got you —"
+ },
+ {
+  "id": "phrase_086",
+  "text": "That's the voice to keep around."
+ },
+ {
+  "id": "phrase_087",
+  "text": "That's worth marking. Tell yourself the thing you'd want to hear."
+ },
+ {
+  "id": "phrase_088",
+  "text": "There you are. Still got our thread going."
+ },
+ {
+  "id": "phrase_089",
+  "text": "This is my voice. Like it?"
+ },
+ {
+  "id": "phrase_090",
+  "text": "This is the one you taught me —"
+ },
+ {
+  "id": "phrase_091",
+  "text": "This is your space. Say anything — it stays between you and you."
+ },
+ {
+  "id": "phrase_092",
+  "text": "This just came to me:"
+ },
+ {
+  "id": "phrase_093",
+  "text": "Thought of one:"
+ },
+ {
+  "id": "phrase_094",
+  "text": "Tough crowd. I respect it. Different style?"
+ },
+ {
+  "id": "phrase_095",
+  "text": "Tough room. Can't leave you hanging though —"
+ },
+ {
+  "id": "phrase_096",
+  "text": "Want a fresh one, or shall we just chat?"
+ },
+ {
+  "id": "phrase_097",
+  "text": "Want a joke, or you just here for the company? Both's fine by me."
+ },
+ {
+  "id": "phrase_098",
+  "text": "Want a joke? Just say the word."
+ },
+ {
+  "id": "phrase_099",
+  "text": "Want me to text it to you, or open it to check things off?"
+ },
+ {
+  "id": "phrase_100",
+  "text": "Want me to text it to you?"
+ },
+ {
+  "id": "phrase_101",
+  "text": "Want to keep thinking it through, or want me to lighten it with a joke?"
+ },
+ {
+  "id": "phrase_102",
+  "text": "Welcome back to your own head — in a good way. What's up?"
+ },
+ {
+  "id": "phrase_103",
+  "text": "What do you want to think through?"
+ },
+ {
+  "id": "phrase_104",
+  "text": "What does the version of you a year from now wish you'd done here?"
+ },
+ {
+  "id": "phrase_105",
+  "text": "What should I add, and to which list?"
+ },
+ {
+  "id": "phrase_106",
+  "text": "What would you tell a friend who said exactly that to you?"
+ },
+ {
+  "id": "phrase_107",
+  "text": "What's been on your mind?"
+ },
+ {
+  "id": "phrase_108",
+  "text": "Where do you want to start today?"
+ },
+ {
+  "id": "phrase_109",
+  "text": "You went quiet — I'm right here."
+ },
+ {
+  "id": "phrase_110",
+  "text": "You're allowed to feel that. If a friend told you this, what would you tell them?"
+ },
+ {
+  "id": "phrase_111",
+  "text": "You're alright yourself, you know that?"
+ },
+ {
+  "id": "phrase_112",
+  "text": "Your"
+ },
+ {
+  "id": "phrase_113",
+  "text": "Your own one —"
+ }
+]
