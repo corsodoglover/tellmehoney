@@ -3708,7 +3708,7 @@ function revealPunch(){
   themTyping(()=>{
     var p=document.createElement('div'); p.className='bub them punchbub'; p.textContent=joke.p;
     document.getElementById('msgs').appendChild(p); scrollMsgs();
-    if(S.speakerOn) speak(joke.p);
+    if(S.speakerOn) speakPunch(joke.s, joke.p);
     S.lastWasJoke=true; S.lastWasQuestion=false; S.lastJoke=joke;
     updateThumbLabel();
     resetIdle();
@@ -4610,6 +4610,57 @@ function honeyClipFor(text){
   var k2=key.replace(/[\u201c\u201d\"\']/g,"").replace(/\s*\(kjv\)\s*$/,"").replace(/\s*\u2014.*$/,"").trim();
   if(HONEY_AUDIO_MAP[k2]) return HONEY_AUDIO_MAP[k2];
   return null;
+}
+/* Resolve the punchline clip from the SETUP's clip family.
+   Punchline text alone can collide with another joke's line, which made Honey
+   grab the wrong clip (or none, so the device voice rushed it). The setup text
+   resolves uniquely, so derive the matching _punch sibling from it. */
+function honeyPunchClipFor(setupText, punchText){
+  var s=honeyClipFor(setupText);
+  if(s && /_setup$/.test(s)){
+    var sib=s.replace(/_setup$/,"_punch");
+    if(_honeyClipExists(sib)) return sib;
+  }
+  // fall back to text lookup for the punchline (verses, one-liners, etc.)
+  return honeyClipFor(punchText);
+}
+/* a clip "exists" if any text key maps to it */
+var _HONEY_CLIPSET=null;
+function _honeyClipExists(file){
+  if(!_HONEY_CLIPSET){
+    _HONEY_CLIPSET={};
+    for(var k in HONEY_AUDIO_MAP){ _HONEY_CLIPSET[HONEY_AUDIO_MAP[k]]=1; }
+  }
+  return !!_HONEY_CLIPSET[file];
+}
+/* preview: play the setup, wait for it to FINISH, beat, then the matching punch */
+function speakSetupThenPunch(setupText, punchText){
+  if(!S.speakerOn)return;
+  stopAllAudio();
+  if((S.voice||"honey")==="honey"){
+    var sc=honeyClipFor(setupText);
+    if(sc){
+      playHoneyClip(sc, function(err){
+        if(err){ speakPunch(setupText, punchText); return; }
+        setTimeout(function(){ speakPunch(setupText, punchText); }, 500);
+      });
+      return;
+    }
+  }
+  // no Honey clip -> device voice, still sequenced so it doesn't rush
+  speak(setupText);
+}
+/* speak a punchline, choosing the clip via the setup so families never cross */
+function speakPunch(setupText, punchText){
+  if(!S.speakerOn)return;
+  var clean=cleanForSpeech(punchText); if(!clean)return;
+  stopAllAudio();
+  if((S.voice||"honey")==="honey"){
+    var clip=honeyPunchClipFor(setupText, punchText);
+    if(clip){ if(playHoneyClip(clip)) return; }
+  }
+  // any other voice / no clip -> normal path
+  speak(punchText);
 }
 /* stop EVERY kind of sound so nothing ever overlaps */
 function stopAllAudio(){
@@ -6481,7 +6532,7 @@ function renderStyleVault(){
       card.querySelector('.samp .p').textContent=ns.p; };
     card.querySelector('.hr').onclick=(e)=>{ e.stopPropagation();
       var s=card.querySelector('.samp .s').textContent, p=card.querySelector('.samp .p').textContent;
-      speak(s+'. '+p); };
+      speakSetupThenPunch(s,p); };
     wrap.appendChild(card);
   });
 }
