@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0050)file:///Users/sallycollins/Downloads/index_24.html -->
+<!-- saved from url=(0050)file:///Users/sallycollins/Downloads/index_25.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -4348,16 +4348,18 @@ function renderCalendar(){
   // gather upcoming reminders + this week's scheduled goals
   var items=[];
   (SETTINGS.reminders||[]).filter(function(r){return r.when>=Date.now()-3600000;})
-    .forEach(function(r){ items.push({when:r.when, title:r.title, ic:"🗓️", kind:"reminder"}); });
+    .forEach(function(r){ items.push({when:r.when, title:r.title, ic:"🗓️", kind:"reminder", allDay:false}); });
   // scheduled goals → upcoming dated occurrences within the next 7 days
   var now=new Date();
   SETTINGS.goals.forEach(function(g){
     if(g.rhythm!=="daily") return;                 // only day-scheduled goals land on the calendar
     var days=(g.days&&g.days.length)?g.days:[0,1,2,3,4,5,6];
+    var hh=9, mm=0, allDay=true;
+    if(g.time){ var p=g.time.split(':'); hh=parseInt(p[0],10)||0; mm=parseInt(p[1],10)||0; allDay=false; }
     for(var i=0;i<7;i++){
-      var d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i, 9,0,0); // default 9am
+      var d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i, hh, mm, 0);
       if(days.indexOf(d.getDay())>=0){
-        items.push({when:d.getTime(), title:g.name, ic:goalIcon(g.type), kind:"goal"});
+        items.push({when:d.getTime(), title:g.name, ic:goalIcon(g.type), kind:"goal", allDay:allDay});
       }
     }
   });
@@ -4377,9 +4379,9 @@ function renderCalendar(){
       box.appendChild(h);
     }
     var el=document.createElement('div'); el.className='cal-item';
-    var timeStr=d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+    var timeStr=it.allDay ? "all day" : d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
     var a=document.createElement('a'); a.className='ci-add'; a.textContent='Add';
-    a.href=icsDataUri(it.title, d); a.setAttribute('download', makeICSFilename(it.title));
+    a.href=icsDataUri(it.title, d, it.allDay); a.setAttribute('download', makeICSFilename(it.title));
     el.innerHTML='<div class="ci-ic">'+it.ic+'</div>'+
       '<div class="ci-tx">'+esc(it.title)+'<small>'+(it.kind==="goal"?"goal · ":"")+timeStr+'</small></div>';
     el.appendChild(a);
@@ -4412,11 +4414,19 @@ function ensureGoals(){
 }
 /* a goal: {id, type, name, rhythm:'daily'|'weekly'|'monthly'|'yearly', days:[0-6], made} */
 function rhythmLabel(g){
+  var base;
   if(g.rhythm==="daily"){
-    if(g.days && g.days.length && g.days.length<7) return g.days.map(function(d){return DAY_LABELS[d];}).join(" ");
-    return "Every day";
+    if(g.days && g.days.length && g.days.length<7) base=g.days.map(function(d){return DAY_LABELS[d];}).join(" ");
+    else base="Every day";
+  } else {
+    base={weekly:"Weekly",monthly:"Monthly",yearly:"Yearly"}[g.rhythm]||"";
   }
-  return {weekly:"Weekly",monthly:"Monthly",yearly:"Yearly"}[g.rhythm]||"";
+  if(g.time){
+    var p=g.time.split(':'), h=parseInt(p[0],10), m=p[1];
+    var ampm=h>=12?'pm':'am', h12=(h%12)||12;
+    base += " · "+h12+":"+m+ampm;
+  }
+  return base;
 }
 /* is this goal "for today"? */
 function goalDueToday(g){
@@ -4520,9 +4530,9 @@ function gbStepRhythm(){
     '</div>');
 }
 function gbPickRhythm(r){
-  if(r==="dailyAll"){ _gbDraft.rhythm="daily"; _gbDraft.days=[]; gbSaveDraft(); return; }
+  if(r==="dailyAll"){ _gbDraft.rhythm="daily"; _gbDraft.days=[]; gbStepTime(); return; }
   if(r==="daily"){ _gbDraft.rhythm="daily"; gbStepDays(); return; }
-  _gbDraft.rhythm=r; _gbDraft.days=[]; gbSaveDraft();
+  _gbDraft.rhythm=r; _gbDraft.days=[]; gbStepTime();
 }
 function gbStepDays(){
   var days=DAY_LABELS.map(function(lb,i){
@@ -4530,7 +4540,7 @@ function gbStepDays(){
   }).join("");
   gbSay("Which days? Tap all that fit — like Tuesday and Thursday for walking the dog.",
     '<div class="gb-days">'+days+'</div>'+
-    '<button class="gb-next" id="gbDaysNext" onclick="gbSaveDraft()"'+(_gbDraft.days.length?'':' disabled')+'>Save this goal</button>');
+    '<button class="gb-next" id="gbDaysNext" onclick="gbStepTime()"'+(_gbDraft.days.length?'':' disabled')+'>Next</button>');
 }
 function gbToggleDay(i){
   var p=_gbDraft.days.indexOf(i);
@@ -4538,6 +4548,14 @@ function gbToggleDay(i){
   _gbDraft.days.sort();
   gbStepDays();
 }
+function gbStepTime(){
+  gbSay("Want a time on this, or just the day? No pressure — you can change it anytime.",
+    '<input class="gb-field" id="gbTime" type="time" value="'+(_gbDraft.time||"")+'">'+
+    '<button class="gb-next" onclick="gbSetTime()">Use this time</button>'+
+    '<button class="gb-skip" onclick="gbSetAllDay()">Just the day, no time</button>');
+}
+function gbSetTime(){ var f=document.getElementById('gbTime'); _gbDraft.time=(f&&f.value)?f.value:null; gbSaveDraft(); }
+function gbSetAllDay(){ _gbDraft.time=null; gbSaveDraft(); }
 function gbSaveDraft(){
   ensureGoals();
   SETTINGS.goals.push(_gbDraft);
@@ -4859,12 +4877,20 @@ function parseWhen(s){
   }
   return {date:d,label:label};
 }
-function icsDataUri(title,date){
+function icsDataUri(title,date,allDay){
   function z(n){return (n<10?'0':'')+n;}
-  function fmt(dt){ return dt.getUTCFullYear()+z(dt.getUTCMonth()+1)+z(dt.getUTCDate())+'T'+z(dt.getUTCHours())+z(dt.getUTCMinutes())+'00Z'; }
-  var end=new Date(date.getTime()+30*60000);
+  function fmtUTC(dt){ return dt.getUTCFullYear()+z(dt.getUTCMonth()+1)+z(dt.getUTCDate())+'T'+z(dt.getUTCHours())+z(dt.getUTCMinutes())+'00Z'; }
+  function fmtDay(dt){ return dt.getFullYear()+z(dt.getMonth()+1)+z(dt.getDate()); }
+  var body;
+  if(allDay){
+    var next=new Date(date.getTime()+86400000);
+    body="DTSTART;VALUE=DATE:"+fmtDay(date)+"\r\nDTEND;VALUE=DATE:"+fmtDay(next);
+  } else {
+    var end=new Date(date.getTime()+30*60000);
+    body="DTSTART:"+fmtUTC(date)+"\r\nDTEND:"+fmtUTC(end);
+  }
   var ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//TellMeHoney//EN\r\nBEGIN:VEVENT\r\n"+
-    "UID:"+newId()+"@tellmehoney\r\nDTSTAMP:"+fmt(new Date())+"\r\nDTSTART:"+fmt(date)+"\r\nDTEND:"+fmt(end)+
+    "UID:"+newId()+"@tellmehoney\r\nDTSTAMP:"+fmtUTC(new Date())+"\r\n"+body+
     "\r\nSUMMARY:"+title.replace(/[\r\n,;]/g,' ')+"\r\nDESCRIPTION:Set with "+S.name+" in Tell Me Honey\r\nEND:VEVENT\r\nEND:VCALENDAR";
   return 'data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
 }
