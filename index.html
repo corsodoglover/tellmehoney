@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0047)file:///Users/sallycollins/Downloads/index.html -->
+<!-- saved from url=(0050)file:///Users/sallycollins/Downloads/index_23.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -255,6 +255,54 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .pot-wrap svg{width:100%;height:auto;display:block;}
 .pot-momentum{text-align:center;margin:14px 0 4px;font-size:14px;color:var(--muted);}
 .pot-momentum b{color:var(--gold);font-size:18px;}
+/* ── GOALS ── */
+.goals-head{font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;margin:26px 2px 6px;border-top:1px solid var(--line);padding-top:18px;}
+.goals-sub{font-size:13px;color:var(--dim);margin:0 2px 12px;line-height:1.4;}
+.goals-today{display:flex;flex-direction:column;gap:9px;}
+.goal-chip{display:flex;align-items:center;gap:11px;background:var(--panel2);
+  border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;
+  transition:transform .12s,border-color .12s;}
+.goal-chip:active{transform:scale(.985);}
+.goal-chip.done{border-color:var(--gold);background:rgba(231,200,115,.12);}
+.goal-chip .gc-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);
+  flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--gold);}
+.goal-chip.done .gc-check{border-color:var(--gold);background:var(--gold);color:#3a2f12;}
+.goal-chip .gc-ic{font-size:20px;flex:0 0 auto;}
+.goal-chip .gc-tx{flex:1;font-size:15px;font-weight:600;}
+.goal-chip.done .gc-tx{color:var(--muted);text-decoration:line-through;}
+.goal-chip .gc-rhythm{font-size:11px;color:var(--dim);font-weight:600;}
+.goals-empty{text-align:center;color:var(--dim);font-size:14px;padding:18px 10px;line-height:1.5;}
+.goals-actions{display:flex;gap:10px;margin-top:14px;}
+.goals-add-btn,.goals-manage-btn{flex:1;padding:12px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;}
+.goals-add-btn{background:var(--gold);border:none;color:#3a2f12;}
+.goals-manage-btn{background:var(--panel);border:1px solid var(--line);color:var(--muted);}
+.goals-add-btn:active,.goals-manage-btn:active{transform:scale(.98);}
+/* builder */
+.gb-honey{display:flex;align-items:flex-start;gap:11px;margin:6px 2px 20px;}
+.gb-honey .gb-face{width:42px;height:42px;border-radius:50%;flex:0 0 auto;overflow:hidden;
+  background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:24px;}
+.gb-honey .gb-face img{width:100%;height:100%;object-fit:cover;}
+.gb-honey .gb-say{background:var(--panel2);border:1px solid var(--line);border-radius:16px;
+  border-top-left-radius:4px;padding:12px 15px;font-size:15px;line-height:1.45;color:var(--fg);}
+.gb-options{display:flex;flex-direction:column;gap:10px;}
+.gb-opt{display:flex;align-items:center;gap:11px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:14px;padding:13px 15px;font-size:15px;font-weight:600;cursor:pointer;text-align:left;width:100%;color:var(--fg);}
+.gb-opt:active{transform:scale(.985);}
+.gb-opt.sel{border-color:var(--gold);background:rgba(231,200,115,.14);}
+.gb-opt .gb-opt-ic{font-size:20px;}
+.gb-days{display:flex;gap:7px;justify-content:space-between;margin:4px 0 6px;}
+.gb-day{flex:1;aspect-ratio:1;border-radius:10px;border:1px solid var(--line);background:var(--panel2);
+  font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.gb-day.sel{background:var(--gold);border-color:var(--gold);color:#3a2f12;}
+.gb-field{width:100%;padding:13px 15px;border-radius:13px;border:1px solid var(--line);
+  background:var(--panel2);color:var(--fg);font-size:15px;margin:4px 0;}
+.gb-next{width:100%;padding:14px;border-radius:13px;border:none;background:var(--gold);
+  color:#3a2f12;font-weight:800;font-size:15px;cursor:pointer;margin-top:14px;}
+.gb-next:disabled{opacity:.4;}
+.gb-skip{width:100%;text-align:center;background:none;border:none;color:var(--dim);
+  font-size:13px;margin-top:12px;cursor:pointer;text-decoration:underline;}
+.goals-manage-list{display:flex;flex-direction:column;gap:9px;}
 .words-head{font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:1px;
   text-transform:uppercase;margin:26px 2px 12px;border-top:1px solid var(--line);padding-top:18px;}
 .words-list{display:flex;flex-wrap:wrap;gap:9px;}
@@ -1058,6 +1106,15 @@ textarea{resize:none;line-height:1.4;}
     <div class="pot-wrap" id="potWrap"></div>
     <div class="pot-momentum" id="potMomentum"></div>
 
+    <!-- GOALS: the painless daily/weekly/monthly structure -->
+    <div class="goals-head">Your goals</div>
+    <div class="goals-sub" id="goalsSub">Little things, sprinkled through your week. Tap one to check it off.</div>
+    <div class="goals-today" id="goalsToday"></div>
+    <div class="goals-actions">
+      <button class="goals-add-btn" onclick="startGoalBuilder()">＋ Add a goal</button>
+      <button class="goals-manage-btn" onclick="openGoalsManage()">Manage</button>
+    </div>
+
     <div class="words-head">Words you reached for most</div>
     <div class="words-list" id="wordsList"></div>
 
@@ -1068,6 +1125,31 @@ textarea{resize:none;line-height:1.4;}
     <button class="fresh-start-btn" onclick="freshStart()">🌱 Start Fresh this week</button>
     <p class="fresh-start-sub">Begins a clean week without erasing your story. Your long-term trend stays — so every comeback shows.</p>
     <button class="full-wipe-link" onclick="confirmFullWipe()">Erase all my history…</button>
+  </div>
+</section>
+
+<!-- GOAL BUILDER (conversational, tap-guided) -->
+<section class="screen" id="goalBuilder">
+  <div class="bar"><button class="back" onclick="openInsights()">‹</button>
+    <h2>Add a goal</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll">
+    <div class="gb-honey" id="gbHoney"></div>
+    <div class="gb-step" id="gbStep"></div>
+  </div>
+</section>
+
+<!-- GOALS MANAGE -->
+<section class="screen" id="goalsManage">
+  <div class="bar"><button class="back" onclick="openInsights()">‹</button>
+    <h2>Your goals</h2>
+    <button class="act" onclick="startGoalBuilder()" style="color:var(--gold)">＋ Add</button></div>
+  <div class="insights-body scroll">
+    <p class="rec-hint" style="text-align:center;margin:2px 8px 14px">Tap a goal to edit its days. Goals you remove can be restored below.</p>
+    <div class="goals-manage-list" id="goalsManageList"></div>
+    <div id="goalsTrashWrap" style="display:none;margin-top:18px">
+      <label class="rec-label">↩︎ Recently removed (tap Restore)</label>
+      <div id="goalsTrashBody"></div>
+    </div>
   </div>
 </section>
 
@@ -2372,7 +2454,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey" };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{} };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -2978,6 +3060,7 @@ function loadDemoData(){
 }
 function renderInsights(){
   ensureWeek();
+  try{ renderGoalsToday(); }catch(e){}
   document.getElementById('potDate').textContent='Today · '+new Date().toLocaleDateString([], {weekday:'long',month:'long',day:'numeric'});
   var lang=INSIGHTS.lang||{};
   var langTotal=0; LANG.forEach(c=>langTotal+=(lang[c.id]||0));
@@ -4160,6 +4243,212 @@ function showShopping(){
   });
 }
 /* ── LISTS HUB (4 blocks) ── */
+/* ════════════════════════════════════════════════════════════
+   HONEY POT — GOALS  (painless daily/weekly/monthly structure)
+   Extends the existing honey-drop system. Completing a goal earns
+   drops the same gentle way; missing one never penalizes.
+   Educational/observational only — no medical claims.
+   ════════════════════════════════════════════════════════════ */
+var GOAL_TYPES=[
+  {id:"movement", ic:"🚶", label:"Movement"},
+  {id:"meals",    ic:"🥗", label:"Meals & nutrition"},
+  {id:"hydration",ic:"💧", label:"Hydration"},
+  {id:"mindset",  ic:"🧘", label:"Mindset / self-care"},
+  {id:"sleep",    ic:"😴", label:"Sleep / rest"},
+  {id:"treat",    ic:"🍓", label:"Treats & rewards"},
+  {id:"custom",   ic:"⭐", label:"Something else"}
+];
+var DAY_LABELS=["Su","Mo","Tu","We","Th","Fr","Sa"];
+function goalIcon(type){ var t=GOAL_TYPES.find(function(x){return x.id===type;}); return t?t.ic:"⭐"; }
+
+function ensureGoals(){
+  if(!Array.isArray(SETTINGS.goals)) SETTINGS.goals=[];
+  if(!Array.isArray(SETTINGS.goalsTrash)) SETTINGS.goalsTrash=[];
+  if(!SETTINGS.goalDone || typeof SETTINGS.goalDone!=="object") SETTINGS.goalDone={};
+}
+/* a goal: {id, type, name, rhythm:'daily'|'weekly'|'monthly'|'yearly', days:[0-6], made} */
+function rhythmLabel(g){
+  if(g.rhythm==="daily"){
+    if(g.days && g.days.length && g.days.length<7) return g.days.map(function(d){return DAY_LABELS[d];}).join(" ");
+    return "Every day";
+  }
+  return {weekly:"Weekly",monthly:"Monthly",yearly:"Yearly"}[g.rhythm]||"";
+}
+/* is this goal "for today"? */
+function goalDueToday(g){
+  var now=new Date(), dow=now.getDay();
+  if(g.rhythm==="daily") return (!g.days||!g.days.length)?true:g.days.indexOf(dow)>=0;
+  if(g.rhythm==="weekly") return true;   // shown all week; one check counts
+  if(g.rhythm==="monthly")return true;
+  if(g.rhythm==="yearly") return true;
+  return true;
+}
+function goalDoneKey(g){
+  var t=todayKey();
+  if(g.rhythm==="weekly"){ var d=new Date(); var onejan=new Date(d.getFullYear(),0,1);
+    var wk=Math.ceil(((d-onejan)/86400000 + onejan.getDay()+1)/7); return "w"+d.getFullYear()+"-"+wk; }
+  if(g.rhythm==="monthly"){ var m=new Date(); return "m"+m.getFullYear()+"-"+(m.getMonth()+1); }
+  if(g.rhythm==="yearly"){ return "y"+(new Date().getFullYear()); }
+  return t;
+}
+function isGoalDone(g){ ensureGoals(); var k=SETTINGS.goalDone[g.id]; return k===goalDoneKey(g); }
+function toggleGoalDone(g){
+  ensureGoals();
+  var key=goalDoneKey(g);
+  if(SETTINGS.goalDone[g.id]===key){ delete SETTINGS.goalDone[g.id]; }   // un-check
+  else {
+    SETTINGS.goalDone[g.id]=key;
+    // completing a goal pours a few drops into the honey pot (gentle, capped by existing system)
+    var t=todayKey();
+    if(SETTINGS.honeyDay!==t){ SETTINGS.honeyDay=t; SETTINGS.honeyToday=0; }
+    if((SETTINGS.honeyToday||0) < 250){
+      var room=250-(SETTINGS.honeyToday||0), drops=Math.min(5,room);
+      SETTINGS.honey=(SETTINGS.honey||0)+drops; SETTINGS.honeyToday=(SETTINGS.honeyToday||0)+drops;
+    }
+  }
+  saveSettings();
+  renderGoalsToday();
+  try{ document.getElementById('honeyNum').textContent=(SETTINGS.honey||0); }catch(e){}
+}
+
+/* ── render the "today" list on the Honey Pot screen ── */
+function renderGoalsToday(){
+  ensureGoals();
+  var box=document.getElementById('goalsToday'); if(!box)return;
+  var due=SETTINGS.goals.filter(goalDueToday);
+  if(!SETTINGS.goals.length){
+    box.innerHTML='<div class="goals-empty">No goals yet. Tap “Add a goal” and I’ll walk you through it — little things, sprinkled through your week.</div>';
+    return;
+  }
+  if(!due.length){ box.innerHTML='<div class="goals-empty">Nothing scheduled for today. Rest is part of it too.</div>'; return; }
+  box.innerHTML="";
+  due.forEach(function(g){
+    var done=isGoalDone(g);
+    var el=document.createElement('div'); el.className='goal-chip'+(done?' done':'');
+    el.innerHTML='<div class="gc-check">'+(done?'✓':'')+'</div>'+
+      '<div class="gc-ic">'+goalIcon(g.type)+'</div>'+
+      '<div class="gc-tx">'+esc(g.name)+'<div class="gc-rhythm">'+rhythmLabel(g)+'</div></div>';
+    el.onclick=function(){ toggleGoalDone(g); };
+    box.appendChild(el);
+  });
+}
+
+/* ── conversational, tap-guided builder ── */
+var _gbDraft=null;
+function gbFaceHTML(){ if(S.photo) return '<img src="'+S.photo+'">'; if(S.noFace) return '🍯'; return S.avatar||'🍯'; }
+function gbSay(text, bodyHTML){
+  var step=document.getElementById('gbStep');
+  document.getElementById('gbHoney').innerHTML='<div class="gb-face">'+gbFaceHTML()+'</div><div class="gb-say">'+text+'</div>';
+  step.innerHTML=bodyHTML;
+}
+function startGoalBuilder(){
+  ensureGoals();
+  _gbDraft={ id:"goal_"+Date.now(), type:"", name:"", rhythm:"daily", days:[], made:Date.now() };
+  go('goalBuilder');
+  gbStepType();
+}
+function gbStepType(){
+  var opts=GOAL_TYPES.map(function(t){
+    return '<button class="gb-opt'+(_gbDraft.type===t.id?' sel':'')+'" onclick="gbPickType(\''+t.id+'\')">'+
+      '<span class="gb-opt-ic">'+t.ic+'</span> '+t.label+'</button>';
+  }).join("");
+  gbSay("Let’s add one little thing to your week. What kind of goal is it?", '<div class="gb-options">'+opts+'</div>');
+}
+function gbPickType(id){ _gbDraft.type=id; gbStepName(); }
+function gbStepName(){
+  var t=GOAL_TYPES.find(function(x){return x.id===_gbDraft.type;});
+  var examples={movement:"e.g. Walk the dog",meals:"e.g. Salmon & green beans",hydration:"e.g. 8 glasses of water",
+    mindset:"e.g. 5 quiet minutes",sleep:"e.g. Lights out by 10",treat:"e.g. Fruit smoothie",custom:"e.g. Call my mom"};
+  gbSay("Lovely. What would you like to call it?",
+    '<input class="gb-field" id="gbName" placeholder="'+(examples[_gbDraft.type]||"Name your goal")+'" value="'+esc(_gbDraft.name)+'">'+
+    '<button class="gb-next" id="gbNameNext" onclick="gbNameNext()">Next</button>');
+  setTimeout(function(){ var f=document.getElementById('gbName'); if(f){ f.focus(); f.oninput=function(){ document.getElementById('gbNameNext').disabled=!f.value.trim(); }; document.getElementById('gbNameNext').disabled=!f.value.trim(); } },60);
+}
+function gbNameNext(){ var f=document.getElementById('gbName'); if(!f||!f.value.trim())return; _gbDraft.name=f.value.trim().slice(0,60); gbStepRhythm(); }
+function gbStepRhythm(){
+  gbSay("How often, "+(S.name?esc(S.name)+", ":"")+"and no pressure — we can change it anytime?",
+    '<div class="gb-options">'+
+    '<button class="gb-opt" onclick="gbPickRhythm(\'daily\')"><span class="gb-opt-ic">📅</span> Certain days each week</button>'+
+    '<button class="gb-opt" onclick="gbPickRhythm(\'dailyAll\')"><span class="gb-opt-ic">🌞</span> Every day</button>'+
+    '<button class="gb-opt" onclick="gbPickRhythm(\'weekly\')"><span class="gb-opt-ic">🗓️</span> Once a week</button>'+
+    '<button class="gb-opt" onclick="gbPickRhythm(\'monthly\')"><span class="gb-opt-ic">📆</span> Once a month</button>'+
+    '<button class="gb-opt" onclick="gbPickRhythm(\'yearly\')"><span class="gb-opt-ic">🎯</span> Once a year</button>'+
+    '</div>');
+}
+function gbPickRhythm(r){
+  if(r==="dailyAll"){ _gbDraft.rhythm="daily"; _gbDraft.days=[]; gbSaveDraft(); return; }
+  if(r==="daily"){ _gbDraft.rhythm="daily"; gbStepDays(); return; }
+  _gbDraft.rhythm=r; _gbDraft.days=[]; gbSaveDraft();
+}
+function gbStepDays(){
+  var days=DAY_LABELS.map(function(lb,i){
+    return '<button class="gb-day'+(_gbDraft.days.indexOf(i)>=0?' sel':'')+'" onclick="gbToggleDay('+i+')">'+lb+'</button>';
+  }).join("");
+  gbSay("Which days? Tap all that fit — like Tuesday and Thursday for walking the dog.",
+    '<div class="gb-days">'+days+'</div>'+
+    '<button class="gb-next" id="gbDaysNext" onclick="gbSaveDraft()"'+(_gbDraft.days.length?'':' disabled')+'>Save this goal</button>');
+}
+function gbToggleDay(i){
+  var p=_gbDraft.days.indexOf(i);
+  if(p>=0)_gbDraft.days.splice(p,1); else _gbDraft.days.push(i);
+  _gbDraft.days.sort();
+  gbStepDays();
+}
+function gbSaveDraft(){
+  ensureGoals();
+  SETTINGS.goals.push(_gbDraft);
+  saveSettings();
+  var nm=_gbDraft.name; _gbDraft=null;
+  // warm confirmation in Honey's voice (educational/supportive)
+  gbSay("Wonderful — “"+esc(nm)+"” is in your honey pot now. I’ll be right here cheering you on. 🍯",
+    '<button class="gb-next" onclick="startGoalBuilder()">Add another</button>'+
+    '<button class="gb-skip" onclick="openInsights()">All done for now</button>');
+}
+
+/* ── manage + trash (restore) ── */
+function openGoalsManage(){ ensureGoals(); go('goalsManage'); renderGoalsManage(); }
+function renderGoalsManage(){
+  ensureGoals();
+  var box=document.getElementById('goalsManageList'); if(!box)return;
+  if(!SETTINGS.goals.length){ box.innerHTML='<div class="goals-empty">No goals yet. Tap ＋ Add to make one.</div>'; }
+  else {
+    box.innerHTML="";
+    SETTINGS.goals.forEach(function(g){
+      var el=document.createElement('div'); el.className='goal-chip';
+      el.innerHTML='<div class="gc-ic">'+goalIcon(g.type)+'</div>'+
+        '<div class="gc-tx">'+esc(g.name)+'<div class="gc-rhythm">'+rhythmLabel(g)+'</div></div>'+
+        '<button class="trash-undo" onclick="removeGoal(\''+g.id+'\');event.stopPropagation();" style="color:var(--red);border-color:var(--red)">Remove</button>';
+      box.appendChild(el);
+    });
+  }
+  var tw=document.getElementById('goalsTrashWrap'), tb=document.getElementById('goalsTrashBody');
+  if(SETTINGS.goalsTrash.length){
+    tw.style.display='block'; tb.innerHTML="";
+    SETTINGS.goalsTrash.forEach(function(g){
+      var r=document.createElement('div'); r.className='trash-row';
+      r.innerHTML='<span>'+goalIcon(g.type)+' '+esc(g.name)+'</span>'+
+        '<button class="trash-undo" onclick="restoreGoal(\''+g.id+'\')">Restore</button>';
+      tb.appendChild(r);
+    });
+  } else { tw.style.display='none'; }
+}
+function removeGoal(id){
+  ensureGoals();
+  var i=SETTINGS.goals.findIndex(function(g){return g.id===id;});
+  if(i<0)return;
+  var g=SETTINGS.goals.splice(i,1)[0]; g.trashedAt=Date.now();
+  SETTINGS.goalsTrash.unshift(g);
+  if(SETTINGS.goalsTrash.length>30) SETTINGS.goalsTrash=SETTINGS.goalsTrash.slice(0,30);
+  saveSettings(); renderGoalsManage();
+}
+function restoreGoal(id){
+  ensureGoals();
+  var i=SETTINGS.goalsTrash.findIndex(function(g){return g.id===id;});
+  if(i<0)return;
+  var g=SETTINGS.goalsTrash.splice(i,1)[0]; delete g.trashedAt;
+  SETTINGS.goals.push(g); saveSettings(); renderGoalsManage();
+}
+
 function openListsHub(){ ensureLists(); go('listsHub'); renderListsHub(); }
 function renderListsHub(){
   var w=document.getElementById('listsHubBody'); if(!w)return; ensureLists(); w.innerHTML='';
