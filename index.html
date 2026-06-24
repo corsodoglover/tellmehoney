@@ -2620,15 +2620,13 @@ function quickChangeAvatar(){
     inp.id='quickPhotoInput'; inp.style.display='none'; document.body.appendChild(inp);
     inp.addEventListener('change',function(e){
       var f=e.target.files[0]; if(!f)return;
-      var r=new FileReader();
-      r.onload=function(ev){
-        S.photo=ev.target.result; S.avatar=""; S.noFace=false;
+      processPhoto(f, function(dataUrl){
+        S.photo=dataUrl; S.avatar=""; S.noFace=false;
         try{ persist(); }catch(err){}
         if(typeof renderHome==='function') renderHome();
         if(typeof renderProfile==='function') renderProfile();
         toast('Photo updated 🍯');
-      };
-      r.readAsDataURL(f);
+      });
       inp.value='';
     });
   }
@@ -3522,16 +3520,40 @@ function pickGender(btn){
   document.querySelectorAll('#genderSeg button').forEach(b=>b.classList.remove('sel'));
   btn.classList.add('sel'); S.gender=btn.dataset.g;
 }
+/* shrink + square-crop an uploaded photo so big phone pics don't distort,
+   bloat storage, or fail to render. Returns a data URL via callback. */
+function processPhoto(file, cb, size){
+  size = size || 512;
+  var r=new FileReader();
+  r.onload=function(ev){
+    var im=new Image();
+    im.onload=function(){
+      try{
+        var cv=document.createElement('canvas'); cv.width=size; cv.height=size;
+        var ctx=cv.getContext('2d');
+        // cover: scale so the shorter side fills, center-crop the rest (no distortion)
+        var s=Math.max(size/im.width, size/im.height);
+        var w=im.width*s, h=im.height*s;
+        ctx.drawImage(im, (size-w)/2, (size-h)/2, w, h);
+        cb(cv.toDataURL('image/jpeg', 0.85));
+      }catch(e){ cb(ev.target.result); }   // fallback: original
+    };
+    im.onerror=function(){ cb(ev.target.result); };
+    im.src=ev.target.result;
+  };
+  r.readAsDataURL(file);
+}
 document.getElementById('photoInput').addEventListener('change',function(e){
   var f=e.target.files[0]; if(!f)return;
-  var r=new FileReader();
-  r.onload=ev=>{ S.photo=ev.target.result; S.avatar=""; S.noFace=false;
+  processPhoto(f, function(dataUrl){
+    S.photo=dataUrl; S.avatar=""; S.noFace=false;
     var img=document.getElementById('photoImg'); img.src=S.photo; img.style.display='block';
     document.getElementById('photoPh').style.display='none';
     var pe=document.getElementById('photoEmoji'); if(pe)pe.style.display='none';
     var pz=document.getElementById('photoImg'); if(pz&&pz.parentElement)pz.parentElement.classList.add('has-photo');
-    buildAvatarRow(); };
-  r.readAsDataURL(f);
+    buildAvatarRow();
+    if(typeof persist==='function') persist();
+  });
 });
 
 /* ════ BRING TO LIFE ════ */
