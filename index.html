@@ -3437,21 +3437,21 @@ var TRAITS=["Encouraging","Brutally honest","Playful","Nerdy","Romantic","Compet
 
 /* greeting/banter pools keyed by vibe */
 var GREET={
-  Warm:["Hey, there you are. I was hoping you'd call.","Look who it is. Sit down, tell me everything.","Good to see your name pop up. How are you really?"],
-  Flirty:["Well hello, gorgeous. Took you long enough.","There's that face I like. Miss me?","You called. I'm flattered and slightly suspicious."],
+  Warm:["Well, hey there. I was hoping you'd come see me.","Look who it is — come on in, sit down, tell me everything.","Good to see your name pop up. How are you, really?"],
+  Flirty:["Well hello there. Took you long enough.","There's that face I like. Miss me?","You called. I'm flattered and slightly suspicious."],
   Sarcastic:["Oh good, you again. My favorite.","Calling me? Bold. I respect it.","Let me guess — you need cheering up. Shocking."],
   Chill:["Heyyy. No rush, just hangin'. What's up?","Oh nice, you're here. Pull up a chair.","Was just vibing. Glad you called."],
   Hyper:["YOU'RE HERE okay okay okay sit DOWN I have so much.","Finally!! I've been bursting. Ready?","Hi hi hi — what are we doing, what's the move?!"],
-  Wholesome:["Hi, friend. I'm really glad you called today.","Aw, there you are. Hope your day's been kind.","Hey you. Genuinely happy to see you."],
+  Wholesome:["Hi, friend. Thank you for coming to see me today.","Aw, there you are. Hope your day's been kind.","Hey you. Genuinely happy to see you."],
   Mysterious:["You came back. Interesting.","I had a feeling you'd call. I usually do.","Ah. Right on time, somehow."]
 };
 var WELCOME_BACK={
-  Warm:["Hey, you're back. I was just resting my eyes. Missed you.","There you are again. Pull up a chair — I'm all yours.","Welcome back, sweetheart. Glad you woke me up."],
+  Warm:["Hey, you're back. I was just resting my eyes. Missed you.","There you are, darlin'. Pull up a chair — I'm all yours.","Welcome back. Glad you woke me up, thank you."],
   Flirty:["Mmm, look who couldn't stay away. Welcome back.","You came back for me. I knew you would.","Back already? I'm flattered. Sit close."],
   Sarcastic:["Oh, you're back. Try to contain your excitement.","Welcome back. I barely slept, thinking of new material.","Look who returned. Missed my charm, huh."],
   Chill:["Heyyy, welcome back. Right where we left off.","Oh nice, you're back. I was just vibing in standby.","Back again? Cool. Let's pick it up."],
   Hyper:["YOU'RE BACK okay okay I'm AWAKE let's GO.","Welcome back welcome back I have SO much energy stored up!","Finally!! I was just buzzing in sleep mode. Hi hi hi!"],
-  Wholesome:["Hi friend, welcome back. I'm so glad you returned.","Aw, you came back. That made my whole day.","Hey you. Good to have you back — really."],
+  Wholesome:["Hi friend, welcome back. I'm so glad you returned.","Aw, you came back. That made my whole day, thank you.","Hey you. Good to have you back — really."],
   Mysterious:["You returned. I had a feeling you would.","Welcome back. I never fully sleep, you know.","Ah, awake again. Right on time, as always."]
 };
 var SETUP_LINE={
@@ -3903,7 +3903,7 @@ function userSays(t){
     if(pcNum){
       var pcClean=pcNum.replace(/[^\d+]/g,''); var pcName=S.pendingContact.name; S.pendingContact=null;
       saveContact(pcName, pcClean);
-      themTyping(()=>{ pushThem(vibeColor("Saved "+pcName+"! Tap to call:")); pushAction('📞 Call '+pcName, 'tel:'+pcClean, false); });
+      themTyping(()=>{ pushThem(vibeColor("Saved, thank you. Tap to give them a call:")); pushAction('📞 Call '+pcName, 'tel:'+pcClean, false); });
       return;
     }
     S.pendingContact=null; // they moved on — drop the ask and handle normally
@@ -4007,7 +4007,7 @@ function doCall(orig){
   themTyping(()=>{
     if(num){
       var clean=num.replace(/[^\d+]/g,'');
-      if(who){ saveContact(who, clean); pushThem(vibeColor("Got it — I'll remember "+who+"'s number. Tap to call:")); }
+      if(who){ saveContact(who, clean); pushThem(vibeColor("Got it, thank you — I'll remember that number. Tap to call:")); }
       else { pushThem(vibeColor("On it. Tap to dial:")); }
       pushAction('📞 Call '+(who||clean), 'tel:'+clean, false);
       return;
@@ -4044,9 +4044,9 @@ function doCalendar(orig){
     // save it so "what's on my calendar" can read it back
     SETTINGS.reminders.push({title:title, when:when.date.getTime(), label:when.label, made:Date.now()});
     persist();
-    pushThem(vibeColor("Got it — \""+title+"\" "+fmtWhen(when.date)+". Tap to add it to your calendar:"));
+    pushThem(vibeColor("Got it, thank you. Tap to add it to your calendar:"));
     pushAction('🗓️ Add: '+title, icsDataUri(title,when.date), true, makeICSFilename(title));
-    setTimeout(()=>themTyping(()=>pushThem(vibeColor("Saved to your list too — say \"what's on my calendar\" anytime."))),900);
+    setTimeout(()=>themTyping(()=>pushThem(vibeColor("I saved it to your list too — say \"what's on my calendar\" anytime."))),900);
   });
 }
 /* ════ LISTS (multi-list: Shopping, To-Do, Notes, + custom) ════ */
@@ -4058,7 +4058,7 @@ function doShopping(t){
     .replace(/\b(to|on|in)?\s*(my )?(the )?(shopping|grocery|groceries|store|household|to-?do|notes?)?\s*list\b/ig,'')
     .replace(/^\s*(some|more|a|an|the)\s+/i,'')
     .replace(/[.!?]+$/,'').trim();
-  if(!item){ pushThem(vibeColor("What should I add, and to which list?")); return; }
+  if(!item){ pushThem(vibeColor("Now what can I add for you, and to which list?")); return; }
   // pick target list: mention wins, else last opened
   var targetId=SETTINGS.lastList||"shopping";
   var lo=orig.toLowerCase();
@@ -4070,17 +4070,17 @@ function doShopping(t){
   var added=[];
   parts.forEach(p=>{ if(p && !list.items.some(x=>x.item.toLowerCase()===p.toLowerCase())){ list.items.push({item:p, made:Date.now(), done:false}); added.push(p); } });
   persist();
-  if(!added.length){ pushThem(vibeColor("That's already on your "+list.name+" list, honey.")); return; }
+  if(!added.length){ pushThem(vibeColor("Aw, that's already on your list.")); return; }
   var nice = added.length===1 ? "\""+added[0]+"\"" : added.slice(0,-1).map(a=>"\""+a+"\"").join(", ")+" and \""+added[added.length-1]+"\"";
-  pushThem(vibeColor("Added "+nice+" to your "+list.name+" list. "+list.icon));
+  pushThem(vibeColor("Done — added it for you. "+list.icon));
   pushAction(list.icon+' Open '+list.name, null, false, null, 'openList:'+list.id);
 }
 function showShopping(){
   var list=getList(SETTINGS.lastList||"shopping")||getList("shopping");
   var items=(list.items||[]).filter(x=>!x.done);
   themTyping(()=>{
-    if(!items.length){ pushThem(vibeColor("Your "+list.name+" list is empty. Just say \"add milk to my list\" and I'll keep it.")); return; }
-    pushThem(vibeColor("Here's your "+list.name+" list, honey:"));
+    if(!items.length){ pushThem(vibeColor("Your list's empty for now — just tell me what you need.")); return; }
+    pushThem(vibeColor("Here's your list:"));
     var lines=items.slice(0,40).map(x=>"• "+x.item).join("\n");
     setTimeout(()=>themTyping(()=>{
       pushThem(lines);
@@ -4635,6 +4635,100 @@ HONEY_AUDIO_MAP["here's a little something —"]     = "intro_wholesome";
 HONEY_AUDIO_MAP["here's a little something"]       = "intro_wholesome";
 HONEY_AUDIO_MAP["lean in for this one…"]           = "intro_mysterious";
 HONEY_AUDIO_MAP["lean in for this one"]            = "intro_mysterious";
+/* greeting + welcome-back lines */
+HONEY_AUDIO_MAP["ah, awake again. right on time, as always."]='greet_ah_awake_again_right_on_time_as_always';
+HONEY_AUDIO_MAP["ah. right on time, somehow."]='greet_ah_right_on_time_somehow';
+HONEY_AUDIO_MAP["aw, there you are. hope your day's been kind."]='greet_aw_there_you_are_hope_your_days_been_kind';
+HONEY_AUDIO_MAP["aw, there you are. hope your days been kind."]='greet_aw_there_you_are_hope_your_days_been_kind';
+HONEY_AUDIO_MAP["aw, you came back. that made my whole day."]='greet_aw_you_came_back_that_made_my_whole_day';
+HONEY_AUDIO_MAP["back again? cool. let's pick it up."]='greet_back_again_cool_lets_pick_it_up';
+HONEY_AUDIO_MAP["back again? cool. lets pick it up."]='greet_back_again_cool_lets_pick_it_up';
+HONEY_AUDIO_MAP["back already? i'm flattered. sit close."]='greet_back_already_im_flattered_sit_close';
+HONEY_AUDIO_MAP["back already? im flattered. sit close."]='greet_back_already_im_flattered_sit_close';
+HONEY_AUDIO_MAP["finally!! i was just buzzing in sleep mode. hi hi hi!"]='greet_finally_i_was_just_buzzing_in_sleep_mode_hi_hi_hi';
+HONEY_AUDIO_MAP["finally!! i've been bursting. ready?"]='greet_finally_ive_been_bursting_ready';
+HONEY_AUDIO_MAP["finally!! ive been bursting. ready?"]='greet_finally_ive_been_bursting_ready';
+HONEY_AUDIO_MAP["good to see your name pop up. how are you really?"]='greet_good_to_see_your_name_pop_up_how_are_you_really';
+HONEY_AUDIO_MAP["hey you. genuinely happy to see you."]='greet_hey_you_genuinely_happy_to_see_you';
+HONEY_AUDIO_MAP["hey you. good to have you back — really."]='greet_hey_you_good_to_have_you_back_really';
+HONEY_AUDIO_MAP["hey you. good to have you back"]='greet_hey_you_good_to_have_you_back_really';
+HONEY_AUDIO_MAP["hey, there you are. i was hoping you'd call."]='greet_hey_there_you_are_i_was_hoping_youd_call';
+HONEY_AUDIO_MAP["hey, there you are. i was hoping youd call."]='greet_hey_there_you_are_i_was_hoping_youd_call';
+HONEY_AUDIO_MAP["hey, you're back. i was just resting my eyes. missed you."]='greet_hey_youre_back_i_was_just_resting_my_eyes_missed_';
+HONEY_AUDIO_MAP["hey, youre back. i was just resting my eyes. missed you."]='greet_hey_youre_back_i_was_just_resting_my_eyes_missed_';
+HONEY_AUDIO_MAP["heyyy, welcome back. right where we left off."]='greet_heyyy_welcome_back_right_where_we_left_off';
+HONEY_AUDIO_MAP["heyyy. no rush, just hangin'. what's up?"]='greet_heyyy_no_rush_just_hangin_whats_up';
+HONEY_AUDIO_MAP["heyyy. no rush, just hangin. whats up?"]='greet_heyyy_no_rush_just_hangin_whats_up';
+HONEY_AUDIO_MAP["hi friend, welcome back. i'm so glad you returned."]='greet_hi_friend_welcome_back_im_so_glad_you_returned';
+HONEY_AUDIO_MAP["hi friend, welcome back. im so glad you returned."]='greet_hi_friend_welcome_back_im_so_glad_you_returned';
+HONEY_AUDIO_MAP["hi hi hi — what are we doing, what's the move?!"]='greet_hi_hi_hi_what_are_we_doing_whats_the_move';
+HONEY_AUDIO_MAP["hi hi hi"]='greet_hi_hi_hi_what_are_we_doing_whats_the_move';
+HONEY_AUDIO_MAP["hi, friend. i'm really glad you called today."]='greet_hi_friend_im_really_glad_you_called_today';
+HONEY_AUDIO_MAP["hi, friend. im really glad you called today."]='greet_hi_friend_im_really_glad_you_called_today';
+HONEY_AUDIO_MAP["i had a feeling you'd call. i usually do."]='greet_i_had_a_feeling_youd_call_i_usually_do';
+HONEY_AUDIO_MAP["i had a feeling youd call. i usually do."]='greet_i_had_a_feeling_youd_call_i_usually_do';
+HONEY_AUDIO_MAP["let me guess — you need cheering up. shocking."]='greet_let_me_guess_you_need_cheering_up_shocking';
+HONEY_AUDIO_MAP["let me guess"]='greet_let_me_guess_you_need_cheering_up_shocking';
+HONEY_AUDIO_MAP["look who it is. sit down, tell me everything."]='greet_look_who_it_is_sit_down_tell_me_everything';
+HONEY_AUDIO_MAP["look who returned. missed my charm, huh."]='greet_look_who_returned_missed_my_charm_huh';
+HONEY_AUDIO_MAP["mmm, look who couldn't stay away. welcome back."]='greet_mmm_look_who_couldnt_stay_away_welcome_back';
+HONEY_AUDIO_MAP["mmm, look who couldnt stay away. welcome back."]='greet_mmm_look_who_couldnt_stay_away_welcome_back';
+HONEY_AUDIO_MAP["oh good, you again. my favorite."]='greet_oh_good_you_again_my_favorite';
+HONEY_AUDIO_MAP["oh nice, you're back. i was just vibing in standby."]='greet_oh_nice_youre_back_i_was_just_vibing_in_standby';
+HONEY_AUDIO_MAP["oh nice, youre back. i was just vibing in standby."]='greet_oh_nice_youre_back_i_was_just_vibing_in_standby';
+HONEY_AUDIO_MAP["oh nice, you're here. pull up a chair."]='greet_oh_nice_youre_here_pull_up_a_chair';
+HONEY_AUDIO_MAP["oh nice, youre here. pull up a chair."]='greet_oh_nice_youre_here_pull_up_a_chair';
+HONEY_AUDIO_MAP["oh, you're back. try to contain your excitement."]='greet_oh_youre_back_try_to_contain_your_excitement';
+HONEY_AUDIO_MAP["oh, youre back. try to contain your excitement."]='greet_oh_youre_back_try_to_contain_your_excitement';
+HONEY_AUDIO_MAP["there you are again. pull up a chair — i'm all yours."]='greet_there_you_are_again_pull_up_a_chair_im_all_yours';
+HONEY_AUDIO_MAP["there you are again. pull up a chair"]='greet_there_you_are_again_pull_up_a_chair_im_all_yours';
+HONEY_AUDIO_MAP["there's that face i like. miss me?"]='greet_theres_that_face_i_like_miss_me';
+HONEY_AUDIO_MAP["theres that face i like. miss me?"]='greet_theres_that_face_i_like_miss_me';
+HONEY_AUDIO_MAP["was just vibing. glad you called."]='greet_was_just_vibing_glad_you_called';
+HONEY_AUDIO_MAP["welcome back welcome back i have so much energy stored up!"]='greet_welcome_back_welcome_back_i_have_so_much_energy_s';
+HONEY_AUDIO_MAP["welcome back, sweetheart. glad you woke me up."]='greet_welcome_back_sweetheart_glad_you_woke_me_up';
+HONEY_AUDIO_MAP["welcome back. i barely slept, thinking of new material."]='greet_welcome_back_i_barely_slept_thinking_of_new_mater';
+HONEY_AUDIO_MAP["welcome back. i never fully sleep, you know."]='greet_welcome_back_i_never_fully_sleep_you_know';
+HONEY_AUDIO_MAP["well hello, gorgeous. took you long enough."]='greet_well_hello_gorgeous_took_you_long_enough';
+HONEY_AUDIO_MAP["you're back okay okay i'm awake let's go."]='greet_youre_back_okay_okay_im_awake_lets_go';
+HONEY_AUDIO_MAP["youre back okay okay im awake lets go."]='greet_youre_back_okay_okay_im_awake_lets_go';
+HONEY_AUDIO_MAP["you're here okay okay okay sit down i have so much."]='greet_youre_here_okay_okay_okay_sit_down_i_have_so_much';
+HONEY_AUDIO_MAP["youre here okay okay okay sit down i have so much."]='greet_youre_here_okay_okay_okay_sit_down_i_have_so_much';
+HONEY_AUDIO_MAP["you called. i'm flattered and slightly suspicious."]='greet_you_called_im_flattered_and_slightly_suspicious';
+HONEY_AUDIO_MAP["you called. im flattered and slightly suspicious."]='greet_you_called_im_flattered_and_slightly_suspicious';
+HONEY_AUDIO_MAP["you came back for me. i knew you would."]='greet_you_came_back_for_me_i_knew_you_would';
+HONEY_AUDIO_MAP["you came back. interesting."]='greet_you_came_back_interesting';
+HONEY_AUDIO_MAP["you returned. i had a feeling you would."]='greet_you_returned_i_had_a_feeling_you_would';
+/* charm + utility + greeting lines (rewritten wording) */
+HONEY_AUDIO_MAP["aw, that's already on your list."]='line_aw_thats_already_on_your_list';
+HONEY_AUDIO_MAP["aw, thats already on your list."]='line_aw_thats_already_on_your_list';
+HONEY_AUDIO_MAP["aw, you came back. that made my whole day, thank you."]='line_aw_you_came_back_that_made_my_whole_day_thank_you';
+HONEY_AUDIO_MAP["calling me? bold. i respect it."]='line_calling_me_bold_i_respect_it';
+HONEY_AUDIO_MAP["good to see your name pop up. how are you, really?"]='line_good_to_see_your_name_pop_up_how_are_you_really';
+HONEY_AUDIO_MAP["got it, thank you — i'll remember that number. tap to call:"]='line_got_it_thank_you_ill_remember_that_number_tap_to_c';
+HONEY_AUDIO_MAP["got it, thank you"]='line_got_it_thank_you_ill_remember_that_number_tap_to_c';
+HONEY_AUDIO_MAP["got it, thank you — i'll remember that number. tap to call"]='line_got_it_thank_you_ill_remember_that_number_tap_to_c';
+HONEY_AUDIO_MAP["got it, thank you. tap to add it to your calendar:"]='line_got_it_thank_you_tap_to_add_it_to_your_calendar';
+HONEY_AUDIO_MAP["got it, thank you. tap to add it to your calendar"]='line_got_it_thank_you_tap_to_add_it_to_your_calendar';
+HONEY_AUDIO_MAP["heres your list:"]='line_heres_your_list';
+HONEY_AUDIO_MAP["here's your list"]='line_heres_your_list';
+HONEY_AUDIO_MAP["here's your list:"]='line_heres_your_list';
+HONEY_AUDIO_MAP["hi, friend. thank you for coming to see me today."]='line_hi_friend_thank_you_for_coming_to_see_me_today';
+HONEY_AUDIO_MAP["i saved it to your list too — say \"what's on my calendar\" anytime."]='line_i_saved_it_to_your_list_too_say_whats_on_my_calend';
+HONEY_AUDIO_MAP["i saved it to your list too"]='line_i_saved_it_to_your_list_too_say_whats_on_my_calend';
+HONEY_AUDIO_MAP["look who it is"]='line_look_who_it_is_come_on_in_sit_down_tell_me_everyth';
+HONEY_AUDIO_MAP["look who it is — come on in, sit down, tell me everything."]='line_look_who_it_is_come_on_in_sit_down_tell_me_everyth';
+HONEY_AUDIO_MAP["now what can i add for you, and to which list?"]='line_now_what_can_i_add_for_you_and_to_which_list';
+HONEY_AUDIO_MAP["saved, thank you. tap to give them a call:"]='line_saved_thank_you_tap_to_give_them_a_call';
+HONEY_AUDIO_MAP["saved, thank you. tap to give them a call"]='line_saved_thank_you_tap_to_give_them_a_call';
+HONEY_AUDIO_MAP["there you are, darlin. pull up a chair"]='line_there_you_are_darlin_pull_up_a_chair_im_all_yours';
+HONEY_AUDIO_MAP["there you are, darlin'. pull up a chair — i'm all yours."]='line_there_you_are_darlin_pull_up_a_chair_im_all_yours';
+HONEY_AUDIO_MAP["welcome back. glad you woke me up, thank you."]='line_welcome_back_glad_you_woke_me_up_thank_you';
+HONEY_AUDIO_MAP["well hello there. took you long enough."]='line_well_hello_there_took_you_long_enough';
+HONEY_AUDIO_MAP["well, hey there. i was hoping youd come see me."]='line_well_hey_there_i_was_hoping_youd_come_see_me';
+HONEY_AUDIO_MAP["well, hey there. i was hoping you'd come see me."]='line_well_hey_there_i_was_hoping_youd_come_see_me';
+HONEY_AUDIO_MAP["your lists empty for now"]='line_your_lists_empty_for_now_just_tell_me_what_you_nee';
+HONEY_AUDIO_MAP["your list's empty for now — just tell me what you need."]='line_your_lists_empty_for_now_just_tell_me_what_you_nee';
 function _honeyNorm(t){ return (t||"").toString().trim().toLowerCase().replace(/\s+/g," "); }
 function honeyClipFor(text){
   var key=_honeyNorm(typeof cleanForSpeech==="function"?cleanForSpeech(text):text);
@@ -4712,12 +4806,15 @@ function _spDrain(){
       try{
         _honeyAudioEl = new Audio(HONEY_AUDIO_BASE + clip + ".mp3");
         _honeyAudioEl.onended = next;
-        _honeyAudioEl.onerror = function(){ _spSpeakDevice(text, next); };
-        _honeyAudioEl.play().catch(function(){ _spSpeakDevice(text, next); });
+        // if the file fails to load, just move on silently — never robot-voice over Honey
+        _honeyAudioEl.onerror = next;
+        _honeyAudioEl.play().catch(next);
         return;
-      }catch(e){ _spSpeakDevice(text, next); return; }
+      }catch(e){ next(); return; }
     }
-    _spSpeakDevice(text, next); return;
+    // No recorded clip for this line. Honey stays SILENT (shows as text only)
+    // rather than breaking the spell with the device voice.
+    next(); return;
   }
   if(cloudReady()){ cloudSpeak(text); _spPollCloud(myToken, next); return; }
   _spSpeakDevice(text, next);
