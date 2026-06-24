@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0050)file:///Users/sallycollins/Downloads/index_25.html -->
+<!-- saved from url=(0050)file:///Users/sallycollins/Downloads/index_27.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -1143,7 +1143,7 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- CALENDAR -->
 <section class="screen" id="calendar">
-  <div class="bar"><button class="back" onclick="showHome()">‹</button>
+  <div class="bar"><button class="back" onclick="goBack()">‹</button>
     <h2>📅 Calendar</h2>
     <button class="act" onclick="shareCalendar()" style="color:var(--gold)">Text it</button></div>
   <div class="insights-body scroll">
@@ -1245,7 +1245,7 @@ textarea{resize:none;line-height:1.4;}
 <!-- SHOPPING LIST -->
 <!-- LISTS HUB (4 blocks) -->
 <section class="screen" id="listsHub">
-  <div class="bar"><button class="back" onclick="go(&#39;welcome&#39;)">‹</button>
+  <div class="bar"><button class="back" onclick="goBack()">‹</button>
     <h2>My Lists</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll">
     <p class="rec-hint" style="text-align:center;margin:2px 8px 14px">Tap a list to open it. Add your own anytime.</p>
@@ -2479,7 +2479,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{} };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{} };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -3571,12 +3571,17 @@ var SETUP_LINE={
 };
 
 /* ════ NAV ════ */
+var _navPrev=null, _navCur='welcome', _navOrigin=null;
+var _UTIL_SCREENS=['listsHub','shopping','calendar'];
 function go(id){
   var el=document.getElementById(id);
   if(!el){ // safety: unknown screen — don't go black, fall back to a working screen
     el=document.getElementById('chat')||document.getElementById('welcome');
     if(!el) return;
   }
+  // when ENTERING the utility cluster from outside it, remember where we came from
+  if(_UTIL_SCREENS.indexOf(id)>=0 && _UTIL_SCREENS.indexOf(_navCur)<0){ _navOrigin=_navCur; }
+  if(id!==_navCur){ _navPrev=_navCur; _navCur=id; }
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   el.classList.add('on'); el.classList.add('fadein');
   setTimeout(()=>el.classList.remove('fadein'),400);
@@ -3588,6 +3593,15 @@ function go(id){
   var ph=document.querySelector('.phone'); if(ph) ph.classList.toggle('tabs-on',dash);
   // leaving welcome turns off the cream home view unless we're staying on a dashboard
   if(id!=='welcome'){ var wel=document.getElementById('welcome'); if(wel) wel.classList.remove('home-on'); }
+}
+/* smart back: return to the screen you entered the utility area from
+   (usually chat or home), instead of flashing to a blank welcome */
+function goBack(){
+  var dest=_navOrigin;
+  if(!dest || !document.getElementById(dest)) dest = S.agentId ? 'chat' : 'welcome';
+  _navOrigin=null;
+  if(dest==='welcome'){ showHome(); return; }
+  go(dest);
 }
 
 /* ════ BUILDER UI ════ */
@@ -4411,6 +4425,7 @@ function ensureGoals(){
   if(!Array.isArray(SETTINGS.goals)) SETTINGS.goals=[];
   if(!Array.isArray(SETTINGS.goalsTrash)) SETTINGS.goalsTrash=[];
   if(!SETTINGS.goalDone || typeof SETTINGS.goalDone!=="object") SETTINGS.goalDone={};
+  if(!SETTINGS.goalStats || typeof SETTINGS.goalStats!=="object") SETTINGS.goalStats={};
 }
 /* a goal: {id, type, name, rhythm:'daily'|'weekly'|'monthly'|'yearly', days:[0-6], made} */
 function rhythmLabel(g){
@@ -4448,8 +4463,13 @@ function goalDoneKey(g){
 function isGoalDone(g){ ensureGoals(); var k=SETTINGS.goalDone[g.id]; return k===goalDoneKey(g); }
 function toggleGoalDone(g){
   ensureGoals();
+  if(!SETTINGS.goalStats||typeof SETTINGS.goalStats!=="object") SETTINGS.goalStats={};
   var key=goalDoneKey(g);
-  if(SETTINGS.goalDone[g.id]===key){ delete SETTINGS.goalDone[g.id]; }   // un-check
+  if(SETTINGS.goalDone[g.id]===key){
+    delete SETTINGS.goalDone[g.id];
+    // gently roll back the count if they un-check
+    var st0=SETTINGS.goalStats[g.id]; if(st0&&st0.count>0){ st0.count--; }
+  }
   else {
     SETTINGS.goalDone[g.id]=key;
     // completing a goal pours a few drops into the honey pot (gentle, capped by existing system)
@@ -4459,10 +4479,48 @@ function toggleGoalDone(g){
       var room=250-(SETTINGS.honeyToday||0), drops=Math.min(5,room);
       SETTINGS.honey=(SETTINGS.honey||0)+drops; SETTINGS.honeyToday=(SETTINGS.honeyToday||0)+drops;
     }
+    // track total completions + streak for milestone celebration
+    var st=SETTINGS.goalStats[g.id]||{count:0, streak:0, lastKey:""};
+    st.count=(st.count||0)+1;
+    // streak: consecutive completion-periods (best-effort, based on last key)
+    st.streak=(st.lastKey && st.lastKey!==key) ? (st.streak||0)+1 : (st.streak||1);
+    if(!st.lastKey) st.streak=1;
+    st.lastKey=key;
+    SETTINGS.goalStats[g.id]=st;
+    saveSettings();
+    celebrateGoalMaybe(g, st);   // Honey notices milestones in her voice
   }
   saveSettings();
   renderGoalsToday();
   try{ document.getElementById('honeyNum').textContent=(SETTINGS.honey||0); }catch(e){}
+}
+/* Honey celebrates milestones — supportive/educational, never clinical.
+   Fires on meaningful counts (3, 7, 14, 21, 30, 50, 100…). */
+function celebrateGoalMaybe(g, st){
+  var c=st.count;
+  var milestones={3:"three times",7:"a whole week's worth",14:"two weeks",21:"three weeks",30:"a full month",50:"fifty times",100:"one hundred times"};
+  if(!milestones[c]) return;
+  var lines=[
+    "Look at you — “"+g.name+"” "+milestones[c]+" now. I’m so proud of you, darlin’.",
+    "That’s “"+g.name+"” "+milestones[c]+"! Little by little, that’s how it’s done. 🍯",
+    "“"+g.name+"” — "+milestones[c]+". You’re building something real here, and I see it.",
+    "Well done, you. “"+g.name+"” "+milestones[c]+". Pour yourself a little pride."
+  ];
+  var msg=rand(lines);
+  // bonus drops for hitting a milestone (gentle, respects cap)
+  var t=todayKey();
+  if(SETTINGS.honeyDay!==t){ SETTINGS.honeyDay=t; SETTINGS.honeyToday=0; }
+  if((SETTINGS.honeyToday||0) < 250){
+    var room=250-(SETTINGS.honeyToday||0), bonus=Math.min(10,room);
+    SETTINGS.honey=(SETTINGS.honey||0)+bonus; SETTINGS.honeyToday=(SETTINGS.honeyToday||0)+bonus;
+  }
+  saveSettings();
+  // celebrate in chat if a friend is active, else a gentle toast
+  if(S.agentId){
+    try{ go('chat'); pushThem(vibeColor(msg)); }catch(e){ toast(msg); }
+  } else {
+    toast("🍯 "+msg);
+  }
 }
 
 /* ── render the "today" list on the Honey Pot screen ── */
