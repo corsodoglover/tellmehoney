@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!-- saved from url=(0047)file:///Users/sallycollins/Downloads/index.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Tell Me Honey</title>
 <style>
@@ -898,7 +898,7 @@ textarea{resize:none;line-height:1.4;}
 </style>
 </head>
 <body>
-<div id="app"><div class="phone tabs-on">
+<div id="app"><div class="phone">
 
 <!-- GENTLE ONBOARDING (first launch only) -->
 <div class="onboard" id="onboard" style="display:none">
@@ -906,8 +906,8 @@ textarea{resize:none;line-height:1.4;}
     <div class="ob-slide on" data-ob="0">
       <div class="ob-logo">
         <svg width="92" height="92" viewBox="0 0 200 200" aria-label="Tell Me Honey">
-          <polygon points="100,16 174,59 174,141 100,184 26,141 26,59" fill="none" stroke="#c79a21" stroke-width="8" stroke-linejoin="round"></polygon>
-          <polygon points="100,54 137,75 137,125 100,146 63,125 63,75" fill="#f6e3c0" stroke="#c79a21" stroke-width="3.5" stroke-linejoin="round"></polygon>
+          <polygon points="100,16 174,59 174,141 100,184 26,141 26,59" fill="none" stroke="#c79a21" stroke-width="8" stroke-linejoin="round"/>
+          <polygon points="100,54 137,75 137,125 100,146 63,125 63,75" fill="#f6e3c0" stroke="#c79a21" stroke-width="3.5" stroke-linejoin="round"/>
           <text x="100" y="101" text-anchor="middle" dominant-baseline="central" font-family="Georgia,serif" font-weight="700" font-size="42" fill="#4a3318">H</text>
         </svg>
       </div>
@@ -933,7 +933,7 @@ textarea{resize:none;line-height:1.4;}
 
 
 <!-- WELCOME -->
-<section class="screen home-on on" id="welcome">
+<section class="screen on" id="welcome">
   <!-- HOME DASHBOARD (cream) -->
   <div class="home" id="homeView">
     <!-- top row: streak chip + tiny pot badge -->
@@ -943,15 +943,15 @@ textarea{resize:none;line-height:1.4;}
     </div>
     <div class="home-scroll">
       <h1 class="home-title" onclick="ownerTap()">Tell me <em>Honey</em></h1>
-      <button class="home-friendface" id="homeFriendFaceBtn" onclick="quickChangeAvatar()" aria-label="Change your friend&#39;s photo">
-        <span class="home-friendface-inner" id="homeFriendFace">🍯</span>
+      <button class="home-friendface" id="homeFriendFaceBtn" onclick="quickChangeAvatar()" aria-label="Change your friend's photo">
+        <span class="home-friendface-inner" id="homeFriendFace"></span>
         <span class="avatar-cam" aria-hidden="true">📷</span>
       </button>
-      <div class="sync-note" id="syncNote"><b>The friend who is always here — and makes you laugh.</b> Ready to chat? Tell me about it — I'll lighten it up with a joke or two.</div>
+      <div class="sync-note" id="syncNote"></div>
       <button class="home-cta" id="homeCta" onclick="homeTalk()"><span class="mic-ic">🎙️</span> <span id="homeCtaText">Talk to Honey</span></button>
-      <button class="home-upgrade" id="homeUpgrade" onclick="openTiers()" style="display: block;">🍯 Upgrade your Honey</button>
-      <div class="start-hint" id="startHint" style="display: none;">👆 Start here — it only takes a minute</div>
-      <div class="home-grid" style="display: flex;">
+      <button class="home-upgrade" id="homeUpgrade" onclick="openTiers()" style="display:none">🍯 Upgrade your Honey</button>
+      <div class="start-hint" id="startHint" style="display:none">👆 Start here — it only takes a minute</div>
+      <div class="home-grid">
         <button class="home-big" onclick="openJokes()"><span class="hb-ic">😄</span><span class="hb-tx"><b>Share or make a joke</b><small>Send a laugh to someone</small></span></button>
         <div class="home-half-row">
           <button class="home-half" onclick="homeWeather()"><span class="hh-ic">☀️</span><span class="hh-tx">Weather</span><span class="hh-net">needs internet</span></button>
@@ -968,9 +968,9 @@ textarea{resize:none;line-height:1.4;}
   <div class="w-fresh" id="wFresh" style="display:none">
     <div class="w-mark">🍯</div>
     <h1 class="w-title">Tell Me <em>Honey</em></h1>
-    <p class="w-sub" id="wSub">You're all set. Record a joke, call a friend, or check your roster.</p>
-    <button class="w-cta" id="wMainCta" onclick="frontMainAction()">✍️ Record your joke now</button>
-    <button class="w-secondary" id="wRosterBtn" onclick="openRoster()" style="display: block;">My Friends</button>
+    <p class="w-sub" id="wSub">Build a comedian who calls you back. Pick a face, a vibe, a personality — then talk like it's a FaceTime call.</p>
+    <button class="w-cta" id="wMainCta" onclick="frontMainAction()">Build Your Honey</button>
+    <button class="w-secondary" id="wRosterBtn" onclick="openRoster()" style="display:none">My Friends</button>
     <div class="w-foot">Your comedian, on call · v19</div>
   </div>
   <div class="w-sleep" id="wSleep">
@@ -994,15 +994,15 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- GLOBAL BOTTOM TAB BAR (home dashboard navigation) -->
 <nav class="tabbar" id="tabbar">
-  <button class="tab on" data-tab="home" onclick="goTab(&#39;home&#39;)"><span class="ti">🍯</span>Home</button>
-  <button class="tab" data-tab="insights" onclick="goTab(&#39;insights&#39;)"><span class="ti">📊</span>Insights</button>
-  <button class="tab" data-tab="prompts" onclick="goTab(&#39;prompts&#39;)"><span class="ti">⚡</span>Daily Buzz</button>
-  <button class="tab" data-tab="profile" onclick="goTab(&#39;profile&#39;)"><span class="ti">👤</span>Profile</button>
+  <button class="tab on" data-tab="home" onclick="goTab('home')"><span class="ti">🍯</span>Home</button>
+  <button class="tab" data-tab="insights" onclick="goTab('insights')"><span class="ti">📊</span>Insights</button>
+  <button class="tab" data-tab="prompts" onclick="goTab('prompts')"><span class="ti">⚡</span>Daily Buzz</button>
+  <button class="tab" data-tab="profile" onclick="goTab('profile')"><span class="ti">👤</span>Profile</button>
 </nav>
 
 <!-- ROSTER -->
 <section class="screen" id="roster">
-  <div class="bar"><button class="back" onclick="go(&#39;welcome&#39;)">‹</button>
+  <div class="bar"><button class="back" onclick="go('welcome')">‹</button>
     <h2>My Friends</h2>
     <button class="act" onclick="newAgentFlow()">+ Add</button></div>
   <div class="roster-body scroll">
@@ -1046,10 +1046,10 @@ textarea{resize:none;line-height:1.4;}
     <!-- Thriving trend -->
     <div class="trend-head">Thriving trend</div>
     <div class="trend-range" id="trendRange">
-      <button data-range="week" onclick="setTrendRange(&#39;week&#39;)">Week</button>
-      <button data-range="month" onclick="setTrendRange(&#39;month&#39;)">Month</button>
-      <button data-range="year" onclick="setTrendRange(&#39;year&#39;)">Year</button>
-      <button data-range="all" class="on" onclick="setTrendRange(&#39;all&#39;)">All time</button>
+      <button data-range="week"  onclick="setTrendRange('week')">Week</button>
+      <button data-range="month" onclick="setTrendRange('month')">Month</button>
+      <button data-range="year"  onclick="setTrendRange('year')">Year</button>
+      <button data-range="all"   class="on" onclick="setTrendRange('all')">All time</button>
     </div>
     <div class="trend-wrap" id="trendWrap"></div>
 
@@ -1088,7 +1088,7 @@ textarea{resize:none;line-height:1.4;}
     <h2>Profile</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll">
     <div class="prof-card">
-      <button class="prof-face" id="profFace" onclick="quickChangeAvatar()" aria-label="Change your friend&#39;s photo">🍯<span class="avatar-cam avatar-cam-sm" aria-hidden="true">📷</span></button>
+      <button class="prof-face" id="profFace" onclick="quickChangeAvatar()" aria-label="Change your friend's photo">🍯<span class="avatar-cam avatar-cam-sm" aria-hidden="true">📷</span></button>
       <div class="prof-name" id="profName">You</div>
       <div class="prof-stat" id="profStat"></div>
     </div>
@@ -1102,7 +1102,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="openLearn()">📚 Learn with Honey</button>
     <button class="prof-row" onclick="cycleLearnLang()" id="learnLangRow">🌍 Learning language: Spanish</button>
     <button class="prof-row" onclick="openVideoStudio()">🎬 Video Studio</button>
-    <button class="prof-row" onclick="openLovedScreen()">♥ Saved jokes, verses &amp; phrases</button>
+    <button class="prof-row" onclick="openLovedScreen()">♥ Saved jokes, verses & phrases</button>
     <button class="prof-row" onclick="toggleStreakSetting()" id="streakSettingRow">🔥 Daily streak: On</button>
     <button class="prof-row" onclick="newAgentFlow(false)">➕ Add a friend</button>
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
@@ -1119,7 +1119,7 @@ textarea{resize:none;line-height:1.4;}
   <div class="insights-body scroll">
     <div class="theme-intro">Color gently shapes how a space <em>feels</em>. Decades of research connect certain colors with certain moods — so pick the one that fits how you want to feel today. Your whole app changes with it, and you can switch anytime.</div>
     <div id="themeList" class="theme-list"></div>
-    <div class="theme-foot">A note in honesty: colors can shift mood and atmosphere, but they aren’t medical treatment. This is about comfort and feeling, not curing anything.</div>
+    <div class="theme-foot">A note in honesty: colors can shift mood and atmosphere, but they aren&rsquo;t medical treatment. This is about comfort and feeling, not curing anything.</div>
   </div>
 </section>
 
@@ -1138,7 +1138,7 @@ textarea{resize:none;line-height:1.4;}
 <!-- SHOPPING LIST -->
 <!-- LISTS HUB (4 blocks) -->
 <section class="screen" id="listsHub">
-  <div class="bar"><button class="back" onclick="go(&#39;welcome&#39;)">‹</button>
+  <div class="bar"><button class="back" onclick="go('welcome')">‹</button>
     <h2>My Lists</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll">
     <p class="rec-hint" style="text-align:center;margin:2px 8px 14px">Tap a list to open it. Add your own anytime.</p>
@@ -1157,7 +1157,7 @@ textarea{resize:none;line-height:1.4;}
   <div class="insights-body scroll">
     <p class="rec-hint" style="margin:2px 4px 12px">Tap a bubble to check it off. Say "add milk to my list" anytime, or add one below.</p>
     <div class="rec-field" style="display:flex;gap:8px">
-      <input id="shopAddInput" placeholder="Add an item…" style="flex:1" onkeydown="if(event.key===&#39;Enter&#39;)addShopItem()">
+      <input id="shopAddInput" placeholder="Add an item…" style="flex:1" onkeydown="if(event.key==='Enter')addShopItem()">
       <button class="rec-save" style="width:auto;padding:11px 16px" onclick="addShopItem()">Add</button>
     </div>
     <div id="shopListBody" style="margin-top:8px"></div>
@@ -1168,7 +1168,7 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- JOKES (simple combined page) -->
 <section class="screen" id="jokes">
-  <div class="bar"><button class="back" onclick="go(&#39;welcome&#39;)">‹</button>
+  <div class="bar"><button class="back" onclick="go('welcome')">‹</button>
     <h2>Jokes</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll" style="display:flex;flex-direction:column;justify-content:center">
     <p class="rec-hint" style="text-align:center;font-size:16px;margin:0 8px 22px">What would you like to do?</p>
@@ -1185,7 +1185,7 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- LEARN WITH HONEY -->
 <section class="screen" id="learn">
-  <div class="bar"><button class="back" onclick="go(&#39;welcome&#39;)">‹</button>
+  <div class="bar"><button class="back" onclick="go('welcome')">‹</button>
     <h2>Learn with Honey</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll">
     <p class="rec-hint" style="text-align:center;margin:2px 8px 14px">Learn a little something — Honey says it out loud so you can repeat it. 🍯</p>
@@ -1234,21 +1234,21 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- BUILDER -->
 <section class="screen" id="builder">
-  <div class="bar"><button class="back" onclick="go(&#39;welcome&#39;)">‹</button>
+  <div class="bar"><button class="back" onclick="go('welcome')">‹</button>
     <h2>Build Your Honey</h2></div>
   <div class="b-body scroll">
     <div class="b-eyebrow" id="builderEyebrow">Step one</div>
     <div class="b-h" id="builderH">Give them a face.</div>
 
     <div class="field">
-      <div class="photo-zone" id="photoZone" onclick="document.getElementById(&#39;photoInput&#39;).click()">
+      <div class="photo-zone" id="photoZone" onclick="document.getElementById('photoInput').click()">
         <span class="ph" id="photoPh">＋</span>
         <span class="ph-emoji" id="photoEmoji" style="display:none"></span>
         <img id="photoImg" style="display:none">
       </div>
       <input type="file" id="photoInput" accept="image/*" style="display:none">
       <div class="photo-hint">Upload a photo, or pick a face below</div>
-      <div class="avatar-row" id="avatarRow"><button class="av-pick">😀</button><button class="av-pick">😎</button><button class="av-pick">🤓</button><button class="av-pick">😈</button><button class="av-pick">👹</button><button class="av-pick">👺</button><button class="av-pick">🤖</button><button class="av-pick">👻</button><button class="av-pick">💀</button><button class="av-pick">🧟</button><button class="av-pick">🧛</button><button class="av-pick">🧙</button><button class="av-pick">🧚</button><button class="av-pick">🦊</button><button class="av-pick">🐱</button><button class="av-pick">🐲</button><button class="av-pick">👽</button><button class="av-pick">🤡</button><button class="av-pick">🥸</button><button class="av-pick">🧑‍🎤</button><button class="av-pick">👸</button><button class="av-pick">🤠</button></div>
+      <div class="avatar-row" id="avatarRow"></div>
     </div>
 
     <div class="field"><label>They are…</label>
@@ -1260,7 +1260,7 @@ textarea{resize:none;line-height:1.4;}
     </div>
 
     <div class="field"><label>Comedy style</label>
-      <div class="cards" id="styleCards"><button class="scard sel"><div class="em">🎙️</div><div class="nm">The Natural</div><div class="ds">Easy timing, never tries too hard</div></button><button class="scard"><div class="em">🪦</div><div class="nm">Bone Dry</div><div class="ds">Deadpan. Barely a flicker</div></button><button class="scard"><div class="em">🪑</div><div class="nm">Front Porch</div><div class="ds">Southern, slow-cooked, friendly</div></button><button class="scard"><div class="em">🧠</div><div class="nm">Smart Aleck</div><div class="ds">Knows it. Says it anyway</div></button><button class="scard"><div class="em">⚡</div><div class="nm">Chaos Goblin</div><div class="ds">Unpredictable, high voltage</div></button><button class="scard"><div class="em">🕶️</div><div class="nm">Throwback</div><div class="ds">Pure '80s, totally rad</div></button><button class="scard"><div class="em">🥋</div><div class="nm">Zen &amp; Funny</div><div class="ds">Calm wisdom with a wink</div></button><button class="scard"><div class="em">🔥</div><div class="nm">Roast Lord</div><div class="ds">Affectionate destruction</div></button><button class="scard"><div class="em">🏀</div><div class="nm">Locker Room</div><div class="ds">Sports brain, quick jabs</div></button><button class="scard"><div class="em">👨</div><div class="nm">Dad Mode</div><div class="ds">Groans guaranteed</div></button><button class="scard"><div class="em">🧣</div><div class="nm">True North</div><div class="ds">Cold hands, warm jokes, eh</div></button><button class="scard"><div class="em">🪿</div><div class="nm">Snob Bird</div><div class="ds">Canadian, polite, and judging you</div></button></div>
+      <div class="cards" id="styleCards"></div>
     </div>
 
     <div class="row2">
@@ -1271,15 +1271,15 @@ textarea{resize:none;line-height:1.4;}
     </div>
 
     <div class="field"><label>Their vibe</label>
-      <div class="chipset" id="vibeChips"><button class="chip sel">Warm</button><button class="chip">Flirty</button><button class="chip">Sarcastic</button><button class="chip">Chill</button><button class="chip">Hyper</button><button class="chip">Wholesome</button><button class="chip">Mysterious</button></div>
+      <div class="chipset" id="vibeChips"></div>
     </div>
 
     <div class="field"><label>Personality traits (pick up to 3)</label>
-      <div class="chipset" id="traitChips"><button type="button" class="chip sel">Encouraging</button><button type="button" class="chip">Brutally honest</button><button type="button" class="chip sel">Playful</button><button type="button" class="chip">Nerdy</button><button type="button" class="chip">Romantic</button><button type="button" class="chip">Competitive</button><button type="button" class="chip">Old soul</button><button type="button" class="chip">Mischievous</button><button type="button" class="chip sel">Loyal</button><button type="button" class="chip">Dramatic</button><button type="button" class="chip">Low-key</button><button type="button" class="chip">Curious</button></div>
+      <div class="chipset" id="traitChips"></div>
     </div>
 
     <div class="field"><label>Anything they should know about you? (optional)</label>
-      <textarea id="aboutInput" rows="2" placeholder="Goals, what&#39;s stressing you out, inside jokes…"></textarea>
+      <textarea id="aboutInput" rows="2" placeholder="Goals, what's stressing you out, inside jokes…"></textarea>
     </div>
   </div>
   <div class="b-foot">
@@ -1312,18 +1312,18 @@ textarea{resize:none;line-height:1.4;}
     <button class="gear">⚙︎</button>
     <div class="emojiview" id="selfEmoji">🙂</div>
     <div class="blackview" id="selfBlack" style="display:none"></div>
-    <video id="selfCam" autoplay="" playsinline="" muted="" style="display:none"></video>
+    <video id="selfCam" autoplay playsinline muted style="display:none"></video>
     <div class="label" id="selfLabel">You</div>
   </div>
   <div class="viewmenu" id="viewMenu">
-    <button class="vm-item sel" data-v="emoji" onclick="setView(&#39;emoji&#39;)"><span class="ic">🙂</span>Emoji avatar</button>
-    <button class="vm-item" data-v="black" onclick="setView(&#39;black&#39;)"><span class="ic">⬛️</span>Black screen</button>
-    <button class="vm-item" data-v="camera" onclick="setView(&#39;camera&#39;)"><span class="ic">📷</span>My camera</button>
+    <button class="vm-item sel" data-v="emoji" onclick="setView('emoji')"><span class="ic">🙂</span>Emoji avatar</button>
+    <button class="vm-item" data-v="black" onclick="setView('black')"><span class="ic">⬛️</span>Black screen</button>
+    <button class="vm-item" data-v="camera" onclick="setView('camera')"><span class="ic">📷</span>My camera</button>
     <div class="vm-sep"></div>
     <button class="vm-item" onclick="fromViewMenuSwitch(event)"><span class="ic">🔄</span>Switch friend</button>
-    <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openVoicePicker()"><span class="ic">🎚️</span>Pick a voice</button>
-    <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openVideoStudio()"><span class="ic">🎬</span>Video Studio</button>
-    <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openInsights()"><span class="ic">🍯</span>Your Honey Pot</button>
+    <button class="vm-item" onclick="document.getElementById('viewMenu').classList.remove('on');openVoicePicker()"><span class="ic">🎚️</span>Pick a voice</button>
+    <button class="vm-item" onclick="document.getElementById('viewMenu').classList.remove('on');openVideoStudio()"><span class="ic">🎬</span>Video Studio</button>
+    <button class="vm-item" onclick="document.getElementById('viewMenu').classList.remove('on');openInsights()"><span class="ic">🍯</span>Your Honey Pot</button>
     <button class="vm-item" onclick="fromViewMenuRoster()"><span class="ic">👥</span>My Friends</button>
     <button class="vm-item" onclick="fromViewMenuAdd()"><span class="ic">➕</span>Add a friend</button>
   </div>
@@ -1336,14 +1336,15 @@ textarea{resize:none;line-height:1.4;}
   <div class="dock">
     <div class="thumbsbar on" id="thumbsBar">
       <span class="tb-label" id="tbLabel">Your call:</span>
-      <button class="tbtn" id="tbDown" onclick="thumb(&#39;down&#39;)">👎</button>
-      <button class="tbtn" id="tbUp" onclick="thumb(&#39;up&#39;)">👍</button>
-      <button class="tbtn" id="tbQ" onclick="thumb(&#39;q&#39;)">❓</button>
+      <button class="tbtn" id="tbDown" onclick="thumb('down')">👎</button>
+      <button class="tbtn" id="tbUp" onclick="thumb('up')">👍</button>
+      <button class="tbtn" id="tbQ" onclick="thumb('q')">❓</button>
       <button class="tbtn tb-heart" id="tbHeart" onclick="loveJoke()">♥</button>
     </div>
     <div class="input-row">
       <div class="pill">
-        <input id="chatInput" placeholder="Type here, or tap a button below…" autocomplete="off" onkeydown="if(event.key===&#39;Enter&#39;)sendUser()">
+        <input id="chatInput" placeholder="Type here, or tap a button below…" autocomplete="off"
+          onkeydown="if(event.key==='Enter')sendUser()">
         <button class="mic" id="micBtn" onclick="toggleMic()">🎤</button>
       </div>
       <button class="send" onclick="sendUser()">➤</button>
@@ -1358,7 +1359,7 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- VAULT -->
 <section class="screen" id="vault">
-  <div class="bar"><button class="back" onclick="go(&#39;chat&#39;)">‹</button>
+  <div class="bar"><button class="back" onclick="go('chat')">‹</button>
     <h2>Joke Styles</h2></div>
   <div class="vault-body scroll">
     <p class="vault-intro">Your honey's set to <b id="curStyleName">The Natural</b>. Tap any style to switch, then sample one before you commit.</p>
@@ -1367,7 +1368,7 @@ textarea{resize:none;line-height:1.4;}
 </section>
 
 <section class="screen" id="verses">
-  <div class="bar"><button class="back" onclick="go(&#39;chat&#39;)">‹</button>
+  <div class="bar"><button class="back" onclick="go('chat')">‹</button>
     <h2>Bible Verse</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll">
     <div class="prompt-sub">Pick a theme — I'll share a verse for it.</div>
@@ -1377,13 +1378,13 @@ textarea{resize:none;line-height:1.4;}
 
 <div class="rec-overlay" id="loveOverlay">
   <div class="rec-sheet">
-    <div class="rec-head"><span>♥ Saved &amp; ready to share</span><button class="rec-x" onclick="closeLoveShare()">✕</button></div>
+    <div class="rec-head"><span>♥ Saved & ready to share</span><button class="rec-x" onclick="closeLoveShare()">✕</button></div>
     <p class="rec-hint" id="loveJokeText"></p>
     <div class="love-stage" id="loveStage"><canvas id="loveCanvas" width="540" height="540"></canvas>
       <div class="vid-noimg" id="loveNoImg">No photo on this friend yet — the joke will go on a honey background. Add a photo in Edit for a personal card.</div>
     </div>
     <button class="rec-save" onclick="shareLovedImage()">🖼️ Share as image</button>
-    <button class="rec-save" onclick="document.getElementById(&#39;loveImgInput&#39;).click()" style="margin-top:10px;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📷 Change the picture</button>
+    <button class="rec-save" onclick="document.getElementById('loveImgInput').click()" style="margin-top:10px;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📷 Change the picture</button>
     <input type="file" id="loveImgInput" accept="image/*" style="display:none" onchange="onLoveImgPick(event)">
     <button class="rec-save" onclick="shareLovedVideo()" style="margin-top:10px;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">🎬 Share as video</button>
     <div class="vid-status" id="loveStatus"></div>
@@ -1399,7 +1400,7 @@ textarea{resize:none;line-height:1.4;}
     <div class="vid-stage"><canvas id="vidCanvas" width="540" height="540"></canvas>
       <div class="vid-noimg" id="vidNoImg">Add a photo to your friend first (Edit → upload a photo), then come back.</div>
     </div>
-    <button class="rec-save" onclick="document.getElementById(&#39;vidImgInput&#39;).click()" style="margin-top:10px;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📷 Change the picture</button>
+    <button class="rec-save" onclick="document.getElementById('vidImgInput').click()" style="margin-top:10px;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📷 Change the picture</button>
     <input type="file" id="vidImgInput" accept="image/*" style="display:none" onchange="onVidImgPick(event)">
     <p class="rec-hint" style="margin:8px 2px 0;font-size:12px">✨ Tip: for the prettiest floating look with Clouds, Garden or Hearts, use a photo with the background removed (a transparent PNG). Free tools like Canva or remove.bg do it in seconds — then the scene drifts right behind the person.</p>
 
@@ -1409,7 +1410,7 @@ textarea{resize:none;line-height:1.4;}
     <label class="rec-label">Paste a favorite joke (shows on the video)</label>
     <div class="rec-field">
       <textarea id="vidCaption" rows="2" placeholder="Paste, type, or 🎤 speak a joke…" oninput="vidDrawStill()"></textarea>
-      <button class="rec-mic" onclick="recDictate(&#39;vidCaption&#39;,this)">🎤</button>
+      <button class="rec-mic" onclick="recDictate('vidCaption',this)">🎤</button>
     </div>
 
     <div class="vid-actions">
@@ -1421,7 +1422,7 @@ textarea{resize:none;line-height:1.4;}
     <div class="cloud-box">
       <div class="cloud-head"><span>🎥 Share your own video</span></div>
       <p class="rec-hint" style="margin:6px 0 10px">Made a video somewhere else? Pick it here and share it with a Tell me Honey note attached. Free — it goes straight from your phone, nothing stored.</p>
-      <button class="rec-save" onclick="document.getElementById(&#39;ownVidInput&#39;).click()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">🎥 Pick a video to share</button>
+      <button class="rec-save" onclick="document.getElementById('ownVidInput').click()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">🎥 Pick a video to share</button>
       <input type="file" id="ownVidInput" accept="video/*" style="display:none" onchange="onOwnVideoPick(event)">
       <div class="vid-status" id="ownVidStatus"></div>
     </div>
@@ -1453,7 +1454,7 @@ textarea{resize:none;line-height:1.4;}
 </div>
 <div class="rec-overlay" id="voiceOverlay">
   <div class="rec-sheet">
-    <div class="rec-head"><span>Voice &amp; speech</span><button class="rec-x" onclick="closeVoicePicker()">✕</button></div>
+    <div class="rec-head"><span>Voice & speech</span><button class="rec-x" onclick="closeVoicePicker()">✕</button></div>
     <p class="rec-hint">Tap a voice to hear it. Drag to fine-tune speed and tone.</p>
     <label class="rec-label">Free device voices</label>
     <p class="rec-hint" id="presetNote" style="margin:2px 0 8px;display:none">Using your premium voice — these device presets are off. Tap a preset to switch back to device voices.</p>
@@ -1476,7 +1477,7 @@ textarea{resize:none;line-height:1.4;}
       <div class="cloud-head"><span>🎙️ Upload a voice (beta)</span></div>
       <p class="rec-hint" style="margin:6px 0 10px">Record or upload a voice clip to save for this friend. (Plays your clip as a greeting; full voice-cloning needs the premium AI voice.)</p>
       <input type="file" id="voiceFile" accept="audio/*" style="display:none" onchange="onVoiceUpload(event)">
-      <button class="rec-save" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)" onclick="document.getElementById(&#39;voiceFile&#39;).click()">📁 Upload a voice clip</button>
+      <button class="rec-save" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)" onclick="document.getElementById('voiceFile').click()">📁 Upload a voice clip</button>
       <button class="rec-save" id="voicePlayBtn" style="margin-top:10px;display:none" onclick="playCustomVoice()">▶ Play saved voice</button>
       <div class="vid-status" id="voiceUpStatus"></div>
     </div>
@@ -1490,8 +1491,8 @@ textarea{resize:none;line-height:1.4;}
 
       <label class="rec-label">Provider</label>
       <div class="freq-row" id="provRow" style="grid-template-columns:repeat(2,1fr)">
-        <button class="freq-btn" id="provOpenai" onclick="setProvider(&#39;openai&#39;)"><span class="fe">🗣️</span>OpenAI voices</button>
-        <button class="freq-btn" id="provEleven" onclick="setProvider(&#39;elevenlabs&#39;)"><span class="fe">🎙️</span>ElevenLabs (my voice)</button>
+        <button class="freq-btn" id="provOpenai" onclick="setProvider('openai')"><span class="fe">🗣️</span>OpenAI voices</button>
+        <button class="freq-btn" id="provEleven" onclick="setProvider('elevenlabs')"><span class="fe">🎙️</span>ElevenLabs (my voice)</button>
       </div>
 
       <div id="openaiFields">
@@ -1499,7 +1500,7 @@ textarea{resize:none;line-height:1.4;}
         <div class="rec-field"><input type="password" id="cloudKey" placeholder="sk-…" oninput="CLOUD.key=this.value"></div>
         <label class="rec-label">Choose a voice</label>
         <div class="cloud-voices" id="cloudVoices"></div>
-        <button class="rec-save" onclick="saveCloudCfg()">Save &amp; preview</button>
+        <button class="rec-save" onclick="saveCloudCfg()">Save & preview</button>
       </div>
 
       <div id="elevenFields" style="display:none">
@@ -1508,7 +1509,7 @@ textarea{resize:none;line-height:1.4;}
         <label class="rec-label">Voice ID (from your ElevenLabs voice)</label>
         <div class="rec-field"><input id="elVoice" placeholder="e.g. 21m00Tcm…" oninput="CLOUD.elVoice=this.value"></div>
         <p class="rec-hint" style="margin:2px 0 10px">Clone your voice in the ElevenLabs dashboard, then paste its Voice ID here. Tip: a clean 1–2 min sample = "you, but better."</p>
-        <button class="rec-save" onclick="saveCloudCfg()">Save &amp; preview my voice</button>
+        <button class="rec-save" onclick="saveCloudCfg()">Save & preview my voice</button>
       </div>
     </div>
   </div>
@@ -1520,12 +1521,12 @@ textarea{resize:none;line-height:1.4;}
     <label class="rec-label">Setup</label>
     <div class="rec-field">
       <textarea id="recSetup" rows="2" placeholder="Why did the…"></textarea>
-      <button class="rec-mic" onclick="recDictate(&#39;recSetup&#39;,this)">🎤</button>
+      <button class="rec-mic" onclick="recDictate('recSetup',this)">🎤</button>
     </div>
     <label class="rec-label">Punchline</label>
     <div class="rec-field">
       <textarea id="recPunch" rows="2" placeholder="Because…"></textarea>
-      <button class="rec-mic" onclick="recDictate(&#39;recPunch&#39;,this)">🎤</button>
+      <button class="rec-mic" onclick="recDictate('recPunch',this)">🎤</button>
     </div>
     <button class="rec-save" onclick="saveMyJoke()">Save joke</button>
     <div class="rec-list-head" id="recListHead" style="display:none">Your jokes <span id="recCount"></span></div>
@@ -3708,7 +3709,7 @@ function revealPunch(){
   themTyping(()=>{
     var p=document.createElement('div'); p.className='bub them punchbub'; p.textContent=joke.p;
     document.getElementById('msgs').appendChild(p); scrollMsgs();
-    if(S.speakerOn) speakPunch(joke.s, joke.p);
+    if(S.speakerOn) speak(joke.p);
     S.lastWasJoke=true; S.lastWasQuestion=false; S.lastJoke=joke;
     updateThumbLabel();
     resetIdle();
@@ -4610,57 +4611,6 @@ function honeyClipFor(text){
   var k2=key.replace(/[\u201c\u201d\"\']/g,"").replace(/\s*\(kjv\)\s*$/,"").replace(/\s*\u2014.*$/,"").trim();
   if(HONEY_AUDIO_MAP[k2]) return HONEY_AUDIO_MAP[k2];
   return null;
-}
-/* Resolve the punchline clip from the SETUP's clip family.
-   Punchline text alone can collide with another joke's line, which made Honey
-   grab the wrong clip (or none, so the device voice rushed it). The setup text
-   resolves uniquely, so derive the matching _punch sibling from it. */
-function honeyPunchClipFor(setupText, punchText){
-  var s=honeyClipFor(setupText);
-  if(s && /_setup$/.test(s)){
-    var sib=s.replace(/_setup$/,"_punch");
-    if(_honeyClipExists(sib)) return sib;
-  }
-  // fall back to text lookup for the punchline (verses, one-liners, etc.)
-  return honeyClipFor(punchText);
-}
-/* a clip "exists" if any text key maps to it */
-var _HONEY_CLIPSET=null;
-function _honeyClipExists(file){
-  if(!_HONEY_CLIPSET){
-    _HONEY_CLIPSET={};
-    for(var k in HONEY_AUDIO_MAP){ _HONEY_CLIPSET[HONEY_AUDIO_MAP[k]]=1; }
-  }
-  return !!_HONEY_CLIPSET[file];
-}
-/* preview: play the setup, wait for it to FINISH, beat, then the matching punch */
-function speakSetupThenPunch(setupText, punchText){
-  if(!S.speakerOn)return;
-  stopAllAudio();
-  if((S.voice||"honey")==="honey"){
-    var sc=honeyClipFor(setupText);
-    if(sc){
-      playHoneyClip(sc, function(err){
-        if(err){ speakPunch(setupText, punchText); return; }
-        setTimeout(function(){ speakPunch(setupText, punchText); }, 500);
-      });
-      return;
-    }
-  }
-  // no Honey clip -> device voice, still sequenced so it doesn't rush
-  speak(setupText);
-}
-/* speak a punchline, choosing the clip via the setup so families never cross */
-function speakPunch(setupText, punchText){
-  if(!S.speakerOn)return;
-  var clean=cleanForSpeech(punchText); if(!clean)return;
-  stopAllAudio();
-  if((S.voice||"honey")==="honey"){
-    var clip=honeyPunchClipFor(setupText, punchText);
-    if(clip){ if(playHoneyClip(clip)) return; }
-  }
-  // any other voice / no clip -> normal path
-  speak(punchText);
 }
 /* stop EVERY kind of sound so nothing ever overlaps */
 function stopAllAudio(){
@@ -6532,7 +6482,7 @@ function renderStyleVault(){
       card.querySelector('.samp .p').textContent=ns.p; };
     card.querySelector('.hr').onclick=(e)=>{ e.stopPropagation();
       var s=card.querySelector('.samp .s').textContent, p=card.querySelector('.samp .p').textContent;
-      speakSetupThenPunch(s,p); };
+      speak(s+'. '+p); };
     wrap.appendChild(card);
   });
 }
@@ -6596,6 +6546,5 @@ try{
 // safety net: if somehow no screen is showing, force home
 setTimeout(()=>{ try{ if(!document.querySelector('.screen.on')) bootFallback(); }catch(e){} }, 1500);
 </script>
-
-
-</body></html>
+</body>
+</html>
