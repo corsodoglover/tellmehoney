@@ -3679,8 +3679,16 @@ function buildQuickChips(){
 
 /* ════ MESSAGES ════ */
 function logMsg(o){ S.transcript.push(o); persist(); }
-function pushThem(text,noLog){
+/* show a bubble but never speak it (used for lines with live numbers, e.g. weather) */
+function pushThemText(text,noLog){
   var m=document.createElement('div'); m.className='bub them';
+  m.textContent=text;
+  document.getElementById('msgs').appendChild(m); scrollMsgs();
+  S.lastWasJoke=false; S.lastWasQuestion=false;
+  resetIdle();
+  if(!noLog) logMsg({w:'them',k:'text',t:text});
+}
+function pushThem(text,noLog){  var m=document.createElement('div'); m.className='bub them';
   m.textContent=text;
   document.getElementById('msgs').appendChild(m); scrollMsgs();
   if(S.speakerOn) speak(text);
@@ -3957,18 +3965,59 @@ function fetchWeather(lat,lon){
     var hi=Math.round(day.temperature_2m_max[0]), lo=Math.round(day.temperature_2m_min[0]);
     var line=code[1]+" It's "+t+"°F and "+code[0]+" right now"+
       (Math.abs(feels-t)>=3?" (feels like "+feels+"°)":"")+". High "+hi+"°, low "+lo+"°.";
-    var quip=weatherQuip(c.weather_code,t);
-    themTyping(()=>{ pushThem(line); if(quip) setTimeout(()=>themTyping(()=>pushThem(vibeColor(quip))),700); });
+    var react=weatherReaction(c.weather_code,t);
+    themTyping(()=>{
+      pushThemText(line);                 // numbers shown on screen, not spoken
+      if(react) setTimeout(()=>themTyping(()=>pushThem(vibeColor(react))),700);  // Honey speaks the warm reaction
+    });
   }).catch(()=>weatherFallback("I couldn't reach the weather service"));
 }
-function weatherQuip(code,t){
-  if(code>=95) return "Maybe save the porch comedy for another night.";
-  if([61,63,65,80,81,82,51,53,55].includes(code)) return "Grab an umbrella — or just stay in and let me entertain you.";
-  if([71,73,75,77,85,86].includes(code)) return "Snow day energy. Hot drink and a few jokes?";
-  if(t>=90) return "Hot one. Stay cool — I'll keep things dry, like my humor.";
-  if(t<=32) return "Bundle up out there.";
-  if(code<=1) return "Beautiful out. Don't let me keep you — unless you want one more joke.";
-  return "";
+/* Honey's spoken weather REACTION — numbers stay on screen as text,
+   she speaks a warm, varying reaction that matches the real sky.
+   Each line has a recorded clip (keyed in HONEY_AUDIO_MAP). */
+var WEATHER_REACTIONS={
+  beautiful:[
+    "Oh, it's just beautiful out there today.",
+    "Gorgeous out. Don't let me keep you, darlin' — unless you want one more joke.",
+    "It's fabulous outside. Go soak up a little of it for me.",
+    "What a lovely day. The kind that's good for the soul."
+  ],
+  hot:[
+    "Whew, it's a hot one. Stay cool out there.",
+    "Hot as blazes today. Drink your water, please."
+  ],
+  cold:[
+    "Brr, bundle up out there today.",
+    "It's cold, darlin'. Coat and a hot drink, doctor's orders."
+  ],
+  rain:[
+    "Grab an umbrella — or just stay in and let me entertain you.",
+    "Rainy one today. Perfect excuse to sit a while with me."
+  ],
+  snow:[
+    "Snow day energy. Hot drink and a few jokes?",
+    "It's snowin' out there. Cozy up, I'll keep you company."
+  ],
+  storm:[
+    "Maybe save the porch sittin' for another night — it's wild out there.",
+    "Storm's rolling through. Stay safe and stay in, please."
+  ],
+  gray:[
+    "Bit gray out today. Good thing I'm sunny enough for both of us.",
+    "Foggy one. Take it slow out there, darlin'."
+  ]
+};
+function weatherReaction(code,t){
+  var bucket;
+  if(code>=95) bucket="storm";
+  else if([61,63,65,66,67,80,81,82,51,53,55].indexOf(code)>=0) bucket="rain";
+  else if([71,73,75,77,85,86].indexOf(code)>=0) bucket="snow";
+  else if(t>=90) bucket="hot";
+  else if(t<=32) bucket="cold";
+  else if(code<=1) bucket="beautiful";
+  else if([2,3,45,48].indexOf(code)>=0) bucket="gray";
+  else bucket="beautiful";
+  return rand(WEATHER_REACTIONS[bucket]);
 }
 function weatherFallback(why){
   themTyping(()=>pushThem(vibeColor("I'd check, but "+why+". Tell me your city and I'll have a look — or just enjoy the mystery.")));
@@ -4729,6 +4778,35 @@ HONEY_AUDIO_MAP["well, hey there. i was hoping youd come see me."]='line_well_he
 HONEY_AUDIO_MAP["well, hey there. i was hoping you'd come see me."]='line_well_hey_there_i_was_hoping_youd_come_see_me';
 HONEY_AUDIO_MAP["your lists empty for now"]='line_your_lists_empty_for_now_just_tell_me_what_you_nee';
 HONEY_AUDIO_MAP["your list's empty for now — just tell me what you need."]='line_your_lists_empty_for_now_just_tell_me_what_you_nee';
+/* weather reaction lines */
+HONEY_AUDIO_MAP["oh, it's just beautiful out there today."]='wx_oh_its_just_beautiful_out_there_today';
+HONEY_AUDIO_MAP["oh, its just beautiful out there today."]='wx_oh_its_just_beautiful_out_there_today';
+HONEY_AUDIO_MAP["gorgeous out. don't let me keep you, darlin' — unless you want one more joke."]='wx_gorgeous_out_dont_let_me_keep_you_darlin_unless_you_';
+HONEY_AUDIO_MAP["gorgeous out. dont let me keep you, darlin"]='wx_gorgeous_out_dont_let_me_keep_you_darlin_unless_you_';
+HONEY_AUDIO_MAP["it's fabulous outside. go soak up a little of it for me."]='wx_its_fabulous_outside_go_soak_up_a_little_of_it_for_m';
+HONEY_AUDIO_MAP["its fabulous outside. go soak up a little of it for me."]='wx_its_fabulous_outside_go_soak_up_a_little_of_it_for_m';
+HONEY_AUDIO_MAP["what a lovely day. the kind that's good for the soul."]='wx_what_a_lovely_day_the_kind_thats_good_for_the_soul';
+HONEY_AUDIO_MAP["what a lovely day. the kind thats good for the soul."]='wx_what_a_lovely_day_the_kind_thats_good_for_the_soul';
+HONEY_AUDIO_MAP["whew, it's a hot one. stay cool out there."]='wx_whew_its_a_hot_one_stay_cool_out_there';
+HONEY_AUDIO_MAP["whew, its a hot one. stay cool out there."]='wx_whew_its_a_hot_one_stay_cool_out_there';
+HONEY_AUDIO_MAP["hot as blazes today. drink your water, please."]='wx_hot_as_blazes_today_drink_your_water_please';
+HONEY_AUDIO_MAP["brr, bundle up out there today."]='wx_brr_bundle_up_out_there_today';
+HONEY_AUDIO_MAP["it's cold, darlin'. coat and a hot drink, doctor's orders."]='wx_its_cold_darlin_coat_and_a_hot_drink_doctors_orders';
+HONEY_AUDIO_MAP["its cold, darlin. coat and a hot drink, doctors orders."]='wx_its_cold_darlin_coat_and_a_hot_drink_doctors_orders';
+HONEY_AUDIO_MAP["grab an umbrella — or just stay in and let me entertain you."]='wx_grab_an_umbrella_or_just_stay_in_and_let_me_entertai';
+HONEY_AUDIO_MAP["grab an umbrella"]='wx_grab_an_umbrella_or_just_stay_in_and_let_me_entertai';
+HONEY_AUDIO_MAP["rainy one today. perfect excuse to sit a while with me."]='wx_rainy_one_today_perfect_excuse_to_sit_a_while_with_m';
+HONEY_AUDIO_MAP["snow day energy. hot drink and a few jokes?"]='wx_snow_day_energy_hot_drink_and_a_few_jokes';
+HONEY_AUDIO_MAP["it's snowin' out there. cozy up, i'll keep you company."]='wx_its_snowin_out_there_cozy_up_ill_keep_you_company';
+HONEY_AUDIO_MAP["its snowin out there. cozy up, ill keep you company."]='wx_its_snowin_out_there_cozy_up_ill_keep_you_company';
+HONEY_AUDIO_MAP["maybe save the porch sittin' for another night — it's wild out there."]='wx_maybe_save_the_porch_sittin_for_another_night_its_wi';
+HONEY_AUDIO_MAP["maybe save the porch sittin for another night"]='wx_maybe_save_the_porch_sittin_for_another_night_its_wi';
+HONEY_AUDIO_MAP["storm's rolling through. stay safe and stay in, please."]='wx_storms_rolling_through_stay_safe_and_stay_in_please';
+HONEY_AUDIO_MAP["storms rolling through. stay safe and stay in, please."]='wx_storms_rolling_through_stay_safe_and_stay_in_please';
+HONEY_AUDIO_MAP["bit gray out today. good thing i'm sunny enough for both of us."]='wx_bit_gray_out_today_good_thing_im_sunny_enough_for_bo';
+HONEY_AUDIO_MAP["bit gray out today. good thing im sunny enough for both of us."]='wx_bit_gray_out_today_good_thing_im_sunny_enough_for_bo';
+HONEY_AUDIO_MAP["foggy one. take it slow out there, darlin'."]='wx_foggy_one_take_it_slow_out_there_darlin';
+HONEY_AUDIO_MAP["foggy one. take it slow out there, darlin."]='wx_foggy_one_take_it_slow_out_there_darlin';
 function _honeyNorm(t){ return (t||"").toString().trim().toLowerCase().replace(/\s+/g," "); }
 function honeyClipFor(text){
   var key=_honeyNorm(typeof cleanForSpeech==="function"?cleanForSpeech(text):text);
