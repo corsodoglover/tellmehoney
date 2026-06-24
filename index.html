@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0050)file:///Users/sallycollins/Downloads/index_27.html -->
+<!-- saved from url=(0050)file:///Users/sallycollins/Downloads/index_28.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -755,6 +755,13 @@ textarea{resize:none;line-height:1.4;}
 
 /* ── CHAT / FACETIME ── */
 #chat{background:#000;}
+/* user-chosen background SKIN (their own photo/art) sits behind the chat */
+.chat-skin{position:absolute;inset:0;background-size:cover;background-position:center;
+  background-repeat:no-repeat;z-index:0;display:none;}
+.chat-skin::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(7,8,13,.55) 0%,rgba(7,8,13,.35) 35%,rgba(7,8,13,.6) 100%);}
+#chat.has-skin .chat-skin{display:block;}
+#chat.has-skin #msgs,#chat.has-skin .ft-top,#chat.has-skin .self,#chat.has-skin #typing{position:relative;z-index:2;}
 .ft-bg{position:absolute;inset:0;background-size:cover;background-position:center;
   background-color:#1a1a28;animation:alive 7s ease-in-out infinite;transform-origin:center 40%;}
 .ft-bg::after{content:"";position:absolute;inset:0;
@@ -1401,6 +1408,7 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- CHAT -->
 <section class="screen" id="chat">
+  <div class="chat-skin" id="chatSkin"></div>
   <div class="ft-bg" id="ftBg"></div>
   <div class="ft-avatar" id="ftAvatar" style="display:none"></div>
   <div class="ft-top">
@@ -1430,6 +1438,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="vm-item" onclick="fromViewMenuSwitch(event)"><span class="ic">🔄</span>Switch friend</button>
     <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openVoicePicker()"><span class="ic">🎚️</span>Pick a voice</button>
     <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openVideoStudio()"><span class="ic">🎬</span>Video Studio</button>
+    <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);pickChatSkin()"><span class="ic">🖼️</span>Background</button>
     <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openInsights()"><span class="ic">🍯</span>Your Honey Pot</button>
     <button class="vm-item" onclick="fromViewMenuRoster()"><span class="ic">👥</span>My Friends</button>
     <button class="vm-item" onclick="fromViewMenuAdd()"><span class="ic">➕</span>Add a friend</button>
@@ -2479,7 +2488,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{} };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"" };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -2503,6 +2512,40 @@ function applyTheme(){
   var id=SETTINGS.theme||"honey";
   if(id==="honey"){ document.documentElement.removeAttribute("data-theme"); }
   else { document.documentElement.setAttribute("data-theme", id); }
+}
+/* ── CHAT BACKGROUND SKIN (user's own photo/art) ── */
+function applyChatSkin(){
+  var chat=document.getElementById('chat'), layer=document.getElementById('chatSkin');
+  if(!chat||!layer)return;
+  if(SETTINGS.skin){
+    layer.style.backgroundImage='url('+SETTINGS.skin+')';
+    chat.classList.add('has-skin');
+  } else {
+    layer.style.backgroundImage='';
+    chat.classList.remove('has-skin');
+  }
+}
+function pickChatSkin(){
+  // if they already have one, offer to change or remove
+  var inp=document.getElementById('chatSkinInput');
+  if(!inp){
+    inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+    inp.id='chatSkinInput'; inp.style.display='none'; document.body.appendChild(inp);
+    inp.addEventListener('change',function(e){
+      var f=e.target.files[0]; if(!f)return;
+      processPhoto(f, function(dataUrl){
+        SETTINGS.skin=dataUrl; saveSettings(); applyChatSkin();
+        toast('Background set 🖼️');
+      }, 900);  // larger size for a full background
+      inp.value='';
+    });
+  }
+  if(SETTINGS.skin){
+    if(confirm('Change your background? Tap OK to pick a new photo, or Cancel to remove the current one.')){ inp.click(); }
+    else { SETTINGS.skin=""; saveSettings(); applyChatSkin(); toast('Background cleared'); }
+  } else {
+    inp.click();
+  }
 }
 function setColorTheme(id){
   if(!COLOR_THEMES.some(function(x){return x.id===id;})) return;
@@ -2604,10 +2647,10 @@ function setTier(t){ if(!TIERS[t])return; SETTINGS.tier=t; saveSettings(); toast
 function downloadsLeft(){ var cap=tier().downloads; if(cap<0)return -1; var t=todayKey(); if(SETTINGS.dlDay!==t){ SETTINGS.dlDay=t; SETTINGS.dlToday=0; } return Math.max(0,cap-(SETTINGS.dlToday||0)); }
 function useDownload(){ var cap=tier().downloads; if(cap<0)return true; var t=todayKey(); if(SETTINGS.dlDay!==t){ SETTINGS.dlDay=t; SETTINGS.dlToday=0; } if((SETTINGS.dlToday||0)>=cap)return false; SETTINGS.dlToday=(SETTINGS.dlToday||0)+1; saveSettings(); return true; }
 function saveSettings(){ if(!DB_OK)return; try{ DB.transaction("honey","readwrite").objectStore("honey").put(SETTINGS,"settings"); }catch(e){} }
-function loadSettings(cb){ if(!DB_OK){ try{applyTheme();}catch(e){} cb&&cb(); return; }
+function loadSettings(cb){ if(!DB_OK){ try{applyTheme();applyChatSkin();}catch(e){} cb&&cb(); return; }
   try{ var r=DB.transaction("honey","readonly").objectStore("honey").get("settings");
-    r.onsuccess=()=>{ if(r.result)SETTINGS=Object.assign(SETTINGS,r.result); if(!Array.isArray(SETTINGS.shopping))SETTINGS.shopping=[]; if(!Array.isArray(SETTINGS.reminders))SETTINGS.reminders=[]; ensureLists(); try{applyTheme();}catch(e){} cb&&cb(); };
-    r.onerror=()=>{ try{applyTheme();}catch(e){} cb&&cb(); };
+    r.onsuccess=()=>{ if(r.result)SETTINGS=Object.assign(SETTINGS,r.result); if(!Array.isArray(SETTINGS.shopping))SETTINGS.shopping=[]; if(!Array.isArray(SETTINGS.reminders))SETTINGS.reminders=[]; ensureLists(); try{applyTheme();applyChatSkin();}catch(e){} cb&&cb(); };
+    r.onerror=()=>{ try{applyTheme();applyChatSkin();}catch(e){} cb&&cb(); };
   }catch(e){ cb&&cb(); } }
 function bumpStreak(){
   var t=todayKey();
@@ -3587,6 +3630,7 @@ function go(id){
   setTimeout(()=>el.classList.remove('fadein'),400);
   if(id!=='chat'){ stopIdle(); try{ speechSynthesis.cancel(); }catch(e){} speakQueue=0; stopCloudAudio(); setTalking(false); }
   if(id==='chat') startIdle();
+  if(id==='chat'){ try{ applyChatSkin(); }catch(e){} }
   if(id==='welcome'){ var rb=document.getElementById('wRosterBtn'); if(rb) rb.style.display=activeAgents().length?'block':'none'; refreshFrontCta(); }
   // show the bottom tab bar only on the four dashboard screens
   var dash = (id==='welcome'||id==='insights'||id==='prompts'||id==='profile');
