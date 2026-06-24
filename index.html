@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0050)file:///Users/sallycollins/Downloads/index_30.html -->
+<!-- saved from url=(0050)file:///Users/sallycollins/Downloads/index_31.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -303,6 +303,22 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .gb-skip{width:100%;text-align:center;background:none;border:none;color:var(--dim);
   font-size:13px;margin-top:12px;cursor:pointer;text-decoration:underline;}
 .goals-manage-list{display:flex;flex-direction:column;gap:9px;}
+/* ── CHECK-IN ── */
+.ci-moods{display:flex;justify-content:space-between;gap:8px;margin:6px 2px 4px;}
+.ci-mood{flex:1;aspect-ratio:1;border-radius:14px;border:1.5px solid var(--line);background:var(--panel2);
+  font-size:26px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  transition:transform .12s,border-color .12s;}
+.ci-mood:active{transform:scale(.95);}
+.ci-mood.sel{border-color:var(--gold);background:rgba(231,200,115,.16);}
+.ci-mood .cm-lb{font-size:9.5px;font-weight:700;color:var(--muted);}
+.ci-emojis{display:flex;flex-wrap:wrap;gap:8px;margin:10px 2px 4px;}
+.ci-emo{font-size:22px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;
+  padding:6px 10px;cursor:pointer;}
+.ci-emo:active{transform:scale(.9);}
+.ci-past-entry{background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:11px 13px;margin-bottom:8px;}
+.ci-past-entry .cpe-top{font-size:12px;color:var(--dim);margin-bottom:3px;}
+.ci-past-entry .cpe-mood{font-size:18px;margin-right:6px;}
+.ci-past-entry .cpe-note{font-size:14px;color:var(--fg);line-height:1.4;}
 /* ── CALENDAR ── */
 .cal-list{display:flex;flex-direction:column;gap:10px;}
 .cal-day-head{font-size:12px;color:var(--gold);font-weight:800;letter-spacing:.5px;
@@ -757,11 +773,12 @@ textarea{resize:none;line-height:1.4;}
 #chat{background:#000;}
 /* user-chosen background SKIN (their own photo/art) sits behind the chat */
 .chat-skin{position:absolute;inset:0;background-size:cover;background-position:center;
-  background-repeat:no-repeat;z-index:0;display:none;}
+  background-repeat:no-repeat;z-index:1;display:none;}
 .chat-skin::after{content:"";position:absolute;inset:0;
   background:linear-gradient(180deg,rgba(7,8,13,.55) 0%,rgba(7,8,13,.35) 35%,rgba(7,8,13,.6) 100%);}
 #chat.has-skin .chat-skin{display:block;}
-#chat.has-skin #msgs,#chat.has-skin .ft-top,#chat.has-skin .self,#chat.has-skin #typing{position:relative;z-index:2;}
+#chat.has-skin .ft-bg{display:none;}   /* hide the default animated backdrop so the skin shows */
+#chat.has-skin #msgs,#chat.has-skin .ft-top,#chat.has-skin .self,#chat.has-skin #typing,#chat.has-skin .dock,#chat.has-skin .chips,#chat.has-skin .friend-switch,#chat.has-skin .viewmenu{position:relative;z-index:2;}
 .ft-bg{position:absolute;inset:0;background-size:cover;background-position:center;
   background-color:#1a1a28;animation:alive 7s ease-in-out infinite;transform-origin:center 40%;}
 .ft-bg::after{content:"";position:absolute;inset:0;
@@ -1159,6 +1176,26 @@ textarea{resize:none;line-height:1.4;}
   </div>
 </section>
 
+<!-- QUICK CHECK-IN (mood + talk/type/emoji journal) -->
+<section class="screen" id="checkin">
+  <div class="bar"><button class="back" onclick="openInsights()">‹</button>
+    <h2>Check in</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll">
+    <div class="gb-honey" id="ciHoney"></div>
+    <div class="ci-moods" id="ciMoods"></div>
+    <label class="rec-label" style="margin-top:16px">Anything on your mind? (optional)</label>
+    <div class="rec-field" style="display:flex;gap:8px;align-items:flex-start">
+      <textarea id="ciNote" rows="3" placeholder="Talk, type, or tap a feeling — or skip it entirely" style="flex:1"></textarea>
+      <button class="rec-mic" onclick="recDictate(&#39;ciNote&#39;,this)">🎤</button>
+    </div>
+    <div class="ci-emojis" id="ciEmojis"></div>
+    <button class="gb-next" onclick="saveCheckin()">Save my check-in</button>
+    <button class="goals-manage-btn" style="width:100%;margin-top:10px" onclick="shareCheckin()">📣 Share that I checked in 🍯</button>
+    <button class="gb-skip" onclick="openInsights()">Maybe later</button>
+    <div id="ciPast" style="margin-top:22px"></div>
+  </div>
+</section>
+
 <!-- GOAL BUILDER (conversational, tap-guided) -->
 <section class="screen" id="goalBuilder">
   <div class="bar"><button class="back" onclick="openInsights()">‹</button>
@@ -1499,6 +1536,7 @@ textarea{resize:none;line-height:1.4;}
       <div class="vid-noimg" id="loveNoImg">No photo on this friend yet — the joke will go on a honey background. Add a photo in Edit for a personal card.</div>
     </div>
     <button class="rec-save" onclick="shareLovedImage()">🖼️ Share as image</button>
+    <button class="rec-save" onclick="shareLovedLink()" style="margin-top:10px;background:var(--gold);color:#3a2f12;border:none">📣 Share with link 🍯</button>
     <button class="rec-save" onclick="document.getElementById(&#39;loveImgInput&#39;).click()" style="margin-top:10px;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📷 Change the picture</button>
     <input type="file" id="loveImgInput" accept="image/*" style="display:none" onchange="onLoveImgPick(event)">
     <button class="rec-save" onclick="shareLovedVideo()" style="margin-top:10px;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">🎬 Share as video</button>
@@ -2488,7 +2526,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidTopups:0, voiceCloneDone:false };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidTopups:0, voiceCloneDone:false, checkins:[] };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -4489,6 +4527,7 @@ var GOAL_TYPES=[
   {id:"meals",    ic:"🥗", label:"Meals & nutrition"},
   {id:"hydration",ic:"💧", label:"Hydration"},
   {id:"mindset",  ic:"🧘", label:"Mindset / self-care"},
+  {id:"reflect",  ic:"📓", label:"Reflect / journal"},
   {id:"sleep",    ic:"😴", label:"Sleep / rest"},
   {id:"treat",    ic:"🍓", label:"Treats & rewards"},
   {id:"custom",   ic:"⭐", label:"Something else"}
@@ -4571,6 +4610,75 @@ function toggleGoalDone(g){
 }
 /* Honey celebrates milestones — supportive/educational, never clinical.
    Fires on meaningful counts (3, 7, 14, 21, 30, 50, 100…). */
+/* ── QUICK CHECK-IN (mood + talk/type/emoji journal) ──
+   Opt-in via a "Reflect / journal" goal. Educational/supportive only —
+   Honey reflects warmly, never diagnoses. Saves to SETTINGS.checkins. */
+var CI_MOODS=[
+  {e:"😄", lb:"Great"},{e:"🙂", lb:"Good"},{e:"😐", lb:"Okay"},{e:"😔", lb:"Low"},{e:"😣", lb:"Rough"}
+];
+var CI_EMOJIS=["🙏","💪","😴","🌿","☕","❤️","🎉","🌧️","🔥","🧘","🥗","👣"];
+var _ciGoal=null, _ciMood=null;
+function ciFaceHTML(){ if(S.photo) return '<img src="'+S.photo+'">'; if(S.noFace) return '🍯'; return S.avatar||'🍯'; }
+function openCheckin(goal){
+  _ciGoal=goal||null; _ciMood=null;
+  go('checkin');
+  document.getElementById('ciHoney').innerHTML='<div class="gb-face">'+ciFaceHTML()+'</div><div class="gb-say">How are you, really? Tap how you\u2019re feeling \u2014 add a thought if you like, or don\u2019t. No pressure either way.</div>';
+  // moods
+  document.getElementById('ciMoods').innerHTML=CI_MOODS.map(function(m,i){
+    return '<button class="ci-mood" onclick="ciPickMood('+i+')"><span>'+m.e+'</span><span class="cm-lb">'+m.lb+'</span></button>';
+  }).join("");
+  // quick-add emojis
+  document.getElementById('ciEmojis').innerHTML=CI_EMOJIS.map(function(e){
+    return '<button class="ci-emo" onclick="ciAddEmoji(\''+e+'\')">'+e+'</button>';
+  }).join("");
+  document.getElementById('ciNote').value="";
+  renderPastCheckins();
+}
+function ciPickMood(i){
+  _ciMood=i;
+  var btns=document.querySelectorAll('#ciMoods .ci-mood');
+  btns.forEach(function(b,idx){ b.classList.toggle('sel', idx===i); });
+}
+function ciAddEmoji(e){ var n=document.getElementById('ciNote'); n.value=(n.value?n.value+" ":"")+e; }
+function saveCheckin(){
+  if(!Array.isArray(SETTINGS.checkins)) SETTINGS.checkins=[];
+  if(_ciMood===null && !document.getElementById('ciNote').value.trim()){
+    // nothing entered — gentle nudge, don't force
+    toast("Tap a feeling first, or 'Maybe later'.");
+    return;
+  }
+  var entry={ when:Date.now(), mood:(_ciMood!==null?_ciMood:null), note:document.getElementById('ciNote').value.trim().slice(0,1000) };
+  SETTINGS.checkins.unshift(entry);
+  if(SETTINGS.checkins.length>365) SETTINGS.checkins=SETTINGS.checkins.slice(0,365);
+  // completing the reflect goal earns honey like any goal
+  if(_ciGoal){ try{ if(!isGoalDone(_ciGoal)) toggleGoalDone(_ciGoal); }catch(e){} }
+  saveSettings();
+  // warm, supportive reflection in Honey's voice (never clinical)
+  var moodWord=(_ciMood!==null)?CI_MOODS[_ciMood].lb.toLowerCase():null;
+  var lines={
+    great:["Love that for you. Hold onto whatever made today feel good.","So glad to hear it. You deserve a great day."],
+    good:["That\u2019s good to hear. Steady and good counts for a lot.","Glad today\u2019s treating you kindly."],
+    okay:["Okay is perfectly okay. Some days just are, and that\u2019s alright.","Thanks for checking in. Even okay days are worth noting."],
+    low:["I\u2019m glad you told me. Be gentle with yourself today, you hear?","Low days happen. You showed up anyway \u2014 that matters."],
+    rough:["I\u2019m really glad you checked in. Rough days are heavy; go easy on yourself, and lean on someone you trust if you need to."]
+  };
+  var msg = moodWord && lines[moodWord] ? rand(lines[moodWord]) : "Thank you for taking a moment for yourself today.";
+  _ciGoal=null; _ciMood=null;
+  if(S.agentId){ try{ go('chat'); pushThem(vibeColor(msg)); return; }catch(e){} }
+  toast("🍯 "+msg);
+  openInsights();
+}
+function renderPastCheckins(){
+  var box=document.getElementById('ciPast'); if(!box)return;
+  var list=(SETTINGS.checkins||[]).slice(0,7);
+  if(!list.length){ box.innerHTML=""; return; }
+  box.innerHTML='<label class="rec-label">Recent check-ins</label>'+list.map(function(c){
+    var d=new Date(c.when).toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'});
+    var m=(c.mood!==null && CI_MOODS[c.mood])?CI_MOODS[c.mood].e:"";
+    return '<div class="ci-past-entry"><div class="cpe-top">'+d+'</div>'+
+      '<div class="cpe-note"><span class="cpe-mood">'+m+'</span>'+(c.note?esc(c.note):'<span style="color:var(--dim)">(just a mood)</span>')+'</div></div>';
+  }).join("");
+}
 function celebrateGoalMaybe(g, st){
   var c=st.count;
   var milestones={3:"three times",7:"a whole week's worth",14:"two weeks",21:"three weeks",30:"a full month",50:"fifty times",100:"one hundred times"};
@@ -4615,7 +4723,10 @@ function renderGoalsToday(){
     el.innerHTML='<div class="gc-check">'+(done?'✓':'')+'</div>'+
       '<div class="gc-ic">'+goalIcon(g.type)+'</div>'+
       '<div class="gc-tx">'+esc(g.name)+'<div class="gc-rhythm">'+rhythmLabel(g)+'</div></div>';
-    el.onclick=function(){ toggleGoalDone(g); };
+    el.onclick=function(){
+      if(g.type==='reflect' && !isGoalDone(g)){ openCheckin(g); return; }
+      toggleGoalDone(g);
+    };
     box.appendChild(el);
   });
 }
@@ -4645,7 +4756,7 @@ function gbPickType(id){ _gbDraft.type=id; gbStepName(); }
 function gbStepName(){
   var t=GOAL_TYPES.find(function(x){return x.id===_gbDraft.type;});
   var examples={movement:"e.g. Walk the dog",meals:"e.g. Salmon & green beans",hydration:"e.g. 8 glasses of water",
-    mindset:"e.g. 5 quiet minutes",sleep:"e.g. Lights out by 10",treat:"e.g. Fruit smoothie",custom:"e.g. Call my mom"};
+    mindset:"e.g. 5 quiet minutes",reflect:"e.g. Daily check-in",sleep:"e.g. Lights out by 10",treat:"e.g. Fruit smoothie",custom:"e.g. Call my mom"};
   gbSay("Lovely. What would you like to call it?",
     '<input class="gb-field" id="gbName" placeholder="'+(examples[_gbDraft.type]||"Name your goal")+'" value="'+esc(_gbDraft.name)+'">'+
     '<button class="gb-next" id="gbNameNext" onclick="gbNameNext()">Next</button>');
@@ -6288,6 +6399,36 @@ function earnShareHoney(){
   SETTINGS.honey=(SETTINGS.honey||0)+amt; SETTINGS.shareToday=(SETTINGS.shareToday||0)+amt;
   saveSettings();
   return amt;
+}
+/* ── BRANDED SHARING (habit / joke / verse — never private journal text) ──
+   Native share sheet → Facebook, IG, Messages, etc. Carries Honey branding
+   + the app link to boost reach, and earns a little honey (capped). */
+var HONEY_LINK="https://corsodoglover.github.io/tellmehoney/";
+function honeyShare(text){
+  var full=text+"\n\n🍯 Tell Me Honey — "+HONEY_LINK;
+  if(navigator.share){
+    navigator.share({title:"Tell Me Honey 🍯", text:full, url:HONEY_LINK})
+      .then(function(){ try{ earnShareHoney(); }catch(e){} })
+      .catch(function(){});
+  } else {
+    try{ navigator.clipboard.writeText(full); toast("Copied — paste it anywhere 🍯"); earnShareHoney(); }
+    catch(e){ toast("Copy this and share it 🍯"); }
+  }
+}
+function shareCheckin(){
+  honeyShare(rand([
+    "I took a moment for myself today with Honey. 🍯",
+    "Checked in with myself today. Little habits, big difference. 🍯",
+    "Showed up for me today, and that feels good. 🍯"
+  ]));
+}
+function shareJokeText(jt){ if(!jt)return; honeyShare("Honey told me this one and I had to share it:\n\n\u201c"+jt+"\u201d \ud83d\ude04"); }
+function shareVerseText(vt){ if(!vt)return; honeyShare("A little verse Honey shared with me:\n\n\u201c"+vt+"\u201d \ud83d\ude4f"); }
+/* share the currently-open loved item (joke or verse) as text + link */
+function shareLovedLink(){
+  var t=(typeof loveCurrent==='string')?loveCurrent:(loveCurrent&&loveCurrent.t)||'';
+  if(!t){ toast("Nothing to share yet."); return; }
+  if((typeof loveKind!=='undefined'?loveKind:'joke')==='verse') shareVerseText(t); else shareJokeText(t);
 }
 function shareMeta(){
   if(loveKind==='verse')  return {fname:'honey-verse.png',  title:'A verse for you 🍯',     footer:'🍯 Shared from the Tell me Honey app'};
