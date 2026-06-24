@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0050)file:///Users/sallycollins/Downloads/index_23.html -->
+<!-- saved from url=(0050)file:///Users/sallycollins/Downloads/index_24.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -303,6 +303,18 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .gb-skip{width:100%;text-align:center;background:none;border:none;color:var(--dim);
   font-size:13px;margin-top:12px;cursor:pointer;text-decoration:underline;}
 .goals-manage-list{display:flex;flex-direction:column;gap:9px;}
+/* ── CALENDAR ── */
+.cal-list{display:flex;flex-direction:column;gap:10px;}
+.cal-day-head{font-size:12px;color:var(--gold);font-weight:800;letter-spacing:.5px;
+  text-transform:uppercase;margin:14px 2px 2px;}
+.cal-item{display:flex;align-items:center;gap:11px;background:var(--panel2);
+  border:1px solid var(--line);border-radius:14px;padding:12px 14px;}
+.cal-item .ci-ic{font-size:19px;flex:0 0 auto;}
+.cal-item .ci-tx{flex:1;font-size:15px;font-weight:600;}
+.cal-item .ci-tx small{display:block;color:var(--dim);font-size:12px;font-weight:500;margin-top:2px;}
+.cal-item .ci-add{flex:0 0 auto;background:var(--panel);border:1px solid var(--gold);border-radius:9px;
+  color:var(--gold);font-weight:700;font-size:12px;padding:7px 11px;cursor:pointer;text-decoration:none;}
+.cal-empty{text-align:center;color:var(--dim);font-size:14px;padding:22px 12px;line-height:1.5;}
 .words-head{font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:1px;
   text-transform:uppercase;margin:26px 2px 12px;border-top:1px solid var(--line);padding-top:18px;}
 .words-list{display:flex;flex-wrap:wrap;gap:9px;}
@@ -1003,6 +1015,7 @@ textarea{resize:none;line-height:1.4;}
         <button class="home-big" onclick="openJokes()"><span class="hb-ic">😄</span><span class="hb-tx"><b>Share or make a joke</b><small>Send a laugh to someone</small></span></button>
         <div class="home-half-row">
           <button class="home-half" onclick="homeWeather()"><span class="hh-ic">☀️</span><span class="hh-tx">Weather</span><span class="hh-net">needs internet</span></button>
+          <button class="home-half" onclick="openCalendar()"><span class="hh-ic">📅</span><span class="hh-tx">Calendar</span></button>
           <button class="home-half" onclick="openListsHub()"><span class="hh-ic">🛒</span><span class="hh-tx">My Lists</span></button>
           <button class="home-half" onclick="openLearn()"><span class="hh-ic">📚</span><span class="hh-tx">Learn</span></button>
         </div>
@@ -1128,6 +1141,17 @@ textarea{resize:none;line-height:1.4;}
   </div>
 </section>
 
+<!-- CALENDAR -->
+<section class="screen" id="calendar">
+  <div class="bar"><button class="back" onclick="showHome()">‹</button>
+    <h2>📅 Calendar</h2>
+    <button class="act" onclick="shareCalendar()" style="color:var(--gold)">Text it</button></div>
+  <div class="insights-body scroll">
+    <p class="rec-hint" style="text-align:center;margin:2px 8px 14px">Your schedule and scheduled goals. Tap any item to add it to your phone’s calendar.</p>
+    <div class="cal-list" id="calList"></div>
+  </div>
+</section>
+
 <!-- GOAL BUILDER (conversational, tap-guided) -->
 <section class="screen" id="goalBuilder">
   <div class="bar"><button class="back" onclick="openInsights()">‹</button>
@@ -1180,6 +1204,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="if(loadedOrFirst())openVoicePicker()">🎚️ Voice &amp; speech</button>
     <button class="prof-row" onclick="openTiers()" id="planRow">🍯 Your Honey Plan</button>
     <button class="prof-row" onclick="openThemePicker()" id="themeRow">🎨 App color theme: Honey</button>
+    <button class="prof-row" onclick="openCalendar()">📅 Calendar</button>
     <button class="prof-row" onclick="openListsHub()">🛒 My Lists</button>
     <button class="prof-row" onclick="openLearn()">📚 Learn with Honey</button>
     <button class="prof-row" onclick="cycleLearnLang()" id="learnLangRow">🌍 Learning language: Spanish</button>
@@ -4037,6 +4062,10 @@ function userSays(t){
   if(/((add|put|throw)\b.*(shopping|grocery|groceries|store|household)? ?list|to (my )?(shopping|grocery|groceries|store|household) list|need to (get|buy|pick up|grab)|need (some |more )?|pick up|out of|running low on|grab some|get some|buy some|add .* to the list)\b/.test(l)
      && /(list|store|grocer|buy|get|pick up|grab|need|out of|running low)/.test(l)
      && !/(remind|calendar|schedule|appointment|meeting)/.test(l)){ doShopping(t); return; }
+  // open the Calendar SCREEN ("open my calendar", "show me my calendar")
+  if(/(open|show|see|view|pull up|go to)\b.*(calendar|schedule|agenda)/.test(l)){ openCalendar(); return; }
+  // open goals ("show my goals", "my honey pot goals")
+  if(/(show|see|view|open|my)\b.*goals?\b/.test(l) || /honey ?pot/.test(l)){ openInsights(); return; }
   // view what's saved (check BEFORE create so "what's on my calendar" isn't caught as a create)
   if(/(what('s| is| do i have)?.*(calendar|schedule|reminder|coming up|planned|going on)|my (calendar|schedule|reminders|agenda)|on my (calendar|schedule|plate)|anything (coming up|planned|scheduled)|do i have (any )?(plans|reminders|anything))/.test(l)){ showReminders(); return; }
   // create a reminder — broad set of phrasings
@@ -4243,6 +4272,121 @@ function showShopping(){
   });
 }
 /* ── LISTS HUB (4 blocks) ── */
+/* ════════════════════════════════════════════════════════════
+   CALENDAR screen — shows saved reminders AND scheduled goals.
+   Each item has a tap-to-add button that drops it into the phone's
+   real calendar (Google/Apple) via a standard .ics file.
+   NOTE FOR LATER (native phase): replace tap-to-add with real
+   Google Calendar sign-in for automatic two-way sync. Web apps
+   cannot silently write to Google Calendar — that needs native.
+   ════════════════════════════════════════════════════════════ */
+function openCalendar(){ go('calendar'); renderCalendar(); }
+var _DOW=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+function renderCalendar(){
+  ensureGoals();
+  var box=document.getElementById('calList'); if(!box)return;
+  box.innerHTML="";
+  // 1) one-off reminders (already dated)
+  var rems=(SETTINGS.reminders||[]).filter(function(r){return r.when>=Date.now()-3600000;})
+            .sort(function(a,b){return a.when-b.when;});
+  // 2) scheduled goals laid onto the next 7 days
+  var goalItems=[];
+  var now=new Date();
+  for(var off=0; off<7; off++){
+    var d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+off);
+    var dow=d.getDay();
+    SETTINGS.goals.forEach(function(g){
+      var due=(g.rhythm==="daily") ? (!g.days||!g.days.length? true : g.days.indexOf(dow)>=0)
+            : (g.rhythm==="weekly" && off===0) ? true
+            : false;  // monthly/yearly not laid on the week grid
+      if(due){
+        var when=new Date(d.getFullYear(),d.getMonth(),d.getDate(),9,0,0); // default 9am
+        goalItems.push({title:g.name, when:when.getTime(), label:"goal", icon:goalIcon(g.type), isGoal:true});
+      }
+    });
+  }
+  var all=rems.map(function(r){return {title:r.title, when:r.when, icon:"🗓️", isGoal:false};})
+              .concat(goalItems)
+              .sort(function(a,b){return a.when-b.when;});
+  if(!all.length){
+    box.innerHTML='<div class="cal-empty">Nothing scheduled yet. Say “remind me to…” in chat, or add a goal with days in your Honey Pot — they’ll show up here.</div>';
+    return;
+  }
+  // group by day
+  var lastDay="";
+  all.forEach(function(it){
+    var d=new Date(it.when);
+    var dayKey=d.toDateString();
+    if(dayKey!==lastDay){
+      lastDay=dayKey;
+      var head=document.createElement('div'); head.className='cal-day-head';
+      var today=new Date(); var isToday=d.toDateString()===today.toDateString();
+      head.textContent=(isToday?"Today · ":"")+_DOW[d.getDay()]+", "+d.toLocaleDateString([], {month:'long',day:'numeric'});
+      box.appendChild(head);
+    }
+    var el=document.createElement('div'); el.className='cal-item';
+    var timeStr=d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+    var sub=it.isGoal ? "Goal · "+timeStr : timeStr;
+    var a=icsDataUri(it.title, new Date(it.when));
+    el.innerHTML='<div class="ci-ic">'+(it.icon||"🗓️")+'</div>'+
+      '<div class="ci-tx">'+esc(it.title)+'<small>'+sub+'</small></div>'+
+      '<a class="ci-add" href="'+a+'" download="'+makeICSFilename(it.title)+'">Add</a>';
+    box.appendChild(el);
+  });
+}
+
+/* ════════════════════════════════════════════════════════════
+   CALENDAR  (tap-to-add to phone's real calendar via .ics)
+   NOTE: automatic Google/Apple two-way sync is a NATIVE-phase
+   upgrade. Today: Honey shows the schedule and hands the phone
+   a calendar file you tap to accept. One tap per item.
+   ════════════════════════════════════════════════════════════ */
+function openCalendar(){ go('calendar'); renderCalendar(); }
+function renderCalendar(){
+  var box=document.getElementById('calList'); if(!box)return;
+  ensureGoals();
+  // gather upcoming reminders + this week's scheduled goals
+  var items=[];
+  (SETTINGS.reminders||[]).filter(function(r){return r.when>=Date.now()-3600000;})
+    .forEach(function(r){ items.push({when:r.when, title:r.title, ic:"🗓️", kind:"reminder"}); });
+  // scheduled goals → upcoming dated occurrences within the next 7 days
+  var now=new Date();
+  SETTINGS.goals.forEach(function(g){
+    if(g.rhythm!=="daily") return;                 // only day-scheduled goals land on the calendar
+    var days=(g.days&&g.days.length)?g.days:[0,1,2,3,4,5,6];
+    for(var i=0;i<7;i++){
+      var d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i, 9,0,0); // default 9am
+      if(days.indexOf(d.getDay())>=0){
+        items.push({when:d.getTime(), title:g.name, ic:goalIcon(g.type), kind:"goal"});
+      }
+    }
+  });
+  items.sort(function(a,b){return a.when-b.when;});
+  if(!items.length){
+    box.innerHTML='<div class="cal-empty">Nothing scheduled yet. Say “remind me to…” in chat, or add a goal with days, and it’ll show here — ready to drop into your phone’s calendar.</div>';
+    return;
+  }
+  box.innerHTML="";
+  var lastDay="";
+  items.slice(0,60).forEach(function(it){
+    var d=new Date(it.when);
+    var dayKey=d.toLocaleDateString([], {weekday:'long', month:'long', day:'numeric'});
+    if(dayKey!==lastDay){
+      lastDay=dayKey;
+      var h=document.createElement('div'); h.className='cal-day-head'; h.textContent=dayKey;
+      box.appendChild(h);
+    }
+    var el=document.createElement('div'); el.className='cal-item';
+    var timeStr=d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+    var a=document.createElement('a'); a.className='ci-add'; a.textContent='Add';
+    a.href=icsDataUri(it.title, d); a.setAttribute('download', makeICSFilename(it.title));
+    el.innerHTML='<div class="ci-ic">'+it.ic+'</div>'+
+      '<div class="ci-tx">'+esc(it.title)+'<small>'+(it.kind==="goal"?"goal · ":"")+timeStr+'</small></div>';
+    el.appendChild(a);
+    box.appendChild(el);
+  });
+}
+
 /* ════════════════════════════════════════════════════════════
    HONEY POT — GOALS  (painless daily/weekly/monthly structure)
    Extends the existing honey-drop system. Completing a goal earns
@@ -4562,7 +4706,7 @@ function showReminders(){
       return "• "+r.title+" — "+fmtWhen(d); }).join("\n");
     setTimeout(()=>themTyping(()=>{
       pushThem(lines);
-      setTimeout(()=>themTyping(()=>{ pushThem(vibeColor("Want me to text it to you?")); pushAction('📲 Yes, text me my schedule', null, false, null, 'shareCalendar'); }),700);
+      setTimeout(()=>themTyping(()=>{ pushThem(vibeColor("Want me to text it to you?")); pushAction('📅 Open my calendar', null, false, null, 'openCalendar'); pushAction('📲 Yes, text me my schedule', null, false, null, 'shareCalendar'); }),700);
     }),650);
   });
 }
