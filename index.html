@@ -1227,6 +1227,26 @@ textarea{resize:none;line-height:1.4;}
   </div>
 </section>
 
+<!-- PRAYERS — built-in (keep/delete) + your own (type or record real voice) -->
+<section class="screen" id="prayers">
+  <div class="bar"><button class="back" onclick="goBack()">‹</button>
+    <h2>Prayers</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll">
+    <div class="gb-honey">These are here whenever you'd like them. Keep the ones that are yours, set the others aside, and add any that are close to your heart. 💛</div>
+    <div id="prayerList"></div>
+    <div style="margin-top:18px;border-top:1px solid var(--line,rgba(0,0,0,.1));padding-top:16px">
+      <label class="rec-label">Add your own — type it, or record it in your real voice</label>
+      <input id="upTitle" placeholder="Title (e.g. Grandma's blessing)" style="width:100%;margin:6px 0;padding:10px;border-radius:10px;border:1px solid var(--line,rgba(0,0,0,.15))">
+      <textarea id="upText" rows="3" placeholder="Type the words (optional if you record your voice)" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--line,rgba(0,0,0,.15))"></textarea>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px">
+        <button class="rec-mic" id="upRecBtn" onclick="togglePrayerRec(this)">🎤 Record my voice</button>
+        <span id="upRecStatus" style="font-size:13px;color:#8a7a52"></span>
+      </div>
+      <button class="gb-next" style="width:100%;margin-top:12px" onclick="addUserPrayer()">Save this prayer</button>
+    </div>
+  </div>
+</section>
+
 <!-- GOAL BUILDER (conversational, tap-guided) -->
 <section class="screen" id="goalBuilder">
   <div class="bar"><button class="back" onclick="openInsights()">‹</button>
@@ -4209,6 +4229,15 @@ function userSays(t){
   if(/(joke|funny|laugh|make me)/.test(l)){ if(/roast/.test(l))tellJoke(false,10); else tellJoke(/surprise|random/.test(l)); return; }
   if(/(another|again|more|next)/.test(l)){ tellJoke(); return; }
   if(/(roast)/.test(l)){ tellJoke(false,10); return; }
+  // ── PRAYER (offered gently, never pushed) ──
+  if(/(my prayers|prayer list|open prayers|prayers? (screen|page|area)|add a prayer|record a prayer)/.test(l)){ openPrayers(); return; }
+  if(/(lord'?s prayer|say a prayer|bedtime prayer|pray with me|let'?s pray|serenity prayer|now i lay)/.test(l)){
+    var pl=null;
+    if(/serenity/.test(l)) pl=PRAYERS.find(function(x){return x.id==="serenity";});
+    else if(/now i lay/.test(l)) pl=PRAYERS.find(function(x){return x.id==="now_i_lay";});
+    else if(/lord'?s/.test(l)) pl=visiblePrayers().find(function(x){return x.id.indexOf("lords")===0;})||PRAYERS[0];
+    sayPrayer(pl); return;
+  }
   // ── BEDTIME / COMFORT STORY ──
   if(/(bedtime|comfort|sleep|wind down|wind-down)\s*(story|tale)|tell me a story|story to (sleep|rest)/.test(l)){ bedtimeStory(); return; }
   // ── FUN FACTS (animal / science / plant) ──
@@ -4221,7 +4250,8 @@ function userSays(t){
     var fidx=Math.floor(Math.random()*arr.length);
     themTyping(()=>{
       pushThemText(vibeColor(arr[fidx]));
-      try{ clearSpeech(); new Audio(HONEY_AUDIO_BASE+cat+"_"+String(fidx+1).padStart(2,'0')+".mp3").play().catch(function(){}); }catch(e){}
+      S.speakerOn=true;
+      enqueueSpeak("\u0000CLIP:"+cat+"_"+String(fidx+1).padStart(2,'0'));
     });
     return;
   }
@@ -4801,13 +4831,8 @@ var FORAGE_FACTS=[
 ];
 function forageTidbit(){
   var idx=Math.floor(Math.random()*FORAGE_FACTS.length);
-  // play Honey's recorded clip for this fact, if present (forage_01.mp3 … forage_44.mp3)
-  try{
-    var clip=HONEY_AUDIO_BASE+"forage_"+String(idx+1).padStart(2,'0')+".mp3";
-    var a=new Audio(clip);
-    clearSpeech();              // stop any current speech first
-    a.play().catch(function(){});  // silent if the clip isn't there yet
-  }catch(e){}
+  // play Honey's recorded clip through the proven speech queue (not blocked by autoplay)
+  try{ S.speakerOn=true; enqueueSpeak("\u0000CLIP:forage_"+String(idx+1).padStart(2,'0')); }catch(e){}
   return FORAGE_FACTS[idx] + "  Always be sure of what you pick — when in doubt, leave it be. " + FORAGE_BOOK;
 }
 
@@ -4895,13 +4920,161 @@ function bedtimeStory(){
   var s=BEDTIME_STORIES[idx];
   themTyping(()=>{
     pushThemText(vibeColor("Here's a little story to rest to. Close your eyes if you like. 🌙"));
-    setTimeout(()=>{
-      pushThemText(vibeColor("“"+s.t+"”"));
-      try{ clearSpeech(); new Audio(HONEY_AUDIO_BASE+"story_"+String(idx+1).padStart(2,'0')+".mp3").play().catch(function(){}); }catch(e){}
-      // show the (sample) text gently after the title
-      setTimeout(()=>pushThemText(vibeColor(s.x)), 600);
-    }, 500);
+    pushThemText(vibeColor("“"+s.t+"”"));
+    pushThemText(vibeColor(s.x));
+    // play the recorded clip through the proven speech queue (not blocked by autoplay)
+    S.speakerOn=true;
+    enqueueSpeak("\u0000CLIP:story_"+String(idx+1).padStart(2,'0'));
   });
+}
+
+/* ── PRAYERS ──
+   A small, respectful library. Each person keeps the wording that's right for
+   them and can delete the rest (PRAYER_HIDDEN). Played in Honey's recorded voice
+   (prayer_01… clips) through the proven speech queue. Offered gently, never pushed. */
+var PRAYERS=[
+  {id:"lords_sally", clip:"prayer_01", title:"The Lord's Prayer",
+   text:"Our Father, who art in Heaven, hallowed be thy name. Thy kingdom come, thy will be done, on Earth as it is in Heaven. Give us this day our daily bread, and forgive us of our trespasses, as we forgive those who trespass against us. And lead us not into temptation, but deliver us far, far away from evil. For thine is the kingdom, and the power, and the glory, forever and ever. Amen."},
+  {id:"lords_std", clip:"prayer_02", title:"The Lord's Prayer (traditional)",
+   text:"Our Father, who art in heaven, hallowed be thy name. Thy kingdom come, thy will be done, on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us. And lead us not into temptation, but deliver us from evil. For thine is the kingdom, and the power, and the glory, forever and ever. Amen."},
+  {id:"now_i_lay", clip:"prayer_03", title:"Now I Lay Me Down to Sleep",
+   text:"Now I lay me down to sleep, I pray the Lord my soul to keep. Watch and guard me through the night, and wake me with the morning light. Amen."},
+  {id:"serenity", clip:"prayer_04", title:"The Serenity Prayer",
+   text:"God, grant me the serenity to accept the things I cannot change, the courage to change the things I can, and the wisdom to know the difference. Amen."}
+];
+// which built-in prayers a person has chosen to hide (kept on-device)
+function prayerHidden(){ if(!Array.isArray(SETTINGS.prayerHidden)) SETTINGS.prayerHidden=[]; return SETTINGS.prayerHidden; }
+function visiblePrayers(){ var h=prayerHidden(); return PRAYERS.filter(function(p){return h.indexOf(p.id)<0;}); }
+
+function sayPrayer(p){
+  // if a specific prayer is given, say it; otherwise the person's first kept one
+  if(!p){ var v=visiblePrayers(); if(!v.length){ themTyping(()=>pushThemText(vibeColor("Whenever you're ready, you can add a prayer that's close to your heart. 💛"))); return; } p=v[0]; }
+  themTyping(()=>{
+    pushThemText(vibeColor("Let's say it together. 🙏"));
+    pushThemText(vibeColor(p.text));
+    S.speakerOn=true;
+    enqueueSpeak("\u0000CLIP:"+p.clip);
+  });
+}
+
+/* ── MY PRAYERS & KEEPSAKES (user's own — typed or recorded in their REAL voice) ──
+   Everything stays on this device. Recordings use the phone's own microphone
+   (no AI, no key, no cost). Saved audio replays free, forever.
+   Stored as blobs in IndexedDB under keys "userprayer:<id>". */
+function userPrayers(){ if(!Array.isArray(SETTINGS.userPrayers)) SETTINGS.userPrayers=[]; return SETTINGS.userPrayers; }
+
+function saveUserPrayer(rec){
+  // rec: {id,title,text,hasAudio,ts}
+  var list=userPrayers();
+  var i=list.findIndex(function(x){return x.id===rec.id;});
+  if(i>=0) list[i]=rec; else list.unshift(rec);
+  saveSettings();
+}
+function deleteUserPrayer(id){
+  SETTINGS.userPrayers=userPrayers().filter(function(x){return x.id!==id;});
+  saveSettings();
+  // remove any stored audio blob too
+  try{ if(DB_OK) DB.transaction("honey","readwrite").objectStore("honey").delete("userprayer:"+id); }catch(e){}
+}
+function putPrayerAudio(id, blob, cb){
+  if(!DB_OK){ cb&&cb(false); return; }
+  try{ var t=DB.transaction("honey","readwrite"); t.objectStore("honey").put(blob,"userprayer:"+id);
+    t.oncomplete=function(){ cb&&cb(true); }; t.onerror=function(){ cb&&cb(false); }; }
+  catch(e){ cb&&cb(false); }
+}
+function getPrayerAudio(id, cb){
+  if(!DB_OK){ cb&&cb(null); return; }
+  try{ var r=DB.transaction("honey","readonly").objectStore("honey").get("userprayer:"+id);
+    r.onsuccess=function(){ cb&&cb(r.result||null); }; r.onerror=function(){ cb&&cb(null); }; }
+  catch(e){ cb&&cb(null); }
+}
+function playUserPrayer(p){
+  if(p.hasAudio){
+    getPrayerAudio(p.id, function(blob){
+      if(blob){ try{ var u=URL.createObjectURL(blob); var a=new Audio(u); a.onended=function(){URL.revokeObjectURL(u);}; a.play().catch(function(){}); }catch(e){} }
+      else if(p.text){ S.speakerOn=true; enqueueSpeak(p.text); }
+    });
+  } else if(p.text){ S.speakerOn=true; enqueueSpeak(p.text); }
+}
+
+function openPrayers(){ go("prayers"); renderPrayers(); }
+function renderPrayers(){
+  var box=document.getElementById("prayerList"); if(!box) return;
+  var h=prayerHidden(), html="";
+  // built-in prayers
+  html+='<div style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#a08a55;margin:6px 0">Common prayers</div>';
+  PRAYERS.forEach(function(p){
+    var hidden=h.indexOf(p.id)>=0;
+    html+='<div class="chip" style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:'+(hidden?'rgba(0,0,0,.04)':'var(--warm,rgba(246,207,110,.18))')+';border:1px solid var(--line,rgba(200,150,40,.3));border-radius:12px;padding:10px 12px;margin:6px 0;'+(hidden?'opacity:.55':'')+'">';
+    html+='<div style="flex:1"><b>'+esc(p.title)+'</b></div>';
+    if(hidden){
+      html+='<button class="rec-mic" onclick="unhidePrayer(\''+p.id+'\')">＋ keep</button>';
+    } else {
+      html+='<button class="rec-mic" onclick="sayBuiltinPrayer(\''+p.id+'\')">▶︎</button>';
+      html+='<button class="chip-x" style="cursor:pointer;color:#c89324;font-weight:700;padding:2px 8px" onclick="hidePrayer(\''+p.id+'\')">✕</button>';
+    }
+    html+='</div>';
+  });
+  // user prayers
+  var up=userPrayers();
+  if(up.length){
+    html+='<div style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#a08a55;margin:14px 0 6px">Your own</div>';
+    up.forEach(function(p){
+      html+='<div class="chip" style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--warm,rgba(246,207,110,.18));border:1px solid var(--line,rgba(200,150,40,.3));border-radius:12px;padding:10px 12px;margin:6px 0">';
+      html+='<div style="flex:1"><b>'+esc(p.title||"My prayer")+'</b>'+(p.hasAudio?' <span style="font-size:11px;color:#a08a55">🎤 your voice</span>':'')+'</div>';
+      html+='<button class="rec-mic" onclick="playSavedPrayer(\''+p.id+'\')">▶︎</button>';
+      html+='<button class="chip-x" style="cursor:pointer;color:#c89324;font-weight:700;padding:2px 8px" onclick="removeUserPrayer(\''+p.id+'\')">✕</button>';
+      html+='</div>';
+    });
+  }
+  box.innerHTML=html;
+}
+function sayBuiltinPrayer(id){ var p=PRAYERS.find(function(x){return x.id===id;}); if(p) sayPrayer(p); }
+function hidePrayer(id){ var h=prayerHidden(); if(h.indexOf(id)<0){h.push(id);} saveSettings(); renderPrayers(); }
+function unhidePrayer(id){ SETTINGS.prayerHidden=prayerHidden().filter(function(x){return x!==id;}); saveSettings(); renderPrayers(); }
+function playSavedPrayer(id){ var p=userPrayers().find(function(x){return x.id===id;}); if(p) playUserPrayer(p); }
+function removeUserPrayer(id){ if(confirm("Remove this prayer? This can't be undone.")){ deleteUserPrayer(id); renderPrayers(); } }
+
+/* phone-mic recording (real voice, no AI, no key, no cost) */
+var _prayerRec=null, _prayerChunks=[], _prayerBlob=null;
+function togglePrayerRec(btn){
+  var status=document.getElementById("upRecStatus");
+  if(_prayerRec && _prayerRec.state==="recording"){
+    _prayerRec.stop(); return;
+  }
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||typeof MediaRecorder==="undefined"){
+    status.textContent="Recording isn't available on this device."; return;
+  }
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+    _prayerChunks=[]; _prayerBlob=null;
+    _prayerRec=new MediaRecorder(stream);
+    _prayerRec.ondataavailable=function(e){ if(e.data.size>0) _prayerChunks.push(e.data); };
+    _prayerRec.onstop=function(){
+      _prayerBlob=new Blob(_prayerChunks,{type:_prayerChunks[0]?_prayerChunks[0].type:"audio/webm"});
+      stream.getTracks().forEach(function(t){t.stop();});
+      btn.textContent="🎤 Record my voice"; btn.style.background="";
+      status.textContent="Recorded ✓ — saved when you tap Save.";
+    };
+    _prayerRec.start();
+    btn.textContent="⏹ Stop"; btn.style.background="#f3b0a0";
+    status.textContent="Recording… speak gently.";
+  }).catch(function(){ status.textContent="Couldn't reach the microphone."; });
+}
+function addUserPrayer(){
+  var title=(document.getElementById("upTitle").value||"").trim();
+  var text=(document.getElementById("upText").value||"").trim();
+  if(!title && !text && !_prayerBlob){ alert("Add a title, some words, or a recording first."); return; }
+  var id="p"+Date.now();
+  var rec={id:id, title:title||"My prayer", text:text, hasAudio:!!_prayerBlob, ts:Date.now()};
+  if(_prayerBlob){
+    putPrayerAudio(id, _prayerBlob, function(ok){ rec.hasAudio=ok; saveUserPrayer(rec); finishAddPrayer(); });
+  } else { saveUserPrayer(rec); finishAddPrayer(); }
+}
+function finishAddPrayer(){
+  _prayerBlob=null; _prayerChunks=[];
+  document.getElementById("upTitle").value=""; document.getElementById("upText").value="";
+  document.getElementById("upRecStatus").textContent="";
+  renderPrayers();
 }
 function getNourishToday(){
   if(!SETTINGS.nourish || SETTINGS.nourish.day!==todayKey()){ SETTINGS.nourish={day:todayKey(), eaten:[]}; }
@@ -5878,6 +6051,10 @@ function stopAllAudio(){ clearSpeech(); }
 
 function enqueueSpeak(text){
   if(!S.speakerOn) return;
+  // exact-clip sentinel passes through untouched
+  if(typeof text==='string' && text.indexOf("\u0000CLIP:")===0){
+    _spQueue.push(text); if(!_spActive) _spDrain(); return;
+  }
   var clean = cleanForSpeech(text);
   if(!clean) return;
   _spQueue.push(clean);
