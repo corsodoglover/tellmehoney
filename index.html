@@ -4248,10 +4248,12 @@ function userSays(t){
     else if(/plant|tree|flower|garden/.test(l)){ cat="plant"; arr=PLANT_FACTS; }
     else { var pick=[["animal",ANIMAL_FACTS],["science",SCIENCE_FACTS],["plant",PLANT_FACTS]][Math.floor(Math.random()*3)]; cat=pick[0]; arr=pick[1]; }
     var fidx=Math.floor(Math.random()*arr.length);
+    // play RIGHT NOW on the tap (delayed playback gets autoplay-blocked)
+    S.speakerOn=true;
+    enqueueSpeak("\u0000CLIP:"+cat+"_"+String(fidx+1).padStart(2,'0'));
     themTyping(()=>{
       pushThemText(vibeColor(arr[fidx]));
-      S.speakerOn=true;
-      enqueueSpeak("\u0000CLIP:"+cat+"_"+String(fidx+1).padStart(2,'0'));
+      pushAction("🔊 Read it aloud", null, false, null, function(){ replayClip(cat+"_"+String(fidx+1).padStart(2,'0')); });
     });
     return;
   }
@@ -4918,13 +4920,14 @@ var BEDTIME_STORIES=[
 function bedtimeStory(){
   var idx=Math.floor(Math.random()*BEDTIME_STORIES.length);
   var s=BEDTIME_STORIES[idx];
+  // play RIGHT NOW on the tap (delayed playback gets autoplay-blocked)
+  S.speakerOn=true;
+  enqueueSpeak("\u0000CLIP:story_"+String(idx+1).padStart(2,'0'));
   themTyping(()=>{
     pushThemText(vibeColor("Here's a little story to rest to. Close your eyes if you like. 🌙"));
     pushThemText(vibeColor("“"+s.t+"”"));
     pushThemText(vibeColor(s.x));
-    // play the recorded clip through the proven speech queue (not blocked by autoplay)
-    S.speakerOn=true;
-    enqueueSpeak("\u0000CLIP:story_"+String(idx+1).padStart(2,'0'));
+    pushAction("🔊 Read it aloud", null, false, null, function(){ replayClip("story_"+String(idx+1).padStart(2,'0')); });
   });
 }
 
@@ -4949,13 +4952,18 @@ function visiblePrayers(){ var h=prayerHidden(); return PRAYERS.filter(function(
 function sayPrayer(p){
   // if a specific prayer is given, say it; otherwise the person's first kept one
   if(!p){ var v=visiblePrayers(); if(!v.length){ themTyping(()=>pushThemText(vibeColor("Whenever you're ready, you can add a prayer that's close to your heart. 💛"))); return; } p=v[0]; }
+  // play the clip RIGHT NOW on the user's tap (delayed playback gets autoplay-blocked)
+  S.speakerOn=true;
+  enqueueSpeak("\u0000CLIP:"+p.clip);
+  // the words can still appear gently with the typing animation, with a Read-aloud button
   themTyping(()=>{
     pushThemText(vibeColor("Let's say it together. 🙏"));
     pushThemText(vibeColor(p.text));
-    S.speakerOn=true;
-    enqueueSpeak("\u0000CLIP:"+p.clip);
+    pushAction("🔊 Read it aloud", null, false, null, function(){ replayClip(p.clip); });
   });
 }
+/* one consistent "read aloud" path for any clip, fired by the user's tap */
+function replayClip(clip){ S.speakerOn=true; clearSpeech(); enqueueSpeak("\u0000CLIP:"+clip); }
 
 /* ── MY PRAYERS & KEEPSAKES (user's own — typed or recorded in their REAL voice) ──
    Everything stays on this device. Recordings use the phone's own microphone
