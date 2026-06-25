@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0050)file:///Users/sallycollins/Downloads/index_39.html -->
+<!-- saved from url=(0050)file:///Users/sallycollins/Downloads/index_40.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -7688,7 +7688,7 @@ function showSleepLegacy(){
 }
 function wakeUp(){
   var w=document.getElementById('welcome'); w.classList.add('waking');
-  S.returning = (S.alive && S.transcript.length>0);
+  S.returning = (S.transcript && S.transcript.length>0);
   setTimeout(()=>{ w.classList.remove('sleeping','waking'); enterChat(); }, 950);
 }
 /* start building a brand-new agent (does not touch saved agents) */
@@ -7868,7 +7868,7 @@ function agentCard(a,trashed){
 function callAgent(id){
   var a=getAgent(id); if(!a)return;
   applyAgent(a); ROSTER.currentId=id;
-  S.returning = (S.alive && S.transcript.length>0);
+  S.returning = (S.transcript && S.transcript.length>0);
   S.alive=true;
   enterChat();
 }
@@ -7924,7 +7924,7 @@ function switchToFriend(id){
   ROSTER.currentId=S.agentId; persist();
   var a=getAgent(id); if(!a)return;
   applyAgent(a); ROSTER.currentId=id;
-  S.returning=(S.alive&&S.transcript.length>0); S.alive=true;
+  S.returning=(S.transcript && S.transcript.length>0); S.alive=true;
   enterChat();
 }
 
