@@ -3516,8 +3516,9 @@ function renderPrompts(){
 }
 function startChatWithPrompt(send){
   if(!loadedOrFirst()){ newAgentFlow(true); return; }
+  S.skipGreet=true;            // jump right in — don't fire the generic greeting
   enterChat();
-  setTimeout(()=>{ userSays(send); }, 400);
+  setTimeout(()=>{ userSays(send); }, 350);
 }
 /* Profile — quick overview + entry points */
 function openProfile(){
@@ -4265,8 +4266,16 @@ function enterChat(){
   // Show the persistent setup banner until they've personalized their Honey
   var sbnr=document.getElementById('setupBanner');
   if(sbnr) sbnr.style.display = honeyNeedsSetup() ? 'block' : 'none';
-  var coming=S.returning; S.returning=false;
+  var coming=S.returning || (S.transcript && S.transcript.length>0); S.returning=false;
+  var skipGreet=S.skipGreet; S.skipGreet=false;
   setTimeout(()=>{ var ci=document.getElementById('chatInput'); if(ci)ci.focus({preventScroll:true}); }, 450);
+
+  if(skipGreet){
+    // jumping in from a buzz prompt — keep history if any, no generic greeting
+    if(coming && S.transcript.length) renderTranscript();
+    scheduleJokeSpark();
+    return;
+  }
 
   if(coming && S.transcript.length){
     // returning with history — restore the whole conversation
@@ -4316,9 +4325,14 @@ function enterChat(){
       // Ready-made Honey, not personalized yet → warmly invite setup
       if(!coming && !S.isSelf && honeyNeedsSetup()){
         setTimeout(()=>{ themTyping(()=>{
-          pushThem("Oh — one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours?");
+          pushThem("Oh — one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap \u201Cchange your Honey\u201D up top anytime.");
           showSetupInvite();
           resetIdle();
+          setTimeout(()=>{ themTyping(()=>{
+            pushThem("And see those little taps just above where you type? 👍 👎 ❤️ — use those to react anytime, quick and easy. Here, let me show you — I'll tell you one:");
+            resetIdle();
+            setTimeout(()=>{ try{ tellJoke(); }catch(e){} }, 1300);
+          }); }, 1700);
         }); }, 1100);
       }
     }); },900);
