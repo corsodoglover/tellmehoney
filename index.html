@@ -326,6 +326,40 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .ci-mood.sel{border-color:var(--gold);background:rgba(231,200,115,.16);}
 .ci-mood .cm-lb{font-size:9.5px;font-weight:700;color:var(--muted);}
 .ci-emojis{display:flex;flex-wrap:wrap;gap:8px;margin:10px 2px 4px;}
+.sl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
+.sl-tile{display:flex;align-items:center;gap:11px;background:var(--panel2);border:1.5px solid var(--line);
+  border-radius:15px;padding:15px 14px;cursor:pointer;text-align:left;transition:transform .12s;}
+.sl-tile:active{transform:scale(.97);}
+.sl-tile .sl-ic{font-size:24px;flex-shrink:0;}
+.sl-tile .sl-tx{display:flex;flex-direction:column;line-height:1.25;}
+.sl-tile .sl-tx b{font-size:14.5px;color:var(--ink,#3a2c12);}
+.sl-tile .sl-tx small{font-size:11.5px;color:var(--muted,#8a7038);margin-top:1px;}
+.cs-row{display:flex;align-items:center;justify-content:space-between;background:var(--panel2);
+  border:1px solid var(--line);border-radius:13px;padding:14px 16px;margin-bottom:8px;}
+.cs-row .cs-lb{font-size:15px;color:var(--ink,#3a2c12);font-weight:600;}
+.cs-toggle{width:50px;height:29px;border-radius:999px;background:#d9cdb0;position:relative;
+  cursor:pointer;transition:background .2s;flex-shrink:0;border:none;}
+.cs-toggle.on{background:var(--gold,#d9ab32);}
+.cs-toggle::after{content:"";position:absolute;top:3px;left:3px;width:23px;height:23px;border-radius:50%;
+  background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.cs-toggle.on::after{left:24px;}
+.hm-pocket{background:linear-gradient(180deg,var(--panel2),var(--panel));border:2px solid var(--gold);
+  border-radius:18px;padding:20px;text-align:center;margin:8px 0 6px;}
+.hm-pocket-lb{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);}
+.hm-pocket-num{font-size:44px;font-weight:800;color:var(--ink,#3a2c12);margin:4px 0;letter-spacing:-.02em;}
+.hm-pocket-sub{font-size:12.5px;color:var(--muted,#8a7038);}
+.hm-pace{font-size:13px;color:var(--ink,#4a3b1d);margin-top:12px;padding-top:12px;border-top:1px solid var(--line);line-height:1.5;}
+.hm-row{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:11px;padding:11px 14px;margin-bottom:7px;}
+.hm-row .hm-what{flex:1;font-size:14.5px;color:var(--ink,#3a2c12);}
+.hm-row .hm-amt{font-weight:700;font-size:14.5px;color:var(--gold);}
+.hm-row .hm-x{color:var(--muted,#a8966f);font-size:18px;cursor:pointer;padding:0 4px;}
+.hm-subtotal{font-size:13px;color:var(--ink,#5a4a26);background:var(--cream,#fff6e0);border-radius:11px;
+  padding:11px 14px;margin-top:8px;line-height:1.5;}
+.hm-subtotal b{color:var(--deep,#b9831a);}
+.ci-emo-grp{width:100%;margin:6px 0 2px;}
+.ci-emo-glb{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#b98a2a;margin:0 0 5px 2px;}
+.ci-emo-row{display:flex;flex-wrap:wrap;gap:7px;}
 .ci-emo{font-size:22px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;
   padding:6px 10px;cursor:pointer;}
 .ci-emo:active{transform:scale(.9);}
@@ -548,6 +582,20 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   background:var(--panel);color:var(--gold);border:1px solid var(--gold);font-size:12px;font-weight:800;}
 .shop-item{display:flex;align-items:center;gap:12px;background:var(--panel2);border:1.5px solid var(--line);
   border-radius:14px;padding:13px 15px;margin-bottom:9px;cursor:pointer;transition:opacity .2s;}
+.shop-section-hdr{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--gold);margin:14px 2px 7px;opacity:.85;}
+.shop-section-hdr:first-child{margin-top:2px;}
+.shop-move{color:var(--gold);font-size:17px;opacity:.6;padding:0 6px;cursor:pointer;flex-shrink:0;}
+.shop-move:active{opacity:1;}
+.move-sheet{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;
+  align-items:flex-end;justify-content:center;}
+.move-card{background:var(--panel,#fffdf8);width:100%;max-width:420px;border-radius:20px 20px 0 0;
+  padding:18px 16px 26px;max-height:80vh;overflow:auto;box-shadow:0 -8px 30px rgba(0,0,0,.2);}
+.move-hdr{font-size:15px;font-weight:800;color:var(--ink,#3a2e1c);text-align:center;margin-bottom:14px;}
+.move-opt{display:block;width:100%;text-align:left;background:var(--panel2,#fff6e0);border:1.5px solid var(--line,rgba(199,154,33,.25));
+  border-radius:13px;padding:14px 16px;margin-bottom:8px;font-size:16px;font-weight:600;color:var(--ink,#3a2e1c);cursor:pointer;}
+.move-opt:active{background:var(--gold,#d9ab32);color:#fff;}
+.move-cancel{display:block;width:100%;background:none;border:none;color:#a8966f;font-size:15px;font-weight:700;padding:12px;margin-top:4px;cursor:pointer;}
 .shop-item .bub{width:26px;height:26px;border-radius:50%;border:2px solid var(--gold);flex-shrink:0;
   display:flex;align-items:center;justify-content:center;font-size:15px;color:#3a2c08;}
 .shop-item .txt{font-size:16px;color:var(--ink);flex:1;}
@@ -1094,7 +1142,7 @@ textarea{resize:none;line-height:1.4;}
           <button class="home-half" onclick="openListsHub()"><span class="hh-ic">🛒</span><span class="hh-tx">My Lists</span></button>
           <button class="home-half" onclick="openLearn()"><span class="hh-ic">📚</span><span class="hh-tx">Learn</span></button>
         </div>
-        <button class="home-big home-buzz" onclick="openDailyPrompts()"><span class="hb-ic">⚡</span><span class="hb-tx"><b>Give me a buzz</b><small>Not sure what to say? Tap here</small></span></button>
+        <button class="home-big home-buzz" onclick="openSweetLife()"><span class="hb-ic">🍯</span><span class="hb-tx"><b>My Sweet Life</b><small>Journal, money, lists &amp; more</small></span></button>
       </div>
       <div class="home-privacy">Private. Everything stays on your device.</div>
     </div>
@@ -1229,6 +1277,38 @@ textarea{resize:none;line-height:1.4;}
   </div>
 </section>
 
+<!-- MY SWEET LIFE — the warm home for everything Honey can do -->
+<section class="screen" id="sweetLife">
+  <div class="bar"><button class="back" onclick="go('welcome')">‹</button>
+    <h2>🍯 My Sweet Life</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll">
+    <p class="rec-hint" style="margin:2px 4px 14px">Everything Honey can do, all in one cozy place.</p>
+    <div class="sl-grid">
+      <button class="sl-tile" onclick="slGo('chat')"><span class="sl-ic">💬</span><span class="sl-tx"><b>Just chat</b><small>Talk with Honey</small></span></button>
+      <button class="sl-tile" onclick="slGo('journal')"><span class="sl-ic">📔</span><span class="sl-tx"><b>Journal</b><small>Check in with yourself</small></span></button>
+      <button class="sl-tile" onclick="slGo('lists')"><span class="sl-ic">🛒</span><span class="sl-tx"><b>Lists &amp; grocery</b><small>Smart shopping lists</small></span></button>
+      <button class="sl-tile" onclick="slGo('money')"><span class="sl-ic">💰</span><span class="sl-tx"><b>Honey Money</b><small>Your gentle budget</small></span></button>
+      <button class="sl-tile" onclick="slGo('calendar')"><span class="sl-ic">📅</span><span class="sl-tx"><b>Calendar</b><small>Plans &amp; reminders</small></span></button>
+      <button class="sl-tile" onclick="slGo('jokes')"><span class="sl-ic">😄</span><span class="sl-tx"><b>Jokes</b><small>Share a laugh</small></span></button>
+      <button class="sl-tile" onclick="slGo('prayers')"><span class="sl-ic">🙏</span><span class="sl-tx"><b>Prayers</b><small>Keep &amp; add your own</small></span></button>
+      <button class="sl-tile" onclick="slGo('learn')"><span class="sl-ic">📚</span><span class="sl-tx"><b>Learn</b><small>A new language</small></span></button>
+      <button class="sl-tile" onclick="slGo('weather')"><span class="sl-ic">☀️</span><span class="sl-tx"><b>Weather</b><small>What's it like out</small></span></button>
+      <button class="sl-tile" onclick="slGo('insights')"><span class="sl-ic">🍯</span><span class="sl-tx"><b>Honey Pot</b><small>Your streak &amp; insights</small></span></button>
+    </div>
+    <button class="prof-row" style="margin-top:16px" onclick="openContentSwitches()">⚙️ What Honey shares — turn things on or off</button>
+  </div>
+</section>
+
+<!-- WHAT HONEY SHARES — content on/off switches -->
+<section class="screen" id="contentSwitches">
+  <div class="bar"><button class="back" onclick="go('sweetLife')">‹</button>
+    <h2>What Honey shares</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll">
+    <p class="rec-hint" style="margin:2px 4px 14px">Turn off anything you'd rather not be offered. Honey won't bring it up — but she'll still oblige if you ask for it directly.</p>
+    <div id="csList"></div>
+  </div>
+</section>
+
 <!-- CALENDAR -->
 <section class="screen" id="calendar">
   <div class="bar"><button class="back" onclick="goBack()">‹</button>
@@ -1237,6 +1317,59 @@ textarea{resize:none;line-height:1.4;}
   <div class="insights-body scroll">
     <p class="rec-hint" style="text-align:center;margin:2px 8px 14px">Your schedule and scheduled goals. Tap any item to add it to your phone’s calendar.</p>
     <div class="cal-list" id="calList"></div>
+  </div>
+</section>
+
+<!-- HONEY MONEY — warm, private, manual budget -->
+<section class="screen" id="honeyMoney">
+  <div class="bar"><button class="back" onclick="go('profile')">‹</button>
+    <h2>💰 Honey Money</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll">
+    <div class="gb-honey" id="hmHoney"></div>
+
+    <!-- In My Pocket hero -->
+    <div class="hm-pocket">
+      <div class="hm-pocket-lb">In your pocket</div>
+      <div class="hm-pocket-num" id="hmPocket">$0</div>
+      <div class="hm-pocket-sub" id="hmPocketSub">after bills &amp; spending this month</div>
+      <div class="hm-pace" id="hmPace"></div>
+    </div>
+
+    <!-- quick setup -->
+    <div class="hm-setup" id="hmSetup">
+      <label class="rec-label">Money coming in this month</label>
+      <div class="rec-field" style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:18px;color:var(--gold)">$</span>
+        <input id="hmIncome" type="number" inputmode="decimal" placeholder="e.g. 2400" style="flex:1" oninput="hmRecalc()">
+      </div>
+      <label class="rec-label" style="margin-top:14px">Bills &amp; set costs this month</label>
+      <div class="rec-field" style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:18px;color:var(--gold)">$</span>
+        <input id="hmBills" type="number" inputmode="decimal" placeholder="e.g. 1500" style="flex:1" oninput="hmRecalc()">
+      </div>
+    </div>
+
+    <!-- spending log -->
+    <div class="seclabel" style="margin-top:22px">What you've spent</div>
+    <div class="rec-field" style="display:flex;gap:8px">
+      <input id="hmSpendWhat" placeholder="What? (e.g. gas, groceries)" style="flex:2">
+      <input id="hmSpendAmt" type="number" inputmode="decimal" placeholder="$" style="flex:1">
+      <button class="rec-save" style="width:auto;padding:11px 14px" onclick="hmAddSpend()">Add</button>
+    </div>
+    <div id="hmSpendList" style="margin-top:10px"></div>
+
+    <!-- subscriptions -->
+    <div class="seclabel" style="margin-top:22px">Subscriptions to watch</div>
+    <p class="rec-hint" style="margin:0 4px 10px">The little monthly charges that add up. List them so they never surprise you.</p>
+    <div class="rec-field" style="display:flex;gap:8px">
+      <input id="hmSubWhat" placeholder="What? (e.g. Netflix)" style="flex:2">
+      <input id="hmSubAmt" type="number" inputmode="decimal" placeholder="$/mo" style="flex:1">
+      <button class="rec-save" style="width:auto;padding:11px 14px" onclick="hmAddSub()">Add</button>
+    </div>
+    <div id="hmSubList" style="margin-top:10px"></div>
+    <div id="hmSubTotal" class="hm-subtotal"></div>
+
+    <button class="gb-skip" style="margin-top:18px" onclick="hmNewMonth()">↻ Start a fresh month</button>
   </div>
 </section>
 
@@ -1327,6 +1460,7 @@ textarea{resize:none;line-height:1.4;}
       <div class="prof-stat" id="profStat"></div>
     </div>
     <button class="prof-row" onclick="openRoster()">👥 My Friends</button>
+    <button class="prof-row" onclick="openHoneyMoney()">💰 Honey Money</button>
     <button class="prof-row" onclick="openInsights()">🍯 Your Honey Pot</button>
     <button class="prof-row" id="editRow" onclick="if(loadedOrFirst())editAgent(S.agentId)">✏️ Edit Honey</button>
     <button class="prof-row" onclick="if(loadedOrFirst())openVoicePicker()">🎚️ Voice &amp; speech</button>
@@ -1394,6 +1528,15 @@ textarea{resize:none;line-height:1.4;}
     <div class="rec-field" style="display:flex;gap:8px">
       <input id="shopAddInput" placeholder="Add an item…" style="flex:1" onkeydown="if(event.key===&#39;Enter&#39;)addShopItem()">
       <button class="rec-save" style="width:auto;padding:11px 16px" onclick="addShopItem()">Add</button>
+    </div>
+    <button class="rec-save" id="scanReceiptBtn" style="width:100%;margin-top:8px;background:var(--panel);color:var(--gold);border:1.5px solid var(--gold)" onclick="openReceiptPaste()">📋 Paste a receipt — adds only new items</button>
+    <div id="receiptPasteBox" style="display:none;margin-top:8px">
+      <p class="rec-hint" style="margin:2px 4px 8px">Snap your receipt, highlight &amp; copy the text on your phone, then paste it here. Honey adds only what's new.</p>
+      <textarea id="receiptText" rows="5" placeholder="Paste your receipt text here…" style="width:100%"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="rec-save" style="flex:1" onclick="importPastedReceipt()">Add new items 🍯</button>
+        <button class="rec-save" style="width:auto;padding:11px 16px;background:var(--panel);color:var(--muted);border:1px solid var(--line)" onclick="closeReceiptPaste()">Cancel</button>
+      </div>
     </div>
     <div id="shopListBody" style="margin-top:8px"></div>
     <div class="insights-empty" id="shopEmpty" style="display:none">This list is empty. Say "add eggs to my list" or type above.</div>
@@ -2611,7 +2754,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidTopups:0, voiceCloneDone:false, checkins:[], nourish:null };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidTopups:0, voiceCloneDone:false, checkins:[], nourish:null, learnedItems:{}, money:null, content:{} };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -2707,6 +2850,136 @@ function defaultLists(){ return [
   { id:"todo",     name:"To-Do",    icon:"✅", items:[] },
   { id:"notes",    name:"Notes",    icon:"📝", items:[] }
 ]; }
+
+/* ── SMART GROCERY SORTING ──
+   Honey files grocery items into aisles automatically. Built-in dictionary handles
+   the common stuff free & instant. Odd items get categorized once (AI), then she
+   REMEMBERS them on-device forever (SETTINGS.learnedItems) — Honey evolves. */
+var GROCERY_SECTIONS=["Produce","Dairy","Meat","Bakery","Frozen","Pantry","Beverages","Household","Other"];
+var GROCERY_SECTION_ICON={Produce:"🥬",Dairy:"🥛",Meat:"🥩",Bakery:"🍞",Frozen:"🧊",Pantry:"🥫",Beverages:"🧃",Household:"🧻",Other:"🛒"};
+var GROCERY_DICT={
+  Produce:["apple","apples","banana","bananas","orange","oranges","lemon","lemons","lime","limes","grape","grapes","strawberry","strawberries","blueberry","blueberries","raspberry","blackberry","melon","watermelon","cantaloupe","pineapple","mango","peach","peaches","pear","pears","plum","kiwi","avocado","avocados","tomato","tomatoes","lettuce","spinach","kale","arugula","cabbage","broccoli","cauliflower","carrot","carrots","celery","cucumber","cucumbers","zucchini","squash","pepper","peppers","bell pepper","onion","onions","garlic","ginger","potato","potatoes","sweet potato","mushroom","mushrooms","corn","green beans","peas","asparagus","brussels sprouts","beet","beets","radish","herbs","cilantro","parsley","basil","mint","scallion","green onion","leek","eggplant","grapefruit","cherries","apricot","nectarine","pomegranate","cranberry","raisins"],
+  Dairy:["milk","whole milk","skim milk","almond milk","oat milk","soy milk","cream","heavy cream","half and half","butter","margarine","cheese","cheddar","mozzarella","parmesan","swiss cheese","cream cheese","cottage cheese","sour cream","yogurt","greek yogurt","egg","eggs","creamer","whipped cream","string cheese","feta","ricotta","buttermilk"],
+  Meat:["chicken","chicken breast","chicken thighs","beef","ground beef","steak","pork","pork chops","bacon","sausage","ham","turkey","ground turkey","lamb","ribs","hot dogs","hotdogs","deli meat","lunch meat","salami","pepperoni","fish","salmon","tuna","shrimp","tilapia","cod","crab","lobster","scallops","brisket","roast"],
+  Bakery:["bread","white bread","wheat bread","bagel","bagels","muffin","muffins","croissant","croissants","donut","donuts","cake","cupcake","cupcakes","pie","cookies","roll","rolls","dinner rolls","tortilla","tortillas","pita","baguette","bun","buns","hamburger buns","hot dog buns","danish","biscuits","cornbread"],
+  Frozen:["ice cream","frozen pizza","frozen vegetables","frozen veggies","frozen fruit","frozen dinner","frozen meals","popsicles","frozen waffles","frozen fries","frozen chicken","ice","tv dinner","frozen berries","frozen peas","sherbet","frozen yogurt"],
+  Pantry:["rice","pasta","spaghetti","noodles","flour","sugar","brown sugar","salt","pepper","spices","oil","olive oil","vegetable oil","vinegar","cereal","oatmeal","oats","beans","black beans","canned beans","canned tomatoes","tomato sauce","pasta sauce","soup","broth","stock","peanut butter","jelly","jam","honey","syrup","maple syrup","ketchup","mustard","mayo","mayonnaise","salsa","crackers","chips","pretzels","popcorn","nuts","almonds","peanuts","granola","granola bars","raisins","dried fruit","baking soda","baking powder","vanilla","cocoa","chocolate chips","cake mix","bread crumbs","tuna can","canned corn","coffee","tea","ramen","mac and cheese","macaroni","quinoa","couscous","lentils","gravy","seasoning","hot sauce","soy sauce","ranch","dressing","cooking spray","cornstarch","yeast","sprinkles"],
+  Beverages:["water","bottled water","sparkling water","juice","orange juice","apple juice","soda","pop","coke","pepsi","sprite","lemonade","iced tea","sweet tea","gatorade","sports drink","energy drink","beer","wine","coffee beans","ground coffee","kombucha","seltzer","club soda","tonic","cranberry juice","coconut water"],
+  Household:["toilet paper","paper towels","paper towel","napkins","tissues","kleenex","dish soap","dishwasher detergent","laundry detergent","fabric softener","bleach","cleaner","cleaning spray","disinfectant","sponges","trash bags","garbage bags","ziploc","plastic wrap","aluminum foil","foil","parchment paper","paper plates","plastic cups","plastic utensils","light bulbs","batteries","soap","hand soap","body wash","shampoo","conditioner","toothpaste","toothbrush","deodorant","razors","shaving cream","lotion","sunscreen","cotton balls","q-tips","band aids","bandaids","floss","mouthwash","tampons","pads","diapers","wipes","baby wipes","dog food","cat food","cat litter","air freshener","candles","matches","windex","clorox","lysol","swiffer","mop","broom","detergent","softener","stain remover"]
+};
+var _grocLookup=null;
+function grocLookup(){
+  if(_grocLookup) return _grocLookup;
+  _grocLookup={};
+  GROCERY_SECTIONS.forEach(function(sec){
+    (GROCERY_DICT[sec]||[]).forEach(function(w){ _grocLookup[w]=sec; });
+  });
+  if(SETTINGS && SETTINGS.learnedItems){
+    Object.keys(SETTINGS.learnedItems).forEach(function(w){ _grocLookup[w]=SETTINGS.learnedItems[w]; });
+  }
+  return _grocLookup;
+}
+function grocerySectionFor(name){
+  if(!name) return null;
+  var n=name.toLowerCase().trim().replace(/^\d+\s*(x|lbs?|oz|ct|pack|bag|box|dozen|gallons?|cans?|bottles?)?\s*/,'').trim();
+  var L=grocLookup();
+  if(L[n]) return L[n];
+  if(n.endsWith('s') && L[n.slice(0,-1)]) return L[n.slice(0,-1)];
+  var words=n.split(/\s+/);
+  for(var i=0;i<words.length;i++){ if(L[words[i]]) return L[words[i]]; }
+  for(var key in L){ if(key.indexOf(' ')>-1 && n.indexOf(key)>-1) return L[key]; }
+  return null;
+}
+function learnGroceryItem(name, section){
+  if(!name||!section) return;
+  if(!SETTINGS.learnedItems) SETTINGS.learnedItems={};
+  SETTINGS.learnedItems[name.toLowerCase().trim()]=section;
+  _grocLookup=null;
+  saveSettings();
+}
+
+/* ── RECEIPT IMPORT (paste) ──
+   You snap a receipt, use your phone's built-in text-copy (Live Text) to copy it,
+   and paste it here. Honey cleans it, sorts into aisles, and merges WITHOUT duplicates
+   — so each week only the NEW items get added. Free, no backend, works today.
+   The list becomes a living master list you trim and add to. */
+function openReceiptPaste(){
+  var box=document.getElementById('receiptPasteBox'); if(box) box.style.display='block';
+  var ta=document.getElementById('receiptText'); if(ta){ ta.value=''; ta.focus(); }
+}
+function closeReceiptPaste(){
+  var box=document.getElementById('receiptPasteBox'); if(box) box.style.display='none';
+}
+function importPastedReceipt(){
+  var ta=document.getElementById('receiptText'); if(!ta) return;
+  var txt=ta.value.trim();
+  if(!txt){ toast("Paste your receipt text first."); return; }
+  mergeReceiptItems(parseReceiptText(txt));
+  closeReceiptPaste();
+}
+
+/* Turn raw receipt text into clean item names — strips prices, totals, store junk */
+function parseReceiptText(raw){
+  if(!raw) return [];
+  var lines=raw.split(/\n+/);
+  var skip=/\b(subtotal|total|tax|change|cash|debit|credit|visa|mastercard|balance|tend|tender|amount|savings|items? sold|thank you|walmart|target|kroger|store|cashier|register|receipt|account|card|ref|auth|approval|transaction|date|time|qty|price|^\$?\d|^[\d\.\s\-\*x#]+$)/i;
+  var out=[];
+  lines.forEach(function(ln){
+    var s=ln.trim();
+    if(!s) return;
+    if(skip.test(s)) return;
+    // strip trailing price like  3.48  or  $3.48 F  or  2 @ 1.50
+    s=s.replace(/\s+\$?\d+\.\d{2}\s*[a-z]?$/i,'').trim();
+    s=s.replace(/\s+\d+\s*@\s*\$?\d+\.\d{2}.*$/i,'').trim();
+    s=s.replace(/\s{2,}.*$/,'').trim(); // drop anything after a big gap (usually price column)
+    if(s.length<2) return;
+    out.push(cleanReceiptItem(s));
+  });
+  return out.filter(Boolean);
+}
+
+/* clean up common receipt abbreviations into friendlier names (keeps brand/size) */
+function cleanReceiptItem(s){
+  var map={'GV':'Great Value','MV':'Marketside','GRT VAL':'Great Value','WHT':'White','WHL':'Whole',
+    'CHKN':'Chicken','BNLS':'Boneless','SHRDD':'Shredded','CHS':'Cheese','MILK':'Milk',
+    'BRD':'Bread','EGGS':'Eggs','BTR':'Butter','YOG':'Yogurt','BNANA':'Banana','ORG':'Organic'};
+  var words=s.split(/\s+/).map(function(w){
+    var up=w.toUpperCase().replace(/[^A-Z]/g,'');
+    return map[up]||w;
+  });
+  var name=words.join(' ');
+  // Title-case if it's ALL CAPS (receipts often are)
+  if(name===name.toUpperCase()){
+    name=name.toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase();});
+  }
+  return name.trim();
+}
+
+/* Step 3: merge items onto the shopping list WITHOUT duplicates, auto-sorted */
+function mergeReceiptItems(items){
+  if(!items || !items.length){ toast("Hmm — didn't catch any items. Try a clearer photo."); return; }
+  var l=getList("shopping"); if(!l){ ensureLists(); l=getList("shopping"); }
+  if(!Array.isArray(l.items)) l.items=[];
+  var existing={};
+  l.items.forEach(function(it){ existing[it.item.toLowerCase().trim()]=true; });
+  var addedCount=0;
+  items.forEach(function(name){
+    name=(name||'').trim(); if(!name) return;
+    var key=name.toLowerCase().trim();
+    if(existing[key]) return;            // skip duplicates — only NEW items
+    existing[key]=true;
+    var sec=grocerySectionFor(name)||"Other";
+    l.items.push({item:name, made:Date.now(), done:false, section:sec});
+    addedCount++;
+  });
+  persist();
+  if(curListId==="shopping" && document.getElementById('shopListBody')) renderShopList();
+  if(addedCount===0){
+    toast("🍯 All caught up — nothing new on that receipt.");
+  } else {
+    toast("🍯 Added "+addedCount+" new item"+(addedCount===1?"":"s")+" to your list.");
+  }
+}
 function ensureLists(){
   if(!Array.isArray(SETTINGS.lists) || !SETTINGS.lists.length){
     SETTINGS.lists=defaultLists();
@@ -2904,6 +3177,56 @@ function tagInsights(t){
 
 /* ════ HONEY POT RENDER ════ */
 function openInsights(){ document.getElementById('welcome').classList.remove('sleeping','waking'); go('insights'); renderInsights(); }
+/* ── MY SWEET LIFE — the hub for everything (opened by the big button) ── */
+function openSweetLife(){
+  if(!hasSetup()){ newAgentFlow(true); return; }
+  go('sweetLife');
+}
+function slGo(where){
+  switch(where){
+    case 'chat':     if(loadedOrFirst()) enterChat(); break;
+    case 'journal':  openCheckin(); break;
+    case 'lists':    openListsHub(); break;
+    case 'money':    openHoneyMoney(); break;
+    case 'calendar': openCalendar(); break;
+    case 'jokes':    openJokes(); break;
+    case 'prayers':  openPrayers(); break;
+    case 'learn':    openLearn(); break;
+    case 'weather':  homeWeather(); break;
+    case 'insights': openInsights(); break;
+  }
+}
+/* ── WHAT HONEY SHARES — content category on/off switches ──
+   off = Honey won't OFFER it unprompted, but still obliges if asked directly. */
+var CONTENT_CATS=[
+  {key:"forage",  ic:"🌱", lb:"Plant & foraging facts"},
+  {key:"animal",  ic:"🐾", lb:"Animal facts"},
+  {key:"science", ic:"🔬", lb:"Science facts"},
+  {key:"prayers", ic:"🙏", lb:"Prayers"},
+  {key:"verses",  ic:"📖", lb:"Bible verses"},
+  {key:"stories", ic:"🌙", lb:"Bedtime stories"},
+  {key:"jokes",   ic:"😄", lb:"Jokes"}
+];
+function contentOn(key){
+  if(!SETTINGS.content) return true; // default everything on
+  return SETTINGS.content[key]!==false;
+}
+function openContentSwitches(){
+  if(!SETTINGS.content) SETTINGS.content={};
+  go('contentSwitches');
+  document.getElementById('csList').innerHTML=CONTENT_CATS.map(function(c){
+    var on=contentOn(c.key);
+    return '<div class="cs-row"><div class="cs-lb">'+c.ic+' '+c.lb+'</div>'+
+      '<button class="cs-toggle'+(on?' on':'')+'" onclick="toggleContent(\''+c.key+'\',this)"></button></div>';
+  }).join('');
+}
+function toggleContent(key, btn){
+  if(!SETTINGS.content) SETTINGS.content={};
+  var now=contentOn(key);
+  SETTINGS.content[key]=!now;
+  btn.classList.toggle('on', !now);
+  saveSettings();
+}
 
 /* ════ HOME DASHBOARD ════ */
 function showHome(){
@@ -4536,7 +4859,11 @@ function doShopping(t){
   var list=getList(targetId)||getList("shopping");
   var parts=item.split(/\s*(?:,|\band\b)\s*/i).map(s=>s.trim()).filter(Boolean);
   var added=[];
-  parts.forEach(p=>{ if(p && !list.items.some(x=>x.item.toLowerCase()===p.toLowerCase())){ list.items.push({item:p, made:Date.now(), done:false}); added.push(p); } });
+  parts.forEach(p=>{ if(p && !list.items.some(x=>x.item.toLowerCase()===p.toLowerCase())){
+    var it={item:p, made:Date.now(), done:false};
+    if(list.id==="shopping"){ var sec=grocerySectionFor(p); it.section = sec||"Other"; }
+    list.items.push(it); added.push(p);
+  } });
   persist();
   if(!added.length){ pushThem(vibeColor("Aw, that's already on your list.")); return; }
   var nice = added.length===1 ? "\""+added[0]+"\"" : added.slice(0,-1).map(a=>"\""+a+"\"").join(", ")+" and \""+added[added.length-1]+"\"";
@@ -4774,22 +5101,138 @@ function toggleGoalDone(g){
 var CI_MOODS=[
   {e:"😄", lb:"Great"},{e:"🙂", lb:"Good"},{e:"😐", lb:"Okay"},{e:"😔", lb:"Low"},{e:"😣", lb:"Rough"}
 ];
-var CI_EMOJIS=["🙏","💪","😴","🌿","☕","❤️","🎉","🌧️","🔥","🧘","🥗","👣"];
-var _ciGoal=null, _ciMood=null;
+/* ── HONEY MONEY — warm, private, manual budget (no bank link, free to run) ── */
+function hmData(){
+  if(!SETTINGS.money) SETTINGS.money={ income:0, bills:0, spends:[], subs:[], month:hmMonthKey() };
+  return SETTINGS.money;
+}
+function hmMonthKey(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1); }
+function hmFaceHTML(){ if(S.photo) return '<img src="'+S.photo+'">'; if(S.noFace) return '🍯'; return S.avatar||'🍯'; }
+function openHoneyMoney(){
+  var m=hmData();
+  go('honeyMoney');
+  document.getElementById('hmIncome').value = m.income||'';
+  document.getElementById('hmBills').value = m.bills||'';
+  document.getElementById('hmHoney').innerHTML='<div class="gb-face">'+hmFaceHTML()+'</div><div class="gb-say">Let\u2019s peek at your money together \u2014 no judgment, just a clear picture. Tell me what\u2019s coming in and what you\u2019ve spent, and I\u2019ll keep the math.</div>';
+  hmRecalc(); hmRenderSpends(); hmRenderSubs();
+}
+function hmRecalc(){
+  var m=hmData();
+  m.income = parseFloat(document.getElementById('hmIncome').value)||0;
+  m.bills  = parseFloat(document.getElementById('hmBills').value)||0;
+  var spent = (m.spends||[]).reduce(function(a,s){return a+(s.amt||0);},0);
+  var pocket = m.income - m.bills - spent;
+  var el=document.getElementById('hmPocket');
+  el.textContent = (pocket<0?'-$':'$')+Math.abs(pocket).toFixed(2).replace(/\.00$/,'');
+  el.style.color = pocket<0 ? 'var(--red,#993c1d)' : '';
+  document.getElementById('hmPocketSub').textContent =
+    'after $'+(m.bills||0)+' bills and $'+spent.toFixed(0)+' spent this month';
+  var now=new Date(); var daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  var daysLeft=daysInMonth-now.getDate();
+  var pace=document.getElementById('hmPace');
+  if(m.income>0 && pocket>=0 && daysLeft>0){
+    var perDay=pocket/Math.max(daysLeft,1);
+    pace.textContent='That\u2019s about $'+perDay.toFixed(0)+' a day for the '+daysLeft+' days left. You\u2019re doing fine \u2014 just keeping you in the know. 🍯';
+    pace.style.color='';
+  } else if(pocket<0){
+    pace.textContent='You\u2019re a little over this month \u2014 happens to everyone. Let\u2019s ease up where we can; no shame here. 💛';
+    pace.style.color='var(--red,#993c1d)';
+  } else { pace.textContent=''; }
+  saveSettings();
+}
+function hmAddSpend(){
+  var w=document.getElementById('hmSpendWhat'), a=document.getElementById('hmSpendAmt');
+  var what=(w.value||'').trim(); var amt=parseFloat(a.value)||0;
+  if(!what||!amt){ toast('Add what you spent and how much.'); return; }
+  var m=hmData(); if(!Array.isArray(m.spends)) m.spends=[];
+  m.spends.unshift({what:what, amt:amt, when:Date.now()});
+  w.value=''; a.value='';
+  saveSettings(); hmRecalc(); hmRenderSpends();
+}
+function hmDelSpend(i){ var m=hmData(); m.spends.splice(i,1); saveSettings(); hmRecalc(); hmRenderSpends(); }
+function hmRenderSpends(){
+  var box=document.getElementById('hmSpendList'); if(!box) return;
+  var m=hmData(); var list=m.spends||[];
+  if(!list.length){ box.innerHTML='<p class="rec-hint" style="margin:4px">Nothing logged yet \u2014 add a thing or two as you go.</p>'; return; }
+  box.innerHTML=list.map(function(s,i){
+    return '<div class="hm-row"><div class="hm-what">'+esc(s.what)+'</div><div class="hm-amt">$'+s.amt.toFixed(2).replace(/\.00$/,'')+'</div><div class="hm-x" onclick="hmDelSpend('+i+')">×</div></div>';
+  }).join('');
+}
+function hmAddSub(){
+  var w=document.getElementById('hmSubWhat'), a=document.getElementById('hmSubAmt');
+  var what=(w.value||'').trim(); var amt=parseFloat(a.value)||0;
+  if(!what||!amt){ toast('Add the subscription and its monthly cost.'); return; }
+  var m=hmData(); if(!Array.isArray(m.subs)) m.subs=[];
+  m.subs.push({what:what, amt:amt});
+  w.value=''; a.value='';
+  saveSettings(); hmRenderSubs();
+}
+function hmDelSub(i){ var m=hmData(); m.subs.splice(i,1); saveSettings(); hmRenderSubs(); }
+function hmRenderSubs(){
+  var box=document.getElementById('hmSubList'); if(!box) return;
+  var m=hmData(); var list=m.subs||[];
+  if(!list.length){ box.innerHTML='<p class="rec-hint" style="margin:4px">None listed. Most folks have more than they think \u2014 worth a look.</p>'; document.getElementById('hmSubTotal').textContent=''; return; }
+  box.innerHTML=list.map(function(s,i){
+    return '<div class="hm-row"><div class="hm-what">'+esc(s.what)+'</div><div class="hm-amt">$'+s.amt.toFixed(2).replace(/\.00$/,'')+'/mo</div><div class="hm-x" onclick="hmDelSub('+i+')">×</div></div>';
+  }).join('');
+  var total=list.reduce(function(a,s){return a+(s.amt||0);},0);
+  document.getElementById('hmSubTotal').innerHTML='These add up to <b>$'+total.toFixed(2).replace(/\.00$/,'')+'/month</b> \u2014 that\u2019s $'+(total*12).toFixed(0)+' a year. Worth knowing. 🍯';
+}
+function hmNewMonth(){
+  if(!confirm('Start a fresh month? This clears what you\u2019ve spent (your bills and subscriptions stay).')) return;
+  var m=hmData(); m.spends=[]; m.month=hmMonthKey();
+  saveSettings(); hmRecalc(); hmRenderSpends();
+  toast('🍯 Fresh month \u2014 clean slate.');
+}
+/* Honey's big feelings + life palette — tap as many as fit your day.
+   Grouped warmly so it captures a whole day in taps, Daylio-style but with heart. */
+var CI_EMOJI_GROUPS=[
+  {g:"Feelings", items:["😊","😌","🥰","😢","😟","😤","😮‍💨","🥹","😴","🤗","😍","🙃","😬","🫠","😭","🥳"]},
+  {g:"Body", items:["💪","🤒","🤕","😪","🥱","🤧","🧠","❤️‍🩹","🦵","🩹"]},
+  {g:"Day", items:["☀️","🌧️","🌙","⭐","🔥","🌿","🌊","🍂","❄️","🌈"]},
+  {g:"Doing", items:["☕","🥗","🚶","🏃","🧘","📖","🎵","🛁","🧹","💻","🛒","💤"]},
+  {g:"People", items:["👨‍👩‍👧","💛","🫂","📞","🐾","👋","🎁","🙏"]},
+  {g:"Heart", items:["🙏","✝️","🕊️","🤲","💭","🌻","🎉","✨"]}
+];
+/* flat list kept for older references */
+var CI_EMOJIS=CI_EMOJI_GROUPS.reduce(function(a,grp){return a.concat(grp.items);},[]);
+var _ciGoal=null, _ciMood=null, _ciEditIdx=null;
 function ciFaceHTML(){ if(S.photo) return '<img src="'+S.photo+'">'; if(S.noFace) return '🍯'; return S.avatar||'🍯'; }
+/* find today's saved entry (if any) so we can add to it rather than duplicate */
+function todayCheckinIndex(){
+  if(!Array.isArray(SETTINGS.checkins)) return -1;
+  var now=new Date(); var y=now.getFullYear(),m=now.getMonth(),d=now.getDate();
+  for(var i=0;i<SETTINGS.checkins.length;i++){
+    var t=new Date(SETTINGS.checkins[i].when);
+    if(t.getFullYear()===y&&t.getMonth()===m&&t.getDate()===d) return i;
+  }
+  return -1;
+}
 function openCheckin(goal){
-  _ciGoal=goal||null; _ciMood=null;
+  _ciGoal=goal||null; _ciMood=null; _ciEditIdx=null;
   go('checkin');
-  document.getElementById('ciHoney').innerHTML='<div class="gb-face">'+ciFaceHTML()+'</div><div class="gb-say">How are you, really? Tap how you\u2019re feeling \u2014 add a thought if you like, or don\u2019t. No pressure either way.</div>';
+  // If there's already an entry for today, load it so they can ADD to it
+  var ti=todayCheckinIndex();
+  var existing=(ti>=0)?SETTINGS.checkins[ti]:null;
+  if(existing){ _ciEditIdx=ti; _ciMood=(existing.mood!==null&&existing.mood!==undefined)?existing.mood:null; }
+  var honeySay = existing
+    ? "Back again \u2014 good. Here's what you noted today; add to it, change your feeling, or just sit a minute. It's yours."
+    : "How are you, really? Tap how you\u2019re feeling \u2014 add a thought if you like, or don\u2019t. No pressure either way.";
+  document.getElementById('ciHoney').innerHTML='<div class="gb-face">'+ciFaceHTML()+'</div><div class="gb-say">'+honeySay+'</div>';
   // moods
   document.getElementById('ciMoods').innerHTML=CI_MOODS.map(function(m,i){
-    return '<button class="ci-mood" onclick="ciPickMood('+i+')"><span>'+m.e+'</span><span class="cm-lb">'+m.lb+'</span></button>';
+    return '<button class="ci-mood'+(_ciMood===i?' sel':'')+'" onclick="ciPickMood('+i+')"><span>'+m.e+'</span><span class="cm-lb">'+m.lb+'</span></button>';
   }).join("");
-  // quick-add emojis
-  document.getElementById('ciEmojis').innerHTML=CI_EMOJIS.map(function(e){
-    return '<button class="ci-emo" onclick="ciAddEmoji(\''+e+'\')">'+e+'</button>';
+  // quick-add emojis — grouped into warm categories
+  document.getElementById('ciEmojis').innerHTML=CI_EMOJI_GROUPS.map(function(grp){
+    return '<div class="ci-emo-grp"><div class="ci-emo-glb">'+grp.g+'</div><div class="ci-emo-row">'+
+      grp.items.map(function(e){ return '<button class="ci-emo" onclick="ciAddEmoji(\''+e+'\')">'+e+'</button>'; }).join("")+
+      '</div></div>';
   }).join("");
-  document.getElementById('ciNote').value="";
+  document.getElementById('ciNote').value = existing ? (existing.note||"") : "";
+  // label the save button so it's clear they're adding vs starting
+  var sv=document.querySelector('#checkin .gb-next');
+  if(sv) sv.textContent = existing ? "Update today\u2019s check-in" : "Save my check-in";
   renderPastCheckins();
 }
 function ciPickMood(i){
@@ -4805,9 +5248,17 @@ function saveCheckin(){
     toast("Tap a feeling first, or 'Maybe later'.");
     return;
   }
-  var entry={ when:Date.now(), mood:(_ciMood!==null?_ciMood:null), note:document.getElementById('ciNote').value.trim().slice(0,1000) };
-  SETTINGS.checkins.unshift(entry);
-  if(SETTINGS.checkins.length>365) SETTINGS.checkins=SETTINGS.checkins.slice(0,365);
+  var note=document.getElementById('ciNote').value.trim().slice(0,1000);
+  if(_ciEditIdx!==null && SETTINGS.checkins[_ciEditIdx]){
+    // adding to / updating TODAY's entry — no duplicate
+    SETTINGS.checkins[_ciEditIdx].mood = (_ciMood!==null?_ciMood:SETTINGS.checkins[_ciEditIdx].mood);
+    SETTINGS.checkins[_ciEditIdx].note = note;
+    SETTINGS.checkins[_ciEditIdx].when = Date.now();
+  } else {
+    var entry={ when:Date.now(), mood:(_ciMood!==null?_ciMood:null), note:note };
+    SETTINGS.checkins.unshift(entry);
+    if(SETTINGS.checkins.length>365) SETTINGS.checkins=SETTINGS.checkins.slice(0,365);
+  }
   // completing the reflect goal earns honey like any goal
   if(_ciGoal){ try{ if(!isGoalDone(_ciGoal)) toggleGoalDone(_ciGoal); }catch(e){} }
   saveSettings();
@@ -4821,10 +5272,14 @@ function saveCheckin(){
     rough:["I\u2019m really glad you checked in. Rough days are heavy; go easy on yourself, and lean on someone you trust if you need to."]
   };
   var msg = moodWord && lines[moodWord] ? rand(lines[moodWord]) : "Thank you for taking a moment for yourself today.";
-  _ciGoal=null; _ciMood=null;
-  if(S.agentId){ try{ go('chat'); pushThem(vibeColor(msg)); return; }catch(e){} }
-  toast("🍯 "+msg);
-  openInsights();
+  _ciGoal=null; _ciMood=null; _ciEditIdx=null;
+  // Honey responds RIGHT HERE in the journal — never dumped into normal chat history
+  var hy=document.getElementById('ciHoney');
+  if(hy){ hy.innerHTML='<div class="gb-face">'+ciFaceHTML()+'</div><div class="gb-say">'+esc(msg)+'</div>'; }
+  toast("🍯 Saved for today.");
+  renderPastCheckins();
+  // gently return to the journal/insights view after a beat, staying out of chat
+  setTimeout(function(){ try{ openInsights(); }catch(e){} }, 1500);
 }
 function renderPastCheckins(){
   var box=document.getElementById('ciPast'); if(!box)return;
@@ -5473,25 +5928,80 @@ function renderShopList(){
   if(!items.length){ if(empty)empty.style.display='block'; if(clr)clr.style.display='none'; return; }
   if(empty)empty.style.display='none';
   var anyChecked=false;
-  items.forEach((it,idx)=>{
+  function makeRow(it,idx){
     if(it.done) anyChecked=true;
     var row=document.createElement('div'); row.className='shop-item'+(it.done?' checked':'');
-    row.innerHTML='<div class="bub">'+(it.done?'✓':'')+'</div><div class="txt">'+esc(it.item)+'</div><div class="del">×</div>';
+    var secChip = (l.id==="shopping") ? '<div class="shop-move" title="Move to another aisle">⇄</div>' : '';
+    row.innerHTML='<div class="bub">'+(it.done?'✓':'')+'</div><div class="txt">'+esc(it.item)+'</div>'+secChip+'<div class="del">×</div>';
     row.querySelector('.txt').onclick=()=>toggleShop(idx);
     row.querySelector('.bub').onclick=()=>toggleShop(idx);
     row.querySelector('.del').onclick=(e)=>{ e.stopPropagation(); delShop(idx); };
-    body.appendChild(row);
-  });
+    var mv=row.querySelector('.shop-move');
+    if(mv) mv.onclick=(e)=>{ e.stopPropagation(); moveItemSection(idx); };
+    return row;
+  }
+  // Grocery list → group under section headers. Other lists → flat.
+  if(l.id==="shopping"){
+    var bySection={};
+    items.forEach(function(it,idx){
+      var sec=it.section || grocerySectionFor(it.item) || "Other";
+      if(!bySection[sec]) bySection[sec]=[];
+      bySection[sec].push({it:it, idx:idx});
+    });
+    GROCERY_SECTIONS.forEach(function(sec){
+      var group=bySection[sec]; if(!group||!group.length) return;
+      var hdr=document.createElement('div'); hdr.className='shop-section-hdr';
+      hdr.textContent=(GROCERY_SECTION_ICON[sec]||'')+' '+sec;
+      body.appendChild(hdr);
+      group.forEach(function(g){ body.appendChild(makeRow(g.it, g.idx)); });
+    });
+  } else {
+    items.forEach((it,idx)=>{ body.appendChild(makeRow(it,idx)); });
+  }
   if(clr)clr.style.display=anyChecked?'block':'none';
 }
 function toggleShop(idx){ var l=getList(curListId); if(!l||!l.items[idx])return; l.items[idx].done=!l.items[idx].done; persist(); renderShopList(); }
 function delShop(idx){ var l=getList(curListId); if(!l||!l.items[idx])return; trashItem(l, l.items[idx]); l.items.splice(idx,1); persist(); renderShopList(); }
+/* Move a grocery item to a different aisle — and teach Honey to remember it next time (free, no AI) */
+function moveItemSection(idx){
+  var l=getList(curListId); if(!l||!l.items[idx])return;
+  var it=l.items[idx];
+  var sheet=document.getElementById('moveSheet');
+  if(!sheet){
+    sheet=document.createElement('div'); sheet.id='moveSheet'; sheet.className='move-sheet';
+    document.body.appendChild(sheet);
+  }
+  sheet.innerHTML='<div class="move-card">'+
+    '<div class="move-hdr">Put “'+esc(it.item)+'” in…</div>'+
+    GROCERY_SECTIONS.map(function(sec){
+      return '<button class="move-opt" onclick="applyMoveSection('+idx+',\''+sec+'\')">'+(GROCERY_SECTION_ICON[sec]||'')+' '+sec+'</button>';
+    }).join('')+
+    '<button class="move-cancel" onclick="closeMoveSheet()">Cancel</button>'+
+    '</div>';
+  sheet.style.display='flex';
+}
+function closeMoveSheet(){ var s=document.getElementById('moveSheet'); if(s) s.style.display='none'; }
+function applyMoveSection(idx, sec){
+  var l=getList(curListId); if(!l||!l.items[idx]){ closeMoveSheet(); return; }
+  var it=l.items[idx];
+  it.section=sec;
+  // teach Honey: remember this item belongs here, for next time — free, on-device, forever
+  learnGroceryItem(it.item, sec);
+  persist();
+  closeMoveSheet();
+  renderShopList();
+  toast("🍯 Got it — I'll remember "+it.item+" goes in "+sec+".");
+}
 function addShopItem(){
   var inp=document.getElementById('shopAddInput'); if(!inp)return;
   var v=inp.value.trim(); if(!v)return;
   var l=getList(curListId)||getList("shopping");
   v.split(/\s*(?:,|\band\b)\s*/i).map(s=>s.trim()).filter(Boolean).forEach(p=>{
-    if(!l.items.some(x=>x.item.toLowerCase()===p.toLowerCase())) l.items.push({item:p,made:Date.now(),done:false});
+    if(!l.items.some(x=>x.item.toLowerCase()===p.toLowerCase())){
+      var it={item:p,made:Date.now(),done:false};
+      if(l.id==="shopping"){ var sec=grocerySectionFor(p); it.section=sec||"Other"; }
+      l.items.push(it);
+    }
   });
   inp.value=''; persist(); renderShopList();
 }
