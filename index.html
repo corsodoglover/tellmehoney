@@ -1186,7 +1186,7 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- ROSTER -->
 <section class="screen" id="roster">
-  <div class="bar"><button class="back" onclick="go(&#39;welcome&#39;)">‹</button>
+  <div class="bar"><button class="back" onclick="goBack()">‹</button>
     <h2>My Friends</h2>
     <button class="act" onclick="newAgentFlow()">+ Add</button></div>
   <div class="roster-body scroll">
@@ -1322,7 +1322,7 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- HONEY MONEY — warm, private, manual budget -->
 <section class="screen" id="honeyMoney">
-  <div class="bar"><button class="back" onclick="go('profile')">‹</button>
+  <div class="bar"><button class="back" onclick="goBack()">‹</button>
     <h2>💰 Honey Money</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll">
     <div class="gb-honey" id="hmHoney"></div>
@@ -1375,7 +1375,7 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- QUICK CHECK-IN (mood + talk/type/emoji journal) -->
 <section class="screen" id="checkin">
-  <div class="bar"><button class="back" onclick="openInsights()">‹</button>
+  <div class="bar"><button class="back" onclick="goBack()">‹</button>
     <h2>Check in</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll">
     <div class="gb-honey" id="ciHoney"></div>
@@ -1546,7 +1546,7 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- JOKES (simple combined page) -->
 <section class="screen" id="jokes">
-  <div class="bar"><button class="back" onclick="go(&#39;welcome&#39;)">‹</button>
+  <div class="bar"><button class="back" onclick="goBack()">‹</button>
     <h2>Jokes</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll" style="display:flex;flex-direction:column;justify-content:center">
     <p class="rec-hint" style="text-align:center;font-size:16px;margin:0 8px 22px">What would you like to do?</p>
@@ -1563,7 +1563,7 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- LEARN WITH HONEY -->
 <section class="screen" id="learn">
-  <div class="bar"><button class="back" onclick="go(&#39;welcome&#39;)">‹</button>
+  <div class="bar"><button class="back" onclick="goBack()">‹</button>
     <h2>Learn with Honey</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll">
     <p class="rec-hint" style="text-align:center;margin:2px 8px 14px">Learn a little something — Honey says it out loud so you can repeat it. 🍯</p>
@@ -3318,7 +3318,7 @@ function buildHoneyPotIcon(amt){
   return '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">'+
     '<text x="60" y="84" text-anchor="middle" font-size="92">🍯</text>'+
     // black dollar sign centered over the jar body
-    '<text x="60" y="78" text-anchor="middle" font-size="34" font-weight="900" fill="#111" style="paint-order:stroke;stroke:rgba(255,255,255,.55);stroke-width:3px">$</text>'+
+    '<text x="60" y="78" text-anchor="middle" font-size="34" font-weight="900" fill="#111" style="paint-order:stroke;stroke:rgba(255,255,255,.6);stroke-width:3px">$</text>'+
     '</svg>';
 }
 function buildPotBadge(thr){
@@ -3496,11 +3496,20 @@ function tellVerse(cat){
   var v=avail[Math.floor(Math.random()*avail.length)];
   seen[v.r]=1; verseServed[cat]=seen;
   go('chat');
+  S.lastVerse = v;   // remember it so "hear it again" can replay
   themTyping(function(){
     pushThem('\u201C'+v.t+'\u201D  \u2014 '+v.r+' (KJV)');
+    pushAction('🔁 Hear it again', null, false, null, function(){ repeatVerse(); });
     pushAction('🤍 Save this verse', null, false, null, function(){ lovedAddText(v.t+'\n'+v.r,'verse'); toast('Saved to your collection 🍯'); });
     pushAction('📤 Share this verse', null, false, null, function(){ openLoveShare(v.t+'\n'+v.r, 'verse'); });
   }, 520);
+}
+/* Replay the last verse Honey gave, in her voice */
+function repeatVerse(){
+  var v = S.lastVerse; if(!v) return;
+  S.speakerOn = true;
+  clearSpeech();
+  enqueueSpeak(v.t);   // verse text maps to its recorded clip (citation handled in audio)
 }
 function todaysSpark(){ var d=new Date(); var i=(d.getFullYear()*1000+ (Math.floor((d-new Date(d.getFullYear(),0,0))/86400000)))%SPARKS.length; return SPARKS[i]; }
 function openDailyPrompts(){
@@ -4095,7 +4104,7 @@ var SETUP_LINE={
 
 /* ════ NAV ════ */
 var _navPrev=null, _navCur='welcome', _navOrigin=null;
-var _UTIL_SCREENS=['listsHub','shopping','calendar'];
+var _UTIL_SCREENS=['listsHub','shopping','calendar','jokes','learn','roster','prayers','honeyMoney','checkin','sweetLife','contentSwitches','vault','verses','loved','goalBuilder','goalsManage'];
 function go(id){
   var el=document.getElementById(id);
   if(!el){ // safety: unknown screen — don't go black, fall back to a working screen
@@ -4121,8 +4130,8 @@ function go(id){
 /* smart back: return to the screen you entered the utility area from
    (usually chat or home), instead of flashing to a blank welcome */
 function goBack(){
-  var dest=_navOrigin;
-  if(!dest || !document.getElementById(dest)) dest = S.agentId ? 'chat' : 'welcome';
+  var dest=_navPrev || _navOrigin;
+  if(!dest || !document.getElementById(dest) || dest===_navCur) dest = S.agentId ? 'chat' : 'welcome';
   _navOrigin=null;
   if(dest==='welcome'){ showHome(); return; }
   go(dest);
@@ -4204,7 +4213,7 @@ document.getElementById('photoInput').addEventListener('change',function(e){
 
 /* ════ BRING TO LIFE ════ */
 function bringToLife(){
-  S.name=(document.getElementById('nameInput').value||'Honey').trim();
+  S.name=document.getElementById('nameInput').value.trim();
   S.age=document.getElementById('ageInput').value.trim();
   S.about=document.getElementById('aboutInput').value.trim();
   if(S.editing){
@@ -4216,7 +4225,7 @@ function bringToLife(){
     var bnr=document.getElementById('setupBanner'); if(bnr) bnr.style.display='none';
     var sib=document.getElementById('setupInviteBtn'); if(sib&&sib.parentElement) sib.parentElement.style.display='none';
     persist();
-    toast(esc(S.name)+' updated.');
+    toast(esc(S.name||'Honey')+' updated.');
     openRoster();
     return;
   }
@@ -4252,7 +4261,7 @@ var STOP=["that","this","with","have","about","there","their","would","could","s
 /* ════ ENTER CHAT ════ */
 function enterChat(){
   S.alive=true;
-  document.getElementById('ftName').textContent=S.name;
+  document.getElementById('ftName').textContent=S.name||'Honey';
   var bg=document.getElementById('ftBg'), av=document.getElementById('ftAvatar');
   if(S.photo){ bg.style.backgroundImage='url('+S.photo+')'; av.style.display='none'; }
   else { bg.style.backgroundImage='none'; bg.style.background='radial-gradient(120% 90% at 50% 25%,#2a2436,#10121b)';
@@ -4290,10 +4299,12 @@ function enterChat(){
       if(SETTINGS.setupNudges<2){
         SETTINGS.setupNudges++;
         setTimeout(()=>{ themTyping(()=>{
-          pushThem(rand([
+          var nudge = rand([
             "Whenever you're ready, you can give me a name and a face — I'd love to be really yours. 🍯",
             "Still just \"Honey\" for now — tap below anytime to make me your own. No rush."
-          ]));
+          ]);
+          pushThem(nudge);
+          if(S.speakerOn) enqueueSpeak("\u0000CLIP:"+(nudge.indexOf("Whenever")===0?"onboard_nudge1":"onboard_nudge2"));
           showSetupInvite(); resetIdle();
         }); }, 1400);
       }
@@ -4326,10 +4337,12 @@ function enterChat(){
       if(!coming && !S.isSelf && honeyNeedsSetup()){
         setTimeout(()=>{ themTyping(()=>{
           pushThem("Oh — one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap \u201Cchange your Honey\u201D up top anytime.");
+          if(S.speakerOn) enqueueSpeak("\u0000CLIP:onboard_intro");
           showSetupInvite();
           resetIdle();
           setTimeout(()=>{ themTyping(()=>{
-            pushThem("And see those little taps just above where you type? 👍 👎 ❤️ — use those to react anytime, quick and easy. Here, let me show you — I'll tell you one:");
+            pushThem("And see those little taps just above where you type? 👍 👎 ❓ ❤️ — use those to react anytime, quick and easy. Here, let me show you — I'll tell you one:");
+            if(S.speakerOn) enqueueSpeak("\u0000CLIP:onboard_reactions");
             resetIdle();
             setTimeout(()=>{ try{ tellJoke(); }catch(e){} }, 1300);
           }); }, 1700);
@@ -4342,7 +4355,7 @@ function enterChat(){
 }
 /* Still the ready-made default Honey? (not personalized yet) */
 function honeyNeedsSetup(){
-  return !S.isSelf && S.noFace===true && S.name==="Honey" && !(SETTINGS && SETTINGS.honeySetupDone);
+  return !S.isSelf && S.noFace===true && (!S.name || S.name==="Honey") && !(SETTINGS && SETTINGS.honeySetupDone);
 }
 /* Tappable invite bubble in chat that opens the quick setup form */
 function showSetupInvite(){
@@ -4723,10 +4736,40 @@ function fetchWeather(lat,lon){
       (Math.abs(feels-t)>=3?" (feels like "+feels+"°)":"")+". High "+hi+"°, low "+lo+"°.";
     var react=weatherReaction(c.weather_code,t);
     themTyping(()=>{
-      pushThemText(line);                 // numbers shown on screen, not spoken
-      if(react) setTimeout(()=>themTyping(()=>pushThem(vibeColor(react))),700);  // Honey speaks the warm reaction
+      pushThemText(line);                 // numbers shown on screen
+      speakWeather(t, feels, hi, lo, code[0]);   // ...and now spoken in Honey's voice
+      if(react) setTimeout(()=>themTyping(()=>pushThem(vibeColor(react))),700);  // warm reaction after
     });
   }).catch(()=>weatherFallback("I couldn't reach the weather service"));
+}
+
+/* ── Speak the weather by stitching recorded number/word/condition clips ──
+   Numbers, connector words, and sky conditions were recorded as separate
+   clips (wxn_*, wxc_*, wxs_*). We queue them in order so Honey says the
+   whole thing in her own voice. If any clip is missing it's simply skipped
+   (never robot-voiced over). */
+var WX_CONDITION_CLIP={
+  "clear skies":"wxs_clear_skies","mostly clear":"wxs_mostly_clear","partly cloudy":"wxs_partly_cloudy",
+  "overcast":"wxs_overcast","foggy":"wxs_foggy","icy fog":"wxs_icy_fog",
+  "light drizzle":"wxs_light_drizzle","drizzle":"wxs_drizzle","heavy drizzle":"wxs_heavy_drizzle",
+  "light rain":"wxs_light_rain","rain":"wxs_rain","heavy rain":"wxs_heavy_rain",
+  "freezing rain":"wxs_freezing_rain","rain showers":"wxs_rain_showers","violent showers":"wxs_violent_showers",
+  "light snow":"wxs_light_snow","snow":"wxs_snow","heavy snow":"wxs_heavy_snow",
+  "snow grains":"wxs_snow_grains","snow showers":"wxs_snow_showers",
+  "a thunderstorm":"wxs_thunderstorm","thunderstorm w/ hail":"wxs_thunderstorm_hail",
+  "severe thunderstorm":"wxs_severe_thunderstorm"
+};
+function wxNumClip(n){ n=Math.round(n); return "wxn_"+(n<0?("m"+Math.abs(n)):String(n)); }
+function speakWeather(t, feels, hi, lo, condText){
+  if(!S.speakerOn) return;
+  if((S.voice||"honey")!=="honey") return;  // only stitch for Honey's recorded voice
+  var seq=[];
+  seq.push("wxc_its", wxNumClip(t), "wxc_degrees", "wxc_and");
+  var cc=WX_CONDITION_CLIP[condText]; if(cc) seq.push(cc);
+  seq.push("wxc_rightnow");
+  if(Math.abs(feels-t)>=3){ seq.push("wxc_feelslike", wxNumClip(feels), "wxc_degrees"); }
+  seq.push("wxc_high", wxNumClip(hi), "wxc_low", wxNumClip(lo), "wxc_degreestoday");
+  seq.forEach(function(k){ enqueueSpeak("\u0000CLIP:"+k); });
 }
 /* Honey's spoken weather REACTION — numbers stay on screen as text,
    she speaks a warm, varying reaction that matches the real sky.
@@ -8275,8 +8318,8 @@ function showSleepLegacy(){
   document.getElementById('wRosterBtn').style.display = activeAgents().length ? 'block':'none'; refreshFrontCta();
   if(S.alive){
     w.classList.add('sleeping');
-    document.getElementById('sleepName').textContent=S.name;
-    document.getElementById('wakeName').textContent=S.name;
+    document.getElementById('sleepName').textContent=S.name||'Honey';
+    document.getElementById('wakeName').textContent=S.name||'Honey';
     var se=document.getElementById('sleepEmoji'), si=document.getElementById('sleepImg');
     if(S.photo){ si.src=S.photo; si.style.display='block'; se.style.display='none'; }
     else { se.style.display='flex'; si.style.display='none'; se.textContent=avatarEmoji(); }
