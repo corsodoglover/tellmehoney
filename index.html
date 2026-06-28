@@ -1092,9 +1092,8 @@ textarea{resize:none;line-height:1.4;}
       </div>
       <div class="ob-brand">Tell Me Honey</div>
       <h2 class="ob-h">Got a minute?<br>Let's <em>get away</em>.</h2>
-      <p class="ob-p">A little break, right where you are. Ready for your first one?</p>
+      <p class="ob-p">A little break, right where you are. Ready for your first joke?</p>
       <button class="ob-next" onclick="obToJoke()">Yes — let's go</button>
-      <button class="ob-skip" onclick="finishOnboard()">Just take me in</button>
     </div>
 
     <!-- SCREEN 2 — the laugh, then go to Honey, all here -->
@@ -3504,12 +3503,12 @@ function tellVerse(cat){
     pushAction('📤 Share this verse', null, false, null, function(){ openLoveShare(v.t+'\n'+v.r, 'verse'); });
   }, 520);
 }
-/* Replay the last verse Honey gave, in her voice */
+/* Replay the last verse Honey gave — in Honey's voice, or the user's chosen voice */
 function repeatVerse(){
   var v = S.lastVerse; if(!v) return;
   S.speakerOn = true;
   clearSpeech();
-  enqueueSpeak(v.t);   // verse text maps to its recorded clip (citation handled in audio)
+  enqueueSpeak(v.t);   // verse text maps to its recorded clip; non-Honey voices read the text
 }
 function todaysSpark(){ var d=new Date(); var i=(d.getFullYear()*1000+ (Math.floor((d-new Date(d.getFullYear(),0,0))/86400000)))%SPARKS.length; return SPARKS[i]; }
 function openDailyPrompts(){
@@ -4304,7 +4303,7 @@ function enterChat(){
             "Still just \"Honey\" for now — tap below anytime to make me your own. No rush."
           ]);
           pushThem(nudge);
-          if(S.speakerOn) enqueueSpeak("\u0000CLIP:"+(nudge.indexOf("Whenever")===0?"onboard_nudge1":"onboard_nudge2"));
+          if(S.speakerOn) enqueueSpeak("\u0000CLIP:"+(nudge.indexOf("Whenever")===0?"onboard_nudge1":"onboard_nudge2")+"\u0001"+nudge.replace(/🍯/g,'').replace(/"/g,'').trim());
           showSetupInvite(); resetIdle();
         }); }, 1400);
       }
@@ -4337,12 +4336,12 @@ function enterChat(){
       if(!coming && !S.isSelf && honeyNeedsSetup()){
         setTimeout(()=>{ themTyping(()=>{
           pushThem("Oh — one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap \u201Cchange your Honey\u201D up top anytime.");
-          if(S.speakerOn) enqueueSpeak("\u0000CLIP:onboard_intro");
+          if(S.speakerOn) enqueueSpeak("\u0000CLIP:onboard_intro\u0001Oh, one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap change your Honey up top anytime.");
           showSetupInvite();
           resetIdle();
           setTimeout(()=>{ themTyping(()=>{
             pushThem("And see those little taps just above where you type? 👍 👎 ❓ ❤️ — use those to react anytime, quick and easy. Here, let me show you — I'll tell you one:");
-            if(S.speakerOn) enqueueSpeak("\u0000CLIP:onboard_reactions");
+            if(S.speakerOn) enqueueSpeak("\u0000CLIP:onboard_reactions\u0001And see those little taps just above where you type? The thumbs up, thumbs down, question mark, and heart — use those to react anytime, quick and easy. Here, let me show you. I'll tell you one:");
             resetIdle();
             setTimeout(()=>{ try{ tellJoke(); }catch(e){} }, 1300);
           }); }, 1700);
@@ -4563,9 +4562,15 @@ function thumb(kind){
   if(yes){ toast("👍"); themTyping(()=>pushThem(vibeColor(rand(["Glad we agree.","Right? Knew you'd be on board.","Good. I like you too."])))); }
   else { toast("👎"); themTyping(()=>pushThem(vibeColor(rand(["Fair enough. Tell me what'd be better.","Okay, noted. I can pivot.","Alright, scratch that."])))); }
 }
-function explain(j){ var c=["The bit is the gap — your brain expects one thing, gets the other. Want another?",
-  "Setup points you one way, punchline yanks the rug. That little jolt is the laugh. Another?",
-  "It's misdirection. I lead, you assume, then I turn. Works every time it works."]; return rand(c); }
+function explain(j){ var c=[
+  "Ha — that's a scratch and sniff. Want a better one?",
+  "Ha — that one's a stretch, I'll give you that. Want a better one?",
+  "Honestly? Half of mine are just groaners. That's the fun of it. Let me try again —",
+  "Eh, don't overthink it, darlin' — that one was more silly than clever. Want another?",
+  "Fair. Some of 'em you just gotta let wash right over you. I've got more —",
+  "That's okay — not every joke lands. You're sweet to humor me. Want a fresh one?",
+  "Ha, I lost you on that one. My fault, not yours. Let me make it up to you —"
+]; return rand(c); }
 
 /* ════ JOKE ENGINE ════ */
 function styleCats(){ return (STYLES[S.style]||STYLES[0]).cats; }
@@ -4677,10 +4682,10 @@ function userSays(t){
     var fidx=Math.floor(Math.random()*arr.length);
     // play RIGHT NOW on the tap (delayed playback gets autoplay-blocked)
     S.speakerOn=true;
-    enqueueSpeak("\u0000CLIP:"+cat+"_"+String(fidx+1).padStart(2,'0'));
+    enqueueSpeak("\u0000CLIP:"+cat+"_"+String(fidx+1).padStart(2,'0')+"\u0001"+arr[fidx]);
     themTyping(()=>{
       pushThemText(vibeColor(arr[fidx]));
-      pushAction("🔊 Read it aloud", null, false, null, function(){ replayClip(cat+"_"+String(fidx+1).padStart(2,'0')); });
+      pushAction("🔊 Read it aloud", null, false, null, function(){ replayClip(cat+"_"+String(fidx+1).padStart(2,'0'), arr[fidx]); });
     });
     return;
   }
@@ -5422,7 +5427,7 @@ var FORAGE_FACTS=[
 function forageTidbit(){
   var idx=Math.floor(Math.random()*FORAGE_FACTS.length);
   // play Honey's recorded clip through the proven speech queue (not blocked by autoplay)
-  try{ S.speakerOn=true; enqueueSpeak("\u0000CLIP:forage_"+String(idx+1).padStart(2,'0')); }catch(e){}
+  try{ S.speakerOn=true; enqueueSpeak("\u0000CLIP:forage_"+String(idx+1).padStart(2,'0')+"\u0001"+FORAGE_FACTS[idx]); }catch(e){}
   return FORAGE_FACTS[idx] + "  Always be sure of what you pick — when in doubt, leave it be. " + FORAGE_BOOK;
 }
 
@@ -5510,7 +5515,7 @@ function bedtimeStory(){
   var s=BEDTIME_STORIES[idx];
   // play RIGHT NOW on the tap (delayed playback gets autoplay-blocked)
   S.speakerOn=true;
-  enqueueSpeak("\u0000CLIP:story_"+String(idx+1).padStart(2,'0'));
+  enqueueSpeak("\u0000CLIP:story_"+String(idx+1).padStart(2,'0')+"\u0001"+s.x);
   themTyping(()=>{
     pushThemText(vibeColor("Here's a little story to rest to. Close your eyes if you like. 🌙"));
     pushThemText(vibeColor("“"+s.t+"”"));
@@ -5542,16 +5547,17 @@ function sayPrayer(p){
   if(!p){ var v=visiblePrayers(); if(!v.length){ themTyping(()=>pushThemText(vibeColor("Whenever you're ready, you can add a prayer that's close to your heart. 💛"))); return; } p=v[0]; }
   // play the clip RIGHT NOW on the user's tap (delayed playback gets autoplay-blocked)
   S.speakerOn=true;
-  enqueueSpeak("\u0000CLIP:"+p.clip);
+  enqueueSpeak("\u0000CLIP:"+p.clip+"\u0001"+p.text);
   // the words can still appear gently with the typing animation, with a Read-aloud button
   themTyping(()=>{
     pushThemText(vibeColor("Let's say it together. 🙏"));
     pushThemText(vibeColor(p.text));
-    pushAction("🔊 Read it aloud", null, false, null, function(){ replayClip(p.clip); });
+    pushAction("🔊 Read it aloud", null, false, null, function(){ replayClip(p.clip, p.text); });
   });
 }
-/* one consistent "read aloud" path for any clip, fired by the user's tap */
-function replayClip(clip){ S.speakerOn=true; clearSpeech(); enqueueSpeak("\u0000CLIP:"+clip); }
+/* one consistent "read aloud" path for any clip, fired by the user's tap.
+   Pass the spoken text too, so users on a non-Honey voice hear it in THEIR voice. */
+function replayClip(clip, text){ S.speakerOn=true; clearSpeech(); enqueueSpeak("\u0000CLIP:"+clip+(text?("\u0001"+text):"")); }
 
 /* ── MY PRAYERS & KEEPSAKES (user's own — typed or recorded in their REAL voice) ──
    Everything stays on this device. Recordings use the phone's own microphone
@@ -6730,9 +6736,23 @@ function _spDrain(){
   setTalking(true);
   if(listening) pauseListening();
 
-  // sentinel: play an EXACT clip file (used for punchlines resolved by setup family)
+  // sentinel: play an EXACT clip file. Format: "\u0000CLIP:clipname" or
+  // "\u0000CLIP:clipname\u0001spoken text" (text used if user is on a non-Honey voice)
   if(text.indexOf("\u0000CLIP:")===0){
-    var forced=text.slice(6);
+    var payload=text.slice(6);
+    var sep=payload.indexOf("\u0001");
+    var forced = sep>=0 ? payload.slice(0,sep) : payload;
+    var spokenText = sep>=0 ? payload.slice(sep+1) : "";
+    // If the user picked a NON-Honey voice, speak the words in THEIR voice
+    if((S.voice||"honey")!=="honey"){
+      if(spokenText){
+        if(cloudReady()){ cloudSpeak(spokenText); _spPollCloud(myToken, next); return; }
+        _spSpeakDevice(spokenText, next); return;
+      }
+      // no text available to speak in their voice — just move on
+      next(); return;
+    }
+    // Honey's voice: play her recorded clip
     try{
       _honeyAudioEl = new Audio(HONEY_AUDIO_BASE + forced + ".mp3");
       _honeyAudioEl.onended = next;
@@ -6846,6 +6866,14 @@ function cloudSpeak(t){
 }
 /* preview a voice without affecting the conversation */
 function previewVoice(id){
+  // If previewing HONEY's voice, play one of her REAL recorded clips (not the device voice)
+  if((id||"honey")==="honey"){
+    S.speakerOn=true; clearSpeech();
+    var honeyLine=rand(["hey there — how do i sound?","this is my voice. like it?","testing, testing — that's me."]);
+    var hc=honeyClipFor(honeyLine);
+    if(hc){ enqueueSpeak("\u0000CLIP:"+hc); return; }
+    // fall through to device voice only if no clip found
+  }
   var line=rand(["Hey there — how do I sound?","This is my voice. Like it?","Knock knock. Pretty good, right?","Testing, testing — that's me."]);
   if(cloudReady()){ S.speakerOn=true; cloudSpeak(line); return; }
   if(!('speechSynthesis'in window))return;
