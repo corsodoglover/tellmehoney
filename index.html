@@ -4736,8 +4736,7 @@ function fetchWeather(lat,lon){
       (Math.abs(feels-t)>=3?" (feels like "+feels+"°)":"")+". High "+hi+"°, low "+lo+"°.";
     var react=weatherReaction(c.weather_code,t);
     themTyping(()=>{
-      pushThemText(line);                 // numbers shown on screen
-      speakWeather(t, feels, hi, lo, code[0]);   // ...and now spoken in Honey's voice
+      pushThem(line);                     // speaks normally (computer voices read it; Honey shows as text)
       if(react) setTimeout(()=>themTyping(()=>pushThem(vibeColor(react))),700);  // warm reaction after
     });
   }).catch(()=>weatherFallback("I couldn't reach the weather service"));
