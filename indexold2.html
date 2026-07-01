@@ -4288,7 +4288,7 @@ function go(id){
   if(id==='chat'){ try{ applyChatSkin(); }catch(e){} }
   if(id==='welcome'){ var rb=document.getElementById('wRosterBtn'); if(rb) rb.style.display=activeAgents().length?'block':'none'; refreshFrontCta(); }
   // show the bottom tab bar only on the four dashboard screens
-  var dash = (id!=='chat' && id!=='onboard' && id!=='builder' && id!=='tiers');
+  var dash = (id==='welcome'||id==='insights'||id==='prompts'||id==='profile');
   var ph=document.querySelector('.phone'); if(ph) ph.classList.toggle('tabs-on',dash);
   // leaving welcome turns off the cream home view unless we're staying on a dashboard
   if(id!=='welcome'){ var wel=document.getElementById('welcome'); if(wel) wel.classList.remove('home-on'); }
@@ -4510,7 +4510,7 @@ function enterChat(){
             pushThem("And see those little taps just above where you type? 👍 👎 ❓ ❤️ — use those to react anytime, quick and easy. Here, let me show you — I'll tell you one:");
             if(S.speakerOn) enqueueSpeak("\u0000CLIP:onboard_reactions\u0001And see those little taps just above where you type? The thumbs up, thumbs down, question mark, and heart — use those to react anytime, quick and easy. Here, let me show you. I'll tell you one:");
             resetIdle();
-            setTimeout(()=>{ try{ tellJoke(); }catch(e){} }, 8500);
+            setTimeout(()=>{ try{ tellJoke(); }catch(e){} }, 1300);
           }); }, 1700);
         }); }, 1100);
       }
@@ -4695,12 +4695,9 @@ function revealPunch(auto){
     updateThumbLabel(); resetIdle();
     logMsg({w:'them',k:'punch',t:joke.p});
     if(joke.roast) setTimeout(()=>themTyping(()=>pushThem("Said with love. Mostly.")),900);
-    // 🌸 Scratch & Sniff button — rare surprise (~1 in 20 jokes). Guard so it can't fire twice for one joke.
-    if(!S._scratchShownFor || S._scratchShownFor !== joke.p){
-      if(Math.random() < 0.05){
-        S._scratchShownFor = joke.p;
-        setTimeout(function(){ pushAction('🌸 Scratch & Sniff', null, false, null, function(){ scratchAndSniffShare(); }); }, joke.roast?1400:700);
-      }
+    // 🌸 Scratch & Sniff button — rare surprise (~1 in 10 jokes), so it's a fun treat people share
+    if(Math.random() < 0.10){
+      setTimeout(function(){ pushAction('🌸 Scratch & Sniff', null, false, null, function(){ scratchAndSniffShare(); }); }, joke.roast?1400:700);
     }
   }
   if(lead){
