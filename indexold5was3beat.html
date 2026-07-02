@@ -3183,52 +3183,40 @@ function ownerTap(){
     if(SETTINGS.owner){ setTimeout(honeyAIPanel, 400); }
   }
 }
-/* owner-only AI control panel (real visible modal) */
+/* owner-only AI control panel (simple prompt-based, reliable) */
 function honeyAIPanel(){
   if(!isOwner()) return;
   var a=aiCfg();
-  document.getElementById('aiKeyField').value = a.key || '';
-  document.getElementById('aiLevelSlider').value = (a.level!=null?a.level:100);
-  document.getElementById('aiLevelVal').textContent = (a.level!=null?a.level:100);
-  _aiSyncToggle();
-  _aiSyncKeyStatus();
-  document.getElementById('aiPanel').style.display='flex';
-}
-function _aiSyncToggle(){
-  var a=aiCfg(); var b=document.getElementById('aiToggleBtn');
-  if(!b) return;
-  b.textContent = a.on ? 'ON' : 'OFF';
-  b.style.background = a.on ? '#7bc47f' : '#e0d6bd';
-  b.style.color = a.on ? '#fff' : '#8a7a52';
-}
-function _aiSyncKeyStatus(){
-  var a=aiCfg(); var s=document.getElementById('aiKeyStatus');
-  if(!s) return;
-  s.textContent = (a.key && a.key.indexOf('sk-')===0) ? ('Key saved ✅ ('+a.key.slice(0,6)+'…)') : 'No valid key yet.';
-}
-function aiToggleOnOff(){ var a=aiCfg(); a.on=!a.on; _aiSyncToggle(); }
-function aiSavePanel(){
-  var a=aiCfg();
-  var k=document.getElementById('aiKeyField').value.trim();
-  if(k && k.indexOf('sk-')!==0){ alert("That doesn't look like an OpenAI key (should start with sk-)."); return; }
-  a.key=k;
-  a.level=parseInt(document.getElementById('aiLevelSlider').value,10);
-  // if they saved a key and never toggled, assume they want it on
-  if(a.key && !a.on){ a.on=true; }
-  saveSettings();
-  _aiSyncToggle(); _aiSyncKeyStatus();
-  document.getElementById('aiPanel').style.display='none';
-  toast(a.on && aiAvailable() ? "Honey's brain is ON 🍯" : "Saved. (Add a valid key + turn ON to use AI.)");
-}
-function aiTestFromPanel(){
-  var a=aiCfg();
-  var k=document.getElementById('aiKeyField').value.trim();
-  if(!k || k.indexOf('sk-')!==0){ alert("Paste a valid OpenAI key first (starts with sk-)."); return; }
-  a.key=k; // use what's typed for the test
-  var msg=prompt("Say something to Honey (test):","How's my day gonna go?");
-  if(!msg) return;
-  toast("Asking Honey…");
-  askHoney(msg).then(function(r){ alert(r ? ("Honey says:\n\n"+r) : "No reply — check the key or your internet."); });
+  var status = a.on ? ("ON (level "+a.level+")") : "OFF";
+  var choice = prompt(
+    "🍯 HONEY AI BRAIN — owner testing\n\n"+
+    "Status: "+status+"\nKey: "+(a.key?("saved ("+a.key.slice(0,6)+"…)"):"none")+"\n\n"+
+    "Type a command:\n"+
+    "  on        — turn AI brain on\n"+
+    "  off       — turn AI brain off\n"+
+    "  key       — paste/replace your OpenAI key\n"+
+    "  level     — set how often AI answers (0-100)\n"+
+    "  test      — send Honey a test message\n\n"+
+    "(leave blank to close)"
+  );
+  if(!choice) return;
+  choice=choice.trim().toLowerCase();
+  if(choice==="on"){ a.on=true; saveSettings(); toast("Honey AI brain ON 🍯"); }
+  else if(choice==="off"){ a.on=false; saveSettings(); toast("Honey AI brain off."); }
+  else if(choice==="key"){
+    var k=prompt("Paste your OpenAI key (starts with sk-). It stays on this device only.");
+    if(k && k.trim().indexOf("sk-")===0){ a.key=k.trim(); saveSettings(); toast("Key saved on this device ✅"); }
+    else if(k){ alert("That doesn't look like an OpenAI key (should start with sk-)."); }
+  }
+  else if(choice==="level"){
+    var lv=prompt("How often should the AI answer? 0 = never (all scripted), 100 = always AI.", String(a.level));
+    if(lv!==null){ var n=parseInt(lv,10); if(!isNaN(n)){ a.level=Math.max(0,Math.min(100,n)); saveSettings(); toast("AI level set to "+a.level); } }
+  }
+  else if(choice==="test"){
+    if(!aiAvailable()){ alert("Turn AI on and add your key first."); return; }
+    var msg=prompt("Say something to Honey (test):","How's my day gonna go?");
+    if(msg){ askHoney(msg).then(function(r){ alert(r ? ("Honey says:\n\n"+r) : "No reply (check key or network)."); }); }
+  }
 }
 /* lock a feature box: grey it out + show an upgrade note */
 function lockBox(id, label, needTier){
@@ -9709,31 +9697,5 @@ try{
 setTimeout(()=>{ try{ if(!document.querySelector('.screen.on')) bootFallback(); }catch(e){} }, 1500);
 </script>
 
-
-
-<!-- 🍯 Owner-only AI control panel -->
-<div id="aiPanel" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:20px;">
-  <div style="background:#fffdf6;color:#3a2f1a;max-width:420px;width:100%;border-radius:20px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.4);font-family:-apple-system,sans-serif;">
-    <h2 style="margin:0 0 4px;font-size:20px;">🍯 Honey AI Brain</h2>
-    <p style="margin:0 0 16px;font-size:13px;color:#8a7a52;">Owner testing only. Everything here stays on this device.</p>
-
-    <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid rgba(200,150,40,.3);border-radius:12px;padding:12px 14px;margin-bottom:12px;">
-      <span style="font-weight:600;">AI Brain</span>
-      <button id="aiToggleBtn" onclick="aiToggleOnOff()" style="border:none;border-radius:999px;padding:8px 20px;font-weight:700;cursor:pointer;">OFF</button>
-    </div>
-
-    <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">Your OpenAI key (starts with sk-)</label>
-    <input id="aiKeyField" type="password" placeholder="sk-…" style="width:100%;border:1px solid rgba(200,150,40,.3);border-radius:12px;padding:12px;font-size:15px;margin-bottom:4px;background:#fff8e8;">
-    <p id="aiKeyStatus" style="margin:0 0 14px;font-size:12px;color:#8a7a52;">No key saved.</p>
-
-    <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">How often AI answers: <span id="aiLevelVal">100</span>%</label>
-    <input id="aiLevelSlider" type="range" min="0" max="100" value="100" oninput="document.getElementById('aiLevelVal').textContent=this.value" style="width:100%;margin-bottom:16px;">
-
-    <div style="display:flex;gap:8px;">
-      <button onclick="aiTestFromPanel()" style="flex:1;background:#fff;border:1px solid rgba(200,150,40,.4);color:#8a7a52;border-radius:999px;padding:12px;font-weight:600;cursor:pointer;">Test</button>
-      <button onclick="aiSavePanel()" style="flex:2;background:#f6cf6e;border:none;color:#3a2f1a;border-radius:999px;padding:12px;font-weight:700;cursor:pointer;">Save & Close</button>
-    </div>
-  </div>
-</div>
 
 </body></html>
