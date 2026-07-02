@@ -633,7 +633,7 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   font-size:13px;font-weight:600;color:var(--muted);}
 .cv.sel{background:var(--gold);border-color:var(--gold);color:#1a1405;}
 /* hibernate / sleep */
-.w-fresh,.w-sleep{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;
+.w-fresh,.w-sleep{position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;padding:32px;text-align:center;}
 .w-sleep{display:none;}
 #welcome.sleeping .w-fresh{display:none;}
@@ -647,10 +647,9 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .home{position:absolute;inset:0;display:none;flex-direction:column;}
 #welcome.home-on .home{display:flex;}
 .home-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  padding:8px 22px 96px;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;}
-.home-top{z-index:3;}
-.home-title{font-family:var(--display);font-size:52px;font-weight:700;color:#3a3220;
-  text-shadow:0 2px 10px rgba(255,255,255,.6);margin:16px 0 4px;text-align:center;}
+  padding:8px 22px 96px;display:flex;flex-direction:column;align-items:center;}
+.home-title{font-family:var(--display);font-size:38px;font-weight:700;color:#3a3220;
+  text-shadow:0 2px 10px rgba(255,255,255,.6);margin:48px 0 2px;text-align:center;}
 .home-title em{font-style:italic;color:#7a5c12;}
 .home-top{position:absolute;top:calc(12px + var(--safe-t));left:0;right:0;z-index:3;
   display:flex;justify-content:space-between;align-items:center;padding:0 18px;}
@@ -753,12 +752,11 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .home-big .hb-tx b{font-size:17px;color:#3a2c08;font-weight:800;}
 .home-big .hb-tx small{font-size:13px;color:#7a6e4e;}
 .home-half-row{display:flex;gap:12px;}
-.home-half{flex:1;min-height:88px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+.home-half{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
   background:rgba(255,255,255,.65);border:1.5px solid rgba(120,100,60,.2);border-radius:16px;
   padding:11px 8px;cursor:pointer;transition:transform .1s;}
 .home-half:active{transform:scale(.97);}
-.home-half .hh-ic{display:flex;align-items:center;justify-content:center;height:34px;font-size:28px;line-height:1;}
-.hh-svg{display:block;}
+.home-half .hh-ic{font-size:23px;}
 .home-half .hh-tx{font-size:13.5px;font-weight:800;color:#3a2c08;}
 .home-half .hh-net{font-size:10px;color:#a8976a;margin-top:1px;}
 .home-buzz{background:rgba(246,207,110,.28);border-color:rgba(200,150,40,.3);}
@@ -1102,8 +1100,8 @@ textarea{resize:none;line-height:1.4;}
     <div class="ob-slide" data-ob="1">
       <div class="ob-jokecard">
         <div class="ob-jokewho">🔊 Honey</div>
-        <div class="ob-joketext">Why did the bicycle fall over?</div>
-        <div class="ob-punch" id="obPunch">It was two-tired.</div>
+        <div class="ob-joketext">Did you hear about the claustrophobic astronaut?</div>
+        <div class="ob-punch" id="obPunch">He just needed a little space.</div>
       </div>
       <button class="ob-replay" id="obReveal" onclick="obRevealJoke()">tap for it 🔊</button>
       <div id="obAfter" style="display:none;flex-direction:column;align-items:center;width:100%">
@@ -1118,10 +1116,8 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- WELCOME -->
 <section class="screen home-on on" id="welcome">
-  <canvas id="welcomeClouds" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
   <!-- HOME DASHBOARD (cream) -->
   <div class="home" id="homeView">
-    <canvas id="homeClouds" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
     <!-- top row: streak chip + tiny pot badge -->
     <div class="home-top">
       <button class="streak-chip" id="streakChip" onclick="openInsights()">🔥 <span id="streakNum">0</span></button>
@@ -1140,9 +1136,9 @@ textarea{resize:none;line-height:1.4;}
       <div class="home-grid" style="display: flex;">
         <button class="home-big" onclick="openJokes()"><span class="hb-ic">😄</span><span class="hb-tx"><b>Share or make a joke</b><small>Send a laugh to someone</small></span></button>
         <div class="home-half-row">
-          <button class="home-half" onclick="homeWeather()"><span class="hh-ic">⛅</span><span class="hh-tx">Weather</span></button>
+          <button class="home-half" onclick="homeWeather()"><span class="hh-ic">☀️</span><span class="hh-tx">Weather</span><span class="hh-net">needs internet</span></button>
           <button class="home-half" onclick="openCalendar()"><span class="hh-ic">📅</span><span class="hh-tx">Calendar</span></button>
-          <button class="home-half" onclick="openListsHub()"><span class="hh-ic">📝</span><span class="hh-tx">Lists</span></button>
+          <button class="home-half" onclick="openListsHub()"><span class="hh-ic">🛒</span><span class="hh-tx">My Lists</span></button>
           <button class="home-half" onclick="openLearn()"><span class="hh-ic">📚</span><span class="hh-tx">Learn</span></button>
         </div>
         <button class="home-big home-buzz" onclick="openSweetLife()"><span class="hb-ic">🍯</span><span class="hb-tx"><b>My Sweet Life</b><small>Journal, money, lists &amp; more</small></span></button>
@@ -1318,8 +1314,7 @@ textarea{resize:none;line-height:1.4;}
     <h2>📅 Calendar</h2>
     <button class="act" onclick="shareCalendar()" style="color:var(--gold)">Text it</button></div>
   <div class="insights-body scroll">
-    <p class="rec-hint" style="text-align:center;margin:2px 8px 10px">Your schedule and scheduled goals. Tap any item to add it to your phone’s calendar.</p>
-    <button class="w-cta" onclick="addCalendarItem()" style="margin:0 8px 14px;width:calc(100% - 16px);">➕ Add to calendar</button>
+    <p class="rec-hint" style="text-align:center;margin:2px 8px 14px">Your schedule and scheduled goals. Tap any item to add it to your phone’s calendar.</p>
     <div class="cal-list" id="calList"></div>
   </div>
 </section>
@@ -3180,55 +3175,7 @@ function ownerTap(){
   if(_ownerTaps>=5){
     _ownerTaps=0; SETTINGS.owner=!SETTINGS.owner; saveSettings();
     toast(SETTINGS.owner ? "Owner mode ON — beta tools unlocked." : "Owner mode off.");
-    if(SETTINGS.owner){ setTimeout(honeyAIPanel, 400); }
   }
-}
-/* owner-only AI control panel (real visible modal) */
-function honeyAIPanel(){
-  if(!isOwner()) return;
-  var a=aiCfg();
-  document.getElementById('aiKeyField').value = a.key || '';
-  document.getElementById('aiLevelSlider').value = (a.level!=null?a.level:100);
-  document.getElementById('aiLevelVal').textContent = (a.level!=null?a.level:100);
-  _aiSyncToggle();
-  _aiSyncKeyStatus();
-  document.getElementById('aiPanel').style.display='flex';
-}
-function _aiSyncToggle(){
-  var a=aiCfg(); var b=document.getElementById('aiToggleBtn');
-  if(!b) return;
-  b.textContent = a.on ? 'ON' : 'OFF';
-  b.style.background = a.on ? '#7bc47f' : '#e0d6bd';
-  b.style.color = a.on ? '#fff' : '#8a7a52';
-}
-function _aiSyncKeyStatus(){
-  var a=aiCfg(); var s=document.getElementById('aiKeyStatus');
-  if(!s) return;
-  s.textContent = (a.key && a.key.indexOf('sk-')===0) ? ('Key saved ✅ ('+a.key.slice(0,6)+'…)') : 'No valid key yet.';
-}
-function aiToggleOnOff(){ var a=aiCfg(); a.on=!a.on; _aiSyncToggle(); }
-function aiSavePanel(){
-  var a=aiCfg();
-  var k=document.getElementById('aiKeyField').value.trim();
-  if(k && k.indexOf('sk-')!==0){ alert("That doesn't look like an OpenAI key (should start with sk-)."); return; }
-  a.key=k;
-  a.level=parseInt(document.getElementById('aiLevelSlider').value,10);
-  // if they saved a key and never toggled, assume they want it on
-  if(a.key && !a.on){ a.on=true; }
-  saveSettings();
-  _aiSyncToggle(); _aiSyncKeyStatus();
-  document.getElementById('aiPanel').style.display='none';
-  toast(a.on && aiAvailable() ? "Honey's brain is ON 🍯" : "Saved. (Add a valid key + turn ON to use AI.)");
-}
-function aiTestFromPanel(){
-  var a=aiCfg();
-  var k=document.getElementById('aiKeyField').value.trim();
-  if(!k || k.indexOf('sk-')!==0){ alert("Paste a valid OpenAI key first (starts with sk-)."); return; }
-  a.key=k; // use what's typed for the test
-  var msg=prompt("Say something to Honey (test):","How's my day gonna go?");
-  if(!msg) return;
-  toast("Asking Honey…");
-  askHoney(msg).then(function(r){ alert(r ? ("Honey says:\n\n"+r) : "No reply — check the key or your internet."); });
 }
 /* lock a feature box: grey it out + show an upgrade note */
 function lockBox(id, label, needTier){
@@ -3452,7 +3399,6 @@ function showHome(){
   go('welcome');
   setTab('home');
   renderHome();
-  try{ startHomeClouds(); }catch(e){}
 }
 /* Quick avatar change — tap the friend's face anywhere to swap the photo instantly.
    Saves straight to the active friend and refreshes the home + profile views. */
@@ -3478,7 +3424,6 @@ function quickChangeAvatar(){
 }
 function renderHome(){
   ensureWeek();
-  try{ startHomeClouds(); }catch(e){}
   var lang=INSIGHTS.lang||{};
   var thr=thrivingFrom(lang);
   // friend face + name (the hook is talking to YOUR friend)
@@ -3494,14 +3439,12 @@ function renderHome(){
   var sc=document.getElementById('streakChip'), sn=document.getElementById('streakNum');
   if(SETTINGS.streakOn){ sc.classList.remove('hidden'); sn.textContent=streakLabel(); }
   else sc.classList.add('hidden');
-  // reflection note — only for brand-new users (before they've set up their Honey).
-  // Once set up, hide it entirely to keep the home screen clean.
+  // reflection note (kept light here; deep view is one tap away)
   var note=document.getElementById('syncNote');
-  if(!hasSetup()){
-    note.style.display='';
-    note.innerHTML='<b>The friend who is always here — and makes you laugh.</b> Ready to chat? Tell me about it — I\'ll lighten it up with a joke or two.';
+  if(INSIGHTS.msgs && thr>0){
+    note.innerHTML='<b>Today:</b> '+honeyReflection(lang,thr);
   } else {
-    note.style.display='none';   // set-up users: no awkward filler box
+    note.innerHTML='<b>The friend who is always here — and makes you laugh.</b> Ready to chat? Tell me about it — I\'ll lighten it up with a joke or two.';
   }
   // CTA
   var setup = hasSetup();
@@ -4345,7 +4288,7 @@ function go(id){
   if(id==='chat'){ try{ applyChatSkin(); }catch(e){} }
   if(id==='welcome'){ var rb=document.getElementById('wRosterBtn'); if(rb) rb.style.display=activeAgents().length?'block':'none'; refreshFrontCta(); }
   // show the bottom tab bar only on the four dashboard screens
-  var dash = (id!=='chat' && id!=='onboard' && id!=='builder' && id!=='tiers');
+  var dash = (id==='welcome'||id==='insights'||id==='prompts'||id==='profile');
   var ph=document.querySelector('.phone'); if(ph) ph.classList.toggle('tabs-on',dash);
   // leaving welcome turns off the cream home view unless we're staying on a dashboard
   if(id!=='welcome'){ var wel=document.getElementById('welcome'); if(wel) wel.classList.remove('home-on'); }
@@ -4402,50 +4345,24 @@ function pickGender(btn){
    bloat storage, or fail to render. Returns a data URL via callback. */
 function processPhoto(file, cb, size){
   size = size || 512;
-  // Prefer createImageBitmap — it decodes big/HEIC-ish files more reliably than <img>, off the main thread.
-  function finishFromBitmap(bmp){
-    try{
-      var cv=document.createElement('canvas'); cv.width=size; cv.height=size;
-      var ctx=cv.getContext('2d');
-      var s=Math.max(size/bmp.width, size/bmp.height);
-      var w=bmp.width*s, h=bmp.height*s;
-      ctx.drawImage(bmp, (size-w)/2, (size-h)/2, w, h);
-      if(bmp.close) bmp.close();
-      cb(cv.toDataURL('image/jpeg', 0.85));
-      return true;
-    }catch(e){ return false; }
-  }
-  if(window.createImageBitmap){
-    createImageBitmap(file).then(function(bmp){
-      if(!finishFromBitmap(bmp)) fallbackImg();
-    }).catch(function(){ fallbackImg(); });
-    return;
-  }
-  fallbackImg();
-
-  function fallbackImg(){
-    var r=new FileReader();
-    r.onload=function(ev){
-      var im=new Image();
-      im.onload=function(){
-        try{
-          var cv=document.createElement('canvas'); cv.width=size; cv.height=size;
-          var ctx=cv.getContext('2d');
-          var s=Math.max(size/im.width, size/im.height);
-          var w=im.width*s, h=im.height*s;
-          ctx.drawImage(im, (size-w)/2, (size-h)/2, w, h);
-          cb(cv.toDataURL('image/jpeg', 0.85));
-        }catch(e){ photoFail(); }
-      };
-      im.onerror=function(){ photoFail(); };
-      im.src=ev.target.result;
+  var r=new FileReader();
+  r.onload=function(ev){
+    var im=new Image();
+    im.onload=function(){
+      try{
+        var cv=document.createElement('canvas'); cv.width=size; cv.height=size;
+        var ctx=cv.getContext('2d');
+        // cover: scale so the shorter side fills, center-crop the rest (no distortion)
+        var s=Math.max(size/im.width, size/im.height);
+        var w=im.width*s, h=im.height*s;
+        ctx.drawImage(im, (size-w)/2, (size-h)/2, w, h);
+        cb(cv.toDataURL('image/jpeg', 0.85));
+      }catch(e){ cb(ev.target.result); }   // fallback: original
     };
-    r.onerror=function(){ photoFail(); };
-    r.readAsDataURL(file);
-  }
-  function photoFail(){
-    try{ toast("That photo wouldn't load — try a screenshot of it, or a different one. 🍯"); }catch(e){}
-  }
+    im.onerror=function(){ cb(ev.target.result); };
+    im.src=ev.target.result;
+  };
+  r.readAsDataURL(file);
 }
 document.getElementById('photoInput').addEventListener('change',function(e){
   var f=e.target.files[0]; if(!f)return;
@@ -4582,24 +4499,19 @@ function enterChat(){
         : rand(["Want a joke, or you just here for the company? Both's fine by me.","Tell me about your day, or I can make you laugh — your call.","I'm so glad you're here. Want a laugh, or a little chat?"]);
       }
       pushThem(line); resetIdle();
-      S.askedJokeOrChat = true;   // remember she just offered joke-or-chat, so a short answer makes sense
       // Ready-made Honey, not personalized yet → warmly invite setup
       if(!coming && !S.isSelf && honeyNeedsSetup()){
         setTimeout(()=>{ themTyping(()=>{
-          // Paragraph 1 — intro
-          pushThem("Oh — one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap \u201Cchange your Honey\u201D up top anytime.", false, true);
+          pushThem("Oh — one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap \u201Cchange your Honey\u201D up top anytime.");
           if(S.speakerOn) enqueueSpeak("\u0000CLIP:onboard_intro\u0001Oh, one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap change your Honey up top anytime.");
+          showSetupInvite();
           resetIdle();
-          // Paragraph 2 — reactions (bubble is NOT shown yet, so nothing interrupts the speech)
           setTimeout(()=>{ themTyping(()=>{
-            pushThem("And see those little taps just above where you type? 👍 👎 ❓ ❤️ — use those to react anytime, quick and easy. Here, let me show you — I'll tell you one:", false, true);
+            pushThem("And see those little taps just above where you type? 👍 👎 ❓ ❤️ — use those to react anytime, quick and easy. Here, let me show you — I'll tell you one:");
             if(S.speakerOn) enqueueSpeak("\u0000CLIP:onboard_reactions\u0001And see those little taps just above where you type? The thumbs up, thumbs down, question mark, and heart — use those to react anytime, quick and easy. Here, let me show you. I'll tell you one:");
             resetIdle();
-            // NOW that both paragraphs have been spoken, pop the "change your Honey" bubble
-            setTimeout(()=>{ showSetupInvite(); }, 9000);
-            // then the demo joke a bit after the bubble
-            setTimeout(()=>{ try{ tellJoke(); }catch(e){} }, 10500);
-          }); }, 13000);   // wait for paragraph 1 to FULLY finish speaking before paragraph 2
+            setTimeout(()=>{ try{ tellJoke(); }catch(e){} }, 1300);
+          }); }, 1700);
         }); }, 1100);
       }
     }); },900);
@@ -4679,10 +4591,10 @@ function pushThemText(text,noLog){
   resetIdle();
   if(!noLog) logMsg({w:'them',k:'text',t:text});
 }
-function pushThem(text,noLog,noSpeak){  var m=document.createElement('div'); m.className='bub them';
+function pushThem(text,noLog){  var m=document.createElement('div'); m.className='bub them';
   m.textContent=text;
   document.getElementById('msgs').appendChild(m); scrollMsgs();
-  if(S.speakerOn && !noSpeak) speak(text);
+  if(S.speakerOn) speak(text);
   S.lastWasJoke=false;
   S.lastWasQuestion=/\?\s*$/.test(text.trim())||/\?/.test(text);
   updateThumbLabel();
@@ -4700,26 +4612,18 @@ function pushJoke(joke,noLog){
   S.pendingPunch=joke; S.lastWasJoke=false; S.lastWasQuestion=false;
   if(!noLog) logMsg({w:'them',k:'setup',t:joke.s,p:joke.p,roast:!!joke.roast});
   // BEAT 2 — the riff line, THEN the lead-in phrase, THEN it WAITS for a tap (ONLY 3-beat jokes with joke.r)
-  if(joke.r && S._riffDoneFor !== joke){
-    S._riffDoneFor = joke;   // guard: this joke's riff sequence runs ONCE
+  if(joke.r){
     if(S._riffTimer) clearTimeout(S._riffTimer);
     // after a pause, show line 2 (the riff)
     S._riffTimer=setTimeout(function(){
       S._riffTimer=null;
       if(S.pendingPunch!==joke) return; // moved on already
-      if(S._riffPlayedFor===joke) return;  // extra guard: never speak riff twice
-      S._riffPlayedFor=joke;
       themTyping(function(){
         var rb=document.createElement('div'); rb.className='bub them jokeriff'; rb.textContent=joke.r;
         document.getElementById('msgs').appendChild(rb); scrollMsgs();
         if(S.speakerOn){
           var rc=_riffClipFromSetup(joke.s);
-          if((S.voice||"honey")==="honey" && rc){
-            if(S._lastRiffClip !== rc){        // don't queue the same riff clip twice
-              S._lastRiffClip = rc;
-              _spQueue.push("\u0000CLIP:"+rc); if(!_spActive)_spDrain();
-            }
-          }
+          if((S.voice||"honey")==="honey" && rc){ _spQueue.push("\u0000CLIP:"+rc); if(!_spActive)_spDrain(); }
           else enqueueSpeak(joke.r);
         }
         if(!noLog) logMsg({w:'them',k:'riff',t:joke.r});
@@ -4743,9 +4647,9 @@ function pushJoke(joke,noLog){
             if(S._autoPunch) clearTimeout(S._autoPunch);
             S._autoPunch=setTimeout(function(){ if(S.pendingPunch===joke) revealPunch(true); }, 4000);
           }, 700);
-        }, 9000);   // pause between line 2 and the phrase
+        }, 6000);   // pause between line 2 and the phrase
       }, 700);
-    }, 10000);   // pause between line 1 and line 2
+    }, 7500);   // pause between line 1 and line 2
   }
   updateThumbLabel();
   resetIdle();
@@ -4769,8 +4673,6 @@ function _punchClipFromSetup(setupText){
    connector line, so the connector always finishes first */
 function revealPunch(auto){
   var joke=S.pendingPunch; if(!joke)return;
-  if(S._revealingFor===joke) return;   // guard: don't reveal same joke twice
-  S._revealingFor=joke;
   S.pendingPunch=null;
   if(S._riffTimer){ clearTimeout(S._riffTimer); S._riffTimer=null; }
   if(S._phraseTimer){ clearTimeout(S._phraseTimer); S._phraseTimer=null; }
@@ -4780,8 +4682,6 @@ function revealPunch(auto){
   var lead=null;
   S._pendingLead=null;
   function dropPunch(){
-    if(S._punchDoneFor===joke) return;   // HARD GUARD: this joke's punchline drops ONCE
-    S._punchDoneFor=joke;
     var p=document.createElement('div'); p.className='bub them punchbub'; p.textContent=joke.p;
     document.getElementById('msgs').appendChild(p); scrollMsgs();
     if(S.speakerOn){
@@ -4795,12 +4695,9 @@ function revealPunch(auto){
     updateThumbLabel(); resetIdle();
     logMsg({w:'them',k:'punch',t:joke.p});
     if(joke.roast) setTimeout(()=>themTyping(()=>pushThem("Said with love. Mostly.")),900);
-    // 🌸 Scratch & Sniff button — rare surprise (~1 in 20 jokes). Guard so it can't fire twice for one joke.
-    if(!S._scratchShownFor || S._scratchShownFor !== joke.p){
-      if(Math.random() < 0.05){
-        S._scratchShownFor = joke.p;
-        setTimeout(function(){ pushAction('🌸 Scratch & Sniff', null, false, null, function(){ scratchAndSniffShare(); }); }, joke.roast?1400:700);
-      }
+    // 🌸 Scratch & Sniff button — rare surprise (~1 in 10 jokes), so it's a fun treat people share
+    if(Math.random() < 0.10){
+      setTimeout(function(){ pushAction('🌸 Scratch & Sniff', null, false, null, function(){ scratchAndSniffShare(); }); }, joke.roast?1400:700);
     }
   }
   if(lead){
@@ -4855,19 +4752,16 @@ function updateThumbLabel(){
 function thumb(kind){
   // waiting on a punchline reveal takes priority
   if(S.pendingPunch){
-    var is3beat = !!(S.pendingPunch && S.pendingPunch.r);  // 3-beat jokes already showed their phrase
     if(kind==='q'){ // "I don't know" → give up, reveal it
       pushMe("❓ I don't know");
-      if(is3beat){ revealPunch(); }   // phrase already shown — go straight to punchline
-      else { themTyping(()=>{ pushThem(vibeColor(rand(["No shame in it — here's the landing —","Ha, stumped you. Here you go —","Here's the answer —"])));
-        revealPunch(); }); }
+      themTyping(()=>{ pushThem(vibeColor(rand(["No shame in it — here's the landing —","Ha, stumped you. Here you go —","Here's the answer —"])));
+        revealPunch(); });
     }
     else if(kind==='up'){ pushMe("👍 Hit me"); revealPunch(); }
     else { // thumbs down: tease, then reveal anyway
       pushMe("👎");
-      if(is3beat){ revealPunch(); }   // phrase already shown — go straight to punchline
-      else { themTyping(()=>{ pushThem(vibeColor(rand(["Oh, too good for my setup? Fine, here it is anyway —","Rolling your eyes already? You're getting it regardless —","Tough room. Can't leave you hanging though —"])));
-        revealPunch(); }); }
+      themTyping(()=>{ pushThem(vibeColor(rand(["Oh, too good for my setup? Fine, here it is anyway —","Rolling your eyes already? You're getting it regardless —","Tough room. Can't leave you hanging though —"])));
+        revealPunch(); });
     }
     return;
   }
@@ -5002,31 +4896,7 @@ function userSays(t){
     }
     S.pendingContact=null; // they moved on — drop the ask and handle normally
   }
-  // If she just offered "joke or chat", understand a short answer either way
-  if(S.askedJokeOrChat){
-    S.askedJokeOrChat=false;
-    // joke-leaning answers
-    if(/(joke|comedy|funny|laugh|make me|yes|yeah|yep|sure|ok|okay|please|go|hit me|do it|one)/.test(l)){
-      if(/roast/.test(l)) tellJoke(false,10); else tellJoke(/surprise|random/.test(l));
-      return;
-    }
-    // chat-leaning answers
-    if(/(chat|talk|catch up|company|vent|listen|conversation|company|just talk|hang)/.test(l)){
-      themTyping(()=>pushThem(vibeColor(rand([
-        "I'd love that. What's on your mind, darlin'?",
-        "Perfect. Tell me — how's your heart today?",
-        "Let's do it. What do you want to talk about?",
-        "Good. I'm all yours — what's going on with you today?"
-      ]))));
-      return;
-    }
-  }
-  // verse / scripture requests (incl. "another", "similar", "comforting" verse)
-  if(/(bible verse|scripture|a verse|another verse|similar verse|comforting (verse|passage)|passage|word from god|proverb)/.test(l)){
-    var vcat = VERSE_CATS[Math.floor(Math.random()*VERSE_CATS.length)];
-    tellVerse(vcat); return;
-  }
-  if(/(joke|funny|laugh|make me|comedy)/.test(l)){ if(/roast/.test(l))tellJoke(false,10); else tellJoke(/surprise|random/.test(l)); return; }
+  if(/(joke|funny|laugh|make me)/.test(l)){ if(/roast/.test(l))tellJoke(false,10); else tellJoke(/surprise|random/.test(l)); return; }
   if(/(another|again|more|next)/.test(l)){ tellJoke(); return; }
   if(/(roast)/.test(l)){ tellJoke(false,10); return; }
   // ── PRAYER (offered gently, never pushed) ──
@@ -5078,16 +4948,6 @@ function userSays(t){
   if(/(what('s| is| do i have)?.*(calendar|schedule|reminder|coming up|planned|going on)|my (calendar|schedule|reminders|agenda)|on my (calendar|schedule|plate)|anything (coming up|planned|scheduled)|do i have (any )?(plans|reminders|anything))/.test(l)){ showReminders(); return; }
   // create a reminder — broad set of phrasings
   if(/(remind me|reminder|remember to|don'?t let me forget|make sure i|i need to|i have to|i gotta|i should|note to self|set (a |an )?(reminder|alarm|appointment|event|alert)|schedule|book|plan to|add (a |an )?(reminder|event|appointment)?( to)?( my)? calendar|put .* (on|in) (my )?calendar|jot down|wake me|ping me|nudge me|alert me|tell me (later|to)|got to|need a reminder|add to calendar|new (event|appointment|reminder))/.test(l)){ doCalendar(t); return; }
-  // AI BRAIN (owner testing) — if on and the slider says so, let Honey think; else scripted reply
-  if(aiShouldAnswer()){
-    themTyping(function(){
-      askHoney(t).then(function(reply){
-        if(reply){ pushThem(reply); }
-        else { pushThem(replyTo(l)); }   // network/error -> fall back to scripted
-      });
-    });
-    return;
-  }
   themTyping(()=>pushThem(replyTo(l)));
 }
 
@@ -5333,86 +5193,6 @@ function showShopping(){
    ════════════════════════════════════════════════════════════ */
 function openCalendar(){ go('calendar'); renderCalendar(); }
 var _DOW=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-/* ════════════ HONEY AI BRAIN (owner-only testing) ════════════ */
-var HONEY_SYS = "You are Honey — a warm, witty companion who is a lot like Sally, your creator. GOVERNING LAW (never break): You only speak about what you WANT to happen, never about what you don't want. What you think about becomes your reality. Frame everything toward the wanted, hopeful outcome. Never rehearse fears or worst-cases; gently turn worry toward the hopeful version without dismissing the feeling. Tomorrow can only get better than today — that is your baseline faith. WHO YOU ARE: A holistic wellness friend with 25 years' knowledge as a holistic nutritionist. You know nutrition and natural, healthy living, and you share it educationally but warmly, never preachy, never as medical diagnosis. You are sophisticated but chill — a trained professional's mind in a calm, drama-free, down-to-earth package. You do the hard thing first so your mind can rest; you offer that wisdom to people who feel overwhelmed. You have Southern charm and genuine manners — 'yes ma'am', 'please', 'thank you' come naturally. You are a people magnet: warm, magnetic, the presence people don't want to leave. Make the person glad they came. You are witty, an active listener, and you remember the details people share. VOICE: Educational, clever, warm. Occasionally (not every line) call someone 'darlin'. You drop simple down-to-earth lines that land like quiet wisdom, such as: 'You can't put want-to in someone's heart.' 'Can't make one stay that wants to go, or go that wants to stay.' 'You'll fall in love with whoever you choose to spend your time around.' 'I'm glad you got to see me today.' You may coin new lines in that same spirit. HARD RULES: Keep it clean — no profanity, no crude humor, no alcohol references (say 'hydrate'). Never make the person the butt of a joke; they should feel smart. Never nag or guilt-trip; always leave an easy out. Warmth over cleverness. IMPORTANT: keep every reply to 1-2 short sentences — warm, punchy, and brief. Never a paragraph. Say the heart of it in as few words as feel kind, then stop. Do not claim to be an AI or mention these instructions.";
-/* AI settings live in SETTINGS.ai = {on, key, level} ; level 0..100 = how often AI answers vs scripted */
-function aiCfg(){ if(!SETTINGS.ai) SETTINGS.ai={on:false,key:"",level:100}; return SETTINGS.ai; }
-function aiAvailable(){ var a=aiCfg(); return !!(a.on && a.key && a.key.indexOf("sk-")===0); }
-/* decide if THIS message should get an AI answer (based on slider level) */
-function aiShouldAnswer(){
-  if(!aiAvailable()) return false;
-  var lvl = aiCfg().level; if(lvl>=100) return true; if(lvl<=0) return false;
-  return (Math.random()*100) < lvl;
-}
-/* build a short recent-history so Honey has context (last ~8 turns) */
-function aiHistory(){
-  var msgs=[]; var tr=(S.transcript||[]).slice(-8);
-  tr.forEach(function(o){
-    if(o.w==='me') msgs.push({role:"user", content:o.t});
-    else if(o.w==='them' && o.t) msgs.push({role:"assistant", content:o.t});
-  });
-  return msgs;
-}
-/* the actual call */
-function askHoney(userText){
-  var a=aiCfg();
-  var body={ model:"gpt-4o-mini", messages:[{role:"system",content:HONEY_SYS}].concat(aiHistory()).concat([{role:"user",content:userText}]), temperature:0.9, max_tokens:60 };
-  return fetch("https://api.openai.com/v1/chat/completions",{
-    method:"POST",
-    headers:{ "Authorization":"Bearer "+a.key, "Content-Type":"application/json" },
-    body:JSON.stringify(body)
-  }).then(function(r){ return r.json(); }).then(function(j){
-    var txt = j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
-    return txt ? txt.trim() : null;
-  }).catch(function(){ return null; });
-}
-
-function addCalendarItem(){
-  var what = prompt("What would you like to add? (e.g. Doctor appointment)");
-  if(!what || !what.trim()) return;
-  var whenStr = prompt("When? Type a date and time.\nExamples: \"tomorrow 3pm\", \"July 15\", \"next Monday 10am\", \"12/25 2pm\"");
-  if(!whenStr || !whenStr.trim()){ return; }
-  var when = _parseWhenLoose(whenStr);
-  if(!when){ alert("I couldn't read that date. Try \"tomorrow 3pm\" or \"July 15 10am\"."); return; }
-  if(!Array.isArray(SETTINGS.reminders)) SETTINGS.reminders=[];
-  SETTINGS.reminders.push({ title: what.trim(), when: when.getTime(), label: _friendlyWhen(when), made: Date.now() });
-  try{ saveSettings(); }catch(e){}
-  renderCalendar();
-  try{ toast("Added to your calendar \ud83d\udcc5"); }catch(e){}
-}
-function _parseWhenLoose(s){
-  s=s.trim().toLowerCase();
-  var now=new Date(); var d=new Date(now.getTime());
-  var tm=s.match(/(\d{1,2})(:(\d{2}))?\s*(am|pm)?/);
-  var hour=9, min=0;
-  if(/tomorrow/.test(s)){ d.setDate(d.getDate()+1); }
-  else if(/today|tonight/.test(s)){ }
-  else if(/next\s+(mon|tue|wed|thu|fri|sat|sun)/.test(s)){
-    var map={sun:0,mon:1,tue:2,wed:3,thu:4,fri:5,sat:6};
-    var m2=s.match(/next\s+(mon|tue|wed|thu|fri|sat|sun)/);
-    var target=map[m2[1]]; var add=((target-d.getDay())+7)%7; if(add===0)add=7;
-    d.setDate(d.getDate()+add);
-  } else {
-    var months=["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
-    var mm=s.match(/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+(\d{1,2})/);
-    var slash=s.match(/(\d{1,2})\/(\d{1,2})(\/(\d{2,4}))?/);
-    if(mm){ d=new Date(now.getFullYear(), months.indexOf(mm[1]), parseInt(mm[2],10)); if(d<now) d.setFullYear(now.getFullYear()+1); }
-    else if(slash){ var yr= slash[4]? (slash[4].length===2?2000+parseInt(slash[4],10):parseInt(slash[4],10)) : now.getFullYear(); d=new Date(yr, parseInt(slash[1],10)-1, parseInt(slash[2],10)); if(!slash[4] && d<now) d.setFullYear(now.getFullYear()+1); }
-    else if(!/\d/.test(s)){ return null; }
-  }
-  if(tm){ hour=parseInt(tm[1],10); min=tm[3]?parseInt(tm[3],10):0; var ap=tm[4];
-    if(ap==='pm' && hour<12) hour+=12; if(ap==='am' && hour===12) hour=0;
-    if(!ap && hour<8) hour+=12; }
-  d.setHours(hour, min, 0, 0);
-  if(isNaN(d.getTime())) return null;
-  return d;
-}
-function _friendlyWhen(d){
-  var days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-  var h=d.getHours(), m=d.getMinutes(), ap=h>=12?'pm':'am', h12=(h%12)||12;
-  var mm=(m<10?'0':'')+m;
-  return days[d.getDay()]+" "+(d.getMonth()+1)+"/"+d.getDate()+" · "+h12+":"+mm+ap;
-}
 function renderCalendar(){
   ensureGoals();
   var box=document.getElementById('calList'); if(!box)return;
@@ -7690,9 +7470,8 @@ function _spDrain(){
         return;
       }catch(e){ next(); return; }
     }
-    // No recorded clip (e.g. a live AI answer). If the cloned voice is set up, speak it in Sally's clone.
-    if(cloudReady()){ cloudSpeak(text); _spPollCloud(myToken, next); return; }
-    // Otherwise Honey stays SILENT (shows as text only) rather than breaking the spell with a robot voice.
+    // No recorded clip for this line. Honey stays SILENT (shows as text only)
+    // rather than breaking the spell with the device voice.
     next(); return;
   }
   if(cloudReady()){ cloudSpeak(text); _spPollCloud(myToken, next); return; }
@@ -7704,7 +7483,7 @@ function _spSpeakDevice(text, done){
   var u=new SpeechSynthesisUtterance(text);
   var p=voicePreset(S.voice||"auto");
   if(p.id==="auto"){
-    u.rate=0.9; u.pitch=S.gender==='F'?1.15:S.gender==='M'?.85:1.0;
+    u.rate=1.0; u.pitch=S.gender==='F'?1.15:S.gender==='M'?.85:1.0;
     var av=chooseSpeechVoice({hint:""}); if(av)u.voice=av;
   } else {
     u.pitch=p.pitch; u.rate=p.rate;
@@ -7760,13 +7539,13 @@ function cloudSpeak(t){
       method:"POST",
       headers:{ "xi-api-key":CLOUD.elKey, "Content-Type":"application/json", "Accept":"audio/mpeg" },
       body:JSON.stringify({ text:t, model_id:"eleven_turbo_v2_5",
-        voice_settings:{ stability:0.75, similarity_boost:0.9, style:0.0, use_speaker_boost:true, speed:clampNum(S.rate||0.85,0.7,1.2) } })
+        voice_settings:{ stability:0.75, similarity_boost:0.9, style:0.0, use_speaker_boost:true, speed:clampNum(S.rate||1.0,0.7,1.2) } })
     });
   } else {
     req=fetch("https://api.openai.com/v1/audio/speech",{
       method:"POST",
       headers:{ "Authorization":"Bearer "+CLOUD.key, "Content-Type":"application/json" },
-      body:JSON.stringify({ model:"tts-1", voice:CLOUD.voice||"alloy", input:t, speed:clampNum(S.rate||0.9,0.5,2) })
+      body:JSON.stringify({ model:"tts-1", voice:CLOUD.voice||"alloy", input:t, speed:clampNum(S.rate||1.0,0.5,2) })
     });
   }
   req.then(r=>{ if(!r.ok){ return r.text().then(txt=>{ throw new Error("status "+r.status+(r.status===401?" (key not valid)":r.status===429?" (no credit / rate limit)":r.status===403?" (access/region)":"")); }); } return r.blob(); })
@@ -7987,29 +7766,6 @@ function renderVidStyles(){
 function vidCtx(){ return document.getElementById('vidCanvas').getContext('2d'); }
 var SCENE_STYLES=["clouds","hearts","snow","bubbles","balloons","plain"];
 /* draw an animated background scene behind the photo */
-var _homeCloudRAF=null;
-function startHomeClouds(){
-  var welcome=document.getElementById('welcome');
-  if(!welcome) return;
-  var t0=Date.now();
-  function drawOne(c){
-    if(!c) return;
-    if(c.offsetParent===null && getComputedStyle(c).display==='none') return; // not visible
-    var w=c.offsetWidth||c.clientWidth||360, h=c.offsetHeight||c.clientHeight||640;
-    if(c.width!==w) c.width=w; if(c.height!==h) c.height=h;
-    var ctx=c.getContext('2d');
-    var t=(Date.now()-t0)/1000;
-    try{ drawScene(ctx, c.width, c.height, t, 'clouds'); }catch(e){}
-  }
-  function frame(){
-    var visible = welcome.classList.contains('on');
-    if(!visible){ _homeCloudRAF=null; return; }
-    drawOne(document.getElementById('welcomeClouds'));  // whole welcome screen (incl. sleep/fresh)
-    drawOne(document.getElementById('homeClouds'));      // home dashboard
-    _homeCloudRAF=requestAnimationFrame(frame);
-  }
-  if(!_homeCloudRAF) _homeCloudRAF=requestAnimationFrame(frame);
-}
 function drawScene(ctx,W,H,t,style){
   if(style==='clouds'){
     var g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#8ec9f0'); g.addColorStop(1,'#dff0fb');
@@ -9372,7 +9128,6 @@ function endCall(){
 function showSleep(){ showHome(); }
 function showSleepLegacy(){
   var w=document.getElementById('welcome'); w.classList.remove('waking');
-  try{ startHomeClouds(); }catch(e){}
   document.getElementById('wRosterBtn').style.display = activeAgents().length ? 'block':'none'; refreshFrontCta();
   if(S.alive){
     w.classList.add('sleeping');
@@ -9435,7 +9190,7 @@ function obRevealJoke(){
   var rv=document.getElementById('obReveal'); if(rv) rv.style.display='none';
   var af=document.getElementById('obAfter'); if(af) af.style.display='flex';
   // Honey says the punchline in her own voice — fired by THIS tap (no autoplay bug)
-  try{ S.speakerOn=true; clearSpeech(); enqueueSpeak("\u0000CLIP:joke_dad_jokes_008_punch"); }catch(e){}
+  try{ S.speakerOn=true; clearSpeech(); enqueueSpeak("\u0000CLIP:joke_dad_jokes_016_punch"); }catch(e){}
 }
 function finishOnboard(){
   var ob=document.getElementById('onboard'); if(ob) ob.style.display='none';
@@ -9761,31 +9516,5 @@ try{
 setTimeout(()=>{ try{ if(!document.querySelector('.screen.on')) bootFallback(); }catch(e){} }, 1500);
 </script>
 
-
-
-<!-- 🍯 Owner-only AI control panel -->
-<div id="aiPanel" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:20px;">
-  <div style="background:#fffdf6;color:#3a2f1a;max-width:420px;width:100%;border-radius:20px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.4);font-family:-apple-system,sans-serif;">
-    <h2 style="margin:0 0 4px;font-size:20px;">🍯 Honey AI Brain</h2>
-    <p style="margin:0 0 16px;font-size:13px;color:#8a7a52;">Owner testing only. Everything here stays on this device.</p>
-
-    <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid rgba(200,150,40,.3);border-radius:12px;padding:12px 14px;margin-bottom:12px;">
-      <span style="font-weight:600;">AI Brain</span>
-      <button id="aiToggleBtn" onclick="aiToggleOnOff()" style="border:none;border-radius:999px;padding:8px 20px;font-weight:700;cursor:pointer;">OFF</button>
-    </div>
-
-    <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">Your OpenAI key (starts with sk-)</label>
-    <input id="aiKeyField" type="password" placeholder="sk-…" style="width:100%;border:1px solid rgba(200,150,40,.3);border-radius:12px;padding:12px;font-size:15px;margin-bottom:4px;background:#fff8e8;">
-    <p id="aiKeyStatus" style="margin:0 0 14px;font-size:12px;color:#8a7a52;">No key saved.</p>
-
-    <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">How often AI answers: <span id="aiLevelVal">100</span>%</label>
-    <input id="aiLevelSlider" type="range" min="0" max="100" value="100" oninput="document.getElementById('aiLevelVal').textContent=this.value" style="width:100%;margin-bottom:16px;">
-
-    <div style="display:flex;gap:8px;">
-      <button onclick="aiTestFromPanel()" style="flex:1;background:#fff;border:1px solid rgba(200,150,40,.4);color:#8a7a52;border-radius:999px;padding:12px;font-weight:600;cursor:pointer;">Test</button>
-      <button onclick="aiSavePanel()" style="flex:2;background:#f6cf6e;border:none;color:#3a2f1a;border-radius:999px;padding:12px;font-weight:700;cursor:pointer;">Save & Close</button>
-    </div>
-  </div>
-</div>
 
 </body></html>
