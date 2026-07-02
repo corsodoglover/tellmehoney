@@ -4556,7 +4556,6 @@ function enterChat(){
         : rand(["Want a joke, or you just here for the company? Both's fine by me.","Tell me about your day, or I can make you laugh — your call.","I'm so glad you're here. Want a laugh, or a little chat?"]);
       }
       pushThem(line); resetIdle();
-      S.askedJokeOrChat = true;   // remember she just offered joke-or-chat, so a short answer makes sense
       // Ready-made Honey, not personalized yet → warmly invite setup
       if(!coming && !S.isSelf && honeyNeedsSetup()){
         setTimeout(()=>{ themTyping(()=>{
@@ -4976,31 +4975,7 @@ function userSays(t){
     }
     S.pendingContact=null; // they moved on — drop the ask and handle normally
   }
-  // If she just offered "joke or chat", understand a short answer either way
-  if(S.askedJokeOrChat){
-    S.askedJokeOrChat=false;
-    // joke-leaning answers
-    if(/(joke|comedy|funny|laugh|make me|yes|yeah|yep|sure|ok|okay|please|go|hit me|do it|one)/.test(l)){
-      if(/roast/.test(l)) tellJoke(false,10); else tellJoke(/surprise|random/.test(l));
-      return;
-    }
-    // chat-leaning answers
-    if(/(chat|talk|catch up|company|vent|listen|conversation|company|just talk|hang)/.test(l)){
-      themTyping(()=>pushThem(vibeColor(rand([
-        "I'd love that. What's on your mind, darlin'?",
-        "Perfect. Tell me — how's your heart today?",
-        "Let's do it. What do you want to talk about?",
-        "Good. I'm all yours — what's going on with you today?"
-      ]))));
-      return;
-    }
-  }
-  // verse / scripture requests (incl. "another", "similar", "comforting" verse)
-  if(/(bible verse|scripture|a verse|another verse|similar verse|comforting (verse|passage)|passage|word from god|proverb)/.test(l)){
-    var vcat = VERSE_CATS[Math.floor(Math.random()*VERSE_CATS.length)];
-    tellVerse(vcat); return;
-  }
-  if(/(joke|funny|laugh|make me|comedy)/.test(l)){ if(/roast/.test(l))tellJoke(false,10); else tellJoke(/surprise|random/.test(l)); return; }
+  if(/(joke|funny|laugh|make me)/.test(l)){ if(/roast/.test(l))tellJoke(false,10); else tellJoke(/surprise|random/.test(l)); return; }
   if(/(another|again|more|next)/.test(l)){ tellJoke(); return; }
   if(/(roast)/.test(l)){ tellJoke(false,10); return; }
   // ── PRAYER (offered gently, never pushed) ──
@@ -7664,9 +7639,8 @@ function _spDrain(){
         return;
       }catch(e){ next(); return; }
     }
-    // No recorded clip (e.g. a live AI answer). If the cloned voice is set up, speak it in Sally's clone.
-    if(cloudReady()){ cloudSpeak(text); _spPollCloud(myToken, next); return; }
-    // Otherwise Honey stays SILENT (shows as text only) rather than breaking the spell with a robot voice.
+    // No recorded clip for this line. Honey stays SILENT (shows as text only)
+    // rather than breaking the spell with the device voice.
     next(); return;
   }
   if(cloudReady()){ cloudSpeak(text); _spPollCloud(myToken, next); return; }
@@ -9409,7 +9383,7 @@ function obRevealJoke(){
   var rv=document.getElementById('obReveal'); if(rv) rv.style.display='none';
   var af=document.getElementById('obAfter'); if(af) af.style.display='flex';
   // Honey says the punchline in her own voice — fired by THIS tap (no autoplay bug)
-  try{ S.speakerOn=true; clearSpeech(); enqueueSpeak("\u0000CLIP:joke_dad_jokes_008_punch"); }catch(e){}
+  try{ S.speakerOn=true; clearSpeech(); enqueueSpeak("\u0000CLIP:joke_dad_jokes_007_punch"); }catch(e){}
 }
 function finishOnboard(){
   var ob=document.getElementById('onboard'); if(ob) ob.style.display='none';
