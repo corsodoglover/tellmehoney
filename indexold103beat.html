@@ -685,8 +685,8 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   color:#4a432f;max-width:330px;box-shadow:0 4px 16px rgba(120,100,60,.08);}
 .sync-note b{color:#7a5c12;}
 /* gentle onboarding */
-.onboard{position:absolute;inset:0;z-index:60;background:linear-gradient(180deg,#8ec9f0 0%,#dff0fb 100%);
-  display:flex;align-items:center;justify-content:center;padding:30px 26px;overflow:hidden;}
+.onboard{position:absolute;inset:0;z-index:60;background:linear-gradient(180deg,#fffdf8 0%,#fbf3e4 100%);
+  display:flex;align-items:center;justify-content:center;padding:30px 26px;}
 .ob-inner{width:100%;max-width:420px;text-align:center;display:flex;flex-direction:column;align-items:center;}
 .ob-slide{display:none;animation:obfade .5s ease;}
 .ob-slide.on{display:block;}
@@ -1083,12 +1083,17 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- GENTLE ONBOARDING (first launch only) -->
 <div class="onboard" id="onboard" style="display:none">
-  <canvas id="onboardClouds" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
-  <div class="ob-inner" style="position:relative;z-index:1;">
+  <div class="ob-inner">
 
     <!-- SCREEN 1 — the mini-vacation invite -->
     <div class="ob-slide on" data-ob="0">
-      <div class="ob-logo" style="font-size:76px;line-height:1;">🍯</div>
+      <div class="ob-logo">
+        <svg width="92" height="92" viewBox="0 0 200 200" aria-label="Tell Me Honey">
+          <polygon points="100,16 174,59 174,141 100,184 26,141 26,59" fill="none" stroke="#c79a21" stroke-width="8" stroke-linejoin="round"></polygon>
+          <polygon points="100,54 137,75 137,125 100,146 63,125 63,75" fill="#f6e3c0" stroke="#c79a21" stroke-width="3.5" stroke-linejoin="round"></polygon>
+          <text x="100" y="101" text-anchor="middle" dominant-baseline="central" font-family="Georgia,serif" font-weight="700" font-size="42" fill="#4a3318">H</text>
+        </svg>
+      </div>
       <div class="ob-brand">Tell Me Honey</div>
       <h2 class="ob-h">Got a minute?<br>Let's <em>get away</em>.</h2>
       <p class="ob-p">A little break, right where you are. Ready for your first joke?</p>
@@ -1127,7 +1132,7 @@ textarea{resize:none;line-height:1.4;}
     <div class="home-scroll">
       <h1 class="home-title" onclick="ownerTap()">Tell me <em>Honey</em></h1>
       <button class="home-friendface" id="homeFriendFaceBtn" onclick="quickChangeAvatar()" aria-label="Change your friend&#39;s photo">
-        <span class="home-friendface-inner" id="homeFriendFace"><img src="honeypot.png" alt="Honey" style="width:100%;height:100%;object-fit:contain;"></span>
+        <span class="home-friendface-inner" id="homeFriendFace">🍯</span>
         <span class="avatar-cam" aria-hidden="true">📷</span>
       </button>
       <div class="sync-note" id="syncNote"><b>The friend who is always here — and makes you laugh.</b> Ready to chat? Tell me about it — I'll lighten it up with a joke or two.</div>
@@ -1456,7 +1461,7 @@ textarea{resize:none;line-height:1.4;}
     <h2>Profile</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll">
     <div class="prof-card">
-      <button class="prof-face" id="profFace" onclick="quickChangeAvatar()" aria-label="Change your friend&#39;s photo"><img src="honeypot.png" alt="Honey" style="width:100%;height:100%;object-fit:contain;"><span class="avatar-cam avatar-cam-sm" aria-hidden="true">📷</span></button>
+      <button class="prof-face" id="profFace" onclick="quickChangeAvatar()" aria-label="Change your friend&#39;s photo">🍯<span class="avatar-cam avatar-cam-sm" aria-hidden="true">📷</span></button>
       <div class="prof-name" id="profName">You</div>
       <div class="prof-stat" id="profStat"></div>
     </div>
@@ -3091,64 +3096,6 @@ function applyTierLocks(){
     else lockBox('premiumVoiceBox','Premium voices','quart');
   }
 }
-/* ═══════════ UPGRADE / PURCHASE (Apple/Google plug-in point) ═══════════ */
-/* isPaid(): is the user on a paid tier? (free = pint) */
-function isPaid(){ return (SETTINGS.tier||"pint")!=="pint"; }
-function isFreeTier(){ return !isPaid(); }
-
-/* trialActive(): first week free. Apple enforces the real trial; this mirrors it for UI. */
-function trialActive(){
-  if(!SETTINGS.trialStart) return false;
-  var week = 7*24*60*60*1000;
-  return (Date.now() - SETTINGS.trialStart) < week;
-}
-function trialDaysLeft(){
-  if(!SETTINGS.trialStart) return 0;
-  var week=7*24*60*60*1000, left=week-(Date.now()-SETTINGS.trialStart);
-  return Math.max(0, Math.ceil(left/(24*60*60*1000)));
-}
-function startTrialIfNew(){
-  if(!SETTINGS.trialStart){ SETTINGS.trialStart=Date.now(); saveSettings(); }
-}
-
-/* THE PURCHASE HOOK — this is where Apple StoreKit / Google Billing plugs in later.
-   For now (web/testing) it just switches the tier. In the native app, this will call
-   the real store, and ONLY on Apple's confirmed success will it call grantTier(). */
-function requestUpgrade(targetTier){
-  targetTier = targetTier || "quart";
-  if(window.StoreKitPurchase){          // native app will define this
-    window.StoreKitPurchase(targetTier); // Apple handles payment, then calls grantTier on success
-    return;
-  }
-  // WEB/TESTING fallback: simulate a successful purchase
-  if(confirm("(Testing) Upgrade to "+ (TIERS[targetTier]?TIERS[targetTier].nm:targetTier) +"?\n\nIn the real app this opens Apple's payment.")){
-    grantTier(targetTier);
-  }
-}
-/* grantTier(): called ONLY after a confirmed purchase (by Apple, or the test path above). */
-function grantTier(t){
-  if(!TIERS[t]) return;
-  setTier(t);
-  try{ toast("Welcome to "+TIERS[t].ic+" "+TIERS[t].nm+"! Your Honey is upgraded. 🍯"); }catch(e){}
-  hideUpgradePrompt();
-}
-
-/* The persistent upgrade prompt shown to free users. */
-function updateUpgradePrompt(){
-  var el = document.getElementById('upgradePrompt');
-  if(!el) return;
-  if(isFreeTier()){
-    el.style.display='flex';
-    var msg = trialActive()
-      ? ("✨ "+trialDaysLeft()+" days left of your free Honey — keep it forever")
-      : "✨ Upgrade your Honey — unlock her full heart";
-    var t=document.getElementById('upgradePromptText'); if(t) t.textContent=msg;
-  } else {
-    el.style.display='none';
-  }
-}
-function hideUpgradePrompt(){ var el=document.getElementById('upgradePrompt'); if(el) el.style.display='none'; }
-
 function setTier(t){ if(!TIERS[t])return; SETTINGS.tier=t; saveSettings(); toast("Now on "+TIERS[t].ic+" "+TIERS[t].nm+"."); if(typeof renderHome==='function')renderHome(); if(typeof renderProfile==='function')renderProfile(); }
 /* download allowance (free tier capped per day; -1 = unlimited) */
 function downloadsLeft(){ var cap=tier().downloads; if(cap<0)return -1; var t=todayKey(); if(SETTINGS.dlDay!==t){ SETTINGS.dlDay=t; SETTINGS.dlToday=0; } return Math.max(0,cap-(SETTINGS.dlToday||0)); }
@@ -3374,15 +3321,14 @@ function quickChangeAvatar(){
 function renderHome(){
   ensureWeek();
   try{ startHomeClouds(); }catch(e){}
-  try{ startTrialIfNew(); }catch(e){}
   var lang=INSIGHTS.lang||{};
   var thr=thrivingFrom(lang);
   // friend face + name (the hook is talking to YOUR friend)
   var name = (S.name && S.agentId) ? S.name : (activeAgents()[0]&&activeAgents()[0].name) || "Honey";
   var face = document.getElementById('homeFriendFace');
   if(S.agentId && S.photo){ face.innerHTML='<img src="'+S.photo+'">'; }
-  else if(S.agentId){ face.innerHTML=avatarFaceHTML(); }
-  else { var a0=activeAgents()[0]; face.innerHTML = a0 ? (a0.photo?'<img src="'+a0.photo+'">':(agentFaceHTML(a0))) : potFaceHTML(); }
+  else if(S.agentId){ face.textContent=avatarEmoji(); }
+  else { var a0=activeAgents()[0]; face.innerHTML = a0 ? (a0.photo?'<img src="'+a0.photo+'">':(agentFaceHTML(a0))) : '🍯'; }
   var nmEl=document.getElementById('homeFriendName'); if(nmEl) nmEl.textContent = hasSetup()? name : '';
   // tiny honey balance
   document.getElementById('honeyNum').textContent=(SETTINGS.honey||0);
@@ -3656,8 +3602,8 @@ function renderProfile(){
   var pf=document.getElementById('profFace');
   if(pf){
     var inner = (S.agentId&&S.photo) ? '<img src="'+S.photo+'">'
-              : (S.agentId ? avatarFaceHTML()
-              : ((live[0]&&live[0].photo) ? '<img src="'+live[0].photo+'">' : potFaceHTML()));
+              : (S.agentId ? avatarEmoji()
+              : ((live[0]&&live[0].photo) ? '<img src="'+live[0].photo+'">' : '🍯'));
     pf.innerHTML = inner + '<span class="avatar-cam avatar-cam-sm" aria-hidden="true">📷</span>';
   }
   document.getElementById('profName').textContent = self&&self.name ? self.name : "You";
@@ -4183,7 +4129,10 @@ var STYLES=[
   {nm:"Locker Room",   em:"🏀", ds:"Sports brain, quick jabs", cats:[11,3]},
   {nm:"Dad Mode",      em:"👨", ds:"Groans guaranteed", cats:[9,0]},
   {nm:"True North",    em:"🧣", ds:"Cold hands, warm jokes, eh", cats:[12,12,9]},
-  {nm:"Snob Bird",     em:"🪿", ds:"Canadian, polite, and judging you", cats:[13,13,4]}
+  {nm:"Snob Bird",     em:"🪿", ds:"Canadian, polite, and judging you", cats:[13,13,4]},
+  {nm:"AI Is Just Us", em:"🤖", ds:"Honey roasts AI — and it's really us", cats:[14]},
+  {nm:"Invisible Man", em:"👻", ds:"Nobody notices him. Sweet, sad-funny", cats:[15]},
+  {nm:"Squirrel Brain",em:"🐿️", ds:"A hundred thoughts at once — so me", cats:[16]}
 ];
 var VIBES=["Warm","Flirty","Sarcastic","Chill","Hyper","Wholesome","Mysterious"];
 var TRAITS=["Encouraging","Brutally honest","Playful","Nerdy","Romantic","Competitive",
@@ -4380,7 +4329,7 @@ function bringToLife(){
   document.getElementById('lifeBtn').classList.add('busy');
   var lp=document.getElementById('lifePh'), li=document.getElementById('lifeImg');
   if(S.photo){ li.src=S.photo; li.style.display='block'; lp.style.display='none'; }
-  else { lp.style.display='flex'; li.style.display='none'; lp.innerHTML=avatarFaceHTML(); }
+  else { lp.style.display='flex'; li.style.display='none'; lp.textContent=avatarEmoji(); }
   var subs=["Calibrating the comedy","Warming up the material","Setting the "+S.vibe.toLowerCase()+" tone","Almost alive…"];
   var i=0; var iv=setInterval(()=>{ i++; if(subs[i])document.getElementById('lifeSub').textContent=subs[i]; },650);
   setTimeout(()=>{ clearInterval(iv); ov.classList.remove('on');
@@ -4407,8 +4356,8 @@ function enterChat(){
   var bg=document.getElementById('ftBg'), av=document.getElementById('ftAvatar');
   if(S.photo){ bg.style.backgroundImage='url('+S.photo+')'; av.style.display='none'; }
   else { bg.style.backgroundImage='none'; bg.style.background='radial-gradient(120% 90% at 50% 25%,#2a2436,#10121b)';
-    av.innerHTML=avatarFaceHTML(); av.style.display='flex'; }
-  document.getElementById('selfEmoji').innerHTML=avatarFaceHTML();
+    av.textContent=avatarEmoji(); av.style.display='flex'; }
+  document.getElementById('selfEmoji').textContent=avatarEmoji();
   setView(S.selfView,true);
   go('chat');
   buildQuickChips();
@@ -4478,24 +4427,22 @@ function enterChat(){
       S.askedJokeOrChat = true;   // remember she just offered joke-or-chat, so a short answer makes sense
       // Ready-made Honey, not personalized yet → warmly invite setup
       if(!coming && !S.isSelf && honeyNeedsSetup()){
-        // BOX FIRST — pop the "Set up my Honey" invite up top, so it's already there
-        // when Honey references it, and it can't drop in mid-sentence and cut her off.
-        setTimeout(()=>{ showSetupInvite(); resetIdle(); }, 700);
-        // THEN Honey says her lines (nothing interrupts — the box is already placed)
         setTimeout(()=>{ themTyping(()=>{
           // Paragraph 1 — intro
-          pushThem("Oh — one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap the \u201CSet up my Honey\u201D button up top anytime.", false, true);
+          pushThem("Oh — one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap \u201Cchange your Honey\u201D up top anytime.", false, true);
           if(S.speakerOn) enqueueSpeak("\u0000CLIP:onboard_intro\u0001Oh, one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap change your Honey up top anytime.");
           resetIdle();
-          // Paragraph 2 — reactions
+          // Paragraph 2 — reactions (bubble is NOT shown yet, so nothing interrupts the speech)
           setTimeout(()=>{ themTyping(()=>{
             pushThem("And see those little taps just above where you type? 👍 👎 ❓ ❤️ — use those to react anytime, quick and easy. Here, let me show you — I'll tell you one:", false, true);
             if(S.speakerOn) enqueueSpeak("\u0000CLIP:onboard_reactions\u0001And see those little taps just above where you type? The thumbs up, thumbs down, question mark, and heart — use those to react anytime, quick and easy. Here, let me show you. I'll tell you one:");
             resetIdle();
-            // demo joke after both paragraphs fully finish (no box to interrupt now)
-            setTimeout(()=>{ try{ tellJoke(); }catch(e){} }, 13000);
-          }); }, 13000);   // wait for paragraph 1 to FULLY finish speaking
-        }); }, 1800);
+            // NOW that both paragraphs have been spoken, pop the "change your Honey" bubble
+            setTimeout(()=>{ showSetupInvite(); }, 9000);
+            // then the demo joke a bit after the bubble
+            setTimeout(()=>{ try{ tellJoke(); }catch(e){} }, 10500);
+          }); }, 13000);   // wait for paragraph 1 to FULLY finish speaking before paragraph 2
+        }); }, 1100);
       }
     }); },900);
   },700);
@@ -4514,17 +4461,6 @@ function showSetupInvite(){
   wrap.innerHTML='<button id="setupInviteBtn" class="setup-invite-btn" onclick="editAgent(S.agentId)">✨ Set up my Honey — name &amp; face</button>';
   m.appendChild(wrap);
   m.scrollTop=m.scrollHeight;
-}
-/* Honey pot IMAGE (original art) used as the default face/avatar instead of the emoji.
-   File must be in the repo as honeypot.png (same folder as index.html). */
-var HONEYPOT_IMG = 'honeypot.png';
-function potFaceHTML(){ return '<img src="'+HONEYPOT_IMG+'" alt="Honey" style="width:100%;height:100%;object-fit:contain;border-radius:inherit;">'; }
-/* For DISPLAY spots (not canvas/text): show photo, else honey-pot image, else avatar emoji. */
-function avatarFaceHTML(){
-  if(S.photo) return '<img src="'+S.photo+'">';
-  if(S.noFace) return potFaceHTML();
-  var a=S.avatar||(S.gender==='F'?'👩':S.gender==='M'?'👨':'🙂');
-  return '<span style="font-size:1em">'+a+'</span>';
 }
 function avatarEmoji(){ if(S.noFace) return '🍯'; return S.avatar || (S.gender==='F'?'👩':S.gender==='M'?'👨':'🧑'); }
 /* preset avatar faces */
@@ -4548,7 +4484,7 @@ function pickAvatar(em){
 /* a face for any agent record (photo wins, else its avatar emoji, else gender) */
 function faceFor(a){
   if(a.photo) return '<img src="'+a.photo+'">';
-  if(a.noFace) return potFaceHTML();
+  if(a.noFace) return '🍯';
   return a.avatar || (a.gender==='F'?'👩':a.gender==='M'?'👨':'🧑');
 }
 function careLine(){ var c=["I'm really glad you're here.","Whatever's on your plate, let me lighten it a little.","Let me carry the funny part for a bit."]; return rand(c); }
@@ -4823,13 +4759,7 @@ function explain(j){ var c=[
 ]; return rand(c); }
 
 /* ════ JOKE ENGINE ════ */
-function styleCats(){
-  var st = STYLES[S.style] || STYLES[0];
-  // only keep category indices that still exist (removed categories are filtered out)
-  var valid = (st.cats||[]).filter(function(ci){ return JOKE_CATEGORIES[ci] && JOKE_CATEGORIES[ci].jokes; });
-  if(!valid.length) valid=[0];   // always have at least one real category
-  return valid;
-}
+function styleCats(){ return (STYLES[S.style]||STYLES[0]).cats; }
 function pickCategory(surprise,forceCat){
   if(forceCat!=null) return forceCat;
   if(surprise) return Math.floor(Math.random()*JOKE_CATEGORIES.length);
@@ -4855,7 +4785,6 @@ function getJoke(surprise,forceCat){
   }
   var ci=pickCategory(surprise,forceCat);
   S.lastCat=ci;
-  if(!JOKE_CATEGORIES[ci]) ci=0;   // safety: category may have been removed
   var list=JOKE_CATEGORIES[ci].jokes;
   var avail=list.filter(j=>!S.blacklist[j.s]&&!S.served[j.s]);
   if(!avail.length){ // reset served for this cat
@@ -5539,7 +5468,7 @@ function hmData(){
   return SETTINGS.money;
 }
 function hmMonthKey(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1); }
-function hmFaceHTML(){ if(S.photo) return '<img src="'+S.photo+'">'; if(S.noFace) return potFaceHTML(); return S.avatar||'🍯'; }
+function hmFaceHTML(){ if(S.photo) return '<img src="'+S.photo+'">'; if(S.noFace) return '🍯'; return S.avatar||'🍯'; }
 function openHoneyMoney(){
   var m=hmData();
   go('honeyMoney');
@@ -5629,7 +5558,7 @@ var CI_EMOJI_GROUPS=[
 /* flat list kept for older references */
 var CI_EMOJIS=CI_EMOJI_GROUPS.reduce(function(a,grp){return a.concat(grp.items);},[]);
 var _ciGoal=null, _ciMood=null, _ciEditIdx=null;
-function ciFaceHTML(){ if(S.photo) return '<img src="'+S.photo+'">'; if(S.noFace) return potFaceHTML(); return S.avatar||'🍯'; }
+function ciFaceHTML(){ if(S.photo) return '<img src="'+S.photo+'">'; if(S.noFace) return '🍯'; return S.avatar||'🍯'; }
 /* find today's saved entry (if any) so we can add to it rather than duplicate */
 function todayCheckinIndex(){
   if(!Array.isArray(SETTINGS.checkins)) return -1;
@@ -6190,7 +6119,7 @@ function renderGoalsToday(){
 
 /* ── conversational, tap-guided builder ── */
 var _gbDraft=null;
-function gbFaceHTML(){ if(S.photo) return '<img src="'+S.photo+'">'; if(S.noFace) return potFaceHTML(); return S.avatar||'🍯'; }
+function gbFaceHTML(){ if(S.photo) return '<img src="'+S.photo+'">'; if(S.noFace) return '🍯'; return S.avatar||'🍯'; }
 function gbSay(text, bodyHTML){
   var step=document.getElementById('gbStep');
   document.getElementById('gbHoney').innerHTML='<div class="gb-face">'+gbFaceHTML()+'</div><div class="gb-say">'+text+'</div>';
@@ -7901,20 +7830,6 @@ function vidCtx(){ return document.getElementById('vidCanvas').getContext('2d');
 var SCENE_STYLES=["clouds","hearts","snow","bubbles","balloons","plain"];
 /* draw an animated background scene behind the photo */
 var _homeCloudRAF=null;
-var _obCloudRAF=null;
-function startOnboardClouds(){
-  var c=document.getElementById('onboardClouds'); if(!c) return;
-  var ob=document.getElementById('onboard');
-  var t0=Date.now();
-  function frame(){
-    if(!ob || ob.style.display==='none' || getComputedStyle(ob).display==='none'){ _obCloudRAF=null; return; }
-    var w=c.offsetWidth||360, h=c.offsetHeight||640;
-    if(c.width!==w) c.width=w; if(c.height!==h) c.height=h;
-    try{ drawScene(c.getContext('2d'), c.width, c.height, (Date.now()-t0)/1000, 'clouds'); }catch(e){}
-    _obCloudRAF=requestAnimationFrame(frame);
-  }
-  if(!_obCloudRAF) _obCloudRAF=requestAnimationFrame(frame);
-}
 function startHomeClouds(){
   var welcome=document.getElementById('welcome');
   if(!welcome) return;
@@ -9307,7 +9222,7 @@ function showSleepLegacy(){
     document.getElementById('wakeName').textContent=S.name||'Honey';
     var se=document.getElementById('sleepEmoji'), si=document.getElementById('sleepImg');
     if(S.photo){ si.src=S.photo; si.style.display='block'; se.style.display='none'; }
-    else { se.style.display='flex'; si.style.display='none'; se.innerHTML=avatarFaceHTML(); }
+    else { se.style.display='flex'; si.style.display='none'; se.textContent=avatarEmoji(); }
   } else {
     w.classList.remove('sleeping');
   }
@@ -9350,7 +9265,6 @@ function startOnboard(){
   var ob=document.getElementById('onboard'); if(!ob){ newAgentFlow(true); return; }
   ob.style.display='flex';
   showObStep();
-  try{ startOnboardClouds(); }catch(e){}
 }
 function showObStep(){
   document.querySelectorAll('.ob-slide').forEach(s=>{ s.classList.toggle('on', +s.getAttribute('data-ob')===obStep); });
@@ -9425,9 +9339,8 @@ function editAgent(id){
   var a=getAgent(id); if(!a)return;
   applyAgent(a);          // load everything into S
   S.editing=true; S.returning=false;
-  // prefill builder fields — but if name is still the default "Honey", leave it BLANK
-  // so the placeholder shows and the user doesn't have to delete "Honey" first (age already works this way).
-  document.getElementById('nameInput').value=(a.name && a.name!=='Honey') ? a.name : '';
+  // prefill builder fields
+  document.getElementById('nameInput').value=a.name||'';
   document.getElementById('ageInput').value=a.age||'';
   document.getElementById('aboutInput').value=a.about||'';
   // gender segment
@@ -9470,7 +9383,7 @@ function renderRoster(){
 }
 function agentFaceHTML(a){
   if(a.photo) return '<img src="'+a.photo+'">';
-  if(a.noFace) return potFaceHTML();
+  if(a.noFace) return '🍯';
   return a.avatar || (a.gender==='F'?'👩':a.gender==='M'?'👨':'🧑');
 }
 function agentCard(a,trashed){
@@ -9631,12 +9544,9 @@ function renderStyleVault(){
 }
 /* one representative joke per style (from its primary category) */
 function styleSample(i,reroll){
-  var st=STYLES[i]; if(!st) return null;
-  var ci=st.cats[0];
-  var cat=JOKE_CATEGORIES[ci]; if(!cat||!cat.jokes) cat=JOKE_CATEGORIES[0];  // safety: fall back if category missing
-  ci = cat===JOKE_CATEGORIES[ci] ? ci : 0;
-  var list=cat.jokes.filter(j=>!S.blacklist[j.s]);
-  if(!list.length)list=cat.jokes;
+  var ci=STYLES[i].cats[0];
+  var list=JOKE_CATEGORIES[ci].jokes.filter(j=>!S.blacklist[j.s]);
+  if(!list.length)list=JOKE_CATEGORIES[ci].jokes;
   if(reroll||sampleIdx[i]==null) sampleIdx[i]=Math.floor(Math.random()*list.length);
   return list[sampleIdx[i]%list.length];
 }
