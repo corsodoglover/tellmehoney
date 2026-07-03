@@ -1304,11 +1304,7 @@ textarea{resize:none;line-height:1.4;}
   <div class="bar"><button class="back" onclick="go('sweetLife')">‹</button>
     <h2>What Honey shares</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll">
-    <div class="seclabel" style="margin-top:4px">Chat shortcuts</div>
-    <p class="rec-hint" style="margin:2px 4px 12px">Choose which quick buttons show at the bottom of the chat. Turn one off to tidy up — you can still ask Honey for it anytime.</p>
-    <div id="chipList"></div>
-    <div class="seclabel" style="margin-top:22px">Content packs</div>
-    <p class="rec-hint" style="margin:2px 4px 14px">Extra things Honey can share. Turn off what you don't want offered — she'll still oblige if you ask. More packs coming soon.</p>
+    <p class="rec-hint" style="margin:2px 4px 14px">Turn off anything you'd rather not be offered. Honey won't bring it up — but she'll still oblige if you ask for it directly.</p>
     <div id="csList"></div>
   </div>
 </section>
@@ -3318,7 +3314,9 @@ var CONTENT_CATS=[
   {key:"animal",  ic:"🐾", lb:"Animal facts"},
   {key:"science", ic:"🔬", lb:"Science facts"},
   {key:"prayers", ic:"🙏", lb:"Prayers"},
-  {key:"stories", ic:"🌙", lb:"Bedtime stories"}
+  {key:"verses",  ic:"📖", lb:"Bible verses"},
+  {key:"stories", ic:"🌙", lb:"Bedtime stories"},
+  {key:"jokes",   ic:"😄", lb:"Jokes"}
 ];
 function contentOn(key){
   if(!SETTINGS.content) return true; // default everything on
@@ -3332,23 +3330,6 @@ function openContentSwitches(){
     return '<div class="cs-row"><div class="cs-lb">'+c.ic+' '+c.lb+'</div>'+
       '<button class="cs-toggle'+(on?' on':'')+'" onclick="toggleContent(\''+c.key+'\',this)"></button></div>';
   }).join('');
-  // chat shortcut toggles
-  var cl=document.getElementById('chipList');
-  if(cl){
-    cl.innerHTML=CHIP_DEFS.map(function(def){
-      var key=def[0], label=def[1], on=chipOn(key);
-      return '<div class="cs-row"><div class="cs-lb">'+label+'</div>'+
-        '<button class="cs-toggle'+(on?' on':'')+'" onclick="toggleChip(\''+key+'\',this)"></button></div>';
-    }).join('');
-  }
-}
-function toggleChip(key, btn){
-  if(!SETTINGS.chips) SETTINGS.chips={};
-  var now=chipOn(key);
-  SETTINGS.chips[key]=!now;
-  btn.classList.toggle('on', !now);
-  saveSettings();
-  try{ if(document.getElementById('chat').classList.contains('on')) buildQuickChips(); }catch(e){}
 }
 function toggleContent(key, btn){
   if(!SETTINGS.content) SETTINGS.content={};
@@ -4574,39 +4555,23 @@ function careLine(){ var c=["I'm really glad you're here.","Whatever's on your p
 function trimGoal(g){ return g.replace(/^(i'm |i am |trying to |want to |working toward )/i,'').slice(0,40); }
 
 /* ════ QUICK CHIPS ════ */
-/* Chat quick-access chips. Each has a KEY so it can be toggled on/off from
-   the bottom of My Sweet Life. Turning one off only HIDES the shortcut here —
-   the feature still works if the user asks for it in chat.
-   Order (left→right) is Sally's layout: joke, verse, journal, calendar, weather, then the rest. */
-var CHIP_DEFS=[
-  ["joke",    "😂 Tell me a joke",  ()=>tellJoke()],
-  ["surprise","🎲 Surprise me",     ()=>{S.lastCat=null;tellJoke(true);}],
-  ["roast",   "🔥 Roast me",        ()=>tellJoke(false,10)],
-  ["journal", "📔 Journal",         ()=>openCheckin()],
-  ["honeypot","🍯 Honey Pot",       ()=>openInsights()],
-  ["verse",   "📖 Bible verse",     ()=>openVerses()],
-  ["calendar","📅 My calendar",     ()=>openCalendar()],
-  ["lists",   "🛒 Lists",           ()=>openListsHub()],
-  ["weather", "🌤️ Weather",        ()=>userSays("what's the weather")],
-  ["money",   "💰 Honey Money",     ()=>openHoneyMoney()],
-  ["jokestyles","📚 Joke styles",   ()=>openVault()],
-  ["language","🌍 Language",        ()=>openLangCue()],
-  ["record",  "✍️ Record a joke",   ()=>openRecordJoke()],
-  ["voice",   "🎚️ Voice",          ()=>openVoicePicker()],
-  ["video",   "🎬 Video",           ()=>openVideoStudio()]
-];
-/* is a chip shown? default ON unless the user turned it off */
-function chipOn(key){
-  if(!SETTINGS.chips) return true;
-  return SETTINGS.chips[key]!==false;
-}
 function buildQuickChips(){
   var c=document.getElementById('quickChips'); c.innerHTML='';
-  CHIP_DEFS.forEach(function(def){
-    var key=def[0], t=def[1], fn=def[2];
-    if(!chipOn(key)) return;               // hidden by toggle (feature still works via asking)
-    var b=document.createElement('button'); b.className='qchip'; b.textContent=t; b.onclick=fn; c.appendChild(b);
-  });
+  [["😂 Tell me a joke",()=>tellJoke()],
+   ["🎲 Surprise me",()=>{S.lastCat=null;tellJoke(true);}],
+   ["🌤️ Weather",()=>userSays("what's the weather")],
+   ["📚 Joke styles",()=>openVault()],
+   ["📖 Bible verse",()=>openVerses()],
+   ["🌍 Language",()=>openLangCue()],
+   ["🔥 Roast me",()=>tellJoke(false,10)],
+   ["🗓️ Remind me",()=>userSays("remind me to take a break in 1 hour")],
+   ["📅 My calendar",()=>userSays("what's on my calendar")],
+   ["✍️ Record a joke",()=>openRecordJoke()],
+   ["🎚️ Voice",()=>openVoicePicker()],
+   ["🎬 Video",()=>openVideoStudio()],
+   ["🍯 Honey Pot",()=>openInsights()],
+   ["💬 How are you?",()=>userSays("how are you")]
+  ].forEach(([t,fn])=>{ var b=document.createElement('button'); b.className='qchip'; b.textContent=t; b.onclick=fn; c.appendChild(b); });
 }
 
 /* ════ MESSAGES ════ */
