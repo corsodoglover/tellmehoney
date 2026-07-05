@@ -6988,7 +6988,12 @@ function cleanForSpeech(t){
 }
 
 function cloudReady(){
-  if(!CLOUD.enabled) return false;
+  // Premium voice turns on AUTOMATICALLY for qualifying tiers (Quart+) or owner —
+  // no checkbox needed. It only needs the keys/voice-ID to be available behind the scenes.
+  // (For your testing, the keys live behind the five-tap developer area. For real
+  //  customers, the proxy supplies them per tier.)
+  var allowed = isOwner() || tierAtLeast('quart');
+  if(!allowed) return false;
   if(CLOUD.provider==='elevenlabs') return !!(CLOUD.elKey && CLOUD.elVoice);
   return !!CLOUD.key;
 }
@@ -7857,7 +7862,10 @@ function onRate(v){ S.rate=parseFloat(v); document.getElementById('rateVal').tex
 function onPitch(v){ S.pitch=parseFloat(v); document.getElementById('pitchVal').textContent=S.pitch.toFixed(2); persist(); }
 function onCloudToggle(on){ CLOUD.enabled=on; saveCloud();
   if(on){ var need = CLOUD.provider==='elevenlabs' ? (!CLOUD.elKey||!CLOUD.elVoice) : !CLOUD.key;
-    if(need) toast("Enter your key below to use premium voices."); }
+    if(need) toast("Enter your key below to use premium voices.");
+    // Premium is Honey's clone voice — switch to Honey so her live AI lines speak in it.
+    else { S.voice="honey"; persist(); }
+  }
   renderVoiceGrid(); }
 var CLOUD_VOICES=["alloy","echo","fable","onyx","nova","shimmer"];
 function renderCloudVoices(){
@@ -7886,6 +7894,7 @@ function saveCloudCfg(){
     if(!CLOUD.key){ toast("Enter your OpenAI API key first."); return; }
   }
   CLOUD.enabled=true; document.getElementById('cloudOn').checked=true;
+  if(CLOUD.provider==='elevenlabs'){ S.voice="honey"; }   // ElevenLabs is Honey's clone — make her the voice
   saveCloud(); S.speakerOn=true;
   toast("Saved — previewing…");
   renderVoiceGrid();
@@ -7894,14 +7903,24 @@ function saveCloudCfg(){
 function renderVoiceGrid(){
   var g=document.getElementById('voiceGrid'); g.innerHTML='';
   var premiumOn = cloudReady();
+  var honeySelected = (S.voice||"honey")==="honey";
   var note=document.getElementById('presetNote'); if(note) note.style.display = premiumOn ? 'block':'none';
   VOICE_PRESETS.forEach(p=>{
     var c=document.createElement('button');
-    c.className='vcard'+(!premiumOn && S.voice===p.id?' sel':'')+(premiumOn?' dim':'');
+    // Honey stays SELECTABLE and highlighted even with premium on — premium is her live-voice fill-in, not a rival.
+    // Only the OTHER device presets dim when premium is active.
+    var isHoney = !!p.honey;
+    var selected = (S.voice===p.id);
+    var dimmed = premiumOn && !isHoney;   // don't dim Honey
+    c.className='vcard'+(selected?' sel':'')+(dimmed?' dim':'');
     c.innerHTML='<div class="vem">'+p.em+'</div><div class="vnm">'+p.nm+'</div><div class="vplay">▶ tap to hear</div>';
     c.onclick=()=>{
-      // tapping a device preset turns OFF premium and uses device voices
-      if(cloudReady()){ CLOUD.enabled=false; saveCloud(); document.getElementById('cloudOn').checked=false; }
+      if(isHoney){
+        // Choosing Honey: keep premium ON if it's set up (it becomes her voice for live AI lines).
+        S.voice=p.id; persist(); previewVoice(p.id); renderVoiceGrid(); return;
+      }
+      // Tapping a NON-Honey device preset turns OFF premium and uses device voices.
+      if(cloudReady()){ CLOUD.enabled=false; saveCloud(); var cb=document.getElementById('cloudOn'); if(cb)cb.checked=false; }
       S.voice=p.id; persist(); previewVoice(p.id); renderVoiceGrid();
     };
     g.appendChild(c);
