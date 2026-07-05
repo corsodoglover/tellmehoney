@@ -517,12 +517,15 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .vid-stage canvas,.love-stage canvas{width:100%;height:100%;display:block;}
 .vid-noimg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   text-align:center;padding:24px;color:var(--muted);font-size:13px;line-height:1.5;}
-.vid-styles{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px;}
-.vstyle{background:var(--panel2);border:1.5px solid var(--line);border-radius:13px;
-  padding:11px 6px;font-size:12px;font-weight:700;color:var(--ink);text-align:center;}
-.vstyle .ve{font-size:20px;display:block;margin-bottom:3px;}
-.vstyle.sel{border-color:var(--gold);background:#1c1808;}
-.vstyle:active{transform:scale(.95);}
+.vid-styles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px;}
+.vstyle{background:var(--panel2);border:1.5px solid var(--line);border-radius:11px;
+  padding:10px 4px;font-size:12.5px;font-weight:600;color:var(--ink);text-align:center;
+  min-height:42px;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:border-color .12s ease,background .12s ease;}
+.vstyle .ve{font-size:16px;display:inline;margin:0;line-height:1;flex:none;}
+.vstyle.sel{border-color:var(--gold);background:#1c1808;box-shadow:0 0 0 2px rgba(224,169,63,.16);}
+.vstyle:active{transform:scale(.96);}
 .vid-actions{margin-top:4px;}
 .vid-status{font-size:12.5px;color:var(--muted);text-align:center;margin-top:10px;min-height:16px;}
 .vid-status a{color:var(--gold);font-weight:700;}
@@ -1290,6 +1293,7 @@ textarea{resize:none;line-height:1.4;}
       <button class="sl-tile" onclick="slGo('money')"><span class="sl-ic">💰</span><span class="sl-tx"><b>Honey Money</b><small>Your gentle budget</small></span></button>
       <button class="sl-tile" onclick="slGo('calendar')"><span class="sl-ic">📅</span><span class="sl-tx"><b>Calendar</b><small>Plans &amp; reminders</small></span></button>
       <button class="sl-tile" onclick="slGo('jokes')"><span class="sl-ic">😄</span><span class="sl-tx"><b>Jokes</b><small>Share a laugh</small></span></button>
+      <button class="sl-tile" onclick="slGo('photo')"><span class="sl-ic">📷</span><span class="sl-tx"><b>Photo Suite</b><small>Make &amp; share photos + video</small></span></button>
       <button class="sl-tile" onclick="slGo('prayers')"><span class="sl-ic">🙏</span><span class="sl-tx"><b>Prayers</b><small>Keep &amp; add your own</small></span></button>
       <button class="sl-tile" onclick="slGo('learn')"><span class="sl-ic">📚</span><span class="sl-tx"><b>Learn</b><small>A new language</small></span></button>
       <button class="sl-tile" onclick="slGo('weather')"><span class="sl-ic">☀️</span><span class="sl-tx"><b>Weather</b><small>What's it like out</small></span></button>
@@ -1475,7 +1479,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="openListsHub()">🛒 My Lists</button>
     <button class="prof-row" onclick="openLearn()">📚 Learn with Honey</button>
     <button class="prof-row" onclick="cycleLearnLang()" id="learnLangRow">🌍 Learning language: Spanish</button>
-    <button class="prof-row" onclick="openVideoStudio()">🎬 Video Studio</button>
+    <button class="prof-row" onclick="openVideoStudio()">📷 Photo Suite</button>
     <button class="prof-row" onclick="openLovedScreen()">♥ Saved jokes, verses &amp; phrases</button>
     <button class="prof-row" onclick="toggleStreakSetting()" id="streakSettingRow">🔥 Daily streak: On</button>
     <button class="prof-row" onclick="newAgentFlow(false)">➕ Add a friend</button>
@@ -1769,7 +1773,6 @@ textarea{resize:none;line-height:1.4;}
       <div class="vid-noimg" id="loveNoImg">No photo on this friend yet — the joke will go on a honey background. Add a photo in Edit for a personal card.</div>
     </div>
     <button class="rec-save" onclick="shareLovedImage()">🖼️ Share as image</button>
-    <button class="rec-save" onclick="shareLovedLink()" style="margin-top:10px;background:var(--gold);color:#3a2f12;border:none">📣 Share with link 🍯</button>
     <button class="rec-save" onclick="document.getElementById(&#39;loveImgInput&#39;).click()" style="margin-top:10px;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📷 Change the picture</button>
     <input type="file" id="loveImgInput" accept="image/*" style="display:none" onchange="onLoveImgPick(event)">
     <button class="rec-save" onclick="shareLovedVideo()" style="margin-top:10px;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">🎬 Share as video</button>
@@ -1779,23 +1782,34 @@ textarea{resize:none;line-height:1.4;}
 </div>
 <div class="rec-overlay" id="videoOverlay">
   <div class="rec-sheet">
-    <div class="rec-head"><span>🎬 Video Studio</span><button class="rec-x" onclick="closeVideoStudio()">✕</button></div>
-    <p class="rec-hint">Turn your photo into a short (about 4-second) animated video with a joke on it — to save or send to someone. Pick a style, preview, then record.</p>
-    <p class="rec-hint" id="vidPhoneNote" style="margin:4px 2px 0;font-size:12px;display:none">📱 Heads-up: saving/sharing video straight from the browser is limited on iPhone. If it doesn't attach, your phone will still send the joke text — or screen-record the preview instead (Control Center → Screen Recording). Works best in Chrome on a computer.</p>
+    <div class="rec-head"><span>📷 Photo Suite</span><button class="rec-x" onclick="closeVideoStudio()">✕</button></div>
+    <p class="rec-hint">Add a photo, pick a scene, and share it as a picture or a little video. Free.</p>
+    <p class="rec-hint" id="vidPhoneNote" style="margin:4px 2px 0;font-size:12px;display:none">📱 On iPhone, if a video won’t attach, your phone still sends the picture. Works best in the installed app.</p>
 
     <div class="vid-stage"><canvas id="vidCanvas" width="540" height="540"></canvas>
       <div class="vid-noimg" id="vidNoImg">Add a photo to your friend first (Edit → upload a photo), then come back.</div>
     </div>
-    <button class="rec-save" onclick="document.getElementById(&#39;vidImgInput&#39;).click()" style="margin-top:10px;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📷 Change the picture</button>
-    <input type="file" id="vidImgInput" accept="image/*" style="display:none" onchange="onVidImgPick(event)">
-    <p class="rec-hint" style="margin:8px 2px 0;font-size:12px">✨ Tip: for the prettiest floating look with Clouds, Hearts, Snow or Bubbles, use a photo with the background removed (a transparent PNG). Free tools like Canva or remove.bg do it in seconds — then the scene drifts right behind the person.</p>
 
-    <label class="rec-label">Motion style</label>
+    <label class="rec-label">Scenes</label>
     <div class="vid-styles" id="vidStyles"></div>
+    <label class="rec-label">Looks</label>
+    <div class="vid-styles" id="lookRow" style="grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px"></div>
+    <label class="rec-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0 2px 6px">
+      <input type="checkbox" id="shadowToggle" checked onchange="VIDCFG.shadow=this.checked; if(typeof startVidPreview==='function')startVidPreview();" style="width:18px;height:18px">
+      🌑 Add a soft shadow (looks placed, not pasted)
+    </label>
+    <label class="rec-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0 2px 16px">
+      <input type="checkbox" id="enhanceToggle" onchange="VIDCFG.enhance=this.checked; if(typeof startVidPreview==='function')startVidPreview();" style="width:18px;height:18px">
+      ✨ Enhance — brighten &amp; warm up the photo
+    </label>
 
-    <label class="rec-label">Paste a favorite joke (shows on the video)</label>
+    <button class="rec-save" onclick="document.getElementById(&#39;vidImgInput&#39;).click()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📷 Change the picture</button>
+    <input type="file" id="vidImgInput" accept="image/*" style="display:none" onchange="onVidImgPick(event)">
+    <div class="vid-status" id="bgStatus"></div>
+
+    <label class="rec-label">Your message — joke, verse, phrase, or anything you like</label>
     <div class="rec-field">
-      <textarea id="vidCaption" rows="2" placeholder="Paste, type, or 🎤 speak a joke…" oninput="vidDrawStill()"></textarea>
+      <textarea id="vidCaption" rows="2" placeholder="Type or 🎤 speak — or tap something in chat" oninput="vidDrawStill()"></textarea>
       <button class="rec-mic" onclick="recDictate(&#39;vidCaption&#39;,this)">🎤</button>
     </div>
     <label class="rec-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:6px">
@@ -1804,41 +1818,46 @@ textarea{resize:none;line-height:1.4;}
     </label>
 
     <div class="vid-actions">
-      <button class="rec-save" id="vidRecBtn" onclick="recordVideo()">● Record &amp; download (free)</button>
-      <button class="rec-save" id="vidShareBtn" onclick="shareJokeVideo()" style="margin-top:10px;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📤 Share with someone</button>
+      <button class="rec-save" id="vidShareBtn" onclick="shareJokeVideo()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📤 Share this video</button>
     </div>
     <div class="vid-status" id="vidStatus"></div>
 
     <div class="cloud-box">
-      <div class="cloud-head"><span>🎥 Share your own video</span></div>
-      <p class="rec-hint" style="margin:6px 0 10px">Made a video somewhere else? Pick it here and share it with a Tell me Honey note attached. Free — it goes straight from your phone, nothing stored.</p>
-      <button class="rec-save" onclick="document.getElementById(&#39;ownVidInput&#39;).click()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">🎥 Pick a video to share</button>
+      <div class="cloud-head"><span>🎥 Send a video from your phone</span></div>
+      <p class="rec-hint" style="margin:6px 0 10px">Pick any video off your phone and send it with your message — a joke, an event, an announcement, anything. Free, straight from your phone, nothing stored.</p>
+      <button class="rec-save" onclick="document.getElementById(&#39;ownVidInput&#39;).click()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">🎥 Pick a video &amp; send</button>
       <input type="file" id="ownVidInput" accept="video/*" style="display:none" onchange="onOwnVideoPick(event)">
       <div class="vid-status" id="ownVidStatus"></div>
     </div>
 
-    <div class="cloud-box" id="aiStudioBox">
-      <div class="cloud-head">
-        <span>✨ AI Studio — Beta (your key only)</span>
+    <!-- PREMIUM AI ZONE (user-facing). Dimmed with a gentle top-up when credits are out;
+         fully open when the user has credits. Never blocks the free stuff above. -->
+    <div class="cloud-box" id="aiPremiumBox">
+      <div class="cloud-head"><span>✨ Bring it to life</span></div>
+      <p class="rec-hint" style="margin:6px 0 12px">Turn your photo into a little moving video. Uses your plan's video credits.</p>
+      <div id="aiLockNote"></div>
+      <div id="aiPremiumTools">
+        <div class="rec-field"><input id="vidPrompt" placeholder="e.g. a gentle smile and a little wave"></div>
+        <button class="rec-save" onclick="generateAIVideo()">🎬 Make a moving video</button>
+        <div class="vid-status" id="aiVidStatus"></div>
       </div>
-      <p class="rec-hint" style="margin:6px 0 10px">Your private testing lab. Uses your own Fal.ai key — sends your photo to their servers, costs money on your account, needs internet. Not shown to other users.</p>
+    </div>
+
+    <!-- OWNER-ONLY testing box: your keys + raw tools. Hidden from users; five-tap the title to reveal. -->
+    <div class="cloud-box" id="aiStudioBox" style="display:none">
+      <div class="cloud-head"><span>🔧 Developer — your key only</span></div>
+      <p class="rec-hint" style="margin:6px 0 10px">Private testing. Uses your own Fal.ai key. Not shown to users.</p>
       <label class="rec-label">Fal.ai API key</label>
       <div class="rec-field"><input type="password" id="vidKey" placeholder="your Fal.ai key" oninput="VIDCFG.key=this.value"></div>
 
-      <label class="rec-label">✂️ Remove background (make a floating cutout)</label>
-      <p class="rec-hint" style="margin:2px 0 8px;font-size:12px">Turns the current photo into a transparent cutout, then drops it right into Clouds / Hearts / Snow / Bubbles so the scene floats behind the person. Uses your key — costs money on your account.</p>
-      <button class="rec-save" style="background:var(--panel);color:var(--gold);border:1.5px solid var(--gold)" onclick="removeBgAI()">✂️ Remove background</button>
-      <div class="vid-status" id="bgStatus"></div>
+      <label class="rec-label" style="margin-top:8px">✂️ Remove background (paid, high-quality)</label>
+      <button class="rec-save" style="background:var(--panel);color:var(--gold);border:1.5px solid var(--gold)" onclick="removeBgAI()">✂️ Remove background (Fal.ai)</button>
+      <div class="vid-status" id="bgStatusDev"></div>
 
-      <label class="rec-label" style="margin-top:14px">① Recreate the image (optional)</label>
+      <label class="rec-label" style="margin-top:14px">Recreate the image</label>
       <div class="rec-field"><input id="editPrompt" placeholder="e.g. on a sunny beach, soft cinematic light"></div>
       <button class="rec-save" style="background:var(--panel);color:var(--gold);border:1.5px solid var(--gold)" onclick="editImageAI()">🍌 Recreate image (Nano Banana)</button>
       <div class="vid-status" id="editStatus"></div>
-
-      <label class="rec-label" style="margin-top:14px">② Make a 3-sec video</label>
-      <div class="rec-field"><input id="vidPrompt" placeholder="gentle smile, slight head turn, cinematic"></div>
-      <button class="rec-save" onclick="generateAIVideo()">🎬 Generate 3-sec AI video</button>
-      <div class="vid-status" id="aiVidStatus"></div>
     </div>
   </div>
 </div>
@@ -1885,7 +1904,7 @@ textarea{resize:none;line-height:1.4;}
         <button class="freq-btn" id="provEleven" onclick="setProvider(&#39;elevenlabs&#39;)"><span class="fe">🎙️</span>ElevenLabs (my voice)</button>
       </div>
 
-      <div id="openaiFields">
+      <div id="openaiFields" class="owner-only-keys">
         <label class="rec-label">OpenAI API key</label>
         <div class="rec-field"><input type="password" id="cloudKey" placeholder="sk-…" oninput="CLOUD.key=this.value"></div>
         <label class="rec-label">Choose a voice</label>
@@ -1893,7 +1912,7 @@ textarea{resize:none;line-height:1.4;}
         <button class="rec-save" onclick="saveCloudCfg()">Save &amp; preview</button>
       </div>
 
-      <div id="elevenFields" style="display:none">
+      <div id="elevenFields" class="owner-only-keys" style="display:none">
         <label class="rec-label">ElevenLabs API key</label>
         <div class="rec-field"><input type="password" id="elKey" placeholder="your ElevenLabs key" oninput="CLOUD.elKey=this.value"></div>
         <label class="rec-label">Voice ID (from your ElevenLabs voice)</label>
@@ -2763,7 +2782,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidTopups:0, voiceCloneDone:false, checkins:[], nourish:null, learnedItems:{}, money:null, content:{} };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, checkins:[], nourish:null, learnedItems:{}, money:null, content:{} };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -3086,7 +3105,7 @@ function lockBox(id, label, needTier){
 }
 /* apply all locks for the current tier; hide beta unless owner */
 function applyTierLocks(){
-  // beta AI studio: owner only
+  // developer box: owner only (five-tap the home title)
   var beta=document.getElementById('aiStudioBox'); if(beta) beta.style.display = isOwner() ? 'block':'none';
   // premium voices: Quart+ only (a paid feature that costs us money — honey can't unlock it)
   if(document.getElementById('premiumVoiceBox')){
@@ -3094,7 +3113,24 @@ function applyTierLocks(){
       { var b=document.getElementById('premiumVoiceBox'); b.classList.remove('tier-locked'); var o=b.querySelector('.tier-lock-note'); if(o)o.remove(); }
     else lockBox('premiumVoiceBox','Premium voices','quart');
   }
+  // premium video zone: gently dim + invite a top-up when today's video credits are used up.
+  // Never blocks the free scenes/share above — only this one box dims.
+  applyVideoCreditLock();
 }
+/* dim the "Bring it to life" video box when out of credits; owner & users with credits see it open */
+function applyVideoCreditLock(){
+  var box=document.getElementById('aiPremiumBox'); if(!box) return;
+  var noteHost=document.getElementById('aiLockNote'); if(noteHost) noteHost.innerHTML='';
+  var open = isOwner() || aiVideoLeft() > 0;
+  if(open){ box.classList.remove('tier-locked'); return; }
+  box.classList.add('tier-locked');
+  if(noteHost){
+    noteHost.innerHTML='<div class="tier-lock-note">🔒 You’ve used your video for now.'
+      +'<button class="tl-up" onclick="topUpVideo()">Top up</button></div>';
+  }
+}
+/* top-up entry point — for now routes to plans; wire to Apple/Google IAP at wrap time */
+function topUpVideo(){ try{ closeVideoStudio(); }catch(e){} openTiers(); }
 /* ═══════════ UPGRADE / PURCHASE (Apple/Google plug-in point) ═══════════ */
 /* isPaid(): is the user on a paid tier? (free = pint) */
 function isPaid(){ return (SETTINGS.tier||"pint")!=="pint"; }
@@ -3157,20 +3193,35 @@ function setTier(t){ if(!TIERS[t])return; SETTINGS.tier=t; saveSettings(); toast
 /* download allowance (free tier capped per day; -1 = unlimited) */
 function downloadsLeft(){ var cap=tier().downloads; if(cap<0)return -1; var t=todayKey(); if(SETTINGS.dlDay!==t){ SETTINGS.dlDay=t; SETTINGS.dlToday=0; } return Math.max(0,cap-(SETTINGS.dlToday||0)); }
 function useDownload(){ var cap=tier().downloads; if(cap<0)return true; var t=todayKey(); if(SETTINGS.dlDay!==t){ SETTINGS.dlDay=t; SETTINGS.dlToday=0; } if((SETTINGS.dlToday||0)>=cap)return false; SETTINGS.dlToday=(SETTINGS.dlToday||0)+1; saveSettings(); return true; }
-/* ── AI VIDEO daily cap (1/day on your keys; owner/BYOK bypasses) ──
-   topups add to the day's allowance. */
-var AIVID_DAILY=1;
-function aiVideoAllowanceToday(){ return AIVID_DAILY + (SETTINGS.aiVidTopups||0); }
+/* ── AI VIDEO cap — TIER-AWARE, tracked per WEEK ──
+   Pint: 0 (free users get only free animated sharing — $0 cost to us)
+   Trial week: a small taste  ·  Quart: ~8/mo (2/wk)  ·  Gallon: 5/wk
+   Owner bypasses. Top-ups add to the current week's allowance. */
+var AIVID_WEEKLY = { pint:0, quart:2, gallon:5 };
+var AIVID_TRIAL_WEEK = 2;
+
+function weekKey(){
+  var d=new Date(); var onejan=new Date(d.getFullYear(),0,1);
+  var wk=Math.ceil((((d-onejan)/86400000)+onejan.getDay()+1)/7);
+  return d.getFullYear()+'-W'+wk;
+}
+function aiVideoWeeklyAllowance(){
+  if(isOwner()) return 999;                       // owner/testing bypass
+  if(trialActive()) return AIVID_TRIAL_WEEK;       // free-week taste
+  var t=(SETTINGS.tier||'pint');
+  return (AIVID_WEEKLY[t]!=null ? AIVID_WEEKLY[t] : 0);
+}
+function aiVideoAllowanceToday(){ return aiVideoWeeklyAllowance() + (SETTINGS.aiVidTopups||0); }
 function aiVideoLeft(){
-  var t=todayKey(); if(SETTINGS.aiVidDay!==t){ SETTINGS.aiVidDay=t; SETTINGS.aiVidToday=0; }
-  return Math.max(0, aiVideoAllowanceToday() - (SETTINGS.aiVidToday||0));
+  var t=weekKey(); if(SETTINGS.aiVidWeek!==t){ SETTINGS.aiVidWeek=t; SETTINGS.aiVidUsed=0; SETTINGS.aiVidTopups=0; }
+  return Math.max(0, aiVideoAllowanceToday() - (SETTINGS.aiVidUsed||0));
 }
 function useAIVideo(){
-  // owner / power users with their own key are not metered by us
+  // owner / testing is not metered by us
   if(isOwner()) return true;
-  var t=todayKey(); if(SETTINGS.aiVidDay!==t){ SETTINGS.aiVidDay=t; SETTINGS.aiVidToday=0; }
-  if((SETTINGS.aiVidToday||0) >= aiVideoAllowanceToday()) return false;
-  SETTINGS.aiVidToday=(SETTINGS.aiVidToday||0)+1; saveSettings(); return true;
+  var t=weekKey(); if(SETTINGS.aiVidWeek!==t){ SETTINGS.aiVidWeek=t; SETTINGS.aiVidUsed=0; SETTINGS.aiVidTopups=0; }
+  if((SETTINGS.aiVidUsed||0) >= aiVideoAllowanceToday()) return false;   // 0 for Pint = always blocked
+  SETTINGS.aiVidUsed=(SETTINGS.aiVidUsed||0)+1; saveSettings(); return true;
 }
 /* a warm, in-Honey's-voice "come back tomorrow" line when the daily video is used up */
 function aiVideoCapMessage(){
@@ -3305,6 +3356,7 @@ function slGo(where){
     case 'money':    openHoneyMoney(); break;
     case 'calendar': openCalendar(); break;
     case 'jokes':    openJokes(); break;
+    case 'photo':    openVideoStudio(); break;
     case 'prayers':  openPrayers(); break;
     case 'learn':    openLearn(); break;
     case 'weather':  homeWeather(); break;
@@ -3632,6 +3684,7 @@ function tellVerse(cat){
   seen[v.r]=1; verseServed[cat]=seen;
   go('chat');
   S.lastVerse = v;   // remember it so "hear it again" can replay
+  S.lastShareable = { text:v.t+'\n'+v.r, kind:'verse' };
   themTyping(function(){
     pushThem('\u201C'+v.t+'\u201D  \u2014 '+v.r+' (KJV)');
     pushAction('🔁 Hear it again', null, false, null, function(){ repeatVerse(); });
@@ -4633,6 +4686,7 @@ function pushThem(text,noLog,noSpeak){  var m=document.createElement('div'); m.c
 /* a joke = setup bubble, then WAIT for the user before the punchline */
 function pushJoke(joke,noLog){
   S.lastJoke=joke;
+  S.lastShareable={ text:(joke.s?joke.s+'\n':'')+(joke.p||''), kind:'joke' };
   if(S.speakerOn) clearSpeech();   // a fresh joke interrupts anything still talking
   // BEAT 1 — the setup line
   var s=document.createElement('div'); s.className='bub them joke'; s.textContent=joke.s;
@@ -7815,8 +7869,9 @@ function renderCloudVoices(){
 }
 function setProvider(p){
   CLOUD.provider=p; saveCloud();
-  document.getElementById('openaiFields').style.display = p==='openai' ? 'block':'none';
-  document.getElementById('elevenFields').style.display = p==='elevenlabs' ? 'block':'none';
+  var owner=isOwner();
+  document.getElementById('openaiFields').style.display = (owner && p==='openai') ? 'block':'none';
+  document.getElementById('elevenFields').style.display = (owner && p==='elevenlabs') ? 'block':'none';
   var po=document.getElementById('provOpenai'), pe=document.getElementById('provEleven');
   if(po)po.classList.toggle('sel',p==='openai'); if(pe)pe.classList.toggle('sel',p==='elevenlabs');
 }
@@ -7859,20 +7914,41 @@ function setTalking(on){
 }
 
 /* ════ VIDEO STUDIO ════ */
-var VIDCFG={ key:"" };
+var VIDCFG={ key:"", shadow:true, enhance:false, look:"none" };
+/* one-tap Enhance: warmer, brighter, a touch more contrast & pop — like good phone auto-fix.
+   Combined with an optional "look" filter (B&W, warm, cool, vintage, soft). */
+function enhanceFilter(){
+  var f=[];
+  if(VIDCFG.enhance) f.push('brightness(1.08) contrast(1.10) saturate(1.14) sepia(0.06)');
+  switch(VIDCFG.look){
+    case 'bw':      f.push('grayscale(1) contrast(1.08)'); break;
+    case 'warm':    f.push('sepia(0.35) saturate(1.3) brightness(1.05)'); break;
+    case 'cool':    f.push('saturate(1.15) brightness(1.06) hue-rotate(-8deg) contrast(1.05)'); break;
+    case 'vintage': f.push('sepia(0.45) contrast(0.92) brightness(1.05) saturate(0.85)'); break;
+    case 'soft':    f.push('brightness(1.08) saturate(1.05) blur(0.4px)'); break;
+  }
+  return f.length ? f.join(' ') : 'none';
+}
+function setLook(l){ VIDCFG.look=(VIDCFG.look===l?'none':l); renderLooks(); if(typeof startVidPreview==='function')startVidPreview(); }
+var LOOKS=[{id:'bw',nm:'B&W'},{id:'warm',nm:'Warm'},{id:'cool',nm:'Cool'},{id:'vintage',nm:'Vintage'},{id:'soft',nm:'Soft'}];
+function renderLooks(){
+  var w=document.getElementById('lookRow'); if(!w) return; w.innerHTML='';
+  LOOKS.forEach(function(l){
+    var b=document.createElement('button'); b.className='vstyle'+(VIDCFG.look===l.id?' sel':'');
+    b.style.minHeight='auto'; b.style.padding='11px 4px'; b.textContent=l.nm;
+    b.onclick=function(){ setLook(l.id); };
+    w.appendChild(b);
+  });
+}
 var VID_STYLES=[
-  {id:"breathe", em:"🫧", nm:"Breathe"},
-  {id:"sway",    em:"🌊", nm:"Sway"},
   {id:"clouds",  em:"☁️", nm:"Clouds"},
-  {id:"hearts",  em:"💛", nm:"Hearts"},
-  {id:"snow",    em:"❄️", nm:"Snow"},
+  {id:"hearts",  em:"❤️", nm:"Hearts"},
   {id:"bubbles", em:"🫧", nm:"Bubbles"},
   {id:"balloons",em:"🎈", nm:"Balloons"},
-  {id:"plain",   em:"⬜", nm:"Plain white"},
-  {id:"zoom",    em:"🔍", nm:"Zoom in"},
-  {id:"talk",    em:"💬", nm:"Talking"},
-  {id:"sparkle", em:"✨", nm:"Sparkle"},
-  {id:"glitch",  em:"📺", nm:"Glitch"}
+  {id:"zoom",    em:"🔍", nm:"Zoom"},
+  {id:"breathe", em:"🌬️", nm:"Gentle"},
+  {id:"sway",    em:"🌊", nm:"Sway"},
+  {id:"plain",   em:"⬜", nm:"Plain"}
 ];
 var vidStyle="breathe", vidImg=null, vidRAF=null, vidT0=0;
 var vidCustomImg=null;
@@ -7903,6 +7979,8 @@ function openVideoStudio(customImg){
   var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
   var pn=document.getElementById('vidPhoneNote'); if(pn) pn.style.display = isiOS ? 'block' : 'none';
   renderVidStyles();
+  renderLooks();
+  updateBgBackBtn();
   if(typeof customImg==='string' && customImg) vidCustomImg=customImg;
   else vidCustomImg=null;
   var src = vidCustomImg || S.photo;
@@ -7918,6 +7996,7 @@ function openVideoStudio(customImg){
 }
 function onVidImgPick(e){
   var f=e.target.files&&e.target.files[0]; if(!f)return;
+  vidBeforeCutout=null; updateBgBackBtn();
   var r=new FileReader();
   r.onload=()=>{ vidCustomImg=r.result; var ni=document.getElementById('vidNoImg'); if(ni)ni.style.display='none';
     loadVidImg(vidCustomImg); };
@@ -7933,9 +8012,14 @@ function renderVidStyles(){
     b.innerHTML='<span class="ve">'+s.em+'</span>'+s.nm;
     b.onclick=()=>{ vidStyle=s.id; renderVidStyles(); startVidPreview(); };
     w.appendChild(b); });
+  // 9th tile: the background remove/put-back toggle, filling the empty grid slot
+  var bg=document.createElement('button'); bg.id='bgToggleBtn'; bg.className='vstyle';
+  bg.onclick=function(){ toggleBg(); };
+  w.appendChild(bg);
+  updateBgBackBtn();
 }
 function vidCtx(){ return document.getElementById('vidCanvas').getContext('2d'); }
-var SCENE_STYLES=["clouds","hearts","snow","bubbles","balloons","plain"];
+var SCENE_STYLES=["clouds","hearts","bubbles","balloons","plain"];
 /* draw an animated background scene behind the photo */
 var _homeCloudRAF=null;
 var _obCloudRAF=null;
@@ -7988,18 +8072,6 @@ function drawScene(ctx,W,H,t,style){
       cloud(ctx,x,y,s);
     }
     ctx.globalAlpha=1;
-  } else if(style==='snow'){
-    var gs=ctx.createLinearGradient(0,0,0,H); gs.addColorStop(0,'#dbe9f4'); gs.addColorStop(1,'#f4f9fd');
-    ctx.fillStyle=gs; ctx.fillRect(0,0,W,H);
-    ctx.fillStyle='rgba(255,255,255,0.95)';
-    for(var k=0;k<40;k++){
-      var sx=((k*137 + Math.sin(t/1200+k)*30) % W);
-      var sy=((t/1000*(20+(k%5)*8) + k*40) % (H+20)) - 10;
-      var sr=1.5 + (k%4);
-      ctx.globalAlpha=0.6+0.4*Math.sin(t/700+k);
-      ctx.beginPath(); ctx.arc(sx,sy,sr,0,Math.PI*2); ctx.fill();
-    }
-    ctx.globalAlpha=1;
   } else if(style==='bubbles'){
     var gb=ctx.createLinearGradient(0,0,0,H); gb.addColorStop(0,'#bfeaf2'); gb.addColorStop(1,'#e6f8fb');
     ctx.fillStyle=gb; ctx.fillRect(0,0,W,H);
@@ -8017,7 +8089,7 @@ function drawScene(ctx,W,H,t,style){
     }
     ctx.globalAlpha=1;
   } else if(style==='balloons'){
-    var gball=ctx.createLinearGradient(0,0,0,H); gball.addColorStop(0,'#fde9f2'); gball.addColorStop(1,'#fff6fb');
+    var gball=ctx.createLinearGradient(0,0,0,H); gball.addColorStop(0,'#ffffff'); gball.addColorStop(1,'#f7f7f7');
     ctx.fillStyle=gball; ctx.fillRect(0,0,W,H);
     var bcols=['#ff8fab','#ffd670','#8ecae6','#c8b6ff','#a7e8bd'];
     for(var k=0;k<9;k++){
@@ -8033,11 +8105,15 @@ function drawScene(ctx,W,H,t,style){
   } else if(style==='plain'){
     ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
   } else if(style==='hearts'){
-    var g3=ctx.createLinearGradient(0,0,0,H); g3.addColorStop(0,'#f8e3c0'); g3.addColorStop(1,'#fff3da');
+    var g3=ctx.createLinearGradient(0,0,0,H); g3.addColorStop(0,'#ffffff'); g3.addColorStop(1,'#f7f7f7');
     ctx.fillStyle=g3; ctx.fillRect(0,0,W,H);
-    for(var m=0;m<12;m++){
-      var hx=((m*97 + 40) % W), hy=H - ((t/1000*(30+m*4)+m*70)%(H+80)) + 40, sz=16+ (m%3)*8;
-      ctx.globalAlpha=0.55+0.3*Math.sin(t/400+m); ctx.font=sz+'px serif'; ctx.fillText(m%3? '💛':'🤍', hx, hy);
+    // small red hearts floating upward, gently swaying
+    for(var m=0;m<18;m++){
+      var hx=((m*89 + 30) % W) + Math.sin(t/900+m)*16;
+      var hy=H - ((t/1000*(26+(m%5)*7)+m*55)%(H+70)) + 30;
+      var sz=9 + (m%3)*4;
+      ctx.globalAlpha=0.5+0.35*Math.sin(t/500+m);
+      heart(ctx,hx,hy,sz);
     }
     ctx.globalAlpha=1;
   }
@@ -8047,6 +8123,20 @@ function cloud(ctx,x,y,s){
   ctx.arc(x,y,30*s,0,Math.PI*2); ctx.arc(x+34*s,y-14*s,38*s,0,Math.PI*2);
   ctx.arc(x+74*s,y,30*s,0,Math.PI*2); ctx.arc(x+38*s,y+12*s,32*s,0,Math.PI*2);
   ctx.closePath(); ctx.fill();
+}
+/* small solid red heart centered at (x,y), roughly `s` px tall */
+function heart(ctx,x,y,s){
+  ctx.save();
+  ctx.translate(x,y); ctx.scale(s/16,s/16);
+  ctx.fillStyle='#e63950';
+  ctx.beginPath();
+  ctx.moveTo(0,4);
+  ctx.bezierCurveTo(0,-1,-8,-1,-8,-6);
+  ctx.bezierCurveTo(-8,-11,-2,-11,0,-6);
+  ctx.bezierCurveTo(2,-11,8,-11,8,-6);
+  ctx.bezierCurveTo(8,-1,0,-1,0,4);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
 }
 /* draw one animated frame at time t (ms) */
 function vidDrawFrame(t){
@@ -8072,10 +8162,22 @@ function vidDrawFrame(t){
       var dw, dh;
       if(ar0> pw/ph2){ dw=pw; dh=pw/ar0; } else { dh=ph2; dw=ph2*ar0; }
       var pxx=(W-dw)/2+dx, pyy=(H-dh)/2+dy+6;
+      // GROUNDING SHADOW: soft contact shadow on the "floor" beneath the cutout so it looks
+      // placed, not pasted. On by default; VIDCFG.shadow===false turns it off.
+      if(VIDCFG.shadow!==false){
+        ctx.save();
+        var cx=W/2+dx, baseY=pyy+dh*0.98, shW=dw*0.62, shH=dh*0.05;
+        var sg=ctx.createRadialGradient(cx,baseY,shH*0.2,cx,baseY,shW/2);
+        sg.addColorStop(0,'rgba(0,0,0,0.32)'); sg.addColorStop(0.7,'rgba(0,0,0,0.14)'); sg.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=sg; ctx.beginPath(); ctx.ellipse(cx,baseY,shW/2,shH,0,0,Math.PI*2); ctx.fill();
+        ctx.restore();
+      }
       ctx.save();
       ctx.translate(W/2+dx,H/2+dy); ctx.scale(scale,scale); ctx.translate(-(W/2+dx),-(H/2+dy));
-      ctx.shadowColor='rgba(0,0,0,.22)'; ctx.shadowBlur=22; ctx.shadowOffsetY=10;
+      ctx.shadowColor='rgba(0,0,0,.18)'; ctx.shadowBlur=18; ctx.shadowOffsetY=8;
+      ctx.filter=enhanceFilter();
       ctx.drawImage(vidImg, pxx, pyy, dw, dh);
+      ctx.filter='none';
       ctx.restore();
     } else if(vidImg){
       // regular photo: soft rounded frame floating on the scene
@@ -8089,7 +8191,9 @@ function vidDrawFrame(t){
       var iw=vidImg.width, ih=vidImg.height, ar=iw/ih, car=fw/fh, sw,sh,sx,sy;
       if(ar>car){ sh=ih; sw=ih*car; sx=(iw-sw)/2; sy=0; } else { sw=iw; sh=iw/car; sx=0; sy=(ih-sh)/2; }
       ctx.translate(fx+fw/2,fy+fh/2); ctx.scale(scale,scale); ctx.translate(-(fx+fw/2),-(fy+fh/2));
+      ctx.filter=enhanceFilter();
       ctx.drawImage(vidImg, sx,sy,sw,sh, fx,fy,fw,fh);
+      ctx.filter='none';
       ctx.restore();
     } else {
       ctx.font='200px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -8099,7 +8203,9 @@ function vidDrawFrame(t){
     var iw=vidImg.width, ih=vidImg.height, ar=iw/ih, car=W/H, sw,sh,sx,sy;
     if(ar>car){ sh=ih; sw=ih*car; sx=(iw-sw)/2; sy=0; } else { sw=iw; sh=iw/car; sx=0; sy=(ih-sh)/2; }
     ctx.translate(W/2+dx, H/2+dy); ctx.scale(scale,scale); ctx.translate(-W/2,-H/2);
+    ctx.filter=enhanceFilter();
     ctx.drawImage(vidImg, sx,sy,sw,sh, 0,0,W,H);
+    ctx.filter='none';
     ctx.setTransform(1,0,0,1,0,0);
   } else {
     ctx.font='220px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -8186,9 +8292,8 @@ function recordVideo(mode){
     else {
       if(!useDownload()){
         setVidStatus('vidStatus','You\'ve used today\'s free downloads. You can still <b>share</b> unlimited — or pour a bigger size for unlimited saves. 🍯 <a href="#" onclick="openTiers();return false;">See plans</a>');
-        ['vidRecBtn','vidShareBtn'].forEach(id=>{var b=document.getElementById(id); if(b)b.disabled=false;});
-        document.getElementById('vidRecBtn').textContent='● Record & download (free)';
-        document.getElementById('vidShareBtn').textContent='📤 Share with someone';
+        ['vidShareBtn'].forEach(id=>{var b=document.getElementById(id); if(b)b.disabled=false;});
+        var sb2=document.getElementById('vidShareBtn'); if(sb2)sb2.textContent='📤 Share this video';
         return;
       }
       var url=URL.createObjectURL(blob);
@@ -8201,13 +8306,12 @@ function recordVideo(mode){
       setVidStatus('vidStatus','Saved to your downloads! 🎬'+(left>=0?' ('+left+' free left today)':'')+
         (jk && !already ? ' &nbsp; <a href="#" onclick="keepThisJoke();return false;">♥ Save this joke for future use</a>' : ''));
     }
-    ['vidRecBtn','vidShareBtn'].forEach(id=>{var b=document.getElementById(id); if(b)b.disabled=false;});
-    document.getElementById('vidRecBtn').textContent='● Record & download (free)';
-    document.getElementById('vidShareBtn').textContent='📤 Share with someone';
+    ['vidShareBtn'].forEach(id=>{var b=document.getElementById(id); if(b)b.disabled=false;});
+    var sb=document.getElementById('vidShareBtn'); if(sb)sb.textContent='📤 Share this video';
   };
   startVidPreview();
   rec.start();
-  ['vidRecBtn','vidShareBtn'].forEach(id=>{var b=document.getElementById(id); if(b)b.disabled=true;});
+  ['vidShareBtn'].forEach(id=>{var b=document.getElementById(id); if(b)b.disabled=true;});
   var secs=4, left=secs;
   var btn=document.getElementById(mode==='share'?'vidShareBtn':'vidRecBtn');
   setVidStatus(statusId, (mode==='share'?'Filming to share… ':'Recording… ')+left+'s');
@@ -8305,6 +8409,80 @@ function pollEditImage(statusUrl, resultUrl){
   }
   check();
 }
+/* ── FREE background removal using the PHONE'S own power ──
+   Order of attempts:
+   1. Native bridge (set at wrap time): window.NativeCutout.remove(dataURL) → Promise<dataURL>
+      • iOS  → tiny Capacitor plugin calling VisionKit (same lift as long-press in Photos)
+      • Android → ML Kit Subject Segmentation
+      This is the "just works when wrapped" path. Drops into the marked spot below.
+   2. Browser fallback: if no native bridge, we can't truly cut out in-browser on all
+      devices, so we fail GENTLY — keep the photo as-is on the scene, no error, no scolding.
+   Sets the same vidCustomImg / vidImgTransparent slots the float logic already reads. */
+function removeBgFree(){
+  var srcImage = vidCustomImg || S.photo;
+  if(!srcImage){ setVidStatus('bgStatus','Add or pick a photo first, then tap Remove background.'); return; }
+  setVidStatus('bgStatus','Lifting the background off…');
+
+  // ── NATIVE BRIDGE (populated at wrap time; leave this contract stable) ──
+  if(window.NativeCutout && typeof window.NativeCutout.remove==='function'){
+    Promise.resolve(window.NativeCutout.remove(srcImage)).then(function(cutout){
+      if(cutout){ applyFreeCutout(cutout); }
+      else { setVidStatus('bgStatus',''); } // native returned nothing → leave photo as-is, quietly
+    }).catch(function(){ setVidStatus('bgStatus',''); });
+    return;
+  }
+
+  // ── BROWSER (pre-wrap / testing) ──
+  // No universal in-browser cutout, so we don't fake it. Quiet, friendly note; photo stays usable.
+  setVidStatus('bgStatus','Background removal turns on in the installed app — your photo still works on every scene here.');
+}
+/* shared: take a transparent PNG data URL/URL and float it in the current scene */
+function applyFreeCutout(cutout){
+  // remember what the photo was BEFORE removal, so "Put background back" can restore it
+  if(vidBeforeCutout===null) vidBeforeCutout = { src: vidCustomImg || (S.photo||null), wasTransparent: vidImgTransparent };
+  vidCustomImg = cutout;
+  vidImg = new Image();
+  vidImg.onload = function(){
+    vidImgTransparent = true;
+    if(SCENE_STYLES.indexOf(vidStyle) < 0){ vidStyle = 'clouds'; renderVidStyles(); }
+    startVidPreview();
+    updateBgBackBtn();
+    setVidStatus('bgStatus','Done — your photo is floating in the scene. Pick Clouds, Hearts, Bubbles or Balloons.');
+  };
+  vidImg.onerror = function(){ setVidStatus('bgStatus',''); };
+  vidImg.src = cutout;
+}
+/* holds the pre-removal photo so the user is never stuck with a bad cutout */
+var vidBeforeCutout=null;
+/* ↩︎ Put the background back — restore the original photo exactly as it was */
+function restoreOriginal(){
+  if(vidBeforeCutout===null) return;
+  var src = vidBeforeCutout.src;
+  vidBeforeCutout=null;
+  if(!src){ vidImg=null; vidImgTransparent=false; startVidPreview(); updateBgBackBtn(); return; }
+  vidCustomImg = src;
+  vidImg = new Image();
+  vidImg.onload = function(){ vidImgTransparent=false; startVidPreview(); updateBgBackBtn(); setVidStatus('bgStatus','Background put back. 👍'); };
+  vidImg.onerror = function(){ setVidStatus('bgStatus',''); };
+  vidImg.src = src;
+}
+/* one button that flips: Remove background  ↔  Put the background back */
+function toggleBg(){
+  if(vidBeforeCutout!==null) restoreOriginal();
+  else removeBgFree();
+}
+/* update the toggle tile's label/look based on whether a removal is active */
+function updateBgBackBtn(){
+  var b=document.getElementById('bgToggleBtn'); if(!b) return;
+  if(vidBeforeCutout!==null){
+    b.innerHTML='<span class="ve">↩︎</span>Put back';
+    b.style.background='var(--panel)'; b.style.color='var(--ink)'; b.style.borderColor='var(--line)';
+  } else {
+    b.innerHTML='<span class="ve">✂️</span>Cut out';
+    b.style.background='var(--panel2)'; b.style.color='var(--gold)'; b.style.borderColor='var(--gold)';
+  }
+}
+
 /* BETA: AI background removal via user's Fal.ai key → transparent cutout that floats in the scene */
 function removeBgAI(){
   VIDCFG.key=document.getElementById('vidKey').value.trim();
@@ -8334,9 +8512,10 @@ function pollRemoveBg(statusUrl, resultUrl){
           var out = (res.image && (res.image.url||res.image)) || (res.images && res.images[0] && (res.images[0].url||res.images[0])) || res.url;
           if(out){
             // use the cutout as the video image, mark it transparent, switch to a floating scene
+            if(vidBeforeCutout===null) vidBeforeCutout={ src: vidCustomImg || (S.photo||null), wasTransparent: vidImgTransparent };
             vidCustomImg=out;
             vidImg=new Image();
-            vidImg.onload=()=>{ vidImgTransparent=true; if(SCENE_STYLES.indexOf(vidStyle)<0){ vidStyle='clouds'; renderVidStyles(); } startVidPreview(); };
+            vidImg.onload=()=>{ vidImgTransparent=true; if(SCENE_STYLES.indexOf(vidStyle)<0){ vidStyle='clouds'; renderVidStyles(); } startVidPreview(); updateBgBackBtn(); };
             vidImg.src=out;
             setVidStatus('bgStatus','Done! Background removed — your cutout is now floating in the scene. Pick Clouds, Hearts, Snow, Bubbles or Balloons to see it.');
           } else setVidStatus('bgStatus','Finished, but no image came back. Check your Fal.ai dashboard.');
@@ -8436,13 +8615,19 @@ function currentJokeText(){
   for(var i=tr.length-1;i>=0;i--){ if(tr[i].k==='joke'||tr[i].p) return (tr[i].s?tr[i].s+'\n':'')+(tr[i].p||tr[i].t); }
   return null;
 }
+/* the ♥ heart in chat: saves whatever was last shown (joke, verse, phrase, scratch&sniff),
+   quietly. Offers a share right after — never forces the share card open. */
 function loveJoke(){
-  var jt=currentJokeText();
-  if(!jt){ toast("No joke to save yet — get one first."); return; }
-  lovedAddText(jt);
+  var item = S.lastShareable;                 // {text, kind} set whenever Honey shows something
+  var jt = item && item.text ? item.text : currentJokeText();
+  var kind = item && item.kind ? item.kind : 'joke';
+  if(!jt){ toast("Nothing to save yet — I'll show you something first."); return; }
+  lovedAddText(jt, kind);
   var hb=document.getElementById('tbHeart'); if(hb)hb.classList.add('loved');
-  loveCurrent=jt;
-  openLoveShare(jt);
+  loveCurrent=jt; loveKind=kind;
+  toast('Saved to your collection 🍯');
+  // gentle: offer to share it, don't force the card open
+  pushAction('📤 Share it', null, false, null, function(){ openLoveShare(jt, kind); });
 }
 var loveKind='joke';
 var scratchOverride=false;
@@ -8944,6 +9129,7 @@ function answerHowToSay(phrase, code){
   if(hit){
     // say it aloud in the target language voice
     setTimeout(function(){ try{ sayLearn(hit.say, code); }catch(e){} }, 350);
+    S.lastShareable = { text:hit.en+'\n'+hit.say, kind:'phrase' };
     // add tappable buttons just after the reply bubble: replay (repeats each tap), save, share
     setTimeout(function(){
       pushAction('🔊 Say it again', null, false, null, function(){ sayLearn(hit.say, code); });
@@ -8979,6 +9165,7 @@ function revealLangCue(gaveUp, guess){
   var lead = gaveUp ? 'Here you go \u2014' : (correct ? 'Yes! You nailed it! 🎉' : 'Good try! Here\u2019s how it goes \u2014');
   themTyping(function(){
     pushThem(vibeColor(lead+' In '+L.nm+', \u201C'+c.en+'\u201D is \u201C'+c.say+'.\u201D'));
+    S.lastShareable = { text:c.en+'\n'+c.say, kind:'phrase' };
     setTimeout(function(){ try{ sayLearn(c.say, c.code); }catch(e){} }, 350);
     pushAction('🔊 Say it again', null, false, null, function(){ sayLearn(c.say, c.code); });
     pushAction('🤍 Save this phrase', null, false, null, function(){ lovedAddText(c.en+'\n'+c.say,'phrase'); toast('Saved to your collection 🍯'); });
