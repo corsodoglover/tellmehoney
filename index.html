@@ -3686,7 +3686,7 @@ function tellVerse(cat){
   S.lastVerse = v;   // remember it so "hear it again" can replay
   S.lastShareable = { text:v.t+'\n'+v.r, kind:'verse' };
   themTyping(function(){
-    pushThem('\u201C'+v.t+'\u201D  \u2014 '+v.r+' (KJV)');
+    pushThem('\u201C'+v.t+'\u201D  \u2014 '+v.r);
     pushAction('🔁 Hear it again', null, false, null, function(){ repeatVerse(); });
     pushAction('🤍 Save this verse', null, false, null, function(){ lovedAddText(v.t+'\n'+v.r,'verse'); toast('Saved to your collection 🍯'); });
     pushAction('📤 Share this verse', null, false, null, function(){ openLoveShare(v.t+'\n'+v.r, 'verse'); });
@@ -6988,10 +6988,9 @@ function cleanForSpeech(t){
 }
 
 function cloudReady(){
-  // Premium voice turns on AUTOMATICALLY for qualifying tiers (Quart+) or owner —
-  // no checkbox needed. It only needs the keys/voice-ID to be available behind the scenes.
-  // (For your testing, the keys live behind the five-tap developer area. For real
-  //  customers, the proxy supplies them per tier.)
+  // Premium voice for qualifying tiers (Quart+) or owner — but ALSO respect the on/off flag,
+  // so tapping a plain phone voice (which sets enabled=false) truly switches away from premium.
+  if(CLOUD.enabled===false) return false;
   var allowed = isOwner() || tierAtLeast('quart');
   if(!allowed) return false;
   if(CLOUD.provider==='elevenlabs') return !!(CLOUD.elKey && CLOUD.elVoice);
@@ -7778,16 +7777,19 @@ function cloudSpeak(t){
       body:JSON.stringify({ model:"tts-1", voice:CLOUD.voice||"alloy", input:t, speed:clampNum(S.rate||0.9,0.5,2) })
     });
   }
-  req.then(r=>{ if(!r.ok){ return r.text().then(txt=>{ throw new Error("status "+r.status+(r.status===401?" (key not valid)":r.status===429?" (no credit / rate limit)":r.status===403?" (access/region)":"")); }); } return r.blob(); })
+  req.then(r=>{ if(!r.ok){ return r.text().then(txt=>{
+    var detail=""; try{ var j=JSON.parse(txt); detail = (j.detail && (j.detail.message||j.detail.status||j.detail)) || j.message || ""; if(typeof detail==='object') detail=JSON.stringify(detail); }catch(e){ detail = (txt||"").slice(0,120); }
+    throw new Error("status "+r.status+(r.status===401?" (key not valid)":r.status===429?" (no credit / rate limit)":r.status===403?" (access/region)":"")+(detail?(" — "+detail):"")); }); } return r.blob(); })
   .then(blob=>{
     var url=URL.createObjectURL(blob);
     cloudQueue.push(url);
     playCloudQueue();
   }).catch(err=>{
     speakQueue=Math.max(0,speakQueue-1); setTalking(false);
-    toast("Premium voice error: "+err.message+". Using device voice for now.");
-    CLOUD.enabled=false;  // fall back this session
-    if('speechSynthesis'in window) speak(t);
+    toast("Premium voice error: "+err.message, 7000);
+    // NOTE: do NOT flip CLOUD.enabled off here — a single hiccup shouldn't force you to
+    // re-enable everything. The setting stays as you left it; only this line falls back.
+    if((S.voice||'honey')!=='honey' && 'speechSynthesis'in window) speak(t);
   });
 }
 /* preview a voice without affecting the conversation */
@@ -7896,30 +7898,33 @@ function saveCloudCfg(){
   CLOUD.enabled=true; document.getElementById('cloudOn').checked=true;
   if(CLOUD.provider==='elevenlabs'){ S.voice="honey"; }   // ElevenLabs is Honey's clone — make her the voice
   saveCloud(); S.speakerOn=true;
-  toast("Saved — previewing…");
   renderVoiceGrid();
+  // Honest status: tell the user exactly what the app thinks before it tries to speak.
+  var owner = isOwner(), tierOk = tierAtLeast('quart'), ready = cloudReady();
+  if(!owner && !tierOk){
+    toast("Premium voice is gated: not in owner mode (5-tap the Honey title) and tier isn't Quart+. Turning owner ON for testing…", 6000);
+    SETTINGS.owner=true; saveSettings && saveSettings();  // enable owner so testing works
+  }
+  toast("Saved — previewing… (owner:"+(isOwner()?"yes":"no")+", ready:"+(cloudReady()?"yes":"no")+")", 5000);
   cloudSpeak(CLOUD.provider==='elevenlabs' ? "Hi, it's me. This is my voice — but better." : "Hey, this is my new voice. Much better, right?");
 }
 function renderVoiceGrid(){
   var g=document.getElementById('voiceGrid'); g.innerHTML='';
   var premiumOn = cloudReady();
-  var honeySelected = (S.voice||"honey")==="honey";
   var note=document.getElementById('presetNote'); if(note) note.style.display = premiumOn ? 'block':'none';
   VOICE_PRESETS.forEach(p=>{
     var c=document.createElement('button');
-    // Honey stays SELECTABLE and highlighted even with premium on — premium is her live-voice fill-in, not a rival.
-    // Only the OTHER device presets dim when premium is active.
     var isHoney = !!p.honey;
     var selected = (S.voice===p.id);
-    var dimmed = premiumOn && !isHoney;   // don't dim Honey
-    c.className='vcard'+(selected?' sel':'')+(dimmed?' dim':'');
+    // NEVER dim/lock any voice — every option (phone voices, Honey, premium) stays fully tappable.
+    c.className='vcard'+(selected?' sel':'');
     c.innerHTML='<div class="vem">'+p.em+'</div><div class="vnm">'+p.nm+'</div><div class="vplay">▶ tap to hear</div>';
     c.onclick=()=>{
       if(isHoney){
-        // Choosing Honey: keep premium ON if it's set up (it becomes her voice for live AI lines).
+        // Choosing Honey keeps premium ON (it's her live-voice fill-in).
         S.voice=p.id; persist(); previewVoice(p.id); renderVoiceGrid(); return;
       }
-      // Tapping a NON-Honey device preset turns OFF premium and uses device voices.
+      // Tapping any phone/device voice: switch to it and turn premium OFF so it actually plays the device voice.
       if(cloudReady()){ CLOUD.enabled=false; saveCloud(); var cb=document.getElementById('cloudOn'); if(cb)cb.checked=false; }
       S.voice=p.id; persist(); previewVoice(p.id); renderVoiceGrid();
     };
@@ -9888,8 +9893,8 @@ function styleSample(i,reroll){
 function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
 function shuffle(a){ for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 var toastT;
-function toast(t){ var el=document.getElementById('toast'); el.textContent=t; el.classList.add('on');
-  clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('on'),2200); }
+function toast(t, ms){ var el=document.getElementById('toast'); el.textContent=t; el.classList.add('on');
+  clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('on'), ms||2200); }
 
 // stop all sound/timers when the tab is hidden or loses focus (no background talking)
 document.addEventListener('visibilitychange',function(){
