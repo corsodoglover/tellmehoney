@@ -1294,6 +1294,7 @@ textarea{resize:none;line-height:1.4;}
       <button class="sl-tile" onclick="slGo('calendar')"><span class="sl-ic">📅</span><span class="sl-tx"><b>Calendar</b><small>Plans &amp; reminders</small></span></button>
       <button class="sl-tile" onclick="slGo('jokes')"><span class="sl-ic">😄</span><span class="sl-tx"><b>Jokes</b><small>Share a laugh</small></span></button>
       <button class="sl-tile" onclick="slGo('photo')"><span class="sl-ic">📷</span><span class="sl-tx"><b>Photo Suite</b><small>Make &amp; share photos + video</small></span></button>
+      <button class="sl-tile" onclick="slGo('favorites')"><span class="sl-ic">❤️</span><span class="sl-tx"><b>Memories</b><small>What Honey kept for you</small></span></button>
       <button class="sl-tile" onclick="slGo('prayers')"><span class="sl-ic">🙏</span><span class="sl-tx"><b>Prayers</b><small>Keep &amp; add your own</small></span></button>
       <button class="sl-tile" onclick="slGo('learn')"><span class="sl-ic">📚</span><span class="sl-tx"><b>Learn</b><small>A new language</small></span></button>
       <button class="sl-tile" onclick="slGo('weather')"><span class="sl-ic">☀️</span><span class="sl-tx"><b>Weather</b><small>What's it like out</small></span></button>
@@ -1480,6 +1481,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="openLearn()">📚 Learn with Honey</button>
     <button class="prof-row" onclick="cycleLearnLang()" id="learnLangRow">🌍 Learning language: Spanish</button>
     <button class="prof-row" onclick="openVideoStudio()">📷 Photo Suite</button>
+    <button class="prof-row" onclick="openFavorites()">❤️ Your favorites — what Honey kept for you</button>
     <button class="prof-row" onclick="openLovedScreen()">♥ Saved jokes, verses &amp; phrases</button>
     <button class="prof-row" onclick="toggleStreakSetting()" id="streakSettingRow">🔥 Daily streak: On</button>
     <button class="prof-row" onclick="newAgentFlow(false)">➕ Add a friend</button>
@@ -1765,6 +1767,15 @@ textarea{resize:none;line-height:1.4;}
   </div>
 </section>
 
+<section class="screen" id="favorites">
+  <div class="bar"><button class="back" onclick="go(&#39;chat&#39;)">‹</button>
+    <h2>Your favorites</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll">
+    <div class="prompt-sub" id="favSub">The ones Honey kept for you. 🍯</div>
+    <div id="favGrid" style="display:flex;flex-wrap:wrap;gap:12px;padding:8px 2px 24px"></div>
+  </div>
+</section>
+
 <div class="rec-overlay" id="loveOverlay">
   <div class="rec-sheet">
     <div class="rec-head"><span>♥ Saved &amp; ready to share</span><button class="rec-x" onclick="closeLoveShare()">✕</button></div>
@@ -1819,6 +1830,7 @@ textarea{resize:none;line-height:1.4;}
 
     <div class="vid-actions">
       <button class="rec-save" id="vidShareBtn" onclick="shareJokeVideo()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📤 Share this video</button>
+      <button class="rec-save" id="vidKeepBtn" onclick="keepJokeVideo()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">❤️ Keep in Memories</button>
     </div>
     <div class="vid-status" id="vidStatus"></div>
 
@@ -2786,7 +2798,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, checkins:[], nourish:null, learnedItems:{}, money:null, content:{} };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, checkins:[], nourish:null, learnedItems:{}, money:null, content:{} };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -3027,8 +3039,8 @@ function ensureLists(){
 function getList(id){ ensureLists(); return SETTINGS.lists.find(l=>l.id===id); }
 /* ════ TIERS: pint (free) / quart (mid) / gallon (premium) ════ */
 var TIERS={
-  pint:  { nm:"Pint",   ic:"🍯",    friends:1,  downloads:3,  voices:"device", video:false, aivideo:false, uploadVoice:false },
-  quart: { nm:"Quart",  ic:"🍯🍯",  friends:2,  downloads:-1, voices:"openai", video:true,  aivideo:false, uploadVoice:false },
+  pint:  { nm:"Pint",   ic:"🍯",    friends:1,  downloads:-1, voices:"device", video:false, aivideo:false, uploadVoice:false },
+  quart: { nm:"Quart",  ic:"🍯🍯",  friends:2,  downloads:-1, voices:"openai", video:true,  aivideo:true,  uploadVoice:false },
   gallon:{ nm:"Gallon", ic:"🍯🍯🍯",friends:3,  downloads:-1, voices:"cloned", video:true,  aivideo:true,  uploadVoice:true }
 };
 function tier(){ return TIERS[SETTINGS.tier||"pint"]||TIERS.pint; }
@@ -3365,6 +3377,7 @@ function slGo(where){
     case 'calendar': openCalendar(); break;
     case 'jokes':    openJokes(); break;
     case 'photo':    openVideoStudio(); break;
+    case 'favorites': openFavorites(); break;
     case 'prayers':  openPrayers(); break;
     case 'learn':    openLearn(); break;
     case 'weather':  homeWeather(); break;
@@ -3672,6 +3685,59 @@ var VERSE_CATS=Object.keys(VERSES);
 var verseServed={};
 function verseEmoji(cat){ return {"Productivity & Work":"💼","Love":"❤️","Patience":"⏳","Kindness":"🤝","Joy":"😊","Sorrow & Comfort":"🕊️","Grief & Loss":"🌷","Peace & Calm":"🌿","Strength & Courage":"💪","Hope":"🌅","Faith & Trust":"🙏","Gratitude":"🙌","Forgiveness":"💛","Encouragement & Blessing":"✨"}[cat]||"📖"; }
 function openVerses(){ go('verses'); renderVerses(); }
+function openFavorites(){ go('favorites'); renderFavorites(); }
+function renderFavorites(){
+  var grid=document.getElementById('favGrid'); if(!grid) return;
+  var sub=document.getElementById('favSub');
+  var list=favList();
+  var cap=favCap();
+  if(sub){
+    if(list.length===0){ sub.textContent="Nothing kept yet — when Honey makes you something you love, tap “♥ Keep this.”"; }
+    else if(cap<0){ sub.textContent="The ones Honey kept for you. 🍯"; }
+    else { sub.textContent="The ones Honey kept for you — "+list.length+" of "+cap+". 🍯"; }
+  }
+  grid.innerHTML='';
+  list.forEach(function(f, i){
+    var card=document.createElement('div');
+    card.style.cssText='width:104px;border-radius:14px;overflow:hidden;background:var(--panel);border:1.5px solid rgba(190,158,87,.35);position:relative';
+    var media = f.kind==='video'
+      ? '<video src="'+f.data+'" muted loop playsinline style="width:104px;height:104px;object-fit:cover" onmouseover="try{this.play()}catch(e){}" onmouseout="try{this.pause()}catch(e){}"></video>'
+      : '<img src="'+f.data+'" style="width:104px;height:104px;object-fit:cover;background:#dfeaf5" alt="favorite">';
+    card.innerHTML =
+      media +
+      '<div style="font-size:10.5px;color:var(--muted);padding:3px 6px">'+favKindLabel(f.kind)+'</div>'+
+      '<div style="display:flex;gap:4px;padding:0 6px 7px">'+
+        '<button onclick="favShare('+i+')" style="flex:1;font-size:11px;padding:5px 0;border:none;border-radius:8px;background:var(--gold);color:#3a2c12;font-weight:700">Share</button>'+
+        '<button onclick="favRemove('+i+')" aria-label="Remove" style="font-size:11px;padding:5px 8px;border:none;border-radius:8px;background:rgba(0,0,0,.08);color:var(--muted)">✕</button>'+
+      '</div>';
+    grid.appendChild(card);
+  });
+  // gentle upgrade nudge only when a free user is full — warm, not blocking
+  if(cap>=0 && list.length>=cap){
+    var nudge=document.createElement('div');
+    nudge.style.cssText='width:100%;font-size:12.5px;color:var(--muted);padding:6px 2px';
+    nudge.innerHTML='Honey\'s holding all 3 she can on Pint. <a href="#" onclick="openTiers();return false;" style="color:var(--gold);font-weight:700">Pour a bigger size</a> and she\'ll keep every one. 🍯';
+    grid.appendChild(nudge);
+  }
+}
+function favShare(i){
+  var f=favList()[i]; if(!f) return;
+  // reuse the app's share path: images share as image, video as video
+  try{
+    fetch(f.data).then(r=>r.blob()).then(function(blob){
+      var ext = f.kind==='video' ? 'webm' : 'png';
+      var file=new File([blob], 'tell-me-honey.'+ext, {type:blob.type||(f.kind==='video'?'video/webm':'image/png')});
+      var text='🍯 Made with the Tell me Honey app';
+      if(navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
+        navigator.share({files:[file], text:text}).catch(function(){});
+      } else {
+        var url=URL.createObjectURL(blob); var a=document.createElement('a');
+        a.href=url; a.download=file.name; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),4000);
+      }
+    });
+  }catch(e){}
+}
 function renderVerses(){
   var list=document.getElementById('verseList'); if(!list)return; list.innerHTML='';
   VERSE_CATS.forEach(function(cat){
@@ -8062,9 +8128,16 @@ function buildFilteredImage(){
 function currentVidImage(){ return vidImgFiltered || vidImg; }
 
 function setLook(l){ VIDCFG.look=(VIDCFG.look===l?'none':l); renderLooks(); buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview(); }
+function resetLook(){ VIDCFG.look='none'; VIDCFG.enhance=false; var et=document.getElementById('enhanceToggle'); if(et)et.checked=false; renderLooks(); buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview(); }
 var LOOKS=[{id:'bw',nm:'B&W'},{id:'warm',nm:'Warm'},{id:'cool',nm:'Cool'},{id:'vintage',nm:'Vintage'},{id:'soft',nm:'Soft'}];
 function renderLooks(){
   var w=document.getElementById('lookRow'); if(!w) return; w.innerHTML='';
+  // "Original" always sits first — one clear tap back to the untouched photo.
+  var noLook = (!VIDCFG.look || VIDCFG.look==='none') && !VIDCFG.enhance;
+  var orig=document.createElement('button'); orig.className='vstyle'+(noLook?' sel':'');
+  orig.style.minHeight='auto'; orig.style.padding='11px 4px'; orig.textContent='↩ Original';
+  orig.onclick=function(){ resetLook(); };
+  w.appendChild(orig);
   LOOKS.forEach(function(l){
     var b=document.createElement('button'); b.className='vstyle'+(VIDCFG.look===l.id?' sel':'');
     b.style.minHeight='auto'; b.style.padding='11px 4px'; b.textContent=l.nm;
@@ -8415,37 +8488,48 @@ function recordVideo(mode){
   rec.onstop=()=>{
     var blob=new Blob(chunks,{type:'video/webm'});
     if(mode==='share'){ doShareVideo(blob); }
+    else if(mode==='keep'){
+      // convert the 3-sec clip to a dataURL and put it straight on Honey's shelf
+      try{
+        var _fr=new FileReader();
+        _fr.onload=function(){
+          var note=(document.getElementById('vidCaption').value||'').trim();
+          if(favAdd('video', _fr.result, note)){ setVidStatus('vidStatus','Honey kept this in your Memories. ❤️ &nbsp; <a href="#" onclick="openFavorites();return false;" style="color:var(--gold);font-weight:700">See Memories</a>'); }
+        };
+        _fr.readAsDataURL(blob);
+      }catch(e){ setVidStatus('vidStatus','Could not keep that one — try again.'); }
+    }
     else {
-      if(!useDownload()){
-        setVidStatus('vidStatus','You\'ve used today\'s free downloads. You can still <b>share</b> unlimited — or pour a bigger size for unlimited saves. 🍯 <a href="#" onclick="openTiers();return false;">See plans</a>');
-        ['vidShareBtn'].forEach(id=>{var b=document.getElementById(id); if(b)b.disabled=false;});
-        var sb2=document.getElementById('vidShareBtn'); if(sb2)sb2.textContent='📤 Share this video';
-        return;
-      }
       var url=URL.createObjectURL(blob);
       var a=document.createElement('a'); a.href=url; a.download='tell-me-honey-joke.webm';
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(()=>URL.revokeObjectURL(url),4000);
       var jk=(document.getElementById('vidCaption').value||'').trim();
       var already = jk && Array.isArray(SETTINGS.loved) && SETTINGS.loved.findIndex(x=>lovedText(x)===jk)>=0;
-      var left=downloadsLeft();
-      setVidStatus('vidStatus','Saved to your downloads! 🎬'+(left>=0?' ('+left+' free left today)':'')+
-        (jk && !already ? ' &nbsp; <a href="#" onclick="keepThisJoke();return false;">♥ Save this joke for future use</a>' : ''));
+      setVidStatus('vidStatus','Saved! 🎬'+
+        (jk && !already ? ' &nbsp; <a href="#" onclick="keepThisJoke();return false;">♥ Save joke</a>' : ''));
     }
-    ['vidShareBtn'].forEach(id=>{var b=document.getElementById(id); if(b)b.disabled=false;});
+    ['vidShareBtn','vidKeepBtn'].forEach(id=>{var b=document.getElementById(id); if(b)b.disabled=false;});
     var sb=document.getElementById('vidShareBtn'); if(sb)sb.textContent='📤 Share this video';
+    var kb=document.getElementById('vidKeepBtn'); if(kb)kb.textContent='❤️ Keep in Memories';
   };
   startVidPreview();
   rec.start();
-  ['vidShareBtn'].forEach(id=>{var b=document.getElementById(id); if(b)b.disabled=true;});
+  ['vidShareBtn','vidKeepBtn'].forEach(id=>{var b=document.getElementById(id); if(b)b.disabled=true;});
   var secs=4, left=secs;
-  var btn=document.getElementById(mode==='share'?'vidShareBtn':'vidRecBtn');
-  setVidStatus(statusId, (mode==='share'?'Filming to share… ':'Recording… ')+left+'s');
-  var iv=setInterval(()=>{ left--; if(btn)btn.textContent=(mode==='share'?'Filming… ':'Recording… ')+left+'s';
-    setVidStatus(statusId,(mode==='share'?'Filming to share… ':'Recording… ')+left+'s'); if(left<=0)clearInterval(iv); },1000);
+  var btn=document.getElementById(mode==='share'?'vidShareBtn':(mode==='keep'?'vidKeepBtn':'vidRecBtn'));
+  var verb=(mode==='share'?'Filming to share… ':(mode==='keep'?'Filming for Memories… ':'Recording… '));
+  setVidStatus(statusId, verb+left+'s');
+  var iv=setInterval(()=>{ left--; if(btn)btn.textContent=(mode==='share'?'Filming… ':(mode==='keep'?'Filming… ':'Recording… '))+left+'s';
+    setVidStatus(statusId,verb+left+'s'); if(left<=0)clearInterval(iv); },1000);
   setTimeout(()=>{ try{rec.stop()}catch(e){} }, secs*1000);
 }
 function shareJokeVideo(){ recordVideo('share'); }
+function keepJokeVideo(){
+  // check room first so we don't record then reject
+  if(!favCanAdd()){ toast("Honey keeps 3 favorites on Pint — pour a bigger size and she'll keep them all. 🍯"); return; }
+  recordVideo('keep');
+}
 function keepThisJoke(){
   var jk=(document.getElementById('vidCaption').value||'').trim();
   if(!jk) return;
@@ -8574,7 +8658,7 @@ function applyFreeCutout(cutout){
     if(SCENE_STYLES.indexOf(vidStyle) < 0){ vidStyle = 'clouds'; renderVidStyles(); }
     startVidPreview();
     updateBgBackBtn();
-    setVidStatus('bgStatus','Done — your photo is floating in the scene. Pick Clouds, Hearts, Bubbles or Balloons.');
+    setVidStatus('bgStatus','Done — your photo is floating in the scene. Pick Clouds, Hearts, Bubbles or Balloons. &nbsp; <a href="#" onclick="favAdd(\'cutout\',vidCustomImg||\'\',\'\');return false;" style="color:var(--gold);font-weight:700">♥ Keep this</a>');
   };
   vidImg.onerror = function(){ setVidStatus('bgStatus',''); };
   vidImg.src = cutout;
@@ -8707,6 +8791,38 @@ function pollAIVideo(statusUrl, resultUrl){
 /* ════ LOVED JOKES (♥) + SHARE ════ */
 var loveCurrent=null;
 /* loved entries can be a string (legacy) or {t, shares}; these normalize access */
+/* ════ YOUR FAVORITES ════
+   Honey keeps a few favorites for you — cutouts, backgrounds, 3-second videos.
+   3 free on Pint; unlimited on Quart/Gallon (framed warmly, never a nag).
+   Costs nothing: these are free-to-make items, stored small in the app. */
+var FAV_FREE_CAP = 3;
+function favCap(){ return (isOwner() || tierAtLeast('quart')) ? -1 : FAV_FREE_CAP; }
+function favList(){ if(!Array.isArray(SETTINGS.favorites)) SETTINGS.favorites=[]; return SETTINGS.favorites; }
+function favCount(){ return favList().length; }
+function favRoomLeft(){ var c=favCap(); return c<0 ? -1 : Math.max(0, c-favCount()); }
+function favCanAdd(){ var c=favCap(); return c<0 || favCount()<c; }
+/* kind: 'cutout' | 'background' | 'video' ; data: image/video dataURL ; note: optional caption */
+function favAdd(kind, data, note){
+  if(!data) return false;
+  favList();
+  // avoid exact duplicates
+  if(SETTINGS.favorites.some(f=>f.data===data)){ toast("Honey already kept that one for you. 🍯"); return true; }
+  if(!favCanAdd()){
+    toast("Honey keeps 3 favorites on Pint — pour a bigger size and she'll keep them all. 🍯");
+    return false;
+  }
+  SETTINGS.favorites.unshift({ kind:kind||'cutout', data:data, note:(note||'').trim(), saved:Date.now() });
+  saveSettings();
+  toast("Honey kept this for you. ♥");
+  return true;
+}
+function favRemove(i){
+  if(!Array.isArray(SETTINGS.favorites)) return;
+  if(i<0||i>=SETTINGS.favorites.length) return;
+  SETTINGS.favorites.splice(i,1); saveSettings();
+  if(typeof renderFavorites==='function') renderFavorites();
+}
+function favKindLabel(k){ return k==='video'?'🎬 Video':(k==='background'?'🖼️ Background':'✂️ Cutout'); }
 function lovedText(x){ return typeof x==='string'?x:(x&&x.t)||''; }
 function lovedShares(x){ return typeof x==='string'?0:((x&&x.shares)||0); }
 function lovedAddText(jt, kind){
@@ -9469,9 +9585,7 @@ var REWARDS=[
   { id:"theme_forest", kind:"theme", themeId:"forest", cost:600, need:"pint",
     nm:"Deep Forest theme", desc:"Unlock the rich forest-green look" },
   { id:"theme_slate", kind:"theme", themeId:"slate", cost:600, need:"pint",
-    nm:"Calm Blue-Gray theme", desc:"Unlock the soft, quiet blue-gray look" },
-  { id:"perk_downloads", kind:"perk", cost:500, need:"pint",
-    nm:"+5 downloads today", desc:"Five extra saved downloads, right now" }
+    nm:"Calm Blue-Gray theme", desc:"Unlock the soft, quiet blue-gray look" }
 ];
 function honeyBal(){ return SETTINGS.honey||0; }
 function trialActive(id){ var t=SETTINGS.trials&&SETTINGS.trials[id]; return t && t>Date.now(); }
@@ -9503,9 +9617,6 @@ function redeemReward(r){
   } else if(r.id==='perk_friend'){
     SETTINGS.perks.extraFriends=(SETTINGS.perks.extraFriends||0)+1;
     toast("Extra friend slot added — it's yours to keep. 🍯");
-  } else if(r.id==='perk_downloads'){
-    SETTINGS.dlToday=Math.max(0,(SETTINGS.dlToday||0)-5);
-    toast("5 extra downloads added for today. 🍯");
   }
   saveSettings();
   renderRewards(); if(typeof renderTierCards==='function')renderTierCards();
