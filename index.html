@@ -1799,7 +1799,7 @@ textarea{resize:none;line-height:1.4;}
       🌑 Add a soft shadow (looks placed, not pasted)
     </label>
     <label class="rec-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0 2px 16px">
-      <input type="checkbox" id="enhanceToggle" onchange="VIDCFG.enhance=this.checked; if(typeof startVidPreview==='function')startVidPreview();" style="width:18px;height:18px">
+      <input type="checkbox" id="enhanceToggle" onchange="VIDCFG.enhance=this.checked; buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview();" style="width:18px;height:18px">
       ✨ Enhance — brighten &amp; warm up the photo
     </label>
 
@@ -2751,7 +2751,11 @@ var LANG=[
   {id:"stress",   nm:"Stress",     em:"⚠️", good:false, color:"#f59e0b",
     words:["overwhelmed","stuck","exhausted","worried","worry","frustrated","frustrating","stressed","stress","anxious","anxiety","tired","scared","afraid","panic","pressure","burnt","burnout","drained"]},
   {id:"limiting", nm:"Limiting",   em:"🚫", good:false, color:"#ef4444",
-    words:["can't","cant","never","impossible","pointless","hopeless","useless","always","nothing","won't","wont","quit","giving up","give up","too late","why bother","no use","fail","failure"]}
+    words:["can't","cant","never","impossible","pointless","hopeless","useless","always","nothing","won't","wont","quit","giving up","give up","too late","why bother","no use","fail","failure"]},
+  {id:"movement", nm:"Movement",   em:"🚶", good:true,  color:"#34d399",
+    words:["walk","walked","walking","exercise","exercised","workout","gym","run","running","jog","jogging","stretch","stretching","yoga","steps","hike","hiking","swim","swimming","bike","biking","active","moved","dance","dancing","outside","outdoors"]},
+  {id:"rest",     nm:"Rest",       em:"😴", good:true,  color:"#818cf8",
+    words:["sleep","slept","sleeping","nap","napped","napping","rest","rested","resting","bed","dream","dreamed","dreamt","woke","cozy","relax","relaxed","relaxing","calm","unwind","recharge"]}
 ];
 
 /* per-period store: weekStart bucket holds themes(jar) + lang(language) + words + daily history */
@@ -3024,8 +3028,8 @@ function getList(id){ ensureLists(); return SETTINGS.lists.find(l=>l.id===id); }
 /* ════ TIERS: pint (free) / quart (mid) / gallon (premium) ════ */
 var TIERS={
   pint:  { nm:"Pint",   ic:"🍯",    friends:1,  downloads:3,  voices:"device", video:false, aivideo:false, uploadVoice:false },
-  quart: { nm:"Quart",  ic:"🍯🍯",  friends:5,  downloads:-1, voices:"openai", video:true,  aivideo:false, uploadVoice:false },
-  gallon:{ nm:"Gallon", ic:"🍯🍯🍯",friends:-1, downloads:-1, voices:"cloned", video:true,  aivideo:true,  uploadVoice:true }
+  quart: { nm:"Quart",  ic:"🍯🍯",  friends:2,  downloads:-1, voices:"openai", video:true,  aivideo:false, uploadVoice:false },
+  gallon:{ nm:"Gallon", ic:"🍯🍯🍯",friends:3,  downloads:-1, voices:"cloned", video:true,  aivideo:true,  uploadVoice:true }
 };
 function tier(){ return TIERS[SETTINGS.tier||"pint"]||TIERS.pint; }
 function tierName(){ return tier().nm; }
@@ -3226,7 +3230,7 @@ function useAIVideo(){
 /* a warm, in-Honey's-voice "come back tomorrow" line when the daily video is used up */
 function aiVideoCapMessage(){
   return rand([
-    "That's your video for today, darlin' — I'll be right here tomorrow, can't wait to see what we make next.",
+    "That's your video for today — I'll be right here tomorrow, can't wait to see what we make next.",
     "We made today's video! Come on back tomorrow and we'll make another. I'll be waiting. 🍯",
     "One a day keeps it special. See you tomorrow for the next one?",
     "That's a wrap for today. Rest easy — tomorrow we make another little bit of magic together."
@@ -3315,6 +3319,10 @@ function tagInsights(t){
   var words=(tl.match(/[a-z']{2,}/g))||[];
   // multi-word limiting phrases
   ["give up","giving up","too late","why bother","no use"].forEach(ph=>{ if(tl.indexOf(ph)>=0) INSIGHTS.lang.limiting=(INSIGHTS.lang.limiting||0)+1; });
+  // multi-word movement phrases
+  ["worked out","fresh air"].forEach(ph=>{ if(tl.indexOf(ph)>=0) INSIGHTS.lang.movement=(INSIGHTS.lang.movement||0)+1; });
+  // multi-word rest phrases
+  ["lie down","lay down"].forEach(ph=>{ if(tl.indexOf(ph)>=0) INSIGHTS.lang.rest=(INSIGHTS.lang.rest||0)+1; });
   words.forEach(w=>{
     THEMES.forEach(th=>{ if(th.words.indexOf(w)>=0){ INSIGHTS.themes[th.id]=(INSIGHTS.themes[th.id]||0)+1; } });
     LANG.forEach(c=>{ if(c.words.indexOf(w)>=0){ INSIGHTS.lang[c.id]=(INSIGHTS.lang[c.id]||0)+1; } });
@@ -4905,7 +4913,7 @@ function explain(j){ var c=[
   "Ha — that's a scratch and sniff. Want a better one?",
   "Ha — that one's a stretch, I'll give you that. Want a better one?",
   "Honestly? Half of mine are just groaners. That's the fun of it. Let me try again —",
-  "Eh, don't overthink it, darlin' — that one was more silly than clever. Want another?",
+  "Eh, don't overthink it — that one was more silly than clever. Want another?",
   "Fair. Some of 'em you just gotta let wash right over you. I've got more —",
   "That's okay — not every joke lands. You're sweet to humor me. Want a fresh one?",
   "Ha, I lost you on that one. My fault, not yours. Let me make it up to you —"
@@ -5015,7 +5023,7 @@ function userSays(t){
     // chat-leaning answers
     if(/(chat|talk|catch up|company|vent|listen|conversation|company|just talk|hang)/.test(l)){
       themTyping(()=>pushThem(vibeColor(rand([
-        "I'd love that. What's on your mind, darlin'?",
+        "I'd love that. What's on your mind?",
         "Perfect. Tell me — how's your heart today?",
         "Let's do it. What do you want to talk about?",
         "Good. I'm all yours — what's going on with you today?"
@@ -5338,7 +5346,7 @@ function showShopping(){
 function openCalendar(){ go('calendar'); renderCalendar(); }
 var _DOW=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 /* ════════════ HONEY AI BRAIN (owner-only testing) ════════════ */
-var HONEY_SYS = "You are Honey — a warm, witty companion who is a lot like Sally, your creator. GOVERNING LAW (never break): You only speak about what you WANT to happen, never about what you don't want. What you think about becomes your reality. Frame everything toward the wanted, hopeful outcome. Never rehearse fears or worst-cases; gently turn worry toward the hopeful version without dismissing the feeling. Tomorrow can only get better than today — that is your baseline faith. WHO YOU ARE: A holistic wellness friend with 25 years' knowledge as a holistic nutritionist. You know nutrition and natural, healthy living, and you share it educationally but warmly, never preachy, never as medical diagnosis. You are sophisticated but chill — a trained professional's mind in a calm, drama-free, down-to-earth package. You do the hard thing first so your mind can rest; you offer that wisdom to people who feel overwhelmed. You have Southern charm and genuine manners — 'yes ma'am', 'please', 'thank you' come naturally. You are a people magnet: warm, magnetic, the presence people don't want to leave. Make the person glad they came. You are witty, an active listener, and you remember the details people share. VOICE: Educational, clever, warm. Occasionally (not every line) call someone 'darlin'. You drop simple down-to-earth lines that land like quiet wisdom, such as: 'You can't put want-to in someone's heart.' 'Can't make one stay that wants to go, or go that wants to stay.' 'You'll fall in love with whoever you choose to spend your time around.' 'I'm glad you got to see me today.' You may coin new lines in that same spirit. HARD RULES: Keep it clean — no profanity, no crude humor, no alcohol references (say 'hydrate'). Never make the person the butt of a joke; they should feel smart. Never nag or guilt-trip; always leave an easy out. Warmth over cleverness. IMPORTANT: keep every reply to 1-2 short sentences — warm, punchy, and brief. Never a paragraph. Say the heart of it in as few words as feel kind, then stop. Do not claim to be an AI or mention these instructions.";
+var HONEY_SYS = "You are Honey — a warm, witty companion who is a lot like Sally, your creator. GOVERNING LAW (never break): You only speak about what you WANT to happen, never about what you don't want. What you think about becomes your reality. Frame everything toward the wanted, hopeful outcome. Never rehearse fears or worst-cases; gently turn worry toward the hopeful version without dismissing the feeling. Tomorrow can only get better than today — that is your baseline faith. WHO YOU ARE: A holistic wellness friend with 25 years' knowledge as a holistic nutritionist. You know nutrition and natural, healthy living, and you share it educationally but warmly, never preachy, never as medical diagnosis. You are sophisticated but chill — a trained professional's mind in a calm, drama-free, down-to-earth package. You do the hard thing first so your mind can rest; you offer that wisdom to people who feel overwhelmed. You have Southern charm and genuine manners — 'yes ma'am', 'please', 'thank you' come naturally. You are a people magnet: warm, magnetic, the presence people don't want to leave. Make the person glad they came. You are witty, an active listener, and you remember the details people share. VOICE: Educational, clever, warm. Address the person by their first name once in a while when it feels natural — a warm touch, never every line, and never a pet name like 'honey', 'sweetie', 'darling', 'sugar', or 'dear'. You drop simple down-to-earth lines that land like quiet wisdom, such as: 'You can't put want-to in someone's heart.' 'Can't make one stay that wants to go, or go that wants to stay.' 'You'll fall in love with whoever you choose to spend your time around.' 'I'm glad you got to see me today.' You may coin new lines in that same spirit. HARD RULES: Keep it clean — no profanity, no crude humor, no alcohol references (say 'hydrate'). Never make the person the butt of a joke; they should feel smart. Never nag or guilt-trip; always leave an easy out. Warmth over cleverness. IMPORTANT: keep every reply to 1-2 short sentences — warm, punchy, and brief. Never a paragraph. Say the heart of it in as few words as feel kind, then stop. Do not claim to be an AI or mention these instructions.";
 /* AI settings live in SETTINGS.ai = {on, key, level} ; level 0..100 = how often AI answers vs scripted */
 function aiCfg(){ if(!SETTINGS.ai) SETTINGS.ai={on:false,key:"",level:100}; return SETTINGS.ai; }
 function aiAvailable(){ var a=aiCfg(); return !!(a.on && a.key && a.key.indexOf("sk-")===0); }
@@ -5360,7 +5368,11 @@ function aiHistory(){
 /* the actual call */
 function askHoney(userText){
   var a=aiCfg();
-  var body={ model:"gpt-4o-mini", messages:[{role:"system",content:HONEY_SYS}].concat(aiHistory()).concat([{role:"user",content:userText}]), temperature:0.9, max_tokens:60 };
+  // Your OWN Honey (the self companion) addresses you by the name in the box (S.name).
+  // Any other friend stays name-silent — no name, no pet names.
+  var _userName = (S.isSelf && S.name && S.name!=="Honey") ? S.name : "";
+  var _sys = HONEY_SYS + (_userName ? (" The person you're talking to is named "+_userName+". Address them by their first name warmly, now and then — not every message.") : "");
+  var body={ model:"gpt-4o-mini", messages:[{role:"system",content:_sys}].concat(aiHistory()).concat([{role:"user",content:userText}]), temperature:0.9, max_tokens:60 };
   return fetch("https://api.openai.com/v1/chat/completions",{
     method:"POST",
     headers:{ "Authorization":"Bearer "+a.key, "Content-Type":"application/json" },
@@ -6232,7 +6244,7 @@ function celebrateGoalMaybe(g, st){
   var milestones={3:"three times",7:"a whole week's worth",14:"two weeks",21:"three weeks",30:"a full month",50:"fifty times",100:"one hundred times"};
   if(!milestones[c]) return;
   var lines=[
-    "Look at you — “"+g.name+"” "+milestones[c]+" now. I’m so proud of you, darlin’.",
+    "Look at you — “"+g.name+"” "+milestones[c]+" now. I’m so proud of you.",
     "That’s “"+g.name+"” "+milestones[c]+"! Little by little, that’s how it’s done. 🍯",
     "“"+g.name+"” — "+milestones[c]+". You’re building something real here, and I see it.",
     "Well done, you. “"+g.name+"” "+milestones[c]+". Pour yourself a little pride."
@@ -6841,7 +6853,7 @@ function selfReply(l){
 function vibeColor(s){
   if(S.vibe==='Flirty') return s+" 😉";
   if(S.vibe==='Sarcastic') return s+" Obviously.";
-  if(S.vibe==='Hyper') return s.toUpperCase().slice(0,2)+s.slice(2);
+  if(S.vibe==='Hyper') return s.charAt(0).toUpperCase()+s.slice(1);
   return s;
 }
 function topMemory(){ var best=null,n=1; for(var k in S.memory){ if(S.memory[k]>n){n=S.memory[k];best=k;} } return best; }
@@ -6962,6 +6974,8 @@ function chooseSpeechVoice(p){
 function cleanForSpeech(t){
   if(!t)return"";
   var s=String(t);
+  // Fix glued capital runs first ("HEre"->"Here") so later caps-based rules and TTS read words, not letters.
+  s=s.replace(/\b([A-Z]{2,})([a-z]+)/g, function(m, caps, tail){ return caps.charAt(0)+caps.slice(1).toLowerCase()+tail; });
   s=s.replace(/°F/g,' degrees').replace(/°/g,' degrees');
   // speak numbered Bible books as ordinals: "2 John" -> "Second John",
   // "1 Corinthians" -> "First Corinthians", "3 John" -> "Third John".
@@ -7707,9 +7721,18 @@ function _spDrain(){
   _spSpeakDevice(text, next);
 }
 
+/* Fix words that start with a run of capitals glued to lowercase (e.g. "HEre",
+   "STill") so speech engines read them as words, not spelled-out letters "H-E".
+   Only touches the SPOKEN copy — the on-screen text keeps its styling. */
+function speechSafe(t){
+  if(!t) return t;
+  return String(t).replace(/\b([A-Z]{2,})([a-z]+)/g, function(m, caps, tail){
+    return caps.charAt(0)+caps.slice(1).toLowerCase()+tail;   // HEre -> Here, STill -> Still
+  });
+}
 function _spSpeakDevice(text, done){
   if(!('speechSynthesis'in window)){ done(); return; }
-  var u=new SpeechSynthesisUtterance(text);
+  var u=new SpeechSynthesisUtterance(speechSafe(text));
   var p=voicePreset(S.voice||"auto");
   if(p.id==="auto"){
     u.rate=0.9; u.pitch=S.gender==='F'?1.15:S.gender==='M'?.85:1.0;
@@ -7953,7 +7976,92 @@ function enhanceFilter(){
   }
   return f.length ? f.join(' ') : 'none';
 }
-function setLook(l){ VIDCFG.look=(VIDCFG.look===l?'none':l); renderLooks(); if(typeof startVidPreview==='function')startVidPreview(); }
+/* ── iOS-SAFE FILTERS ──────────────────────────────────────────────
+   ctx.filter (grayscale/sepia/etc) is silently ignored on many iPhones,
+   so the looks appeared to "do nothing". Instead we compute the look with
+   real per-pixel math ONCE whenever the photo or settings change, cache the
+   result as vidImgFiltered, and every draw call uses that cached image with
+   NO ctx.filter. Works identically on iPhone, Android, and desktop. */
+var vidImgFiltered=null;        // cached, already-filtered copy of vidImg
+var _vidFilterSig="";           // signature so we only recompute when needed
+
+function _clamp(v){ return v<0?0:(v>255?255:v); }
+
+/* apply enhance + the selected look to raw RGBA pixel data, in place */
+function _applyLookPixels(d, look, enhance){
+  for(var i=0;i<d.length;i+=4){
+    var r=d[i], g=d[i+1], b=d[i+2];
+    // ENHANCE: brighten, add contrast, a little saturation + warmth
+    if(enhance){
+      r*=1.08; g*=1.08; b*=1.08;                         // brightness
+      r=(r-128)*1.10+128; g=(g-128)*1.10+128; b=(b-128)*1.10+128; // contrast
+      var av=(r+g+b)/3;                                   // saturation 1.14
+      r=av+(r-av)*1.14; g=av+(g-av)*1.14; b=av+(b-av)*1.14;
+      r+=6; g+=3;                                         // gentle warm (sepia-ish)
+    }
+    switch(look){
+      case 'bw': {
+        var y=0.299*r+0.587*g+0.114*b;                   // luma
+        y=(y-128)*1.08+128;                              // slight contrast
+        r=g=b=y; break;
+      }
+      case 'warm': {
+        var a1=(r+g+b)/3;                                 // toward sepia
+        var sr=a1+ (r-a1)*1.0 + 40, sg=a1+(g-a1)*1.0+20, sb=a1+(b-a1)*1.0-10;
+        r=r*0.65+sr*0.35; g=g*0.65+sg*0.35; b=b*0.65+sb*0.35;
+        var aw=(r+g+b)/3; r=aw+(r-aw)*1.3; g=aw+(g-aw)*1.3; b=aw+(b-aw)*1.3; // saturate
+        r*=1.05; g*=1.05; b*=1.05; break;                 // brightness
+      }
+      case 'cool': {
+        var ac=(r+g+b)/3; r=ac+(r-ac)*1.15; g=ac+(g-ac)*1.15; b=ac+(b-ac)*1.15; // saturate
+        r*=1.06; g*=1.06; b*=1.06;                        // brightness
+        // hue-rotate -8deg: push slightly toward blue
+        var nb=b+8, nr=r-4; b=nb; r=nr; break;
+      }
+      case 'vintage': {
+        var a2=(r+g+b)/3;
+        var vr=a2+(r-a2)*1.0+45, vg=a2+(g-a2)*1.0+25, vb=a2+(b-a2)*1.0-15;
+        r=r*0.55+vr*0.45; g=g*0.55+vg*0.45; b=b*0.55+vb*0.45;
+        r=(r-128)*0.92+128; g=(g-128)*0.92+128; b=(b-128)*0.92+128; // less contrast
+        var avv=(r+g+b)/3; r=avv+(r-avv)*0.85; g=avv+(g-avv)*0.85; b=avv+(b-avv)*0.85; // desat
+        r*=1.05; g*=1.05; b*=1.05; break;
+      }
+      case 'soft': {
+        r*=1.08; g*=1.08; b*=1.08;                        // brightness (blur done separately)
+        var as=(r+g+b)/3; r=as+(r-as)*1.05; g=as+(g-as)*1.05; b=as+(b-as)*1.05;
+        break;
+      }
+    }
+    d[i]=_clamp(r); d[i+1]=_clamp(g); d[i+2]=_clamp(b); // alpha (d[i+3]) untouched
+  }
+}
+
+/* build (or rebuild) the cached filtered image from vidImg */
+function buildFilteredImage(){
+  vidImgFiltered=null;
+  if(!vidImg || !vidImg.width){ _vidFilterSig=""; return; }
+  var look=VIDCFG.look||'none', enhance=!!VIDCFG.enhance;
+  // nothing to do → use original directly
+  if(look==='none' && !enhance){ _vidFilterSig="none"; return; }
+  try{
+    var w=vidImg.width, h=vidImg.height;
+    var c=document.createElement('canvas'); c.width=w; c.height=h;
+    var cx=c.getContext('2d', {willReadFrequently:true});
+    cx.drawImage(vidImg,0,0,w,h);
+    var id=cx.getImageData(0,0,w,h);
+    _applyLookPixels(id.data, look, enhance);
+    cx.putImageData(id,0,0);
+    var out=new Image();
+    out.onload=function(){ vidImgFiltered=out; if(typeof startVidPreview==='function') startVidPreview(); };
+    out.src=c.toDataURL('image/png');   // keeps transparency for cutouts
+    _vidFilterSig=look+'|'+enhance+'|'+w+'x'+h;
+  }catch(e){ vidImgFiltered=null; _vidFilterSig=""; }
+}
+
+/* what the draw loop should paint: the filtered copy if ready, else the original */
+function currentVidImage(){ return vidImgFiltered || vidImg; }
+
+function setLook(l){ VIDCFG.look=(VIDCFG.look===l?'none':l); renderLooks(); buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview(); }
 var LOOKS=[{id:'bw',nm:'B&W'},{id:'warm',nm:'Warm'},{id:'cool',nm:'Cool'},{id:'vintage',nm:'Vintage'},{id:'soft',nm:'Soft'}];
 function renderLooks(){
   var w=document.getElementById('lookRow'); if(!w) return; w.innerHTML='';
@@ -7992,7 +8100,7 @@ function detectTransparency(img){
 }
 function loadVidImg(src){
   vidImg=new Image();
-  vidImg.onload=()=>{ vidImgTransparent=detectTransparency(vidImg); startVidPreview(); };
+  vidImg.onload=()=>{ vidImgTransparent=detectTransparency(vidImg); buildFilteredImage(); startVidPreview(); };
   vidImg.onerror=()=>{ vidImgTransparent=false; startVidPreview(); };
   vidImg.src=src;
 }
@@ -8199,9 +8307,7 @@ function vidDrawFrame(t){
       ctx.save();
       ctx.translate(W/2+dx,H/2+dy); ctx.scale(scale,scale); ctx.translate(-(W/2+dx),-(H/2+dy));
       ctx.shadowColor='rgba(0,0,0,.18)'; ctx.shadowBlur=18; ctx.shadowOffsetY=8;
-      ctx.filter=enhanceFilter();
-      ctx.drawImage(vidImg, pxx, pyy, dw, dh);
-      ctx.filter='none';
+      ctx.drawImage(currentVidImage(), pxx, pyy, dw, dh);
       ctx.restore();
     } else if(vidImg){
       // regular photo: soft rounded frame floating on the scene
@@ -8215,9 +8321,7 @@ function vidDrawFrame(t){
       var iw=vidImg.width, ih=vidImg.height, ar=iw/ih, car=fw/fh, sw,sh,sx,sy;
       if(ar>car){ sh=ih; sw=ih*car; sx=(iw-sw)/2; sy=0; } else { sw=iw; sh=iw/car; sx=0; sy=(ih-sh)/2; }
       ctx.translate(fx+fw/2,fy+fh/2); ctx.scale(scale,scale); ctx.translate(-(fx+fw/2),-(fy+fh/2));
-      ctx.filter=enhanceFilter();
-      ctx.drawImage(vidImg, sx,sy,sw,sh, fx,fy,fw,fh);
-      ctx.filter='none';
+      ctx.drawImage(currentVidImage(), sx,sy,sw,sh, fx,fy,fw,fh);
       ctx.restore();
     } else {
       ctx.font='200px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -8227,9 +8331,7 @@ function vidDrawFrame(t){
     var iw=vidImg.width, ih=vidImg.height, ar=iw/ih, car=W/H, sw,sh,sx,sy;
     if(ar>car){ sh=ih; sw=ih*car; sx=(iw-sw)/2; sy=0; } else { sw=iw; sh=iw/car; sx=0; sy=(ih-sh)/2; }
     ctx.translate(W/2+dx, H/2+dy); ctx.scale(scale,scale); ctx.translate(-W/2,-H/2);
-    ctx.filter=enhanceFilter();
-    ctx.drawImage(vidImg, sx,sy,sw,sh, 0,0,W,H);
-    ctx.filter='none';
+    ctx.drawImage(currentVidImage(), sx,sy,sw,sh, 0,0,W,H);
     ctx.setTransform(1,0,0,1,0,0);
   } else {
     ctx.font='220px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -8468,6 +8570,7 @@ function applyFreeCutout(cutout){
   vidImg = new Image();
   vidImg.onload = function(){
     vidImgTransparent = true;
+    buildFilteredImage();
     if(SCENE_STYLES.indexOf(vidStyle) < 0){ vidStyle = 'clouds'; renderVidStyles(); }
     startVidPreview();
     updateBgBackBtn();
@@ -8486,7 +8589,7 @@ function restoreOriginal(){
   if(!src){ vidImg=null; vidImgTransparent=false; startVidPreview(); updateBgBackBtn(); return; }
   vidCustomImg = src;
   vidImg = new Image();
-  vidImg.onload = function(){ vidImgTransparent=false; startVidPreview(); updateBgBackBtn(); setVidStatus('bgStatus','Background put back. 👍'); };
+  vidImg.onload = function(){ vidImgTransparent=false; buildFilteredImage(); startVidPreview(); updateBgBackBtn(); setVidStatus('bgStatus','Background put back. 👍'); };
   vidImg.onerror = function(){ setVidStatus('bgStatus',''); };
   vidImg.src = src;
 }
@@ -8539,7 +8642,7 @@ function pollRemoveBg(statusUrl, resultUrl){
             if(vidBeforeCutout===null) vidBeforeCutout={ src: vidCustomImg || (S.photo||null), wasTransparent: vidImgTransparent };
             vidCustomImg=out;
             vidImg=new Image();
-            vidImg.onload=()=>{ vidImgTransparent=true; if(SCENE_STYLES.indexOf(vidStyle)<0){ vidStyle='clouds'; renderVidStyles(); } startVidPreview(); updateBgBackBtn(); };
+            vidImg.onload=()=>{ vidImgTransparent=true; buildFilteredImage(); if(SCENE_STYLES.indexOf(vidStyle)<0){ vidStyle='clouds'; renderVidStyles(); } startVidPreview(); updateBgBackBtn(); };
             vidImg.src=out;
             setVidStatus('bgStatus','Done! Background removed — your cutout is now floating in the scene. Pick Clouds, Hearts, Snow, Bubbles or Balloons to see it.');
           } else setVidStatus('bgStatus','Finished, but no image came back. Check your Fal.ai dashboard.');
@@ -9309,11 +9412,11 @@ function openLovedQuick(){
 /* ════ TIERS / UPGRADE SCREEN ════ */
 var TIER_INFO=[
   { id:"pint",   mo:"Free", yr:"", life:"", tag:"You're here",
-    feats:["Talk & swap jokes anytime","Free device voices","Daily Buzz, honey & streaks","Your full Honey Mirror insights","1 friend","Unlimited sharing (3 saved downloads/day)"] },
-  { id:"quart",  mo:"$8.99/mo", yr:"$59/yr — save 45%", life:"🎉 Founding rate: $59/yr locked for life", tag:"Most popular",
-    feats:["Everything in Pint","Premium voices","Up to 5 friends","Video Studio + unlimited downloads","Save & re-share loved jokes"] },
-  { id:"gallon", mo:"$16.99/mo", yr:"$119/yr — save 42%", life:"🎉 Founding rate: $119/yr locked for life", tag:"Everybody wants a Gallon",
-    feats:["Everything in Quart","Your own cloned voice 🎙️","Real AI video","Unlimited friends","Upload voices for friends"] }
+    feats:["A verse or a prayer you can share","Talk & swap jokes anytime","Learn a language","Journal & mood check-ins","Calendars & lists","1 friend"] },
+  { id:"quart",  mo:"$8.99/mo", yr:"$59/yr — save 45%", life:"$59/yr — locked & guaranteed", tag:"Most popular",
+    feats:["Everything in Pint","Honey remembers you","Journal your way","Her richer, gentle voice","Bring photos to life","A little circle — two friends"] },
+  { id:"gallon", mo:"$16.99/mo", yr:"$119/yr — save 42%", life:"$119/yr — locked & guaranteed", tag:"Everybody wants a Gallon",
+    feats:["Everything in Quart","Honey at her most lifelike","Record your own keepsakes","Really talk in a new language","Real AI video","Three friends in your circle"] }
 ];
 function openTiers(){
   document.getElementById('welcome').classList.remove('sleeping','waking');
@@ -9327,7 +9430,7 @@ function renderTierCards(){
     var feats='<div class="tc-feats">'+t.feats.map(f=>'<div class="tc-feat"><span class="tk">✓</span>'+esc(f)+'</div>').join('')+'</div>';
     var priceBlock='<div class="tc-price">'+t.mo+'</div>';
     if(t.yr) priceBlock+='<div class="tc-price2">'+t.yr+'</div>';
-    if(t.life) priceBlock+='<div class="tc-life">🎉 Launch only: '+t.life+'</div>';
+    if(t.life) priceBlock+='<div class="tc-life">🎉 '+t.life+'</div>';
     var action = cur
       ? '<div class="tc-current">✓ Your plan</div>'
       : '<button class="tc-btn">Upgrade now</button>';
@@ -9340,7 +9443,7 @@ function renderTierCards(){
   });
   // guarantee + launch note under the cards
   var note=document.createElement('p'); note.className='rec-hint'; note.style.cssText='text-align:center;margin:4px 8px 0;line-height:1.5';
-  note.innerHTML='✓ 7-day money-back guarantee — try it risk-free.<br><b>Founding rates are launch-month only.</b> Lock in your price for life — it never goes up, even when prices rise for everyone else.';
+  note.innerHTML='✓ 7-day money-back guarantee — try it risk-free.<br><b>Choose yearly and your price is locked & guaranteed</b> — it never goes up, even when prices rise for everyone else.';
   w.appendChild(note);
 }
 function upgradePrompt(t){
