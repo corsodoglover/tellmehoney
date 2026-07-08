@@ -1916,12 +1916,15 @@ textarea{resize:none;line-height:1.4;}
         <button class="freq-btn" id="provEleven" onclick="setProvider(&#39;elevenlabs&#39;)"><span class="fe">🎙️</span>ElevenLabs (my voice)</button>
       </div>
 
-      <div id="openaiFields" class="owner-only-keys">
-        <label class="rec-label">OpenAI API key</label>
-        <div class="rec-field"><input type="password" id="cloudKey" placeholder="sk-…" oninput="CLOUD.key=this.value"></div>
+      <div id="voiceChoices">
         <label class="rec-label">Choose a voice</label>
         <div class="cloud-voices" id="cloudVoices"></div>
         <button class="rec-save" onclick="saveCloudCfg()">Save &amp; preview</button>
+      </div>
+
+      <div id="openaiFields" class="owner-only-keys">
+        <label class="rec-label">OpenAI API key</label>
+        <div class="rec-field"><input type="password" id="cloudKey" placeholder="sk-…" oninput="CLOUD.key=this.value"></div>
       </div>
 
       <div id="elevenFields" class="owner-only-keys" style="display:none">
@@ -2126,7 +2129,6 @@ var REDNECK_GENIUS = [
 {s:"Why did the pickup truck get a trophy?",p:"Most dependable thing in three counties."},
 {s:"What do you call a redneck with a briefcase?",p:"The defendant."},
 {s:"Why did the hunting dog go to college?",p:"He was tired of being outdoors."},
-{s:"What's a redneck's idea of a seven-course meal?",p:"A bucket of chicken and a six-pack."},
 {s:"Why did the tractor win the beauty contest?",p:"It was the best looking thing on the farm."},
 {s:"What do you call a redneck in a suit?",p:"The groom."},
 {s:"Why did the fishing pole retire?",p:"It was tired of being strung along."},
@@ -2138,7 +2140,6 @@ var REDNECK_GENIUS = [
 {s:"Why did the catfish win the argument?",p:"It had the deeper point."},
 {s:"What do you call a redneck hot tub?",p:"A John Deere with a busted radiator."},
 {s:"Why did the hound dog write poetry?",p:"He had a lot of feelings about squirrels."},
-{s:"What's a redneck's favorite wine?",p:"You gonna eat that?"},
 {s:"Why did the fence post stay humble?",p:"It knew it was just holding things together."},
 {s:"What do you call a redneck who wins the lottery?",p:"A traveling man."},
 {s:"Why did the hay bale get respect?",p:"It held its shape under pressure."},
@@ -2159,7 +2160,6 @@ var REDNECK_GENIUS = [
 {s:"What do you call a redneck's first day in the city?",p:"Aggressive confusion."},
 {s:"Why did the pickup truck get therapy?",p:"Too many miles of emotional baggage."},
 {s:"What's the country version of WiFi?",p:"Standing on the hood in a thunderstorm."},
-{s:"Why did the moonshine win awards?",p:"Outstanding in its field and several other fields."},
 {s:"What do you call a Southern electrician?",p:"Bubba with wire cutters and a lot of confidence."},
 {s:"Why did the flatbed get respect?",p:"It never complained about what it was carrying."},
 {s:"What's country wisdom on love?",p:"If it ain't broke don't fix it. If it is broke duct tape it."},
@@ -2560,7 +2560,6 @@ var ROAST_MASTER = [
 {s:"You have such a unique sense of style.",p:"'Unique' is doing a lot of heavy lifting in that sentence."},
 {s:"You're living proof that anyone can do anything.",p:"You set the bar so low, everyone clears it."},
 {s:"I admire how you never change.",p:"Growth is scary, and you have avoided it completely."},
-{s:"You're like a fine wine.",p:"You give people headaches and they regret you in the morning."},
 {s:"Don't ever lose that sparkle.",p:"It's the main thing distracting from the rest."},
 {s:"You really committed to the bit.",p:"The bit being your entire personality."},
 {s:"You're a classic.",p:"Outdated, a little confusing, and somehow still around."}
@@ -5367,12 +5366,26 @@ function doShopping(t){
     .replace(/^\s*(some|more|a|an|the)\s+/i,'')
     .replace(/[.!?]+$/,'').trim();
   if(!item){ pushThem(vibeColor("Now what can I add for you, and to which list?")); return; }
-  // pick target list: mention wins, else last opened
-  var targetId=SETTINGS.lastList||"shopping";
+  // pick target list: named mention wins → custom list names → "my/the list" means shopping → bare adds use last opened
   var lo=orig.toLowerCase();
+  var targetId=null;
   if(/to-?do/.test(lo)) targetId="todo";
-  else if(/note/.test(lo)) targetId="notes";
-  else if(/shop|grocer|store/.test(lo)) targetId="shopping";
+  else if(/\bnotes?\b/.test(lo)) targetId="notes";
+  else if(/shop|grocer|store|household/.test(lo)) targetId="shopping";
+  else {
+    // custom lists by name — "add socks to my Christmas list"
+    ensureLists();
+    var hit=SETTINGS.lists.find(function(l){ return l.name && lo.indexOf(String(l.name).toLowerCase())>=0; });
+    if(hit){
+      targetId=hit.id;
+      var esc=String(hit.name).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      item=item.replace(new RegExp('\\b(to|on|in)?\\s*(my |the )?'+esc+'\\s*(list)?\\b','ig'),'').replace(/\s{2,}/g,' ').trim();
+    }
+  }
+  if(!targetId){
+    // "add milk to my list" — the app teaches this means the shopping list
+    targetId = /\b(my|the|a)\s+list\b/.test(lo) ? "shopping" : (SETTINGS.lastList||"shopping");
+  }
   var list=getList(targetId)||getList("shopping");
   var parts=item.split(/\s*(?:,|\band\b)\s*/i).map(s=>s.trim()).filter(Boolean);
   var added=[];
@@ -5931,9 +5944,9 @@ var FORAGE_FACTS=[
   "The fig is one of the most ancient cultivated fruits of the Mediterranean — sacred enough to be painted in Egyptian tomb art, and it thrives in the Southern climate.",
   "Daylily — that orange “ditch lily” everywhere down South — is a surprisingly versatile vegetable; in China the dried buds are sold as “golden needles” for hot-and-sour soup.",
   "The daylily has been a staple of Chinese cooking for over a thousand years; it leapt the garden fence and naturalized across America — a beautiful free vegetable most folks mow right past.",
-  "Sawtooth blackberries along the fence line make jelly, cordial, even wine — and the young peeled stems can be eaten too. Summer's free harvest.",
+  "Sawtooth blackberries along the fence line make jelly and juice — and the young peeled stems can be eaten too. Summer's free harvest.",
   "Blackberry (bramble) was once listed in the official U.S. pharmacopoeia, and Irish folk medicine reached for it for nearly everything — recorded here as history, not medicine.",
-  "Muscadine grapes off a wild vine make juice, jelly, and wine — and the leaves are good eating too. Just be sure the vine's unsprayed.",
+  "Muscadine grapes off a wild vine make juice and jelly — and the leaves are good eating too. Just be sure the vine's unsprayed.",
   "Muscadines are heat- and disease-tolerant Southern natives — grapes and winemaking are among the most documented foods of the entire ancient world.",
   "Wax myrtle leaves work just like a bay leaf — toss one in a pot of beans or stew to flavor it, then fish it out before serving.",
   "Southerners loved wax myrtle so much they called it the “Miracle Bush” — its boiled berries yield the wax for classic bayberry candles, and crushed leaves were rubbed on skin to repel mosquitoes.",
@@ -7021,17 +7034,32 @@ function voicePreset(id){ return VOICE_PRESETS.find(v=>v.id===id)||VOICE_PRESETS
 function chooseSpeechVoice(p){
   var vs=speechSynthesis.getVoices(); if(!vs.length)return null;
   var g=S.gender;
-  // explicit hint from a preset takes priority, but still respect gender if possible
-  if(p && p.hint){ var re=new RegExp(p.hint,'i'); var m=vs.find(v=>re.test(v.name)); if(m)return m; }
-  var FEMALE=/female|samantha|victoria|zira|aria|karen|moira|tessa|fiona|serena|allison|ava|susan|kate|catherine|nicky|woman|girl/i;
+  // Quality score: prefer the modern, natural voices a phone has installed.
+  //   Siri voices (neural, iOS 17+) > Enhanced/Premium/Natural versions > plain compact ones.
+  // If none of the nice ones exist, score is 0 for everything and behavior = the old picker.
+  function q(v){
+    var n=(v.name||'')+' '+(v.voiceURI||'');
+    var s=0;
+    if(/siri/i.test(n)) s+=40;
+    if(/enhanced/i.test(n)) s+=30;
+    if(/premium/i.test(n)) s+=30;
+    if(/natural|neural/i.test(n)) s+=20;
+    if(/^en[-_]/i.test(v.lang||'')) s+=5;          // prefer English
+    if(/compact/i.test(n)) s-=10;                   // the tinny ones
+    return s;
+  }
+  function best(list){ if(!list.length)return null; return list.slice().sort(function(a,b){return q(b)-q(a);})[0]; }
+  // explicit hint from a preset takes priority — but prefer its Enhanced/Premium version if installed
+  if(p && p.hint){ var re=new RegExp(p.hint,'i'); var hm=vs.filter(v=>re.test(v.name)); var m=best(hm); if(m)return m; }
+  var FEMALE=/female|samantha|victoria|zira|aria|karen|moira|tessa|fiona|serena|allison|ava|susan|kate|catherine|nicky|woman|girl|siri/i;
   var MALE=/male|daniel|alex|david|fred|thomas|oliver|aaron|arthur|gordon|lee|rishi|man|guy/i;
   var pick;
-  if(g==='F'){ pick=vs.find(v=>FEMALE.test(v.name) && !/^male/i.test(v.name)); }
-  else if(g==='M'){ pick=vs.find(v=>MALE.test(v.name) && !FEMALE.test(v.name)); }
+  if(g==='F'){ pick=best(vs.filter(v=>FEMALE.test(v.name) && !/^male/i.test(v.name))); }
+  else if(g==='M'){ pick=best(vs.filter(v=>MALE.test(v.name) && !FEMALE.test(v.name))); }
   // English preference among the matches if nothing yet
-  if(!pick && g==='F'){ pick=vs.find(v=>FEMALE.test(v.name)); }
-  if(!pick && g==='M'){ pick=vs.find(v=>MALE.test(v.name)); }
-  return pick || vs.find(v=>/en[-_]/i.test(v.lang)) || vs[0];
+  if(!pick && g==='F'){ pick=best(vs.filter(v=>FEMALE.test(v.name))); }
+  if(!pick && g==='M'){ pick=best(vs.filter(v=>MALE.test(v.name))); }
+  return pick || best(vs.filter(v=>/en[-_]/i.test(v.lang))) || vs[0];
 }
 
 /* remove emoji & symbols so TTS doesn't read "winking face" etc.
@@ -7846,6 +7874,18 @@ function playCloudQueue(){
   cloudAudio.play();
 }
 function stopCloudAudio(){ cloudQueue=[]; cloudPlaying=false; if(cloudAudio){try{cloudAudio.pause()}catch(e){}} }
+/* Per-vibe speaking direction for premium voices — same voice, different performance.
+   Structured like a director's note (personality / tone / emotion / pacing). Rides free on the API call. */
+var VIBE_VOICE_DIRECTION={
+  Warm:       "Personality: a kind Southern friend chatting on the porch. Tone: gentle, unhurried, familiar. Emotion: warm and caring, with a smile you can hear. Pacing: relaxed, never rushed.",
+  Flirty:     "Personality: a playful Southern charmer. Tone: teasing and light, a little sparkle on the punchlines. Emotion: affectionate and fun, never over the top. Pacing: easy, with playful little pauses.",
+  Sarcastic:  "Personality: a dry-witted Southern friend who loves you but won't sugarcoat it. Tone: deadpan and wry, with a smirk you can hear. Emotion: amused, knowing. Pacing: measured, letting the dry lines land.",
+  Chill:      "Personality: the most relaxed friend you know. Tone: soft, low-key, easygoing. Emotion: calm and content, like a slow afternoon. Pacing: slow and soothing, plenty of breathing room.",
+  Hyper:      "Personality: a bubbly best friend who just heard great news. Tone: bright, quick, delighted. Emotion: joyful and excited, laughing at her own jokes. Pacing: lively and bouncy, but every word still clear.",
+  Wholesome:  "Personality: a sweet, encouraging friend who sees the good in everything. Tone: tender and sincere. Emotion: gentle joy and genuine encouragement. Pacing: soft and steady, like a bedtime story.",
+  Mysterious: "Personality: a storyteller by candlelight. Tone: low, intriguing, a little theatrical. Emotion: playful intrigue, like sharing a delicious secret. Pacing: slow builds and dramatic little pauses."
+};
+function vibeVoiceDirection(){ return VIBE_VOICE_DIRECTION[(typeof S!=='undefined'&&S.vibe)||'Warm'] || VIBE_VOICE_DIRECTION.Warm; }
 function cloudSpeak(t){
   t=cleanForSpeech(t); if(!t)return;
   speakQueue++; setTalking(true); if(listening) pauseListening();
@@ -7863,7 +7903,8 @@ function cloudSpeak(t){
     req=fetch("https://api.openai.com/v1/audio/speech",{
       method:"POST",
       headers:{ "Authorization":"Bearer "+CLOUD.key, "Content-Type":"application/json" },
-      body:JSON.stringify({ model:"tts-1", voice:CLOUD.voice||"alloy", input:t, speed:clampNum(S.rate||0.9,0.5,2) })
+      body:JSON.stringify({ model:"gpt-4o-mini-tts", voice:CLOUD.voice||"coral", input:t, speed:clampNum(S.rate||0.9,0.5,2),
+        instructions:vibeVoiceDirection() })
     });
   }
   req.then(r=>{ if(!r.ok){ return r.text().then(txt=>{
@@ -7958,7 +7999,7 @@ function onCloudToggle(on){ CLOUD.enabled=on; saveCloud();
     else { S.voice="honey"; persist(); }
   }
   renderVoiceGrid(); }
-var CLOUD_VOICES=["alloy","echo","fable","onyx","nova","shimmer"];
+var CLOUD_VOICES=["coral","sage","marin","cedar","nova","shimmer","ballad","ash","verse","alloy","echo","fable","onyx"];
 function renderCloudVoices(){
   var w=document.getElementById('cloudVoices'); w.innerHTML='';
   // sensible default by the friend's gender (female friend → warm female voice)
@@ -7969,6 +8010,8 @@ function renderCloudVoices(){
 function setProvider(p){
   CLOUD.provider=p; saveCloud();
   var owner=isOwner();
+  // Voice choices are for every premium user; only the raw API-key fields are owner-only.
+  var vc=document.getElementById('voiceChoices'); if(vc)vc.style.display = (p==='openai') ? 'block':'none';
   document.getElementById('openaiFields').style.display = (owner && p==='openai') ? 'block':'none';
   document.getElementById('elevenFields').style.display = (owner && p==='elevenlabs') ? 'block':'none';
   var po=document.getElementById('provOpenai'), pe=document.getElementById('provEleven');
@@ -9492,7 +9535,8 @@ function sayLearnOpenAI(text){
     fetch("https://api.openai.com/v1/audio/speech",{
       method:"POST",
       headers:{ "Authorization":"Bearer "+CLOUD.key, "Content-Type":"application/json" },
-      body:JSON.stringify({ model:"tts-1", voice:CLOUD.voice||"nova", input:text, speed:0.92 })
+      body:JSON.stringify({ model:"gpt-4o-mini-tts", voice:CLOUD.voice||"nova", input:text, speed:0.92,
+        instructions:"Speak warmly and naturally, like a kind Southern friend — gentle, unhurried, with a smile in your voice." })
     }).then(r=>{ if(!r.ok) throw new Error("status "+r.status); return r.blob(); })
     .then(blob=>{ stopAllAudio(); var a=new Audio(URL.createObjectURL(blob)); a.play(); })
     .catch(e=>{ /* fall back to device voice if the key fails */ sayLearnDevice(text, curLearnLang); });
