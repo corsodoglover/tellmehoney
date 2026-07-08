@@ -1804,15 +1804,7 @@ textarea{resize:none;line-height:1.4;}
     <label class="rec-label">Scenes</label>
     <div class="vid-styles" id="vidStyles"></div>
     <label class="rec-label">Looks</label>
-    <div class="vid-styles" id="lookRow" style="grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px"></div>
-    <label class="rec-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0 2px 6px">
-      <input type="checkbox" id="shadowToggle" checked onchange="VIDCFG.shadow=this.checked; if(typeof startVidPreview==='function')startVidPreview();" style="width:18px;height:18px">
-      🌑 Add a soft shadow (looks placed, not pasted)
-    </label>
-    <label class="rec-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0 2px 16px">
-      <input type="checkbox" id="enhanceToggle" onchange="VIDCFG.enhance=this.checked; buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview();" style="width:18px;height:18px">
-      ✨ Enhance — brighten &amp; warm up the photo
-    </label>
+    <div class="vid-styles" id="lookRow" style="grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px"></div>
 
     <button class="rec-save" onclick="document.getElementById(&#39;vidImgInput&#39;).click()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📷 Change the picture</button>
     <input type="file" id="vidImgInput" accept="image/*" style="display:none" onchange="onVidImgPick(event)">
@@ -8198,6 +8190,11 @@ function _applyLookPixels(d, look, enhance){
         y=(y-128)*1.08+128;                              // slight contrast
         r=g=b=y; break;
       }
+      case 'noir': {
+        var yn=0.299*r+0.587*g+0.114*b;                  // luma
+        yn=(yn-128)*1.55+118;                            // strong contrast, slightly darker
+        r=g=b=yn; break;
+      }
       case 'warm': {
         var a1=(r+g+b)/3;                                 // toward sepia
         var sr=a1+ (r-a1)*1.0 + 40, sg=a1+(g-a1)*1.0+20, sb=a1+(b-a1)*1.0-10;
@@ -8255,14 +8252,16 @@ function buildFilteredImage(){
 function currentVidImage(){ return vidImgFiltered || vidImg; }
 
 function setLook(l){ VIDCFG.look=(VIDCFG.look===l?'none':l); renderLooks(); buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview(); }
-function resetLook(){ VIDCFG.look='none'; VIDCFG.enhance=false; var et=document.getElementById('enhanceToggle'); if(et)et.checked=false; renderLooks(); buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview(); }
-var LOOKS=[{id:'bw',nm:'B&W'},{id:'warm',nm:'Warm'},{id:'cool',nm:'Cool'},{id:'vintage',nm:'Vintage'},{id:'soft',nm:'Soft'}];
+function resetLook(){ VIDCFG.look='none'; VIDCFG.enhance=false; renderLooks(); buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview(); }
+var LOOKS=[{id:'bw',nm:'B&W'},{id:'noir',nm:'Noir'},{id:'warm',nm:'Warm'},{id:'cool',nm:'Cool'},{id:'vintage',nm:'Vintage'},{id:'soft',nm:'Soft'}];
 function renderLooks(){
   var w=document.getElementById('lookRow'); if(!w) return; w.innerHTML='';
   // "Original" always sits first — one clear tap back to the untouched photo.
   var noLook = (!VIDCFG.look || VIDCFG.look==='none') && !VIDCFG.enhance;
-  var orig=document.createElement('button'); orig.className='vstyle'+(noLook?' sel':'');
-  orig.style.minHeight='auto'; orig.style.padding='11px 4px'; orig.textContent='↩ Original';
+  // reset button: blue square, white back-arrow, no word
+  var orig=document.createElement('button'); orig.className='vstyle';
+  orig.style.cssText='min-height:auto;padding:11px 4px;background:#2f6bd6;color:#fff;font-size:20px;font-weight:800';
+  orig.textContent='↩'; orig.title='Back to original'; orig.setAttribute('aria-label','Back to original photo');
   orig.onclick=function(){ resetLook(); };
   w.appendChild(orig);
   LOOKS.forEach(function(l){
@@ -8271,6 +8270,16 @@ function renderLooks(){
     b.onclick=function(){ setLook(l.id); };
     w.appendChild(b);
   });
+  // Shadow toggle (stacks on top of any look)
+  var sh=document.createElement('button'); sh.className='vstyle'+(VIDCFG.shadow?' sel':'');
+  sh.style.minHeight='auto'; sh.style.padding='11px 4px'; sh.textContent='🌑 Shadow';
+  sh.onclick=function(){ VIDCFG.shadow=!VIDCFG.shadow; renderLooks(); if(typeof startVidPreview==='function')startVidPreview(); };
+  w.appendChild(sh);
+  // Touch-up (Enhance) toggle
+  var en=document.createElement('button'); en.className='vstyle'+(VIDCFG.enhance?' sel':'');
+  en.style.minHeight='auto'; en.style.padding='11px 4px'; en.textContent='✨ Touch-up';
+  en.onclick=function(){ VIDCFG.enhance=!VIDCFG.enhance; renderLooks(); buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview(); };
+  w.appendChild(en);
 }
 var VID_STYLES=[
   {id:"clouds",  em:"☁️", nm:"Clouds"},
