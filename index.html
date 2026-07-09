@@ -4886,14 +4886,14 @@ function enterChat(){
           pushThem("Oh — one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap the \u201CSet up my Honey\u201D button up top anytime.", false, true);
           if(S.speakerOn) enqueueSpeak("\u0000CLIP:onboard_intro\u0001Oh, one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap change your Honey up top anytime.");
           resetIdle();
-          // Paragraph 2 — reactions
-          setTimeout(()=>{ themTyping(()=>{
+          // Paragraph 2 — reactions (wait for paragraph 1 to ACTUALLY finish, not a guess)
+          afterHoneySpeaks(()=>{ themTyping(()=>{
             pushThem("And see those little taps just above where you type? 👍 👎 ❓ ❤️ — use those to react anytime, quick and easy. Here, let me show you — I'll tell you one:", false, true);
             if(S.speakerOn) enqueueSpeak("\u0000CLIP:onboard_reactions\u0001And see those little taps just above where you type? The thumbs up, thumbs down, question mark, and heart — use those to react anytime, quick and easy. Here, let me show you. I'll tell you one:");
             resetIdle();
-            // demo joke after both paragraphs fully finish (no box to interrupt now)
-            setTimeout(()=>{ try{ tellJoke(); }catch(e){} }, 13000);
-          }); }, 13000);   // wait for paragraph 1 to FULLY finish speaking
+            // demo joke only once she's truly done talking, so it can't get cut off
+            afterHoneySpeaks(()=>{ try{ tellJoke(); }catch(e){} });
+          }); });
         }); }, 1800);
       }
     }); },900);
@@ -8076,6 +8076,28 @@ function clearSpeech(){
 /* back-compat alias */
 function stopAllAudio(){ clearSpeech(); }
 
+/* Wait until Honey has ACTUALLY finished speaking, then run cb().
+   Used by onboarding so lines can't be queued behind a still-playing clip.
+   - speaker off  -> nothing is ever queued, so just use a short beat
+   - safety cap   -> if audio stalls, move on anyway instead of freezing  */
+function afterHoneySpeaks(cb, gap, cap){
+  gap = (gap==null? 600 : gap);
+  cap = (cap==null? 45000 : cap);
+  if(!S.speakerOn){ setTimeout(cb, 1200); return; }
+  var waited = 0, step = 200;
+  // give the clip a moment to enter the queue before we start checking
+  setTimeout(function(){
+    var iv = setInterval(function(){
+      waited += step;
+      var busy = _spActive || _spQueue.length;
+      if(!busy || waited >= cap){
+        clearInterval(iv);
+        setTimeout(cb, gap);   // small breath after she stops
+      }
+    }, step);
+  }, 400);
+}
+
 function enqueueSpeak(text){
   if(!S.speakerOn) return;
   // exact-clip sentinel passes through untouched
@@ -10122,6 +10144,12 @@ function jokesAllowedAuto(){ return S.jokeFreq!=='off' && S.jokeFreq!=='ask'; }
 function idleNudge(stage){
   if(!document.getElementById('chat').classList.contains('on'))return;
   if(S.pendingPunch)return; // she's waiting on your answer — stay quiet
+  // She's still talking (story, prayer, long clip) — you aren't idle, you're listening.
+  // Don't queue a nudge behind her voice; it dumps out the moment she stops and startles you.
+  var speaking = _spActive || _spQueue.length ||
+                 (typeof cloudPlaying!=='undefined' && cloudPlaying) ||
+                 (window.speechSynthesis && speechSynthesis.speaking);
+  if(speaking){ resetIdle(); return; }
   if(stage===1){ themTyping(()=>pushThem(vibeColor(rand(["Still there? No rush.","You went quiet — I'm right here.","Take your time. I'm around."])))); }
   else if(stage===2){
     // only auto-tell a joke on chatty/balanced; otherwise just a gentle line
