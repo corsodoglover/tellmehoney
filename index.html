@@ -1079,6 +1079,19 @@ textarea{resize:none;line-height:1.4;}
   background:rgba(28,30,42,.96);border:1px solid var(--line);color:#fff;padding:11px 18px;
   border-radius:30px;font-size:13.5px;z-index:40;opacity:0;transition:opacity .3s;backdrop-filter:blur(10px);white-space:nowrap;}
 .toast.on{opacity:1;}
+/* iOS-safe hidden file input.
+   `display:none` makes iOS Safari fall back to the cut-down photo strip —
+   you can't reach Albums/Collections. Keeping the input in the layout (just
+   invisible and out of the way) restores the full Photos picker. */
+.file-hidden{
+  position:absolute;
+  width:1px; height:1px;
+  opacity:0;
+  overflow:hidden;
+  border:0; padding:0;
+  left:-1px; top:-1px;
+  pointer-events:none;
+}
 </style>
 </head>
 <body>
@@ -1487,7 +1500,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="newAgentFlow(false)">➕ Add a friend</button>
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
-    <input type="file" id="restoreFile" accept="application/json,.json,.honey" style="display:none" onchange="importBackup(this.files[0])">
+    <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
   </div>
 </section>
 
@@ -1635,7 +1648,7 @@ textarea{resize:none;line-height:1.4;}
         <span class="ph-emoji" id="photoEmoji" style="display:none"></span>
         <img id="photoImg" style="display:none">
       </div>
-      <input type="file" id="photoInput" accept="image/*" style="display:none">
+      <input type="file" id="photoInput" accept="image/*" class="file-hidden">
       <div class="photo-hint">Upload a photo, or pick a face below</div>
       <div class="avatar-row" id="avatarRow"><button class="av-pick">😀</button><button class="av-pick">😎</button><button class="av-pick">🤓</button><button class="av-pick">😈</button><button class="av-pick">👹</button><button class="av-pick">👺</button><button class="av-pick">🤖</button><button class="av-pick">👻</button><button class="av-pick">💀</button><button class="av-pick">🧟</button><button class="av-pick">🧛</button><button class="av-pick">🧙</button><button class="av-pick">🧚</button><button class="av-pick">🦊</button><button class="av-pick">🐱</button><button class="av-pick">🐲</button><button class="av-pick">👽</button><button class="av-pick">🤡</button><button class="av-pick">🥸</button><button class="av-pick">🧑‍🎤</button><button class="av-pick">👸</button><button class="av-pick">🤠</button></div>
     </div>
@@ -1785,7 +1798,7 @@ textarea{resize:none;line-height:1.4;}
     </div>
     <button class="rec-save" onclick="shareLovedImage()">🖼️ Share as image</button>
     <button class="rec-save" onclick="document.getElementById(&#39;loveImgInput&#39;).click()" style="margin-top:10px;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📷 Change the picture</button>
-    <input type="file" id="loveImgInput" accept="image/*" style="display:none" onchange="onLoveImgPick(event)">
+    <input type="file" id="loveImgInput" accept="image/*" class="file-hidden" onchange="onLoveImgPick(event)">
     <button class="rec-save" onclick="shareLovedVideo()" style="margin-top:10px;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">🎬 Share as video</button>
     <div class="vid-status" id="loveStatus"></div>
     <p class="rec-hint" style="margin-top:12px">Sharing earns you honey 🍯</p>
@@ -1807,7 +1820,7 @@ textarea{resize:none;line-height:1.4;}
     <div class="vid-styles" id="lookRow" style="grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px"></div>
 
     <button class="rec-save" onclick="document.getElementById(&#39;vidImgInput&#39;).click()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📷 Change the picture</button>
-    <input type="file" id="vidImgInput" accept="image/*" style="display:none" onchange="onVidImgPick(event)">
+    <input type="file" id="vidImgInput" accept="image/*" class="file-hidden" onchange="onVidImgPick(event)">
     <div class="vid-status" id="bgStatus"></div>
 
     <label class="rec-label">Your message — joke, verse, phrase, or anything you like</label>
@@ -1830,7 +1843,7 @@ textarea{resize:none;line-height:1.4;}
       <div class="cloud-head"><span>🎥 Send a video from your phone</span></div>
       <p class="rec-hint" style="margin:6px 0 10px">Pick any video off your phone and send it with your message — a joke, an event, an announcement, anything. Free, straight from your phone, nothing stored.</p>
       <button class="rec-save" onclick="document.getElementById(&#39;ownVidInput&#39;).click()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">🎥 Pick a video &amp; send</button>
-      <input type="file" id="ownVidInput" accept="video/*" style="display:none" onchange="onOwnVideoPick(event)">
+      <input type="file" id="ownVidInput" accept="video/*" class="file-hidden" onchange="onOwnVideoPick(event)">
       <div class="vid-status" id="ownVidStatus"></div>
     </div>
 
@@ -1889,7 +1902,7 @@ textarea{resize:none;line-height:1.4;}
     <div class="cloud-box">
       <div class="cloud-head"><span>🎙️ Upload a voice (beta)</span></div>
       <p class="rec-hint" style="margin:6px 0 10px">Record or upload a voice clip to save for this friend. (Plays your clip as a greeting; full voice-cloning needs the premium AI voice.)</p>
-      <input type="file" id="voiceFile" accept="audio/*" style="display:none" onchange="onVoiceUpload(event)">
+      <input type="file" id="voiceFile" accept="audio/*" class="file-hidden" onchange="onVoiceUpload(event)">
       <button class="rec-save" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)" onclick="document.getElementById(&#39;voiceFile&#39;).click()">📁 Upload a voice clip</button>
       <button class="rec-save" id="voicePlayBtn" style="margin-top:10px;display:none" onclick="playCustomVoice()">▶ Play saved voice</button>
       <div class="vid-status" id="voiceUpStatus"></div>
@@ -3093,7 +3106,7 @@ function pickChatSkin(){
   var inp=document.getElementById('chatSkinInput');
   if(!inp){
     inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
-    inp.id='chatSkinInput'; inp.style.display='none'; document.body.appendChild(inp);
+    inp.id='chatSkinInput'; inp.className='file-hidden'; document.body.appendChild(inp);
     inp.addEventListener('change',function(e){
       var f=e.target.files[0]; if(!f)return;
       processPhoto(f, function(dataUrl){
@@ -3701,7 +3714,7 @@ function quickChangeAvatar(){
   var inp=document.getElementById('quickPhotoInput');
   if(!inp){
     inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
-    inp.id='quickPhotoInput'; inp.style.display='none'; document.body.appendChild(inp);
+    inp.id='quickPhotoInput'; inp.className='file-hidden'; document.body.appendChild(inp);
     inp.addEventListener('change',function(e){
       var f=e.target.files[0]; if(!f)return;
       processPhoto(f, function(dataUrl){
@@ -4891,8 +4904,9 @@ function enterChat(){
             pushThem("And see those little taps just above where you type? 👍 👎 ❓ ❤️ — use those to react anytime, quick and easy. Here, let me show you — I'll tell you one:", false, true);
             if(S.speakerOn) enqueueSpeak("\u0000CLIP:onboard_reactions\u0001And see those little taps just above where you type? The thumbs up, thumbs down, question mark, and heart — use those to react anytime, quick and easy. Here, let me show you. I'll tell you one:");
             resetIdle();
-            // demo joke only once she's truly done talking, so it can't get cut off
-            afterHoneySpeaks(()=>{ try{ tellJoke(); }catch(e){} });
+            // demo joke only once she's truly done talking, so it can't get cut off.
+            // noPre=true: she already said "I'll tell you one:" — don't announce it twice.
+            afterHoneySpeaks(()=>{ try{ tellJoke(false,null,true); }catch(e){} });
           }); });
         }); }, 1800);
       }
@@ -5281,14 +5295,17 @@ function getJoke(surprise,forceCat){
   if(!avail.length) return {s:"I'm fresh out for that style.",p:"Try another vault category?",ci:ci};
   var j=rand(avail); S.served[j.s]=1; j.ci=ci; return j;
 }
-function tellJoke(surprise,forceCat){
+/* noPre: skip the "Alright, here's one for you —" setup line.
+   Used by onboarding, where Honey has already said "I'll tell you one:" —
+   otherwise she announces the joke twice. Normal joke-telling is unaffected. */
+function tellJoke(surprise,forceCat,noPre){
   themTyping(()=>{
     var pre=SETUP_LINE[S.vibe];
     setTimeout(()=>{
       themTyping(()=>{ var j=getJoke(surprise,forceCat);
         j.roast = (forceCat===10 && S.vibe!=='Sarcastic');
         if(j.mine) pushThem(vibeColor(rand(["Here's one of yours —","Pulling one from your collection —","This is the one you taught me —"])));
-        else pushThem(pre);
+        else if(!noPre) pushThem(pre);
         setTimeout(()=>pushJoke(j), j.mine?500:0);
       },650);
     },550);
