@@ -5112,7 +5112,7 @@ function enterChat(){
             themTyping(function(){
             pushThem("And see those little taps just above where you type? 👍 👎 ❓ ❤️ — use those to react anytime, quick and easy. Here, let me show you — I'll tell you one:", false, true);
               resetIdle();
-              var tellIt = function(){ try{ tellJoke(false,null,true); }catch(e){} };
+              var tellIt = function(){ try{ tellJoke(false,null,true,ONBOARD_JOKE); }catch(e){} };
               if(S.speakerOn){
                 // noPre=true: she already said "I'll tell you one:" — no double announcement
                 enqueueSpeak("\u0000CLIP:onboard_reactions\u0001And see those little taps just above where you type? The thumbs up, thumbs down, question mark, and heart — use those to react anytime, quick and easy. Here, let me show you. I'll tell you one:", function(){ setTimeout(tellIt, 500); });
@@ -5239,10 +5239,13 @@ function pushThem(text,noLog,noSpeak){  var m=document.createElement('div'); m.c
   if(!noLog) logMsg({w:'them',k:'text',t:text});
 }
 /* a joke = setup bubble, then WAIT for the user before the punchline */
-function pushJoke(joke,noLog){
+function pushJoke(joke,noLog,dontInterrupt){
   S.lastJoke=joke;
   S.lastShareable={ text:(joke.s?joke.s+'\n':'')+(joke.p||''), kind:'joke' };
-  if(S.speakerOn) clearSpeech();   // a fresh joke interrupts anything still talking
+  // A fresh joke normally interrupts whatever Honey is still saying.
+  // During onboarding the joke FOLLOWS her sentence, so we must not tear
+  // down the queue — that was silencing both her line and the joke itself.
+  if(S.speakerOn && !dontInterrupt) clearSpeech();
   // BEAT 1 — the setup line
   var s=document.createElement('div'); s.className='bub them joke'; s.textContent=joke.s;
   document.getElementById('msgs').appendChild(s); scrollMsgs();
@@ -5511,15 +5514,21 @@ function getJoke(surprise,forceCat){
 /* noPre: skip the "Alright, here's one for you —" setup line.
    Used by onboarding, where Honey has already said "I'll tell you one:" —
    otherwise she announces the joke twice. Normal joke-telling is unaffected. */
-function tellJoke(surprise,forceCat,noPre){
+/* The one joke every new person hears, chosen on purpose.
+   Fixed so the first impression is always good and always the same —
+   which also means if it ever goes silent, we know it's the voice
+   path and not a missing clip. Both clips are recorded and verified. */
+var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no expiration date.", ci:catIdx("eighties_cool")};
+
+function tellJoke(surprise,forceCat,noPre,fixedJoke){
   themTyping(()=>{
     var pre=SETUP_LINE[S.vibe];
     setTimeout(()=>{
-      themTyping(()=>{ var j=getJoke(surprise,forceCat);
+      themTyping(()=>{ var j = fixedJoke ? {s:fixedJoke.s, p:fixedJoke.p, ci:fixedJoke.ci} : getJoke(surprise,forceCat);
         j.roast = (forceCat===catIdx("roast_master") && S.vibe!=='Sarcastic');
         if(j.mine) pushThem(vibeColor(rand(["Here's one of yours —","Pulling one from your collection —","This is the one you taught me —"])));
         else if(!noPre) pushThem(pre);
-        setTimeout(()=>pushJoke(j), j.mine?500:0);
+        setTimeout(()=>pushJoke(j, false, !!fixedJoke), j.mine?500:0);
       },650);
     },550);
   },500);
