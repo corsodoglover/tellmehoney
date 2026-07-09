@@ -5480,12 +5480,27 @@ function pickCategory(surprise,forceCat){
   if(forceCat!=null) return forceCat;
   if(surprise) return Math.floor(Math.random()*JOKE_CATEGORIES.length);
   var pool=styleCats();
-  // vibe nudge
-  if(S.vibe==='Flirty'||S.traits.includes('Romantic')) pool=pool.concat([catIdx("roast_master")]);
-  if(S.vibe==='Wholesome') pool=pool.concat([catIdx("front_porch"),catIdx("dad_jokes"),catIdx("dog")]);
-  if(S.vibe==='Mysterious'||S.traits.includes('Old soul')) pool=pool.concat([catIdx("zen_master"),catIdx("fish")]);
-  if(S.traits.includes('Competitive')) pool=pool.concat([catIdx("nothing_but_net")]);
-  return rand(pool);
+
+  /* Vibe nudge: a gentle lean, never a takeover.
+     - A single-category style (Cat Logic, Good Dog, Gone Fishing) is a promise.
+       Pick cats, get cats. No nudging at all.
+     - For broader styles, add at most ONE nudge category, and weight the
+       style's own categories so the nudge can't outvote them. */
+  var chosen = pool.slice();
+  if(pool.length > 1){
+    var nudge = null;
+    if(S.vibe==='Flirty'||S.traits.includes('Romantic'))               nudge = catIdx("roast_master");
+    else if(S.vibe==='Wholesome')                                      nudge = catIdx("front_porch");
+    else if(S.vibe==='Mysterious'||S.traits.includes('Old soul'))      nudge = catIdx("zen_master");
+    else if(S.traits.includes('Competitive'))                          nudge = catIdx("nothing_but_net");
+    if(nudge!=null && pool.indexOf(nudge)===-1){
+      // style categories get 3 slots each; the nudge gets 1
+      chosen = [];
+      pool.forEach(function(ci){ chosen.push(ci,ci,ci); });
+      chosen.push(nudge);
+    }
+  }
+  return rand(chosen);
 }
 function getMyJoke(){
   var avail=(S.myJokes||[]).filter(j=>!S.blacklist[j.s]&&!S.served[j.s]);
