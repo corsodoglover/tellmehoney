@@ -4773,18 +4773,18 @@ function importBackup(file){
   r.readAsText(file);
 }
 var STYLES=[
-  {k:"natural",     nm:"The Natural",   em:"\ud83c\udf99\ufe0f", ds:"Easy timing, never tries too hard", cats:["front_porch","dad_jokes"]},
+  {k:"natural",     nm:"The Natural",   em:"\ud83c\udf99\ufe0f", ds:"Easy timing, never tries too hard", cats:["front_porch"]},
   {k:"bone_dry",    nm:"Bone Dry",      em:"\ud83e\udea6", ds:"Deadpan. Barely a flicker", cats:["dry_toast","dry_toast_office","straight_face"]},
-  {k:"front_porch", nm:"Front Porch",   em:"\ud83e\ude91", ds:"Southern, slow-cooked, friendly", cats:["front_porch","redneck_genius"]},
-  {k:"smart_aleck", nm:"Smart Aleck",   em:"\ud83e\udde0", ds:"Knows it. Says it anyway", cats:["smart_aleck","straight_face"]},
-  {k:"wild_hair",   nm:"Wild Hair",     em:"\u26a1", ds:"Unpredictable, high voltage", cats:["wild_hair","redneck_genius"]},
-  {k:"throwback",   nm:"Throwback",     em:"\ud83d\udd76\ufe0f", ds:"Pure '80s, totally rad", cats:["eighties_cool","dad_jokes"]},
-  {k:"zen",         nm:"Zen & Funny",   em:"\ud83e\udd4b", ds:"Calm wisdom with a wink", cats:["zen_master","straight_face"]},
-  {k:"roast_lord",  nm:"Roast Lord",    em:"\ud83d\udd25", ds:"Affectionate destruction", cats:["roast_master","smart_aleck"]},
-  {k:"locker_room", nm:"Locker Room",   em:"\ud83c\udfc0", ds:"Sports brain, quick jabs", cats:["nothing_but_net","redneck_genius"]},
-  {k:"dad_mode",    nm:"Dad Mode",      em:"\ud83d\udc68", ds:"Groans guaranteed", cats:["dad_jokes","front_porch"]},
-  {k:"true_north",  nm:"True North",    em:"\ud83e\udde3", ds:"Cold hands, warm jokes, eh", cats:["northerner","northerner","dad_jokes"]},
-  {k:"snob_bird",   nm:"Snob Bird",     em:"\ud83e\udebf", ds:"Canadian, polite, and judging you", cats:["snob_bird","snob_bird","smart_aleck"]},
+  {k:"front_porch", nm:"Front Porch",   em:"\ud83e\ude91", ds:"Southern, slow-cooked, friendly", cats:["front_porch"]},
+  {k:"smart_aleck", nm:"Smart Aleck",   em:"\ud83e\udde0", ds:"Knows it. Says it anyway", cats:["smart_aleck"]},
+  {k:"wild_hair",   nm:"Wild Hair",     em:"\u26a1", ds:"Unpredictable, high voltage", cats:["wild_hair","wild_hair","wild_hair","redneck_genius"]},
+  {k:"throwback",   nm:"Throwback",     em:"\ud83d\udd76\ufe0f", ds:"Pure '80s, totally rad", cats:["eighties_cool"]},
+  {k:"zen",         nm:"Zen & Funny",   em:"\ud83e\udd4b", ds:"Calm wisdom with a wink", cats:["zen_master"]},
+  {k:"roast_lord",  nm:"Roast Lord",    em:"\ud83d\udd25", ds:"Affectionate destruction", cats:["roast_master"]},
+  {k:"locker_room", nm:"Locker Room",   em:"\ud83c\udfc0", ds:"Sports brain, quick jabs", cats:["nothing_but_net"]},
+  {k:"dad_mode",    nm:"Dad Mode",      em:"\ud83d\udc68", ds:"Groans guaranteed", cats:["dad_jokes"]},
+  {k:"true_north",  nm:"True North",    em:"\ud83e\udde3", ds:"Cold hands, warm jokes, eh", cats:["northerner"]},
+  {k:"snob_bird",   nm:"Snob Bird",     em:"\ud83e\udebf", ds:"Canadian, polite, and judging you", cats:["snob_bird"]},
   {k:"cat",         nm:"Cat Logic",     em:"\ud83d\udc31", ds:"He owns the house. You just pay for it", cats:["cat"]},
   {k:"good_dog",    nm:"Good Dog",      em:"\ud83d\udc36", ds:"Thrilled you came home. It's been minutes", cats:["dog"]},
   {k:"gone_fishing",nm:"Gone Fishing",  em:"\ud83d\udc1f", ds:"The one that got away, and other true stories", cats:["fish"]}
@@ -5479,28 +5479,10 @@ function styleCats(){
 function pickCategory(surprise,forceCat){
   if(forceCat!=null) return forceCat;
   if(surprise) return Math.floor(Math.random()*JOKE_CATEGORIES.length);
-  var pool=styleCats();
-
-  /* Vibe nudge: a gentle lean, never a takeover.
-     - A single-category style (Cat Logic, Good Dog, Gone Fishing) is a promise.
-       Pick cats, get cats. No nudging at all.
-     - For broader styles, add at most ONE nudge category, and weight the
-       style's own categories so the nudge can't outvote them. */
-  var chosen = pool.slice();
-  if(pool.length > 1){
-    var nudge = null;
-    if(S.vibe==='Flirty'||S.traits.includes('Romantic'))               nudge = catIdx("roast_master");
-    else if(S.vibe==='Wholesome')                                      nudge = catIdx("front_porch");
-    else if(S.vibe==='Mysterious'||S.traits.includes('Old soul'))      nudge = catIdx("zen_master");
-    else if(S.traits.includes('Competitive'))                          nudge = catIdx("nothing_but_net");
-    if(nudge!=null && pool.indexOf(nudge)===-1){
-      // style categories get 3 slots each; the nudge gets 1
-      chosen = [];
-      pool.forEach(function(ci){ chosen.push(ci,ci,ci); });
-      chosen.push(nudge);
-    }
-  }
-  return rand(chosen);
+  /* The style you picked is a promise. Pick Locker Room, get sports.
+     No vibe nudge reaches in and swaps categories on you — vibe changes how
+     Honey TALKS, not which jokes she tells. */
+  return rand(styleCats());
 }
 function getMyJoke(){
   var avail=(S.myJokes||[]).filter(j=>!S.blacklist[j.s]&&!S.served[j.s]);
