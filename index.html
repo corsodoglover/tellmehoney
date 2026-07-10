@@ -8493,18 +8493,26 @@ function _spDrain(){
   }
 
   /* ── VOICE ROUTING ─────────────────────────────────────────────────
-     1. Honey's recorded clip, if one exists for this line. Always.
-     2. No clip? Use the chosen voice (premium cloud, or device).
-     3. Nothing available? Stay silent rather than break the spell.     */
-  var clip = honeyClipFor(text);
-  if(clip){
-    try{
-      playHoneyClip(clip, function(){
-        if(_lastClipFailed){ _speakWithChosenVoice(text, myToken, next); return; }
-        next();
-      });
-      return;
-    }catch(e){ /* fall through to voices */ }
+     The voice picker means what it says.
+
+     HONEY selected  -> her recorded clip whenever one exists. Where she
+                        never recorded a line (live AI answers), fall back
+                        to her clone if it's set up, otherwise stay quiet.
+     ANY OTHER voice -> that voice speaks EVERYTHING. No clips.
+                        Otherwise the picker does nothing and Honey talks
+                        over the voice you chose.                          */
+  if((S.voice||"honey")==="honey"){
+    var clip = honeyClipFor(text);
+    if(clip){
+      try{
+        playHoneyClip(clip, function(){
+          // clip missing or blocked -> don't just go silent
+          if(_lastClipFailed){ _speakWithChosenVoice(text, myToken, next); return; }
+          next();
+        });
+        return;
+      }catch(e){ /* fall through */ }
+    }
   }
   _speakWithChosenVoice(text, myToken, next);
 }
@@ -8515,17 +8523,40 @@ function _spDrain(){
 function _speakWithChosenVoice(text, myToken, next){
   if(!text){ next(); return; }
   var v = S.voice || "honey";
-  if(cloudReady()){
-    if(window.__OBDEBUG) toast("voice: cloud ("+v+")");
-    cloudSpeak(text); _spPollCloud(myToken, next); return;
-  }
+
   if(v !== "honey"){
+    // A voice was chosen on purpose. It speaks everything.
+    // Premium (cloud) if that voice is a cloud voice and keys are set;
+    // otherwise the free device voice. Never silence — they picked it.
+    if(isCloudVoice(v) && cloudReady()){
+      if(window.__OBDEBUG) toast("voice: cloud ("+v+")");
+      cloudSpeak(text); _spPollCloud(myToken, next); return;
+    }
     if(window.__OBDEBUG) toast("voice: device ("+v+")");
     _spSpeakDevice(text, next); return;
   }
-  // Honey selected but nothing recorded and no clone configured -> silence
-  if(window.__OBDEBUG) toast("voice: none available -> silent");
+
+  // Honey selected, but this line was never recorded (e.g. a live AI answer).
+  // Her clone can cover it if it's configured. Otherwise stay quiet rather
+  // than break the spell with a robot voice pretending to be her.
+  if(cloudReady()){
+    if(window.__OBDEBUG) toast("voice: honey clone");
+    cloudSpeak(text); _spPollCloud(myToken, next); return;
+  }
+  if(window.__OBDEBUG) toast("voice: honey, no clip, no clone -> silent");
   next();
+}
+
+/* Is this a paid cloud voice, or a free device voice?
+   CLOUD_VOICES holds the premium OpenAI names. Everything else is a
+   free browser voice and must never need a key to speak. */
+function isCloudVoice(v){
+  if(!v || v==="honey") return false;
+  try{
+    if(typeof CLOUD_VOICES!=="undefined" && CLOUD_VOICES && CLOUD_VOICES.indexOf)
+      return CLOUD_VOICES.indexOf(v) >= 0;
+  }catch(e){}
+  return false;   // unknown -> treat as a free device voice, never as paid
 }
 
 /* Fix words that start with a run of capitals glued to lowercase (e.g. "HEre",
