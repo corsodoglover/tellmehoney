@@ -5397,6 +5397,48 @@ function scrollMsgs(){ var m=document.getElementById('msgs'); m.scrollTop=m.scro
 function esc(s){ return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
 
 /* ════ THUMBS — context-aware yes/no + like/dislike ════ */
+/* Reveal lines — all of these are recorded in Honey's voice.
+   A handful of options so she doesn't say the same thing every single time. */
+var REVEAL_LINES = [
+  "No shame in it — here's the landing —",
+  "Ha, stumped you. Here you go —",
+  "Here's the answer —",
+  "Alright, here you go —",
+  "Here's the punchline —",
+  "That's okay. I've got you —",
+  "Good guess. Real answer though —",
+  "Close-ish. Here's mine —"
+];
+/* After a punchline. 👍 = it landed. 👎 = never tell that one again.
+   These fire on nearly every joke, so they need room to breathe. */
+var LANDED_LINES = [
+  "Knew you'd like that one.",
+  "See? I've still got it.",
+  "One more like it?",
+  "Right? Knew you'd be on board.",
+  "Glad we agree.",
+  "Good. I like you too."
+];
+var MISSED_LINES = [
+  "Fair. Killing that one. Let me try another lane.",
+  "Tough crowd. I respect it. Different style?",
+  "Noted. I'll find your funny.",
+  "Fair enough. Tell me what'd be better.",
+  "Okay, noted. I can pivot.",
+  "Alright, scratch that."
+];
+/* 👎 on the SETUP: she teases you and delivers the punchline anyway.
+   Every line here must still be leading INTO the punchline — never
+   offering to change the subject. That refusal to let you off the hook
+   is the whole charm of this moment. */
+var TEASE_LINES = [
+  "Oh, too good for my setup? Fine, here it is anyway —",
+  "Rolling your eyes already? You're getting it regardless —",
+  "Tough room. Can't leave you hanging though —",
+  "Ha — not bad. The punchline is —",
+  "That's okay. I've got you —"
+];
+
 function updateThumbLabel(){
   var el=document.getElementById('tbLabel'); if(!el)return;
   el.textContent = S.pendingPunch ? "Want the punchline?"
@@ -5412,14 +5454,14 @@ function thumb(kind){
     if(kind==='q'){ // "I don't know" → give up, reveal it
       pushMe("❓ I don't know");
       if(is3beat){ revealPunch(); }   // phrase already shown — go straight to punchline
-      else { themTyping(()=>{ pushThem(vibeColor(rand(["No shame in it — here's the landing —","Ha, stumped you. Here you go —","Here's the answer —"])));
+      else { themTyping(()=>{ pushThem(vibeColor(rand(REVEAL_LINES)));
         revealPunch(); }); }
     }
     else if(kind==='up'){ pushMe("👍 Hit me"); revealPunch(); }
     else { // thumbs down: tease, then reveal anyway
       pushMe("👎");
       if(is3beat){ revealPunch(); }   // phrase already shown — go straight to punchline
-      else { themTyping(()=>{ pushThem(vibeColor(rand(["Oh, too good for my setup? Fine, here it is anyway —","Rolling your eyes already? You're getting it regardless —","Tough room. Can't leave you hanging though —"])));
+      else { themTyping(()=>{ pushThem(vibeColor(rand(TEASE_LINES)));
         revealPunch(); }); }
     }
     return;
@@ -5451,9 +5493,9 @@ function thumb(kind){
   document.getElementById(yes?'tbUp':'tbDown').classList.add('done');
 
   if(S.lastWasJoke){
-    if(yes){ toast("Glad it landed."); themTyping(()=>pushThem(vibeColor(rand(["Knew you'd like that one.","See? I've still got it.","One more like it?"])))); }
+    if(yes){ toast("Glad it landed."); themTyping(()=>pushThem(vibeColor(rand(LANDED_LINES)))); }
     else { if(S.lastJoke)S.blacklist[S.lastJoke.s]=1; toast("Noted — won't tell that one again.");
-      themTyping(()=>pushThem(vibeColor(rand(["Fair. Killing that one. Let me try another lane.","Tough crowd. I respect it. Different style?","Noted. I'll find your funny."])))); }
+      themTyping(()=>pushThem(vibeColor(rand(MISSED_LINES)))); }
     return;
   }
   if(yes){ toast("👍"); themTyping(()=>pushThem(vibeColor(rand(["Glad we agree.","Right? Knew you'd be on board.","Good. I like you too."])))); }
