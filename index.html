@@ -8379,25 +8379,28 @@ function enqueueSpeak(text, onDone){
 
 /* Play one of Honey's recorded clips on the single unlocked element.
    Always calls done() exactly once — ended, error, or blocked. */
+var _lastClipFailed = false;
 function playHoneyClip(clipName, done){
   var a = honeyPlayer();
   var finished = false;
-  var finish = function(why){
+  _lastClipFailed = false;
+  var finish = function(why, failed){
     if(finished) return; finished = true;
     a.onended = null; a.onerror = null;
+    _lastClipFailed = !!failed;
     if(window.__OBDEBUG && why) toast("CLIP "+why+": "+clipName);
     done();
   };
   _honeyAudioEl = a;   // so clearSpeech() can still stop it
   try{ a.pause(); }catch(e){}
-  a.onended = function(){ finish("ended"); };
-  a.onerror = function(){ finish("error"); };
+  a.onended = function(){ finish("ended", false); };
+  a.onerror = function(){ finish("error", true); };
   a.src = HONEY_AUDIO_BASE + clipName + ".mp3";
   try{ a.currentTime = 0; }catch(e){}
   var p = a.play();
   if(p && p.catch){
     p.then(function(){ if(window.__OBDEBUG) toast("CLIP playing: "+clipName); })
-     .catch(function(err){ finish("BLOCKED "+(err&&err.name||"")); });
+     .catch(function(err){ finish("BLOCKED "+(err&&err.name||""), true); });
   }
 }
 
@@ -8431,37 +8434,54 @@ function _spDrain(){
     var forced = sep>=0 ? payload.slice(0,sep) : payload;
     var spokenText = sep>=0 ? payload.slice(sep+1) : "";
     // If the user picked a NON-Honey voice, speak the words in THEIR voice
-    if((S.voice||"honey")!=="honey"){
-      if(window.__OBDEBUG) toast("NOT honey voice: "+(S.voice||"?")+" -> speaking text");
-      if(spokenText){
-        if(cloudReady()){ cloudSpeak(spokenText); _spPollCloud(myToken, next); return; }
-        _spSpeakDevice(spokenText, next); return;
-      }
-      if(window.__OBDEBUG) toast("no spokenText -> SILENT");
-      next(); return;
-    }
-    // Honey's voice: play her recorded clip
+    /* A FORCED clip (onboarding, stories) is Honey's own recording.
+       It costs nothing and it is always the best version of that line,
+       so it plays no matter which voice is selected. Premium voices are
+       a fallback for words she never recorded — not a replacement for her. */
     try{
-      playHoneyClip(forced, next);
+      playHoneyClip(forced, function(){
+        // clip missing/blocked and there IS text -> let the chosen voice cover it
+        if(_lastClipFailed && spokenText){ _speakWithChosenVoice(spokenText, myToken, next); return; }
+        next();
+      });
       return;
     }catch(e){ if(window.__OBDEBUG) toast("CLIP threw: "+forced); next(); return; }
   }
 
-  if((S.voice||"honey")==="honey"){
-    var clip = honeyClipFor(text);
-    if(clip){
-      try{
-        playHoneyClip(clip, next);
-        return;
-      }catch(e){ next(); return; }
-    }
-    // No recorded clip (e.g. a live AI answer). If the cloned voice is set up, speak it in Sally's clone.
-    if(cloudReady()){ cloudSpeak(text); _spPollCloud(myToken, next); return; }
-    // Otherwise Honey stays SILENT (shows as text only) rather than breaking the spell with a robot voice.
-    next(); return;
+  /* ── VOICE ROUTING ─────────────────────────────────────────────────
+     1. Honey's recorded clip, if one exists for this line. Always.
+     2. No clip? Use the chosen voice (premium cloud, or device).
+     3. Nothing available? Stay silent rather than break the spell.     */
+  var clip = honeyClipFor(text);
+  if(clip){
+    try{
+      playHoneyClip(clip, function(){
+        if(_lastClipFailed){ _speakWithChosenVoice(text, myToken, next); return; }
+        next();
+      });
+      return;
+    }catch(e){ /* fall through to voices */ }
   }
-  if(cloudReady()){ cloudSpeak(text); _spPollCloud(myToken, next); return; }
-  _spSpeakDevice(text, next);
+  _speakWithChosenVoice(text, myToken, next);
+}
+
+/* Speak words aloud in whatever voice the person picked.
+   Honey's own clone (cloud) if it's set up, otherwise the device voice.
+   If neither can speak, go quiet — never a robot voice over Honey. */
+function _speakWithChosenVoice(text, myToken, next){
+  if(!text){ next(); return; }
+  var v = S.voice || "honey";
+  if(cloudReady()){
+    if(window.__OBDEBUG) toast("voice: cloud ("+v+")");
+    cloudSpeak(text); _spPollCloud(myToken, next); return;
+  }
+  if(v !== "honey"){
+    if(window.__OBDEBUG) toast("voice: device ("+v+")");
+    _spSpeakDevice(text, next); return;
+  }
+  // Honey selected but nothing recorded and no clone configured -> silence
+  if(window.__OBDEBUG) toast("voice: none available -> silent");
+  next();
 }
 
 /* Fix words that start with a run of capitals glued to lowercase (e.g. "HEre",
