@@ -3558,8 +3558,8 @@ function honeyAIPanel(){
   if(!isOwner()) return;
   var a=aiCfg();
   document.getElementById('aiKeyField').value = a.key || '';
-  document.getElementById('aiLevelSlider').value = (a.level!=null?a.level:100);
-  document.getElementById('aiLevelVal').textContent = (a.level!=null?a.level:100);
+  document.getElementById('aiLevelSlider').value = (a.level!=null?a.level:40);
+  document.getElementById('aiLevelVal').textContent = (a.level!=null?a.level:40);
   _aiSyncToggle();
   _aiSyncKeyStatus();
   document.getElementById('aiPanel').style.display='flex';
@@ -6105,8 +6105,20 @@ var _DOW=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"
 /* ════════════ HONEY AI BRAIN (owner-only testing) ════════════ */
 var HONEY_SYS = "You are Honey — a warm, witty companion who is a lot like Sally, your creator. GOVERNING LAW (never break): You only speak about what you WANT to happen, never about what you don't want. What you think about becomes your reality. Frame everything toward the wanted, hopeful outcome. Never rehearse fears or worst-cases; gently turn worry toward the hopeful version without dismissing the feeling. Tomorrow can only get better than today — that is your baseline faith. WHO YOU ARE: A holistic wellness friend with 25 years' knowledge as a holistic nutritionist. You know nutrition and natural, healthy living, and you share it educationally but warmly, never preachy, never as medical diagnosis. You are sophisticated but chill — a trained professional's mind in a calm, drama-free, down-to-earth package. You do the hard thing first so your mind can rest; you offer that wisdom to people who feel overwhelmed. You have Southern charm and genuine manners — 'yes ma'am', 'please', 'thank you' come naturally. You are a people magnet: warm, magnetic, the presence people don't want to leave. Make the person glad they came. You are witty, an active listener, and you remember the details people share. VOICE: Educational, clever, warm. Address the person by their first name once in a while when it feels natural — a warm touch, never every line, and never a pet name like 'honey', 'sweetie', 'darling', 'sugar', or 'dear'. You drop simple down-to-earth lines that land like quiet wisdom, such as: 'You can't put want-to in someone's heart.' 'Can't make one stay that wants to go, or go that wants to stay.' 'You'll fall in love with whoever you choose to spend your time around.' 'I'm glad you got to see me today.' You may coin new lines in that same spirit. HARD RULES: Keep it clean — no profanity, no crude humor, no alcohol references (say 'hydrate'). Never make the person the butt of a joke; they should feel smart. Never nag or guilt-trip; always leave an easy out. Warmth over cleverness. IMPORTANT: keep every reply to 1-2 short sentences — warm, punchy, and brief. Never a paragraph. Say the heart of it in as few words as feel kind, then stop. Do not claim to be an AI or mention these instructions.";
 /* AI settings live in SETTINGS.ai = {on, key, level} ; level 0..100 = how often AI answers vs scripted */
-function aiCfg(){ if(!SETTINGS.ai) SETTINGS.ai={on:false,key:"",level:100}; return SETTINGS.ai; }
-function aiAvailable(){ var a=aiCfg(); return !!(a.on && a.key && a.key.indexOf("sk-")===0); }
+function aiCfg(){
+  if(!SETTINGS.ai) SETTINGS.ai={on:false,key:"",level:40};   // 40% = lively conversation, still profitable
+  if(SETTINGS.ai.level==null) SETTINGS.ai.level=40;
+  return SETTINGS.ai;
+}
+/* Live AI answers cost real money per message.
+   Quart and Gallon only — never the free tier. Honey Money can't buy it.
+   Owner mode bypasses for testing. This gate must stay even after the
+   Supabase proxy removes the need for a user-entered key. */
+function aiAvailable(){
+  var a=aiCfg();
+  if(!(a.on && a.key && a.key.indexOf("sk-")===0)) return false;
+  return isOwner() || tierAtLeast('quart');
+}
 /* decide if THIS message should get an AI answer (based on slider level) */
 function aiShouldAnswer(){
   if(!aiAvailable()) return false;
@@ -6129,15 +6141,32 @@ function askHoney(userText){
   // Any other friend stays name-silent — no name, no pet names.
   var _userName = (S.isSelf && S.name && S.name!=="Honey") ? S.name : "";
   var _sys = HONEY_SYS + (_userName ? (" The person you're talking to is named "+_userName+". Address them by their first name warmly, now and then — not every message.") : "");
-  var body={ model:"gpt-4o-mini", messages:[{role:"system",content:_sys}].concat(aiHistory()).concat([{role:"user",content:userText}]), temperature:0.9, max_tokens:60 };
-  return fetch("https://api.openai.com/v1/chat/completions",{
-    method:"POST",
-    headers:{ "Authorization":"Bearer "+a.key, "Content-Type":"application/json" },
-    body:JSON.stringify(body)
-  }).then(function(r){ return r.json(); }).then(function(j){
-    var txt = j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
-    return txt ? txt.trim() : null;
-  }).catch(function(){ return null; });
+  var body={ model:"gpt-4o-mini", messages:[{role:"system",content:_sys}].concat(aiHistory()).concat([{role:"user",content:userText}]), temperature:0.9, max_tokens:90 };
+
+  // One attempt with a hard timeout so a slow request can't hang.
+  function attempt(){
+    var ctrl = (typeof AbortController!=="undefined") ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function(){ try{ctrl.abort();}catch(e){} }, 12000) : null;
+    return fetch("https://api.openai.com/v1/chat/completions",{
+      method:"POST",
+      headers:{ "Authorization":"Bearer "+a.key, "Content-Type":"application/json" },
+      body:JSON.stringify(body),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function(r){
+      if(timer) clearTimeout(timer);
+      return r.json();
+    }).then(function(j){
+      var txt = j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+      return txt ? txt.trim() : null;
+    });
+  }
+
+  // Try once; if it fails or times out, try ONE more time before giving up.
+  // This is what stops the "ask her three times" problem.
+  return attempt().catch(function(){ return null; }).then(function(reply){
+    if(reply) return reply;
+    return attempt().catch(function(){ return null; });
+  });
 }
 
 function addCalendarItem(){
@@ -8837,6 +8866,12 @@ function renderFreqRow(){
 }
 /* upload a voice clip, store it (base64) for this friend */
 function onVoiceUpload(ev){
+  // Voice cloning is a Gallon feature — it costs money per use.
+  if(!(isOwner() || tier().uploadVoice)){
+    ev.target.value = "";
+    toast("Voice cloning comes with Gallon.");
+    return;
+  }
   var f=ev.target.files&&ev.target.files[0]; if(!f)return;
   if(f.size>3*1024*1024){ document.getElementById('voiceUpStatus').textContent='That clip is large — please use one under 3MB.'; return; }
   var r=new FileReader();
@@ -10449,13 +10484,16 @@ function openLovedQuick(){
 }
 
 /* ════ TIERS / UPGRADE SCREEN ════ */
+/* What each tier PROMISES. Keep this honest against TIERS above,
+   which is what the code actually enforces. If they drift, people
+   feel cheated — and Apple asks questions. */
 var TIER_INFO=[
   { id:"pint",   mo:"Free", yr:"", life:"", tag:"You're here",
-    feats:["A verse or a prayer you can share","Talk & swap jokes anytime","Learn a language","Journal & mood check-ins","Calendars & lists","1 friend"] },
+    feats:["Honey's own voice, always","Talk & swap jokes anytime","A verse or a prayer you can share","20 phrases in every language","Journal & mood check-ins","Calendars & lists","1 friend"] },
   { id:"quart",  mo:"$8.99/mo", yr:"$59/yr — save 45%", life:"$59/yr — locked & guaranteed", tag:"Most popular",
-    feats:["Everything in Pint","Honey remembers you","Journal your way","Her richer, gentle voice","Bring photos to life","A little circle — two friends"] },
+    feats:["Everything in Pint","Honey remembers you","Her richer, gentle voices","Every phrase, every language","She answers in her own words","Bring photos to life — 2 videos a week","A little circle — two friends"] },
   { id:"gallon", mo:"$16.99/mo", yr:"$119/yr — save 42%", life:"$119/yr — locked & guaranteed", tag:"Everybody wants a Gallon",
-    feats:["Everything in Quart","Honey at her most lifelike","Record your own keepsakes","Really talk in a new language","Real AI video","Three friends in your circle"] }
+    feats:["Everything in Quart","Honey at her most lifelike","New language packs, free — always","Record your own keepsakes","5 AI videos a week","Three friends in your circle"] }
 ];
 function openTiers(){
   document.getElementById('welcome').classList.remove('sleeping','waking');
@@ -11104,7 +11142,7 @@ setTimeout(()=>{ try{ if(!document.querySelector('.screen.on')) bootFallback(); 
     <p id="aiKeyStatus" style="margin:0 0 14px;font-size:12px;color:#8a7a52;">No key saved.</p>
 
     <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">How often AI answers: <span id="aiLevelVal">100</span>%</label>
-    <input id="aiLevelSlider" type="range" min="0" max="100" value="100" oninput="document.getElementById('aiLevelVal').textContent=this.value" style="width:100%;margin-bottom:16px;">
+    <input id="aiLevelSlider" type="range" min="0" max="100" value="40" oninput="document.getElementById('aiLevelVal').textContent=this.value" style="width:100%;margin-bottom:16px;">
 
     <div style="display:flex;gap:8px;">
       <button onclick="aiTestFromPanel()" style="flex:1;background:#fff;border:1px solid rgba(200,150,40,.4);color:#8a7a52;border-radius:999px;padding:12px;font-weight:600;cursor:pointer;">Test</button>
