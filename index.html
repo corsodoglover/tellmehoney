@@ -1092,6 +1092,28 @@ textarea{resize:none;line-height:1.4;}
   left:-1px; top:-1px;
   pointer-events:none;
 }
+
+/* ── STORE ─────────────────────────────────────────── */
+.store-bal{font-family:var(--display);font-size:22px;font-weight:700;color:var(--gold);
+  text-align:center;padding:14px 0 4px;}
+.store-note{text-align:center;color:var(--dim);font-size:13px;padding:0 16px 10px;}
+.store-h{font-family:var(--display);font-size:17px;color:var(--ink);margin:18px 4px 2px;}
+.store-sub{color:var(--dim);font-size:13px;margin:0 4px 10px;}
+.store-list{display:flex;flex-direction:column;gap:10px;}
+.store-card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;
+  padding:14px;display:flex;align-items:center;gap:12px;}
+.store-card .sc-em{font-size:26px;flex:0 0 auto;}
+.store-card .sc-mid{flex:1;min-width:0;}
+.store-card .sc-nm{font-weight:700;color:var(--ink);}
+.store-card .sc-ds{color:var(--dim);font-size:12px;margin-top:2px;}
+.store-card .sc-buy{flex:0 0 auto;display:flex;flex-direction:column;gap:6px;align-items:stretch;}
+.sc-btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);
+  border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700;white-space:nowrap;}
+.sc-btn.coin{border-color:var(--gold);color:var(--gold);}
+.sc-btn:active{transform:scale(.96);}
+.sc-btn[disabled]{opacity:.45;}
+.store-card.owned{border-color:var(--gold);}
+.sc-owned{color:var(--gold);font-size:12px;font-weight:700;white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -1196,8 +1218,8 @@ textarea{resize:none;line-height:1.4;}
 <nav class="tabbar" id="tabbar">
   <button class="tab on" data-tab="home" onclick="goTab(&#39;home&#39;)"><span class="ti">🍯</span>Home</button>
   <button class="tab" data-tab="insights" onclick="goTab(&#39;insights&#39;)"><span class="ti">📊</span>Insights</button>
-  <button class="tab" data-tab="prompts" onclick="goTab(&#39;prompts&#39;)"><span class="ti">⚡</span>Daily Buzz</button>
   <button class="tab" data-tab="profile" onclick="goTab(&#39;profile&#39;)"><span class="ti">👤</span>Profile</button>
+  <button class="tab" data-tab="store" onclick="goTab(&#39;store&#39;)"><span class="ti">🛍️</span>Store</button>
 </nav>
 
 <!-- ROSTER -->
@@ -1462,13 +1484,25 @@ textarea{resize:none;line-height:1.4;}
 </section>
 
 <!-- DAILY PROMPTS -->
-<section class="screen" id="prompts">
+<!-- STORE -->
+<section class="screen" id="store">
   <div class="bar"><button class="back" onclick="showHome()">‹</button>
-    <h2>Daily Buzz</h2><span style="width:40px"></span></div>
+    <h2>Store</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll">
-    <div class="spark-today" id="promptToday"></div>
-    <div class="prompt-sub">Tap a spark to start a chat.</div>
-    <div class="spark-grid" id="promptList"></div>
+    <div class="store-bal" id="storeBal"></div>
+    <div class="store-note" id="storeTierNote"></div>
+
+    <h3 class="store-h">🗣️ Language Packs</h3>
+    <div class="store-sub" id="storeLangSub"></div>
+    <div class="store-list" id="storePacks"></div>
+
+    <h3 class="store-h">🎬 Video Top-Ups</h3>
+    <div class="store-sub">Extra AI videos, on top of your weekly ones.</div>
+    <div class="store-list" id="storeVideo"></div>
+
+    <h3 class="store-h">📚 Books &amp; Journals</h3>
+    <div class="store-sub">Coming soon — Honey&#39;s books and printable journals.</div>
+    <div class="store-list" id="storeBooks"></div>
   </div>
 </section>
 
@@ -3494,10 +3528,15 @@ function ensureLists(){
 function getList(id){ ensureLists(); return SETTINGS.lists.find(l=>l.id===id); }
 /* ════ TIERS: pint (free) / quart (mid) / gallon (premium) ════ */
 var TIERS={
-  pint:  { nm:"Pint",   ic:"🍯",    friends:1,  downloads:-1, voices:"device", video:false, aivideo:false, uploadVoice:false },
-  quart: { nm:"Quart",  ic:"🍯🍯",  friends:2,  downloads:-1, voices:"openai", video:true,  aivideo:true,  uploadVoice:false },
-  gallon:{ nm:"Gallon", ic:"🍯🍯🍯",friends:3,  downloads:-1, voices:"cloned", video:true,  aivideo:true,  uploadVoice:true }
+  /* langPhrases: how many phrases per language you get for free.
+     -1 = the whole library. freeDrops: new packs arrive free.  */
+  pint:  { nm:"Pint",   ic:"🍯",    friends:1,  downloads:-1, voices:"device", video:false, aivideo:false, uploadVoice:false, langPhrases:20, freeDrops:false },
+  quart: { nm:"Quart",  ic:"🍯🍯",  friends:2,  downloads:-1, voices:"openai", video:true,  aivideo:true,  uploadVoice:false, langPhrases:-1, freeDrops:false },
+  gallon:{ nm:"Gallon", ic:"🍯🍯🍯",friends:3,  downloads:-1, voices:"cloned", video:true,  aivideo:true,  uploadVoice:true,  langPhrases:-1, freeDrops:true }
 };
+/* How many phrases of a language this person can reach right now. */
+function langLimit(){ var n=tier().langPhrases; return (n==null? 20 : n); }
+function langLocked(idx){ var lim=langLimit(); return lim>=0 && idx>=lim; }
 function tier(){ return TIERS[SETTINGS.tier||"pint"]||TIERS.pint; }
 function tierName(){ return tier().nm; }
 function tierAtLeast(t){ var order=["pint","quart","gallon"]; return order.indexOf(SETTINGS.tier||"pint") >= order.indexOf(t); }
@@ -3992,32 +4031,123 @@ function buildPotBadge(thr){
 function setTab(id){
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===id));
 }
+/* ══════════ STORE ══════════════════════════════════════════════
+   Packs can be bought with real money (Apple IAP) or Honey Money.
+   Gallon gets every new pack free, the moment it drops.
+   Quart and Pint can buy any pack, anytime.
+   Apple checkout is wired later — every product needs an App Store
+   Connect id first, which needs the Developer account.            */
+
+var PACKS = [
+  {id:"lang_travel",   em:"✈️", nm:"Travel Talk",     ds:"Airports, hotels, ordering dinner abroad", coins:300, usd:"2.99", kind:"lang"},
+  {id:"lang_grandkids",em:"🧸", nm:"Grandkid Words",  ds:"Sweet little phrases to say to the babies", coins:300, usd:"2.99", kind:"lang"},
+  {id:"lang_church",   em:"⛪", nm:"Sunday Words",    ds:"Blessings, greetings, and grace",           coins:300, usd:"2.99", kind:"lang"},
+  {id:"lang_kitchen",  em:"🍳", nm:"Kitchen Table",   ds:"Cooking, sharing, and second helpings",     coins:300, usd:"2.99", kind:"lang"}
+];
+
+function ownedPacks(){ SETTINGS.packs = SETTINGS.packs || {}; return SETTINGS.packs; }
+function ownsPack(id){
+  if(tier().freeDrops) return true;      // Gallon gets everything
+  return !!ownedPacks()[id];
+}
+function grantPack(id, how){
+  ownedPacks()[id] = { at: Date.now(), how: how||"bought" };
+  saveSettings();
+}
+
+/* Spend Honey Money. Returns false (and says so) if they can't afford it. */
+function spendHoney(n){
+  var bal = SETTINGS.honey || 0;
+  if(bal < n){
+    toast("You need "+(n-bal)+" more honey for that.");
+    return false;
+  }
+  SETTINGS.honey = bal - n;
+  saveSettings();
+  return true;
+}
+
+function buyPackWithHoney(id){
+  var p = PACKS.filter(function(x){return x.id===id;})[0];
+  if(!p || ownsPack(id)) return;
+  if(!spendHoney(p.coins)) return;
+  grantPack(id, "honey");
+  toast("Unlocked "+p.nm+" 🍯");
+  renderStore();
+}
+
+function buyPackWithMoney(id){
+  // Apple IAP lands here once the products exist in App Store Connect.
+  toast("Card purchases open when the app launches in the App Store.");
+}
+
+function openStore(){ go('store'); setTab('store'); renderStore(); }
+
+function renderStore(){
+  var t = tier();
+  document.getElementById('storeBal').textContent = '🍯 ' + (SETTINGS.honey||0) + ' honey';
+
+  var note = document.getElementById('storeTierNote');
+  if(t.freeDrops) note.textContent = "You're on Gallon — every new pack lands in your library free.";
+  else if(langLimit() < 0) note.textContent = "You're on Quart — the whole phrasebook is yours. Packs are extra.";
+  else note.textContent = "You're on Pint — " + langLimit() + " phrases in every language. Upgrade or buy packs for more.";
+
+  var sub = document.getElementById('storeLangSub');
+  sub.textContent = t.freeDrops ? "Yours already. New ones arrive free."
+                                : "New phrases for every language you speak.";
+
+  var list = document.getElementById('storePacks'); list.innerHTML='';
+  PACKS.forEach(function(p){
+    var owned = ownsPack(p.id);
+    var c = document.createElement('div');
+    c.className = 'store-card' + (owned?' owned':'');
+    var buy = owned
+      ? '<span class="sc-owned">✓ Yours</span>'
+      : '<button class="sc-btn coin" onclick="buyPackWithHoney(\''+p.id+'\')">🍯 '+p.coins+'</button>'
+      + '<button class="sc-btn" onclick="buyPackWithMoney(\''+p.id+'\')">$'+p.usd+'</button>';
+    c.innerHTML = '<div class="sc-em">'+p.em+'</div>'
+      + '<div class="sc-mid"><div class="sc-nm">'+p.nm+'</div><div class="sc-ds">'+p.ds+'</div></div>'
+      + '<div class="sc-buy">'+buy+'</div>';
+    list.appendChild(c);
+  });
+
+  var vid = document.getElementById('storeVideo'); vid.innerHTML='';
+  if(!t.aivideo){
+    vid.innerHTML = '<div class="store-sub">AI videos come with Quart and Gallon.</div>';
+  } else {
+    [{n:1,coins:150,usd:"1.99"},{n:5,coins:600,usd:"6.99"}].forEach(function(o){
+      var c=document.createElement('div'); c.className='store-card';
+      c.innerHTML = '<div class="sc-em">🎬</div>'
+        + '<div class="sc-mid"><div class="sc-nm">'+o.n+' extra video'+(o.n>1?'s':'')+'</div>'
+        + '<div class="sc-ds">Added to this week&#39;s allowance</div></div>'
+        + '<div class="sc-buy"><button class="sc-btn coin" onclick="buyVideoTopup('+o.n+','+o.coins+')">🍯 '+o.coins+'</button>'
+        + '<button class="sc-btn" onclick="buyPackWithMoney(\'vid\')">$'+o.usd+'</button></div>';
+      vid.appendChild(c);
+    });
+  }
+
+  var books = document.getElementById('storeBooks');
+  books.innerHTML = '<div class="store-card"><div class="sc-em">📖</div>'
+    + '<div class="sc-mid"><div class="sc-nm">Honey Over Money</div>'
+    + '<div class="sc-ds">Verses, word searches, and a little sass</div></div>'
+    + '<div class="sc-buy"><button class="sc-btn" disabled>Soon</button></div></div>';
+}
+
+function buyVideoTopup(n, coins){
+  if(!spendHoney(coins)) return;
+  SETTINGS.aiVidTopups = (SETTINGS.aiVidTopups||0) + n;
+  saveSettings();
+  toast("Added "+n+" video"+(n>1?"s":"")+" 🎬");
+  renderStore();
+}
+
 function goTab(id){
   setTab(id);
   if(id==='home'){ showHome(); }
   else if(id==='insights'){ openInsights(); }
-  else if(id==='prompts'){ openDailyPrompts(); }
   else if(id==='profile'){ openProfile(); }
+  else if(id==='store'){ openStore(); }
 }
-/* Sparks — short, trendy bubbles that kick off a chat (label shown, line sent) */
-var SPARKS=[
-  {l:"🔥 Hot take",    s:"Give me your most controversial hot take and let's debate it."},
-  {l:"😭 Quick Buzz",  s:"Rate my day out of 10 and roast me a little."},
-  {l:"💅 GRWM",        s:"Get ready with me — I'll tell you my plans, you hype me up."},
-  {l:"🍵 Spill the tea",s:"Spill some tea — ask me what's the latest drama in my life."},
-  {l:"😂 Make me laugh",s:"Just make me laugh. Hit me with your best joke."},
-  {l:"🧠 Random fact", s:"Tell me a random fact that'll blow my mind."},
-  {l:"💭 Unpopular opinion",s:"I want to share an unpopular opinion — react to it honestly."},
-  {l:"✨ Manifest",     s:"Help me manifest — ask me what I want for tomorrow."},
-  {l:"🎯 Small win",    s:"Ask me about one small win I had today."},
-  {l:"🥲 Vent sesh",   s:"I need to vent for a sec. Just listen and keep it light."},
-  {l:"🤔 Would you rather",s:"Hit me with a tricky 'would you rather' question."},
-  {l:"🎬 Recommend me", s:"Recommend me something to watch based on my mood right now."},
-  {l:"💪 Hype me up",   s:"I need a pep talk. Hype me up for what's ahead."},
-  {l:"🫶 Gratitude",    s:"Ask me what I'm grateful for today."},
-  {l:"🎲 Surprise me",  s:"Surprise me — say something totally unexpected."},
-  {l:"🗣️ Tea on me",    s:"Tell me something you've noticed about me lately."}
-];
 
 /* ════ BIBLE VERSES (KJV, public domain) — themed, deliverable in chat ════ */
 var VERSES={
@@ -4227,18 +4357,6 @@ function repeatVerse(){
   S.speakerOn = true;
   clearSpeech();
   enqueueSpeak(v.t);   // verse text maps to its recorded clip; non-Honey voices read the text
-}
-function todaysSpark(){ var d=new Date(); var i=(d.getFullYear()*1000+ (Math.floor((d-new Date(d.getFullYear(),0,0))/86400000)))%SPARKS.length; return SPARKS[i]; }
-function openDailyPrompts(){
-  document.getElementById('welcome').classList.remove('sleeping','waking');
-  go('prompts'); setTab('prompts'); renderPrompts();
-}
-function renderPrompts(){
-  var p=todaysSpark();
-  document.getElementById('promptToday').textContent='Today\u2019s buzz: '+p.l;
-  var list=document.getElementById('promptList'); list.innerHTML='';
-  SPARKS.forEach(q=>{ var b=document.createElement('button'); b.className='spark-bubble';
-    b.textContent=q.l; b.onclick=()=>startChatWithPrompt(q.s); list.appendChild(b); });
 }
 function startChatWithPrompt(send){
   if(!loadedOrFirst()){ newAgentFlow(true); return; }
