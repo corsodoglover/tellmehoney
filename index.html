@@ -1114,6 +1114,54 @@ textarea{resize:none;line-height:1.4;}
 .sc-btn[disabled]{opacity:.45;}
 .store-card.owned{border-color:var(--gold);}
 .sc-owned{color:var(--gold);font-size:12px;font-weight:700;white-space:nowrap;}
+
+/* ── WORD PUZZLES — uses theme variables so it re-skins with every skin ── */
+.pz-top{display:flex; justify-content:center; align-items:center; gap:14px; margin:6px 0 10px;}
+.pz-day{font-family:var(--display); font-weight:700; color:var(--gold2); font-size:15px;
+  background:var(--panel2); border:1px solid var(--line); border-radius:999px; padding:4px 14px;}
+.pz-timer{font-family:var(--display); font-size:15px; font-weight:700; color:var(--gold);
+  background:var(--panel2); border:1px solid var(--line); border-radius:999px; padding:4px 14px;
+  min-width:66px; font-variant-numeric:tabular-nums;}
+.pz-best{font-family:var(--display); font-size:14px; font-weight:700; color:var(--gold2);
+  background:var(--panel2); border:1px dashed var(--gold); border-radius:999px; padding:4px 12px;}
+.pz-sub{color:var(--dim); font-size:13px; margin-bottom:12px;}
+.pz-board{display:inline-block; background:var(--panel2); border:1px solid var(--line);
+  border-radius:16px; padding:8px; touch-action:none;}
+#pzGrid{border-collapse:collapse; margin:0 auto;}
+#pzGrid td{width:24px; height:24px; text-align:center; font-family:var(--display); font-size:14px;
+  font-weight:600; color:var(--ink); border-radius:6px; cursor:pointer; user-select:none;
+  transition:background .12s,color .12s,transform .08s;}
+#pzGrid td.sel{background:var(--gold); color:var(--on-accent); transform:scale(1.05);}
+#pzGrid td.found{background:color-mix(in srgb, var(--gold) 30%, transparent); color:var(--gold);}
+#pzGrid td.hint{box-shadow:inset 0 0 0 2px var(--gold);}
+.pz-words{display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin:14px 4px 6px;}
+.pz-chip{background:var(--panel2); border:1px solid var(--line); border-radius:999px;
+  padding:4px 11px; font-size:12px; font-weight:700; letter-spacing:.5px; color:var(--ink);}
+.pz-chip.done{background:color-mix(in srgb, var(--gold) 22%, transparent); color:var(--gold);
+  text-decoration:line-through; border-color:var(--gold);}
+.pz-honey{margin-top:12px; min-height:22px; font-family:var(--display); font-size:15px;
+  color:var(--gold2); font-style:italic;}
+.pz-hint{margin-top:12px; background:none; border:1px solid var(--line); border-radius:999px;
+  padding:7px 16px; font-size:13px; font-weight:700; color:var(--gold);}
+.pz-win{margin-top:12px; padding:14px; background:var(--panel2); border:1px solid var(--gold);
+  border-radius:14px; display:none;}
+.pz-win.show{display:block;}
+.pz-win-big{font-family:var(--display); font-size:19px; color:var(--gold2); font-weight:700;}
+.pz-win-small{color:var(--dim); font-size:13px; margin-top:4px;}
+
+/* ── PUZZLE CELEBRATION ─────────────────────────── */
+.pz-win.show{display:block; animation:pzPop .5s cubic-bezier(.2,1.3,.4,1) both;}
+@keyframes pzPop{0%{transform:scale(.6) translateY(20px);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+.pz-win-big{animation:pzWiggle .6s ease .3s both;}
+@keyframes pzWiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+.pz-fast{display:none; margin-top:8px; font-family:var(--display); font-weight:700;
+  color:var(--gold); font-size:16px;}
+.pz-fast.show{display:block; animation:pzPop .4s ease .2s both;}
+.pz-coins{margin-top:8px; font-size:15px; color:var(--gold2); font-weight:700;}
+/* falling honey drops */
+.pz-drop{position:fixed; top:-40px; font-size:26px; z-index:9999; pointer-events:none;
+  animation:pzFall linear forwards;}
+@keyframes pzFall{to{transform:translateY(110vh) rotate(360deg); opacity:.2;}}
 </style>
 </head>
 <body>
@@ -1332,10 +1380,31 @@ textarea{resize:none;line-height:1.4;}
       <button class="sl-tile" onclick="slGo('favorites')"><span class="sl-ic">❤️</span><span class="sl-tx"><b>Memories</b><small>What Honey kept for you</small></span></button>
       <button class="sl-tile" onclick="slGo('prayers')"><span class="sl-ic">🙏</span><span class="sl-tx"><b>Prayers</b><small>Keep &amp; add your own</small></span></button>
       <button class="sl-tile" onclick="slGo('learn')"><span class="sl-ic">📚</span><span class="sl-tx"><b>Learn</b><small>A new language</small></span></button>
+      <button class="sl-tile" onclick="slGo('puzzle')"><span class="sl-ic">🧩</span><span class="sl-tx"><b>Word Puzzles</b><small>Today's word search</small></span></button>
       <button class="sl-tile" onclick="slGo('weather')"><span class="sl-ic">☀️</span><span class="sl-tx"><b>Weather</b><small>What's it like out</small></span></button>
       <button class="sl-tile" onclick="slGo('insights')"><span class="sl-ic">🍯</span><span class="sl-tx"><b>Honey Pot</b><small>Your streak &amp; insights</small></span></button>
     </div>
     <button class="prof-row" style="margin-top:16px" onclick="openContentSwitches()">⚙️ What Honey shares — turn things on or off</button>
+  </div>
+</section>
+
+<!-- WORD PUZZLES -->
+<section class="screen" id="puzzle">
+  <div class="bar"><button class="back" onclick="go('sweetLife')">‹</button>
+    <h2>🧩 Word Puzzles</h2><span style="width:40px"></span></div>
+  <div class="scroll" style="text-align:center; padding:8px 14px 30px;">
+    <div class="pz-top"><span class="pz-day" id="pzDay">Day 1</span><span class="pz-timer" id="pzTimer">0:00</span><span class="pz-best" id="pzBest" style="display:none"></span></div>
+    <div class="pz-sub" id="pzSub">Tap the first letter, then the last.</div>
+    <div class="pz-board"><table id="pzGrid"></table></div>
+    <div class="pz-words" id="pzWords"></div>
+    <div class="pz-honey" id="pzHoney">Take your time, sugar. They're all in there.</div>
+    <button class="pz-hint" id="pzHint" onclick="pzNudge()">Give me a nudge</button>
+    <div class="pz-win" id="pzWin">
+      <div class="pz-win-big" id="pzWinBig">Well, look at you! 🍯</div>
+      <div class="pz-fast" id="pzFast">🏆 New best time!</div>
+      <div class="pz-win-small" id="pzWinMsg"></div>
+      <div class="pz-coins" id="pzCoins"></div>
+    </div>
   </div>
 </section>
 
@@ -3874,6 +3943,7 @@ function slGo(where){
     case 'favorites': openFavorites(); break;
     case 'prayers':  openPrayers(); break;
     case 'learn':    openLearn(); break;
+    case 'puzzle':   openPuzzle(); break;
     case 'weather':  homeWeather(); break;
     case 'insights': openInsights(); break;
   }
@@ -10380,6 +10450,286 @@ function answerHowToSay(phrase, code){
   return vibeColor('Ooh, good one! I keep a little set of '+L.nm+' phrases I know for sure — tap 📚 Learn to hear them. I don\u2019t want to fib and guess that one wrong. Want me to teach you a phrase I *do* know?');
 }
 function openLearn(){ if(!loadedOrFirst()){ newAgentFlow(true); return; } curLearnLang=SETTINGS.learnLang||"es"; go('learn'); renderLearn(); }
+
+/* ══════════ WORD PUZZLES ══════════════════════════════════════════
+   One word search a day. Tap first letter, tap last, it fills in.
+   Honey talks in her voice; a timer lets you race yourself.
+   Day tracking + best times saved per person in SETTINGS.          */
+var PZ_PUZZLES = [
+  { day:1, grid:["XIHQFELIMSBVN", "CFXGIGGLELCSD", "FZRTPLGYVQOUH", "MAOIKBIPTBMNZ", "CLPLEBUIYSFSO", "JWOASNTXJROHM", "OARULKDFEXRIF", "KRCGKPYSMTTNN", "EMHHHYPHHXDEQ", "GTFTCHCAOITZI", "PHHEKNWBTNPIP", "LWKRWWCQJTEXF", "LJHMNBAICRXYY"],
+    words:{ FRIENDSHIP:[[1,1],[10,10]], SUNSHINE:[[1,11],[8,11]], COMFORT:[[1,10],[7,10]], LAUGHTER:[[4,3],[11,3]], HONEY:[[8,7],[12,11]], SMILE:[[0,9],[0,5]], GIGGLE:[[1,3],[1,8]], WARMTH:[[5,1],[10,1]], PORCH:[[4,2],[8,2]], JOKE:[[5,0],[8,0]] },
+    lines:{ FRIENDSHIP:"Friendship \u2014 the whole point, isn't it?", SUNSHINE:"Sunshine, even on a gray day.", COMFORT:"Comfort. Come sit a while.", LAUGHTER:"Laughter. Best medicine there is.", HONEY:"There I am, sweet as ever.", SMILE:"A smile looks good on you.", GIGGLE:"A giggle! I heard that.", WARMTH:"Warmth \u2014 that's what we're about.", PORCH:"Out on the porch where the good talks happen.", JOKE:"A joke! Want one after this?" } },
+  { day:2, grid:["TMRNPJQNXXAWQ", "MXEKTILLKNDSF", "XCTEEWSEIWDCO", "EGHFBRWYNRPOW", "USJUCMDCDKPUO", "OYSJCRXONSHBS", "YXECAKXZEOEUS", "CXKASBLYSVARG", "RXDQYDCESLRZN", "XRDPEACEJATTK", "AOYFBLESSINGX", "BGRATITUDEWYN", "BXUUXRGRINURK"],
+    words:{ CHUCKLE:[[2,1],[8,7]], BLESSING:[[10,4],[10,11]], KINDNESS:[[1,8],[8,8]], GRATITUDE:[[11,1],[11,9]], HUG:[[5,10],[7,12]], SWEET:[[2,6],[2,2]], HEART:[[5,10],[9,10]], PEACE:[[9,3],[9,7]], COZY:[[4,7],[7,7]], GRIN:[[12,6],[12,9]] },
+    lines:{ CHUCKLE:"Chuckle \u2014 I like that one.", BLESSING:"A blessing, counted.", KINDNESS:"Kindness. Never goes out of style.", GRATITUDE:"Gratitude. It changes everything.", HUG:"A hug! Consider yourself squeezed.", SWEET:"Sweet. Just like you.", HEART:"Heart \u2014 I like that one.", PEACE:"Peace. Hold onto that one.", COZY:"Cozy \u2014 I like that one.", GRIN:"Grin \u2014 I like that one." } },
+  { day:3, grid:["CLBAKINGSGXNP", "PUESMBRRYURIQ", "TWAVFEXQQTGZQ", "VRVYCEMCALMAA", "OZVWJOSOOKHIR", "SJIEXTSWRWQCH", "WDSTORYMTIXED", "ENEIGHBORREOF", "ZUWINKJDIJBSF", "ZRDNIKQWCTXWR", "VHRXLAUGHINGN", "QYLCRQUILTIHR", "MOQUSPDAFZAIV"],
+    words:{ MEMORIES:[[1,4],[8,11]], NEIGHBOR:[[7,1],[7,8]], LAUGHING:[[10,4],[10,11]], SUGAR:[[0,8],[4,12]], KIND:[[9,5],[9,2]], STORY:[[6,2],[6,6]], BAKING:[[0,2],[0,7]], WINK:[[8,2],[8,5]], QUILT:[[11,5],[11,9]], CALM:[[3,7],[3,10]] },
+    lines:{ MEMORIES:"Memories \u2014 the ones worth keeping.", NEIGHBOR:"Neighbor \u2014 I like that one.", LAUGHING:"Laughing \u2014 I like that one.", SUGAR:"Sugar \u2014 I like that one.", KIND:"Kind \u2014 I like that one.", STORY:"Story \u2014 I like that one.", BAKING:"Baking \u2014 I like that one.", WINK:"Wink \u2014 I like that one.", QUILT:"Quilt \u2014 I like that one.", CALM:"Calm as a Sunday morning." } },
+  { day:4, grid:["PVJMSMILEUQOA", "FUOLOJEOSDEWY", "MTPJEILGSCEHS", "BTOPEWJLXDNIM", "GXNGYHBOGIGMU", "DDKSEPYWQJASC", "STDIITXWRJRIC", "TICHABHBVKDCH", "RMIVUGTESVEAT", "EQBBYYQGRJNLW", "ASRPWISEXYOJS", "TJZSUNRISEEYX", "NPWKIJBYYUZHD"],
+    words:{ TOGETHER:[[2,1],[9,8]], SUNRISE:[[11,3],[11,9]], WHIMSICAL:[[1,11],[9,11]], PUPPY:[[0,0],[4,4]], JOY:[[10,11],[10,9]], GARDEN:[[4,10],[9,10]], SMILE:[[0,4],[0,8]], TREAT:[[7,0],[11,0]], GLOW:[[2,7],[5,7]], WISE:[[10,4],[10,7]] },
+    lines:{ TOGETHER:"Together \u2014 I like that one.", SUNRISE:"Sunrise \u2014 I like that one.", WHIMSICAL:"Whimsical \u2014 I like that one.", PUPPY:"Puppy \u2014 I like that one.", JOY:"Joy \u2014 the good kind.", GARDEN:"Garden \u2014 I like that one.", SMILE:"A smile looks good on you.", TREAT:"Treat \u2014 I like that one.", GLOW:"Glow \u2014 I like that one.", WISE:"Wise \u2014 I like that one." } },
+  { day:5, grid:["DNAPSWEETFRFU", "EIGLVTEAACPWY", "XULKJMYCOOKIE", "TIDNMIBDJAFRD", "RBCHERISHEDEJ", "WTLPXGRUVJOMC", "DTIETBEFNXNAU", "HFLUSZSHOOEHK", "LDNOZSTFWUUUQ", "TMATBEEXRCILJ", "WCDEOUBDPOXZT", "VEAFTERNOONJH", "CXJSXQHGUALTW"],
+    words:{ BLESSED:[[4,1],[10,7]], CHERISHED:[[4,2],[4,10]], AFTERNOON:[[11,2],[11,10]], FRONT:[[8,7],[12,11]], LAUGH:[[12,10],[12,6]], SWEET:[[0,4],[0,8]], COOKIE:[[2,7],[2,12]], TEA:[[1,5],[1,7]], NAP:[[0,1],[0,3]], REST:[[5,6],[8,6]] },
+    lines:{ BLESSED:"Blessed \u2014 I like that one.", CHERISHED:"Cherished \u2014 I like that one.", AFTERNOON:"Afternoon \u2014 I like that one.", FRONT:"Front \u2014 I like that one.", LAUGH:"Laugh \u2014 I like that one.", SWEET:"Sweet. Just like you.", COOKIE:"Cookie \u2014 I like that one.", TEA:"Time for a cup of tea, I'd say.", NAP:"A nap sounds just right.", REST:"Rest. You've earned it." } },
+  { day:6, grid:["YGUVCELJGZNMP", "KIBMDREEQFWCI", "UGGOSKCKBFGDE", "JGTRPBWPVUFEQ", "DLSNAMRAWETLP", "DEDIVNACBILIO", "HSBNHFDDUQRGE", "AIQGORXKBPEHJ", "PTJNNSUKIMPTT", "PFJBEOHRMDSFW", "YVHWYVFABASUP", "XXRUIYNSDQXLV", "QVCHCETUXEIVU"],
+    words:{ GRANDKIDS:[[2,2],[10,10]], DELIGHTFUL:[[2,11],[11,11]], MORNING:[[1,3],[7,3]], SHADE:[[8,5],[12,9]], WARM:[[4,8],[4,5]], HAPPY:[[6,0],[10,0]], HONEY:[[6,4],[10,4]], SIT:[[6,1],[8,1]], GIGGLE:[[0,1],[5,1]], PIE:[[0,12],[2,12]] },
+    lines:{ GRANDKIDS:"The grandkids! Light of your life.", DELIGHTFUL:"Delightful \u2014 I like that one.", MORNING:"Morning \u2014 I like that one.", SHADE:"Shade \u2014 I like that one.", WARM:"Warm \u2014 I like that one.", HAPPY:"Happy \u2014 I like that one.", HONEY:"There I am, sweet as ever.", SIT:"Sit \u2014 I like that one.", GIGGLE:"A giggle! I heard that.", PIE:"Pie! Now you're talking." } },
+  { day:7, grid:["PEBREEZEHPMZR", "YVLTQXEZOUJUV", "JPNHKITCHENYS", "NMFRLUSPGXOYK", "HGGKRUYADNUSV", "IORBLALDFXIJE", "QAAHEQALBLPSR", "IMCSGLDRAVHXS", "ZEIDIGLFEBQYE", "ANOSERYSHHYWV", "LWUIIAQERMAYS", "QESNSCXTPAZPR", "YTFGHEWHXJFHY"],
+    words:{ LULLABY:[[3,4],[9,10]], GRACIOUS:[[4,2],[11,2]], KITCHEN:[[2,4],[2,10]], BELL:[[5,3],[8,6]], SUNDAY:[[4,11],[4,6]], GRACE:[[8,5],[12,5]], BREEZE:[[0,2],[0,7]], SING:[[9,3],[12,3]], VERSE:[[4,12],[8,12]], AMEN:[[6,1],[9,1]] },
+    lines:{ LULLABY:"Lullaby \u2014 I like that one.", GRACIOUS:"Gracious \u2014 I like that one.", KITCHEN:"Kitchen \u2014 I like that one.", BELL:"Bell \u2014 I like that one.", SUNDAY:"Sunday \u2014 a day to slow down.", GRACE:"Grace \u2014 enough for today.", BREEZE:"Breeze \u2014 I like that one.", SING:"Sing \u2014 I like that one.", VERSE:"A little verse to carry with you.", AMEN:"Amen \u2014 I like that one." } },
+  { day:8, grid:["PZHDCMYFUNUUC", "WZZGATUOTCANH", "UFWBUTTERFLYW", "RWNCHAIRIUKDA", "EOUDMXXCATPXD", "YNZHWEVENINGG", "HDRPOHYFKEYZD", "DEASWVISTYWTX", "GRDSMLISTEEWS", "GFRXXIPATCTBH", "UUDGJMLXQLKVD", "NLOSVJUEROEKI", "UXGDOBXKXHWAF"],
+    words:{ WHISTLE:[[5,4],[11,10]], BUTTERFLY:[[2,3],[2,11]], WONDERFUL:[[3,1],[11,1]], EVENING:[[5,5],[5,11]], SMILE:[[7,3],[11,7]], SWEET:[[8,12],[8,8]], FUN:[[0,7],[0,9]], CHAIR:[[3,3],[3,7]], DOG:[[10,2],[12,2]], CAT:[[4,7],[4,9]] },
+    lines:{ WHISTLE:"Whistle \u2014 I like that one.", BUTTERFLY:"Butterfly \u2014 I like that one.", WONDERFUL:"Wonderful \u2014 I like that one.", EVENING:"Evening \u2014 I like that one.", SMILE:"A smile looks good on you.", SWEET:"Sweet. Just like you.", FUN:"Fun \u2014 I like that one.", CHAIR:"Chair \u2014 I like that one.", DOG:"Dog \u2014 I like that one.", CAT:"Cat \u2014 I like that one." } },
+  { day:9, grid:["YBQGIMXTHVIIS", "UJILIUBHLWMCC", "KWYEHGDUMVOFY", "BKTISYGGZKOUO", "IQORLUZLEMNNL", "HPWREPJYEELCH", "OIXPTAJOYRIBD", "NPLKNTSPZRGVB", "ERAPPLEUQYHTC", "YXUYWMPQRUTAA", "KNUSTTDLJEEHX", "XTLAUGHTERDKR", "HVRPMPLJFVZJY"],
+    words:{ TREASURE:[[3,2],[10,9]], MOONLIGHT:[[1,10],[9,10]], LAUGHTER:[[11,2],[11,9]], GIGGLE:[[0,3],[5,8]], SUN:[[10,3],[10,1]], MERRY:[[4,9],[8,9]], HONEY:[[5,0],[9,0]], HUG:[[1,7],[3,7]], JOY:[[6,6],[6,8]], APPLE:[[8,2],[8,6]] },
+    lines:{ TREASURE:"Treasure \u2014 I like that one.", MOONLIGHT:"Moonlight \u2014 I like that one.", LAUGHTER:"Laughter. Best medicine there is.", GIGGLE:"A giggle! I heard that.", SUN:"Sun \u2014 I like that one.", MERRY:"Merry and bright, that's you.", HONEY:"There I am, sweet as ever.", HUG:"A hug! Consider yourself squeezed.", JOY:"Joy \u2014 the good kind.", APPLE:"Apple \u2014 I like that one." } },
+  { day:10, grid:["PBWDUGLJCOPOD", "OFOPGZMTKHORG", "RGUDUEKGBCDOR", "CCPVGSNPLPICR", "EOLWAXTEQQPKI", "ANPHREEORFIIQ", "PTVXDKEKROENF", "TEAMEQMIRYUGE", "TNMDNNFXBDFSR", "ITWASXRBOFNAP", "CEGHCROPZSOUW", "PDNYCOZYOYIFB", "RQHEPABANJIUK"],
+    words:{ GENEROUS:[[1,4],[8,11]], CONTENTED:[[3,1],[11,1]], GARDENS:[[3,4],[9,4]], ROCKING:[[1,11],[7,11]], STORY:[[3,5],[7,9]], PORCH:[[10,7],[10,3]], TEA:[[7,0],[7,2]], NAP:[[9,10],[9,12]], PIE:[[4,10],[6,10]], COZY:[[11,4],[11,7]] },
+    lines:{ GENEROUS:"Generous \u2014 I like that one.", CONTENTED:"Contented \u2014 I like that one.", GARDENS:"Gardens \u2014 I like that one.", ROCKING:"Rocking \u2014 I like that one.", STORY:"Story \u2014 I like that one.", PORCH:"Out on the porch where the good talks happen.", TEA:"Time for a cup of tea, I'd say.", NAP:"A nap sounds just right.", PIE:"Pie! Now you're talking.", COZY:"Cozy \u2014 I like that one." } },
+  { day:11, grid:["ECGGKVZVXCXJG", "RSUNFLOWERQKJ", "JOYOSWEETJJIR", "RCTKWHISPERCF", "ZFHHEARTFELTI", "WOBUAOZLJZEHX", "CAGMCFWULVZRS", "KKREEKLJEPMIY", "FSNMHKLVMATUB", "AHFNIUSEOHMGU", "NTISLIIJNIMEI", "GELGOSMILERTM", "EZMPTWIYZMHGB"],
+    words:{ CHUCKLE:[[3,1],[9,7]], SUNFLOWER:[[1,1],[1,9]], HEARTFELT:[[4,3],[4,11]], WHISPER:[[3,4],[3,10]], WARM:[[5,0],[8,3]], SIT:[[10,3],[10,1]], SMILE:[[11,5],[11,9]], JOY:[[2,0],[2,2]], LEMON:[[6,8],[10,8]], SWEET:[[2,4],[2,8]] },
+    lines:{ CHUCKLE:"Chuckle \u2014 I like that one.", SUNFLOWER:"Sunflower \u2014 I like that one.", HEARTFELT:"Heartfelt \u2014 I like that one.", WHISPER:"Whisper \u2014 I like that one.", WARM:"Warm \u2014 I like that one.", SIT:"Sit \u2014 I like that one.", SMILE:"A smile looks good on you.", JOY:"Joy \u2014 the good kind.", LEMON:"Lemon \u2014 I like that one.", SWEET:"Sweet. Just like you." } },
+  { day:12, grid:["HYPPAHNIXPPZU", "YBTWKGACJXAKE", "UENEIGHBORSZV", "SABBKFTEDRFRG", "NUONLSYZZEYLV", "BTVKIEPIDSTCB", "UIVUPVSIVTEZS", "PFHBOIJSNWAHW", "VUYUNTVOIOKOI", "ILZTGSDSPNQNN", "UMGIGGLESLGEG", "LVJJQWDQEHOYX", "RUEOQJEKWQFWA"],
+    words:{ BLESSING:[[3,3],[10,10]], NEIGHBORS:[[2,2],[2,10]], GIGGLES:[[10,2],[10,8]], BEAUTIFUL:[[1,1],[9,1]], HUG:[[7,2],[9,4]], HAPPY:[[0,5],[0,1]], SWING:[[6,12],[10,12]], TEA:[[5,10],[7,10]], HONEY:[[7,11],[11,11]], REST:[[3,9],[6,9]] },
+    lines:{ BLESSING:"A blessing, counted.", NEIGHBORS:"Neighbors \u2014 I like that one.", GIGGLES:"Giggles \u2014 I like that one.", BEAUTIFUL:"Beautiful \u2014 I like that one.", HUG:"A hug! Consider yourself squeezed.", HAPPY:"Happy \u2014 I like that one.", SWING:"Swing \u2014 I like that one.", TEA:"Time for a cup of tea, I'd say.", HONEY:"There I am, sweet as ever.", REST:"Rest. You've earned it." } },
+  { day:13, grid:["GOVXSAMGWRQYJ", "HMBGRATEFULVL", "PRDCCRYRDNIKV", "GOUAPOGBURQGF", "RLELFRLFILJLN", "BPAMXYAFQUILT", "XGPUSUNSHINEZ", "OCRUGLBZORFKR", "JQVAOHOJXAZNF", "TZRMCWEAUNFSR", "RFMXSEPDJWBAO", "AAFTERNOONSSG", "VERSEQGZYKXWY"],
+    words:{ LAUGHED:[[4,1],[10,7]], SUNSHINE:[[6,4],[6,11]], AFTERNOONS:[[11,1],[11,10]], GRATEFUL:[[1,3],[1,10]], GRACE:[[6,1],[10,5]], KIND:[[2,11],[2,8]], CALM:[[2,3],[5,3]], VERSE:[[12,0],[12,4]], QUILT:[[5,8],[5,12]], JOY:[[10,8],[12,8]] },
+    lines:{ LAUGHED:"Laughed \u2014 I like that one.", SUNSHINE:"Sunshine, even on a gray day.", AFTERNOONS:"Afternoons \u2014 I like that one.", GRATEFUL:"Grateful \u2014 I like that one.", GRACE:"Grace \u2014 enough for today.", KIND:"Kind \u2014 I like that one.", CALM:"Calm as a Sunday morning.", VERSE:"A little verse to carry with you.", QUILT:"Quilt \u2014 I like that one.", JOY:"Joy \u2014 the good kind." } },
+  { day:14, grid:["NRUGESBFTPIEI", "RBFNIPDQNDDXH", "ZUMPMHUGDRZOR", "MTKORCAFPAPFM", "NTOQRJHGVNRVP", "JEHVLNZOXFEIR", "RRASNGINLHCSX", "TCGWUHCNEBIUU", "JUFEIHZSGHONQ", "KPREMBVAMSUVU", "WTKTRUTASISGE", "QKEIGIGGLELCR", "FOVWVCZDTQVES"],
+    words:{ MORNINGS:[[2,2],[9,9]], BUTTERCUP:[[1,1],[9,1]], PRECIOUS:[[3,10],[10,10]], SMILE:[[8,7],[12,11]], BENCH:[[7,9],[7,5]], GIGGLE:[[11,4],[11,9]], HUG:[[2,5],[2,7]], SUN:[[6,11],[8,11]], SWEET:[[6,3],[10,3]], PIE:[[0,9],[0,11]] },
+    lines:{ MORNINGS:"Mornings \u2014 I like that one.", BUTTERCUP:"Buttercup \u2014 I like that one.", PRECIOUS:"Precious \u2014 I like that one.", SMILE:"A smile looks good on you.", BENCH:"Bench \u2014 I like that one.", GIGGLE:"A giggle! I heard that.", HUG:"A hug! Consider yourself squeezed.", SUN:"Sun \u2014 I like that one.", SWEET:"Sweet. Just like you.", PIE:"Pie! Now you're talking." } },
+  { day:15, grid:["RBMERRYTCWJBT", "QWSFCUAESJTKU", "DXCUWHPANHOPW", "HFCGIEANPSADO", "OLHPLEJRRVNDS", "NMUJDVXUMVXGE", "ESCPFEJSRITKL", "YQKBLNOXMANYX", "IILPOIRPFJDGT", "UJEEWNXGSJPSL", "UCDGEGOLNONHU", "EOTYRSAHYYDFB", "EDUUMNIPBTVMW"],
+    words:{ CHARMING:[[1,4],[8,11]], EVENINGS:[[4,5],[11,5]], WILDFLOWER:[[2,4],[11,4]], CHUCKLE:[[3,2],[9,2]], SHADE:[[1,8],[5,12]], NAP:[[2,8],[2,6]], TEA:[[0,7],[2,7]], MERRY:[[0,2],[0,6]], JOY:[[9,9],[11,9]], HONEY:[[3,0],[7,0]] },
+    lines:{ CHARMING:"Charming \u2014 I like that one.", EVENINGS:"Evenings \u2014 I like that one.", WILDFLOWER:"Wildflower \u2014 I like that one.", CHUCKLE:"Chuckle \u2014 I like that one.", SHADE:"Shade \u2014 I like that one.", NAP:"A nap sounds just right.", TEA:"Time for a cup of tea, I'd say.", MERRY:"Merry and bright, that's you.", JOY:"Joy \u2014 the good kind.", HONEY:"There I am, sweet as ever." } },
+  { day:16, grid:["ZFVVZRQLMZYGN", "HNVCTSERUHLME", "UGRANDCHILDPS", "GVUCLZECASLOU", "FHRHFAGKKTGRZ", "NIIIHIUUMOVCG", "TYBCYZKGAROHB", "SAKWVPSPHYTIF", "ELZZJHXVSTUXP", "LLECOZYECIEEU", "ZDELIGHTEDTRX", "FZVGELULLABYU", "GYURTQRPGVQPC"],
+    words:{ LAUGHTER:[[3,4],[10,11]], DELIGHTED:[[10,1],[10,9]], LULLABY:[[11,5],[11,11]], GRANDCHILD:[[2,1],[2,10]], SIT:[[8,8],[10,10]], REST:[[1,7],[1,4]], COZY:[[9,3],[9,6]], STORY:[[3,9],[7,9]], PORCH:[[2,11],[6,11]], HUG:[[1,0],[3,0]] },
+    lines:{ LAUGHTER:"Laughter. Best medicine there is.", DELIGHTED:"Delighted \u2014 I like that one.", LULLABY:"Lullaby \u2014 I like that one.", GRANDCHILD:"Grandchild \u2014 I like that one.", SIT:"Sit \u2014 I like that one.", REST:"Rest. You've earned it.", COZY:"Cozy \u2014 I like that one.", STORY:"Story \u2014 I like that one.", PORCH:"Out on the porch where the good talks happen.", HUG:"A hug! Consider yourself squeezed." } },
+  { day:17, grid:["LQFJOYNGPUBUP", "DRFSOLFAKVWRS", "HEWAUDNIKKONM", "CMLXHNWZVPSXC", "WEWARMBWSTGGG", "UMVMISIESTKIH", "SBXCLQXLAMRGT", "SEQDRTXZUMIGQ", "WRWFUBHJPUSLD", "EIJJDINVVOAEE", "ENQGRWNFWZZDT", "TGKOTHANKFULT", "CJVAPPLEHDXDB"],
+    words:{ SUNBEAM:[[1,3],[7,9]], THANKFUL:[[11,4],[11,11]], REMEMBERING:[[1,1],[11,1]], GIGGLED:[[4,11],[10,11]], SMILE:[[5,8],[9,12]], KIND:[[2,8],[2,5]], APPLE:[[12,3],[12,7]], SWEET:[[7,0],[11,0]], WARM:[[4,2],[4,5]], JOY:[[0,3],[0,5]] },
+    lines:{ SUNBEAM:"Sunbeam \u2014 I like that one.", THANKFUL:"Thankful \u2014 I like that one.", REMEMBERING:"Remembering \u2014 I like that one.", GIGGLED:"Giggled \u2014 I like that one.", SMILE:"A smile looks good on you.", KIND:"Kind \u2014 I like that one.", APPLE:"Apple \u2014 I like that one.", SWEET:"Sweet. Just like you.", WARM:"Warm \u2014 I like that one.", JOY:"Joy \u2014 the good kind." } },
+  { day:18, grid:["CFGIIHWUWXNMQ", "YNCETAIGFXYJT", "RPOXWPVAQMBDJ", "WENXDPFNKGJYV", "PDTWEYKSVNVZH", "JUEJHLUFYOJSS", "GLNKBIVSSIMQM", "YXTBIVSUWRTNB", "LHMOLBPTVINAO", "GOEHDUTVLUNPQ", "JNNQPMEWAEZGO", "METKIGARDENSA", "BYSEEOSVQSZAP"],
+    words:{ WHISTLE:[[4,3],[10,9]], GARDENS:[[11,5],[11,11]], CONTENTMENT:[[1,2],[11,2]], SWING:[[6,7],[10,11]], JOYFUL:[[5,10],[5,5]], NAP:[[7,11],[9,11]], HAPPY:[[0,5],[4,5]], PIE:[[10,4],[12,4]], HONEY:[[8,1],[12,1]], TEA:[[9,6],[11,6]] },
+    lines:{ WHISTLE:"Whistle \u2014 I like that one.", GARDENS:"Gardens \u2014 I like that one.", CONTENTMENT:"Contentment \u2014 I like that one.", SWING:"Swing \u2014 I like that one.", JOYFUL:"Joyful \u2014 I like that one.", NAP:"A nap sounds just right.", HAPPY:"Happy \u2014 I like that one.", PIE:"Pie! Now you're talking.", HONEY:"There I am, sweet as ever.", TEA:"Time for a cup of tea, I'd say." } },
+  { day:19, grid:["UUYTNWGUHKSLW", "KPAAFTERNOONE", "EBUCOEVSUNMZA", "ZLJWHCHAIROAI", "NEAKAUIIZTOHL", "PSBZGVCPHKNTO", "ASAEKBHKOVBOH", "NIQIGUOXLBEWC", "RNLQYSQPDEAOO", "NGRACEIJANMXW", "HSLMJZPTQGXDT", "XTKTCJXZNPBJM", "ATJISUUVERSED"],
+    words:{ CHUCKLE:[[2,3],[8,9]], MOONBEAM:[[2,10],[9,10]], AFTERNOON:[[1,3],[1,11]], BLESSINGS:[[2,1],[10,1]], SIT:[[8,5],[10,7]], HUG:[[0,8],[0,6]], VERSE:[[12,7],[12,11]], CHAIR:[[3,5],[3,9]], GRACE:[[9,1],[9,5]], SUN:[[2,7],[2,9]] },
+    lines:{ CHUCKLE:"Chuckle \u2014 I like that one.", MOONBEAM:"Moonbeam \u2014 I like that one.", AFTERNOON:"Afternoon \u2014 I like that one.", BLESSINGS:"Blessings, more than we can count.", SIT:"Sit \u2014 I like that one.", HUG:"A hug! Consider yourself squeezed.", VERSE:"A little verse to carry with you.", CHAIR:"Chair \u2014 I like that one.", GRACE:"Grace \u2014 enough for today.", SUN:"Sun \u2014 I like that one." } },
+  { day:20, grid:["YAJBPFAVDYHVV", "XKINDLINESSEK", "EMEOAMERRYXDL", "LXYHEOCRPCDCU", "FFOCGMATSWUZT", "KIXFHILHUFXGP", "QFRQXEMYNRZDM", "OLJKEDRKRGXKF", "GPOGUOWIIFGJD", "NRYFWTUCSRWME", "GGQGEGETEHZND", "ASMILEPAYSPGA", "XTLIUQYGIGGLE"],
+    words:{ CHERISH:[[4,3],[10,9]], SUNRISE:[[4,8],[10,8]], KINDLINESS:[[1,1],[1,10]], TEA:[[9,5],[11,7]], QUILT:[[12,5],[12,1]], MERRY:[[2,5],[2,9]], JOY:[[7,2],[9,2]], CALM:[[3,6],[6,6]], SMILE:[[11,1],[11,5]], GIGGLE:[[12,7],[12,12]] },
+    lines:{ CHERISH:"Cherish \u2014 I like that one.", SUNRISE:"Sunrise \u2014 I like that one.", KINDLINESS:"Kindliness \u2014 I like that one.", TEA:"Time for a cup of tea, I'd say.", QUILT:"Quilt \u2014 I like that one.", MERRY:"Merry and bright, that's you.", JOY:"Joy \u2014 the good kind.", CALM:"Calm as a Sunday morning.", SMILE:"A smile looks good on you.", GIGGLE:"A giggle! I heard that." } },
+  { day:21, grid:["WUZNGGVNSKRKQ", "SINFPEPHGYNHJ", "JZGIWOXUMYEYI", "GSRTBYQGCSIEW", "HWAYENOHTWGVH", "RECHLJTFCIHEX", "MEIAXAAOXUBNJ", "QTOCCAUVBJOIH", "KTUKRUGGXHRNM", "SZSWGEUYHILGO", "PIEFMCSVDEYSO", "SPORCHKTELDMP", "SUWIHYBMMSZFJ"],
+    words:{ LAUGHED:[[5,4],[11,10]], EVENINGS:[[3,11],[10,11]], NEIGHBORLY:[[1,10],[10,10]], GRACIOUS:[[2,2],[9,2]], REST:[[8,4],[11,7]], HONEY:[[4,7],[4,3]], SWEET:[[3,1],[7,1]], PORCH:[[11,1],[11,5]], PIE:[[10,0],[10,2]], HUG:[[1,7],[3,7]] },
+    lines:{ LAUGHED:"Laughed \u2014 I like that one.", EVENINGS:"Evenings \u2014 I like that one.", NEIGHBORLY:"Neighborly \u2014 I like that one.", GRACIOUS:"Gracious \u2014 I like that one.", REST:"Rest. You've earned it.", HONEY:"There I am, sweet as ever.", SWEET:"Sweet. Just like you.", PORCH:"Out on the porch where the good talks happen.", PIE:"Pie! Now you're talking.", HUG:"A hug! Consider yourself squeezed." } },
+  { day:22, grid:["BKYWZAUDJNPUJ", "EOFMTOSAOFSCB", "NPKOCGFCDJLVQ", "CNSRBHIPYCNAP", "HYUNJRUYROTSG", "VPNIYORCSZFXB", "WXTNNHYUKYGVJ", "DIRGUTRJKLXEA", "RUASMVWEFQEFK", "DBUTTERFLIEST", "NDZCWDMVEEEMC", "DGAKWONDROUSD", "RSRSTWYLTJJNO"],
+    words:{ CHUCKLE:[[2,4],[8,10]], WONDROUS:[[11,4],[11,11]], BUTTERFLIES:[[9,1],[9,11]], MORNINGS:[[1,3],[8,3]], JOY:[[4,4],[6,6]], STORY:[[4,11],[4,7]], COZY:[[3,9],[6,9]], NAP:[[3,10],[3,12]], BENCH:[[0,0],[4,0]], SUN:[[3,2],[5,2]] },
+    lines:{ CHUCKLE:"Chuckle \u2014 I like that one.", WONDROUS:"Wondrous \u2014 I like that one.", BUTTERFLIES:"Butterflies \u2014 I like that one.", MORNINGS:"Mornings \u2014 I like that one.", JOY:"Joy \u2014 the good kind.", STORY:"Story \u2014 I like that one.", COZY:"Cozy \u2014 I like that one.", NAP:"A nap sounds just right.", BENCH:"Bench \u2014 I like that one.", SUN:"Sun \u2014 I like that one." } },
+  { day:23, grid:["HMHLZPZYKIYCA", "ZGTJLFDHIISBL", "IRETBYHSPKNOQ", "QAAIEHJWQJPDM", "WNASENLRFEFDG", "NDOUASDFEQHPC", "HMXNLIEELGGIG", "HONSSTGHRPMDD", "ATEHAMDNRLCMV", "PHAIDPJJNHYIU", "PEXNZGQYHIBVU", "YRLEBSHADELTJ", "ASMILEUGCENPE"],
+    words:{ TENDERLY:[[2,3],[9,10]], GRANDMOTHER:[[1,1],[11,1]], SUNSHINE:[[4,3],[11,3]], KIND:[[0,8],[3,11]], GIGGLE:[[6,12],[6,7]], SIT:[[5,5],[7,5]], SMILE:[[12,1],[12,5]], TEA:[[1,2],[3,2]], SHADE:[[11,5],[11,9]], HAPPY:[[7,0],[11,0]] },
+    lines:{ TENDERLY:"Tenderly \u2014 I like that one.", GRANDMOTHER:"Grandmother \u2014 I like that one.", SUNSHINE:"Sunshine, even on a gray day.", KIND:"Kind \u2014 I like that one.", GIGGLE:"A giggle! I heard that.", SIT:"Sit \u2014 I like that one.", SMILE:"A smile looks good on you.", TEA:"Time for a cup of tea, I'd say.", SHADE:"Shade \u2014 I like that one.", HAPPY:"Happy \u2014 I like that one." } },
+  { day:24, grid:["SBVKSPZTYGRGR", "WMERMBLONQEHN", "ELXRXLAKQXJBB", "EHTECWUMFFWKE", "TOMSMPGLNMKQX", "HNPTHQHOLGUHJ", "ZEIIWTTUCAYGZ", "SYBWEEEHNPBRM", "WDWYNKRMCVRYM", "IHEARTWARMEFB", "NREMEMBRANCER", "GOEXHLEJTEUGZ", "HPDSCBKVVWZSF"],
+    words:{ LULLABY:[[2,5],[8,11]], REMEMBRANCE:[[10,1],[10,11]], LAUGHTER:[[1,6],[8,6]], HEARTWARM:[[9,1],[9,9]], PIE:[[5,2],[7,4]], HUG:[[5,11],[5,9]], REST:[[2,3],[5,3]], SWEET:[[0,0],[4,0]], SWING:[[7,0],[11,0]], HONEY:[[3,1],[7,1]] },
+    lines:{ LULLABY:"Lullaby \u2014 I like that one.", REMEMBRANCE:"Remembrance \u2014 I like that one.", LAUGHTER:"Laughter. Best medicine there is.", HEARTWARM:"Heartwarm \u2014 I like that one.", PIE:"Pie! Now you're talking.", HUG:"A hug! Consider yourself squeezed.", REST:"Rest. You've earned it.", SWEET:"Sweet. Just like you.", SWING:"Swing \u2014 I like that one.", HONEY:"There I am, sweet as ever." } },
+  { day:25, grid:["CZRXYOJFODYEJ", "DOMDICALMUGHB", "HHKORFSTOGKIS", "TGCDOKONPDCIZ", "DRORENFKTLKEA", "WANVRSLMVERSE", "MCTNOVJIMZSPS", "OEEVIIOAGJWUR", "OFNFAPPLEHFQN", "ZZTPCEURSMTFN", "VUEMSCHUCKLEF", "IADWPEACEFULZ", "WLOBLMIEYIABK"],
+    words:{ MOONLIGHT:[[1,2],[9,10]], CONTENTED:[[3,2],[11,2]], PEACEFUL:[[11,4],[11,11]], CHUCKLE:[[10,5],[10,11]], SUN:[[6,10],[8,12]], JOY:[[0,6],[0,4]], APPLE:[[8,4],[8,8]], VERSE:[[5,8],[5,12]], CALM:[[1,5],[1,8]], GRACE:[[3,1],[7,1]] },
+    lines:{ MOONLIGHT:"Moonlight \u2014 I like that one.", CONTENTED:"Contented \u2014 I like that one.", PEACEFUL:"Peaceful \u2014 I like that one.", CHUCKLE:"Chuckle \u2014 I like that one.", SUN:"Sun \u2014 I like that one.", JOY:"Joy \u2014 the good kind.", APPLE:"Apple \u2014 I like that one.", VERSE:"A little verse to carry with you.", CALM:"Calm as a Sunday morning.", GRACE:"Grace \u2014 enough for today." } },
+  { day:26, grid:["SUYCRJEGPVUUT", "IFSUNBEAMOVWQ", "JJRMWHWWTMGTY", "AURIEUUGEEIGM", "KPGUEGBCARGDA", "JAOJLNEZBRGXZ", "ICHRHVDRRYLGD", "AXZICRYSHOEYT", "SMILEHHCHFDJS", "PANYNNPORILNQ", "AUDELIGHTOPZP", "IMDSAMGSZNOSL", "PZGBVKIKEMAKT"],
+    words:{ FRIENDSHIPS:[[1,1],[11,11]], SUNBEAM:[[1,2],[1,8]], DELIGHT:[[10,2],[10,8]], GIGGLED:[[2,10],[8,10]], PORCH:[[4,1],[8,5]], NAP:[[9,2],[9,0]], MERRY:[[2,9],[6,9]], TEA:[[2,8],[4,8]], HUG:[[2,5],[4,5]], SMILE:[[8,0],[8,4]] },
+    lines:{ FRIENDSHIPS:"Friendships \u2014 I like that one.", SUNBEAM:"Sunbeam \u2014 I like that one.", DELIGHT:"Delight \u2014 I like that one.", GIGGLED:"Giggled \u2014 I like that one.", PORCH:"Out on the porch where the good talks happen.", NAP:"A nap sounds just right.", MERRY:"Merry and bright, that's you.", TEA:"Time for a cup of tea, I'd say.", HUG:"A hug! Consider yourself squeezed.", SMILE:"A smile looks good on you." } },
+  { day:27, grid:["HMRJRFSBDTNPD", "VLULBCOZYEWIR", "DAGRATEFULNEG", "LUBPECKTQPZNJ", "KGCJHVMHHSOPP", "WHLGOKEOEFIYS", "UTRIAHCNCDHTM", "YEVEHRHEIMHIK", "CRUZQTLYBNDQD", "YRFIMNURIQGGD", "PAFTERNOONSSS", "JGYMKQRNMSUNA", "CDZIVKCVSPSAB"],
+    words:{ EVENINGS:[[3,4],[10,11]], GRATEFUL:[[2,2],[2,9]], LAUGHTER:[[1,1],[8,1]], AFTERNOONS:[[10,1],[10,10]], SIT:[[4,9],[6,11]], CHAIR:[[6,6],[6,2]], SUN:[[11,9],[11,11]], COZY:[[1,5],[1,8]], PIE:[[0,11],[2,11]], HONEY:[[4,7],[8,7]] },
+    lines:{ EVENINGS:"Evenings \u2014 I like that one.", GRATEFUL:"Grateful \u2014 I like that one.", LAUGHTER:"Laughter. Best medicine there is.", AFTERNOONS:"Afternoons \u2014 I like that one.", SIT:"Sit \u2014 I like that one.", CHAIR:"Chair \u2014 I like that one.", SUN:"Sun \u2014 I like that one.", COZY:"Cozy \u2014 I like that one.", PIE:"Pie! Now you're talking.", HONEY:"There I am, sweet as ever." } },
+  { day:28, grid:["PMNOEIVCYKBSR", "FWNLGSUNRISEE", "JKGBLISSFULKS", "OIINHCXBPALRT", "YNRNEGMDOFBVB", "QDQQCIWITEEWS", "UTMMHXGPAIRQX", "IYQAUZVHACBIG", "LKKMCESRBPQGQ", "TJUBKDOTGOQNT", "IZKILENCOFRRG", "HLQKEPIRXROSC", "KLOKKKYHWKYHJ"],
+    words:{ NEIGHBORS:[[3,3],[11,11]], SUNRISE:[[1,5],[1,11]], BLISSFUL:[[2,3],[2,10]], CHUCKLE:[[5,4],[11,4]], STORY:[[8,6],[12,10]], SWEET:[[5,12],[5,8]], REST:[[0,12],[3,12]], JOY:[[2,0],[4,0]], QUILT:[[5,0],[9,0]], KIND:[[2,1],[5,1]] },
+    lines:{ NEIGHBORS:"Neighbors \u2014 I like that one.", SUNRISE:"Sunrise \u2014 I like that one.", BLISSFUL:"Blissful \u2014 I like that one.", CHUCKLE:"Chuckle \u2014 I like that one.", STORY:"Story \u2014 I like that one.", SWEET:"Sweet. Just like you.", REST:"Rest. You've earned it.", JOY:"Joy \u2014 the good kind.", QUILT:"Quilt \u2014 I like that one.", KIND:"Kind \u2014 I like that one." } },
+  { day:29, grid:["ZQLMMANACXLGC", "VGYUAETWSWMIF", "LCRCHAGIDUOGX", "ECEANAQOBNOGC", "WFODNKPJGINLA", "DJQQHDTPQOBEL", "FOHLTFBBYAEPM", "UYXRFUGAOTAYU", "IOAKSOSSBVMEU", "BUACCGZREISCC", "FSSWINGEIEEEQ", "XDLWHUGAUMTSS", "NSMILEIFGWNHQ"],
+    words:{ GRANDBABIES:[[1,1],[11,11]], MOONBEAM:[[1,10],[8,10]], HAPPY:[[2,4],[6,8]], TEA:[[1,6],[1,4]], JOYOUS:[[5,1],[10,1]], HUG:[[11,4],[11,6]], SWING:[[10,2],[10,6]], GIGGLE:[[0,11],[5,11]], SMILE:[[12,1],[12,5]], CALM:[[3,12],[6,12]] },
+    lines:{ GRANDBABIES:"Grandbabies \u2014 I like that one.", MOONBEAM:"Moonbeam \u2014 I like that one.", HAPPY:"Happy \u2014 I like that one.", TEA:"Time for a cup of tea, I'd say.", JOYOUS:"Joyous \u2014 I like that one.", HUG:"A hug! Consider yourself squeezed.", SWING:"Swing \u2014 I like that one.", GIGGLE:"A giggle! I heard that.", SMILE:"A smile looks good on you.", CALM:"Calm as a Sunday morning." } },
+  { day:30, grid:["SKODTOCQPYZZZ", "GRHNMFRGWWHAF", "ZEWESIEHLVXAQ", "MMTSUHUESWEET", "DERCNLYTQWLLQ", "IMEWSGAOHIJNH", "OBAVHPHUMUZNT", "YESJIXOPGKPYI", "RRUMNHNJOHOXQ", "SIRRETEAPREPX", "WNEEQSYTBKCDT", "BGDSTILUSUNHJ", "FFBTEJKYEIPPZ"],
+    words:{ LAUGHED:[[4,5],[10,11]], REMEMBERING:[[1,1],[11,1]], SUNSHINE:[[2,4],[9,4]], TREASURED:[[3,2],[11,2]], PORCH:[[7,7],[11,11]], PIE:[[12,10],[12,8]], HONEY:[[6,6],[10,6]], REST:[[9,3],[12,3]], SUN:[[11,8],[11,10]], SWEET:[[3,8],[3,12]] },
+    lines:{ LAUGHED:"Laughed \u2014 I like that one.", REMEMBERING:"Remembering \u2014 I like that one.", SUNSHINE:"Sunshine, even on a gray day.", TREASURED:"Treasured \u2014 I like that one.", PORCH:"Out on the porch where the good talks happen.", PIE:"Pie! Now you're talking.", HONEY:"There I am, sweet as ever.", REST:"Rest. You've earned it.", SUN:"Sun \u2014 I like that one.", SWEET:"Sweet. Just like you." } },
+];
+
+var _pzFound={}, _pzAnchor=null, _pzStart=null, _pzInt=null, _pzElapsed=0, _pzCur=null;
+
+function pzState(){ SETTINGS.puzzle = SETTINGS.puzzle || { day:1, best:{}, doneToday:null }; return SETTINGS.puzzle; }
+
+function openPuzzle(){
+  if(!loadedOrFirst()){ newAgentFlow(true); return; }
+  var st=pzState();
+  var today=new Date().toISOString().slice(0,10);
+  _pzCur = PZ_PUZZLES[(st.day-1) % PZ_PUZZLES.length];
+  go('puzzle');
+  // already finished today's? offer a replay
+  if(st.doneToday===today){
+    pzRender(true);
+  } else {
+    pzRender(false);
+  }
+}
+
+function pzFmt(s){ var m=Math.floor(s/60), ss=s%60; return m+":"+(ss<10?"0":"")+ss; }
+
+function pzRender(replay){
+  _pzFound={}; _pzAnchor=null; _pzStart=null; _pzElapsed=0;
+  if(_pzInt){ clearInterval(_pzInt); _pzInt=null; }
+  var p=_pzCur;
+  document.getElementById('pzDay').textContent="Day "+p.day;
+  document.getElementById('pzTimer').textContent="0:00";
+  var bestBadge=document.getElementById('pzBest');
+  var myBest = pzState().best[p.day];
+  if(myBest!=null){ bestBadge.textContent="Best "+pzFmt(myBest); bestBadge.style.display=""; }
+  else { bestBadge.style.display="none"; }
+  document.getElementById('pzWin').classList.remove('show');
+  document.getElementById('pzSub').textContent = replay
+    ? "You\u2019ve done today\u2019s \u2014 tap again for fun. Faster this time?"
+    : "Tap the first letter, then the last.";
+  document.getElementById('pzHoney').textContent = "Take your time, sugar. They\u2019re all in there.";
+
+  // build grid
+  var g=document.getElementById('pzGrid'); g.innerHTML="";
+  for(var r=0;r<p.grid.length;r++){
+    var tr=document.createElement('tr');
+    for(var c=0;c<p.grid[r].length;c++){
+      var td=document.createElement('td');
+      td.textContent=p.grid[r][c];
+      (function(rr,cc,cell){ cell.onclick=function(){ pzTap(rr,cc,cell); }; })(r,c,td);
+      tr.appendChild(td);
+    }
+    g.appendChild(tr);
+  }
+  // word chips
+  var wl=document.getElementById('pzWords'); wl.innerHTML="";
+  Object.keys(p.words).forEach(function(w){
+    var s=document.createElement('span'); s.className='pz-chip'; s.id='pzchip-'+w; s.textContent=w; wl.appendChild(s);
+  });
+}
+
+function pzCell(r,c){ return document.getElementById('pzGrid').rows[r].cells[c]; }
+function pzSay(t){ document.getElementById('pzHoney').textContent=t; if(S.speakerOn && t) enqueueSpeak(t); }
+
+function pzStartTimer(){
+  if(_pzStart) return;
+  _pzStart=Date.now();
+  _pzInt=setInterval(function(){
+    _pzElapsed=Math.floor((Date.now()-_pzStart)/1000);
+    document.getElementById('pzTimer').textContent=pzFmt(_pzElapsed);
+  },250);
+}
+
+function pzLine(r1,c1,r2,c2){
+  var dr=Math.sign(r2-r1), dc=Math.sign(c2-c1);
+  var len=Math.max(Math.abs(r2-r1),Math.abs(c2-c1))+1;
+  if(!(r1===r2||c1===c2||Math.abs(r2-r1)===Math.abs(c2-c1))) return null;
+  var cells=[]; for(var i=0;i<len;i++) cells.push([r1+dr*i,c1+dc*i]); return cells;
+}
+
+function pzMatch(cells){
+  var W=_pzCur.words;
+  for(var w in W){ if(_pzFound[w]) continue;
+    var s=W[w][0], e=W[w][1], a=cells[0], b=cells[cells.length-1];
+    if((s[0]===a[0]&&s[1]===a[1]&&e[0]===b[0]&&e[1]===b[1]) ||
+       (e[0]===a[0]&&e[1]===a[1]&&s[0]===b[0]&&s[1]===b[1])) return w;
+  }
+  return null;
+}
+
+function pzTap(r,c,td){
+  if(td.classList.contains('found')) return;
+  pzStartTimer();
+  if(!_pzAnchor){ _pzAnchor=[r,c]; td.classList.add('sel'); pzSay("Good \u2014 now tap the last letter."); return; }
+  var cells=pzLine(_pzAnchor[0],_pzAnchor[1],r,c);
+  pzCell(_pzAnchor[0],_pzAnchor[1]).classList.remove('sel');
+  if(!cells){ _pzAnchor=null; pzSay("Has to be a straight line, sugar. Try again."); return; }
+  var w=pzMatch(cells);
+  if(w){
+    _pzFound[w]=true;
+    cells.forEach(function(cc){ pzCell(cc[0],cc[1]).classList.add('found'); });
+    var chip=document.getElementById('pzchip-'+w); if(chip) chip.classList.add('done');
+    pzSay(_pzCur.lines[w]||"That\u2019s one!");
+    if(Object.keys(_pzFound).length===Object.keys(_pzCur.words).length) pzWin();
+  } else {
+    pzSay("Not quite \u2014 but keep looking, you\u2019re close.");
+  }
+  _pzAnchor=null;
+}
+
+function pzWin(){
+  if(_pzInt){ clearInterval(_pzInt); _pzInt=null; }
+  var st=pzState(), t=_pzElapsed, p=_pzCur;
+  var today=new Date().toISOString().slice(0,10);
+  var firstDoneToday = (st.doneToday!==today);
+  var prevBest = st.best[p.day];
+  var isFastest = (prevBest==null || t<prevBest);
+  var msg, cheer;
+
+  if(isFastest){
+    st.best[p.day]=t;
+    msg = (prevBest==null) ? "You did it in "+pzFmt(t)+"." : "Your new best \u2014 "+pzFmt(t)+"!";
+    cheer = rand([
+      "Woo! Look at you go, sugar!",
+      "That's your fastest yet! I'm so proud.",
+      "Speedy! Nobody does it like you."
+    ]);
+  } else {
+    msg = "You finished in "+pzFmt(t)+". Your best is "+pzFmt(prevBest)+".";
+    cheer = rand([
+      "Well done, sweetheart! Every one found.",
+      "There you go \u2014 all of them! Lovely.",
+      "You got 'em all. That's my friend."
+    ]);
+  }
+
+  var coins = "";
+  if(firstDoneToday){
+    st.doneToday=today;
+    st.day = (st.day % PZ_PUZZLES.length) + 1;
+    SETTINGS.honey=(SETTINGS.honey||0)+5;
+    coins = "+5 honey \ud83c\udf6f";
+  }
+  saveSettings();
+
+  // fill the card
+  document.getElementById('pzWinBig').textContent = isFastest ? "New record! \ud83c\udf89" : "Well, look at you! \ud83c\udf6f";
+  var fast=document.getElementById('pzFast');
+  if(isFastest && prevBest!=null){ fast.classList.add('show'); } else { fast.classList.remove('show'); }
+  document.getElementById('pzWinMsg').textContent=msg;
+  document.getElementById('pzCoins').textContent=coins;
+  document.getElementById('pzWin').classList.add('show');
+
+  // rain honey drops
+  pzRain(isFastest ? 26 : 16);
+
+  // Honey cheers OUT LOUD in her voice
+  pzSay(cheer);
+}
+
+/* honey drops rain down from the top */
+function pzRain(count){
+  var emojis=["\ud83c\udf6f","\ud83d\udc1d","\u2b50","\ud83c\udf1f"]; // honey, bee, star, sparkle-star
+  for(var i=0;i<count;i++){
+    (function(){
+      var d=document.createElement('div');
+      d.className='pz-drop';
+      d.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      d.style.left=(Math.random()*100)+'vw';
+      var dur=2+Math.random()*2;
+      d.style.animationDuration=dur+'s';
+      d.style.fontSize=(18+Math.random()*18)+'px';
+      document.body.appendChild(d);
+      setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); }, dur*1000+200);
+    })();
+  }
+}
+
+function pzNudge(){
+  var cur=document.querySelector('#pzGrid .hint'); if(cur) cur.classList.remove('hint');
+  var left=Object.keys(_pzCur.words).filter(function(w){ return !_pzFound[w]; });
+  if(!left.length){ pzSay("All done \u2014 nothing left to nudge!"); return; }
+  var w=left[0], s=_pzCur.words[w][0];
+  pzCell(s[0],s[1]).classList.add('hint');
+  pzSay('Look for "'+w+'" \u2014 I lit its first letter.');
+}
+
+
 /* in-chat language quiz: Honey asks how to say a phrase, user answers, then can share it */
 function openLangCue(){
   if(!loadedOrFirst()){ newAgentFlow(true); return; }
