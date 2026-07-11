@@ -1162,6 +1162,31 @@ textarea{resize:none;line-height:1.4;}
 .pz-drop{position:fixed; top:-40px; font-size:26px; z-index:9999; pointer-events:none;
   animation:pzFall linear forwards;}
 @keyframes pzFall{to{transform:translateY(110vh) rotate(360deg); opacity:.2;}}
+
+/* ── MEMORY GAME (Simon) ─────────────────────────── */
+.mem-status{font-size:18px; min-height:2.2em; display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:var(--gold2); margin:6px 0; font-family:var(--display);}
+.mem-scores{font-size:15px; color:var(--dim); margin-bottom:14px;}
+.mem-scores b{color:var(--gold); font-size:18px;}
+.mem-board{display:grid; grid-template-columns:1fr 1fr; gap:14px;
+  width:min(80vw,360px); margin:0 auto;}
+.mem-tile{aspect-ratio:1; border:none; border-radius:24px; font-size:min(15vw,64px);
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  box-shadow:0 4px 10px rgba(0,0,0,0.18);
+  transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;}
+.mem-heart{ background:var(--rose); }
+.mem-smile{ background:var(--grn); }
+.mem-honey{ background:var(--gold); }
+.mem-books{ background:var(--blue); }
+.mem-tile:active{ transform:scale(.96); }
+.mem-tile.lit{ transform:scale(1.12); filter:brightness(1.3) saturate(1.15);
+  box-shadow:0 0 0 6px var(--gold2), 0 6px 18px rgba(0,0,0,0.3); }
+.mem-tile.wrong{ filter:grayscale(.5) brightness(.85); box-shadow:0 0 0 6px var(--red); }
+.mem-start{margin-top:18px; font-family:var(--display); font-size:20px; font-weight:700;
+  color:var(--on-accent); background:var(--gold); border:none; border-radius:40px;
+  padding:14px 42px; box-shadow:0 4px 10px rgba(0,0,0,0.2); cursor:pointer;}
+.mem-start:active{ transform:scale(.97); }
+.mem-start.hidden{ display:none; }
 </style>
 </head>
 <body>
@@ -1381,10 +1406,28 @@ textarea{resize:none;line-height:1.4;}
       <button class="sl-tile" onclick="slGo('prayers')"><span class="sl-ic">🙏</span><span class="sl-tx"><b>Prayers</b><small>Keep &amp; add your own</small></span></button>
       <button class="sl-tile" onclick="slGo('learn')"><span class="sl-ic">📚</span><span class="sl-tx"><b>Learn</b><small>A new language</small></span></button>
       <button class="sl-tile" onclick="slGo('puzzle')"><span class="sl-ic">🧩</span><span class="sl-tx"><b>Word Puzzles</b><small>Today's word search</small></span></button>
+      <button class="sl-tile" onclick="slGo('memory')"><span class="sl-ic">🎵</span><span class="sl-tx"><b>Memory Game</b><small>Watch, listen, repeat</small></span></button>
       <button class="sl-tile" onclick="slGo('weather')"><span class="sl-ic">☀️</span><span class="sl-tx"><b>Weather</b><small>What's it like out</small></span></button>
       <button class="sl-tile" onclick="slGo('insights')"><span class="sl-ic">🍯</span><span class="sl-tx"><b>Honey Pot</b><small>Your streak &amp; insights</small></span></button>
     </div>
     <button class="prof-row" style="margin-top:16px" onclick="openContentSwitches()">⚙️ What Honey shares — turn things on or off</button>
+  </div>
+</section>
+
+<!-- MEMORY GAME (Simon: watch, listen, repeat) -->
+<section class="screen" id="memory">
+  <div class="bar"><button class="back" onclick="go('sweetLife')">‹</button>
+    <h2>🎵 Memory Game</h2><span style="width:40px"></span></div>
+  <div class="scroll" style="text-align:center; padding:10px 14px 30px;">
+    <div class="mem-status" id="memStatus">Touch a tile to hear it — then press Start!</div>
+    <div class="mem-scores">Round <b id="memRound">–</b> &nbsp;·&nbsp; Best today <b id="memBest">0</b></div>
+    <div class="mem-board" id="memBoard">
+      <button class="mem-tile mem-heart"  data-i="0" aria-label="Heart">❤️</button>
+      <button class="mem-tile mem-smile"  data-i="1" aria-label="Smiley">😊</button>
+      <button class="mem-tile mem-honey"  data-i="2" aria-label="Honey pot">🍯</button>
+      <button class="mem-tile mem-books"  data-i="3" aria-label="Books">📚</button>
+    </div>
+    <button class="mem-start" id="memStart" onclick="memStart()">Start</button>
   </div>
 </section>
 
@@ -3944,6 +3987,7 @@ function slGo(where){
     case 'prayers':  openPrayers(); break;
     case 'learn':    openLearn(); break;
     case 'puzzle':   openPuzzle(); break;
+    case 'memory':   openMemory(); break;
     case 'weather':  homeWeather(); break;
     case 'insights': openInsights(); break;
   }
@@ -10551,6 +10595,106 @@ var PZ_PUZZLES = [
 var _pzFound={}, _pzAnchor=null, _pzStart=null, _pzInt=null, _pzElapsed=0, _pzCur=null;
 
 function pzState(){ SETTINGS.puzzle = SETTINGS.puzzle || { day:1, best:{}, doneToday:null }; return SETTINGS.puzzle; }
+
+function openMemory(){
+  if(!loadedOrFirst()){ newAgentFlow(true); return; }
+  go('memory');
+  // wire tile taps once
+  memTiles().forEach(function(tile){
+    if(tile._wired) return; tile._wired=true;
+    tile.addEventListener('pointerdown', function(){
+      var i=parseInt(tile.getAttribute('data-i'),10);
+      memTap(i,tile);
+    });
+  });
+  memReset();
+}
+
+/* ══════════ MEMORY GAME (Simon: watch, listen, repeat) ══════════ */
+var _memSeq=[], _memPos=0, _memAccepting=false, _memShowing=false, _memBest=0;
+var _memCtx=null;
+var MEM_NOTES=[329.63, 392.00, 261.63, 523.25]; // heart E, smile G, honey C, books high-C
+
+function memTone(i){
+  try{
+    if(!_memCtx) _memCtx=new (window.AudioContext||window.webkitAudioContext)();
+    var o=_memCtx.createOscillator(), g=_memCtx.createGain();
+    o.type='sine'; o.frequency.value=MEM_NOTES[i];
+    g.gain.setValueAtTime(0.0001,_memCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.25,_memCtx.currentTime+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,_memCtx.currentTime+0.45);
+    o.connect(g); g.connect(_memCtx.destination);
+    o.start(); o.stop(_memCtx.currentTime+0.5);
+  }catch(e){}
+}
+function memTiles(){ return Array.prototype.slice.call(document.querySelectorAll('#memBoard .mem-tile')); }
+function memLight(i,ms){
+  var t=memTiles()[i]; if(!t) return;
+  t.classList.add('lit'); memTone(i);
+  setTimeout(function(){ t.classList.remove('lit'); }, ms);
+}
+function memSay(t){ var el=document.getElementById('memStatus'); if(el) el.textContent=t; }
+
+function memReset(){
+  _memSeq=[]; _memPos=0; _memAccepting=false; _memShowing=false;
+  document.getElementById('memRound').textContent='–';
+  document.getElementById('memBest').textContent=_memBest;
+  memSay("Touch a tile to hear it \u2014 then press Start!");
+  var b=document.getElementById('memStart'); b.textContent='Start'; b.classList.remove('hidden');
+}
+
+function memPlaySeq(){
+  _memAccepting=false; _memShowing=true;
+  memSay("Watch closely\u2026");
+  var step=0, SHOW=550, GAP=350;
+  function nxt(){
+    if(step>=_memSeq.length){
+      setTimeout(function(){ _memShowing=false; _memAccepting=true; _memPos=0;
+        memSay("Your turn! Tap the order."); },250);
+      return;
+    }
+    memLight(_memSeq[step],SHOW); step++;
+    setTimeout(nxt,SHOW+GAP);
+  }
+  setTimeout(nxt,700);
+}
+function memNextRound(){
+  _memSeq.push(Math.floor(Math.random()*4));
+  document.getElementById('memRound').textContent=_memSeq.length;
+  memPlaySeq();
+}
+function memStart(){
+  _memSeq=[]; _memPos=0;
+  document.getElementById('memStart').classList.add('hidden');
+  memNextRound();
+}
+function memOver(){
+  _memAccepting=false; _memShowing=false;
+  var score=_memSeq.length-1;
+  if(score>_memBest){ _memBest=score; document.getElementById('memBest').textContent=_memBest; }
+  memSay(score>0 ? "Great job! You remembered "+score+" in a row. \ud83c\udf89" : "That\u2019s okay \u2014 try again!");
+  var b=document.getElementById('memStart'); b.textContent='Play Again'; b.classList.remove('hidden');
+}
+function memWin(){
+  _memAccepting=false;
+  memSay("Sweet! \ud83c\udf6f Round "+_memSeq.length+" done!");
+  if(_memSeq.length>=5 && (SETTINGS.honey!=null)){ /* small reward every 5 rounds */
+    if(_memSeq.length%5===0){ SETTINGS.honey=(SETTINGS.honey||0)+2; saveSettings(); }
+  }
+  setTimeout(memNextRound,1200);
+}
+function memTap(i,tile){
+  if(_memShowing) return;                 // taps during playback do nothing
+  if(!_memAccepting){ memLight(i,300); return; }  // free play: every tap sings
+  if(i===_memSeq[_memPos]){
+    memLight(i,300); _memPos++;
+    if(_memPos===_memSeq.length) memWin();
+  } else {
+    tile.classList.add('wrong');
+    setTimeout(function(){ tile.classList.remove('wrong'); },600);
+    memOver();
+  }
+}
 
 function openPuzzle(){
   if(!loadedOrFirst()){ newAgentFlow(true); return; }
