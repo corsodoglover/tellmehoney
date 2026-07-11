@@ -5968,9 +5968,16 @@ function fetchWeather(lat,lon){
       (Math.abs(feels-t)>=3?" (feels like "+feels+"°)":"")+". High "+hi+"°, low "+lo+"°.";
     var react=weatherReaction(c.weather_code,t);
     themTyping(()=>{
-      pushThemText(line);                 // weather DATA: show only, never speak (has live numbers)
+      pushThemText(line);                 // weather DATA: always shown on screen
+      // Honey uses recorded clips (can't say arbitrary numbers), so for HER the
+      // numbers stay on screen and she just gives her warm spoken reaction.
+      // Every OTHER voice (free device voices, premium) can say numbers fine —
+      // so let them read the whole weather line aloud, like they used to.
+      if((S.voice||"honey")!=="honey" && S.speakerOn){
+        _speakWithChosenVoice(line, ++_spToken, function(){});
+      }
       if(react) setTimeout(()=>themTyping(()=>{
-        pushThem(react);                  // warm reaction: SHOW the clean text (so it matches its recorded clip)
+        pushThem(react);                  // warm reaction (Honey speaks this; recorded clip matches the text)
       }),700);
     });
   }).catch(()=>weatherFallback("I couldn't reach the weather service"));
