@@ -8749,22 +8749,31 @@ function playCloudQueue(){
   if(!cloudQueue.length){ return; }
   cloudPlaying=true;
   var url=cloudQueue.shift();
-  if(cloudAudio){ try{cloudAudio.pause()}catch(e){} }
-  cloudAudio=new Audio(url);
-  cloudAudio.onended=()=>{
-    URL.revokeObjectURL(url);
+  // Reuse the ONE unlocked audio element. A fresh Audio() here has no iOS
+  // playback permission, so premium/cloud replies that arrive from a network
+  // callback (AI answers, end-of-sequence lines) get blocked with
+  // NotAllowedError and fall silent. The blessed element plays every time.
+  var a = honeyPlayer();
+  cloudAudio = a;
+  try{ a.pause(); }catch(e){}
+  var done=false;
+  var finish=function(ok){
+    if(done) return; done=true;
+    a.onended=null; a.onerror=null;
+    try{ URL.revokeObjectURL(url); }catch(e){}
     speakQueue=Math.max(0,speakQueue-1);
     cloudPlaying=false;
     if(cloudQueue.length){ playCloudQueue(); }
     else if(speakQueue===0){ setTalking(false); if(audioOn()) reopenMic(); }
   };
-  cloudAudio.onerror=()=>{
-    speakQueue=Math.max(0,speakQueue-1); cloudPlaying=false;
-    if(cloudQueue.length){ playCloudQueue(); } else { setTalking(false); }
-  };
-  cloudAudio.play();
+  a.onended=function(){ finish(true); };
+  a.onerror=function(){ finish(false); };
+  a.src=url;
+  try{ a.currentTime=0; }catch(e){}
+  var p=a.play();
+  if(p && p.catch){ p.catch(function(){ if(window.__OBDEBUG) toast("cloud BLOCKED"); finish(false); }); }
 }
-function stopCloudAudio(){ cloudQueue=[]; cloudPlaying=false; if(cloudAudio){try{cloudAudio.pause()}catch(e){}} }
+function stopCloudAudio(){ cloudQueue=[]; cloudPlaying=false; if(cloudAudio){try{cloudAudio.pause()}catch(e){} cloudAudio=null;} }
 /* Per-vibe speaking direction for premium voices — same voice, different performance.
    Structured like a director's note (personality / tone / emotion / pacing). Rides free on the API call. */
 var VIBE_VOICE_DIRECTION={
