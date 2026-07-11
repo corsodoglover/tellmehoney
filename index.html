@@ -8648,11 +8648,16 @@ function _spDrain(){
     var sep=payload.indexOf("\u0001");
     var forced = sep>=0 ? payload.slice(0,sep) : payload;
     var spokenText = sep>=0 ? payload.slice(sep+1) : "";
-    // If the user picked a NON-Honey voice, speak the words in THEIR voice
-    /* A FORCED clip (onboarding, stories) is Honey's own recording.
-       It costs nothing and it is always the best version of that line,
-       so it plays no matter which voice is selected. Premium voices are
-       a fallback for words she never recorded — not a replacement for her. */
+    /* Forced clips carry BOTH the recording name and the spoken text.
+       Rule: if the person picked a non-Honey voice, honor it — speak the
+       words in THAT voice instead of Honey's clip. The only exception is
+       onboarding (forced clips whose name starts with "onboard"), which
+       always plays in Honey's voice because no voice has been chosen yet. */
+    var isOnboard = forced.indexOf("onboard") === 0;
+    if(window.__OBDEBUG) toast("forced "+forced.slice(0,18)+" | voice="+(S.voice||"honey")+" | txt="+(spokenText?"yes":"NO"));
+    if(!isOnboard && (S.voice||"honey")!=="honey" && spokenText){
+      _speakWithChosenVoice(spokenText, myToken, next); return;
+    }
     try{
       playHoneyClip(forced, function(){
         // clip missing/blocked and there IS text -> let the chosen voice cover it
