@@ -5388,7 +5388,7 @@ function pushJoke(joke,noLog,dontInterrupt){
           if((S.voice||"honey")==="honey" && rc){
             if(S._lastRiffClip !== rc){        // don't queue the same riff clip twice
               S._lastRiffClip = rc;
-              _spQueue.push("\u0000CLIP:"+rc); if(!_spActive)_spDrain();
+              enqueueSpeak("\u0000CLIP:"+rc+"\u0001"+joke.r);
             }
           }
           else enqueueSpeak(joke.r);
@@ -5406,7 +5406,7 @@ function pushJoke(joke,noLog,dontInterrupt){
             document.getElementById('msgs').appendChild(pb); scrollMsgs();
             if(S.speakerOn){
               var lc=honeyClipFor(lead);
-              if((S.voice||"honey")==="honey" && lc){ _spQueue.push("\u0000CLIP:"+lc); if(!_spActive)_spDrain(); }
+              if(lc){ enqueueSpeak("\u0000CLIP:"+lc+"\u0001"+lead); }
               else enqueueSpeak(lead);
             }
             updateThumbLabel(); resetIdle();
@@ -5457,10 +5457,11 @@ function revealPunch(auto){
     document.getElementById('msgs').appendChild(p); scrollMsgs();
     if(S.speakerOn){
       var pc=_punchClipFromSetup(joke.s);
-      if((S.voice||"honey")==="honey" && pc){
-        _spQueue.push("\u0000CLIP:"+pc);
-        if(!_spActive) _spDrain();
-      } else { enqueueSpeak(joke.p); }
+      // Route through enqueueSpeak like every other line, so the reveal line
+      // and the punchline share ONE queue and can't collide/drop on iOS.
+      // Forced-clip sentinel carries the text too, so a non-Honey voice still speaks it.
+      if(pc){ enqueueSpeak("\u0000CLIP:"+pc+"\u0001"+joke.p); }
+      else  { enqueueSpeak(joke.p); }
     }
     S.lastWasJoke=true; S.lastWasQuestion=false; S.lastJoke=joke;
     updateThumbLabel(); resetIdle();
@@ -5480,7 +5481,7 @@ function revealPunch(auto){
       document.getElementById('msgs').appendChild(lb); scrollMsgs();
       if(S.speakerOn){
         var lc=honeyClipFor(lead);
-        if((S.voice||"honey")==="honey" && lc){ _spQueue.push("\u0000CLIP:"+lc); if(!_spActive)_spDrain(); }
+        if(lc){ enqueueSpeak("\u0000CLIP:"+lc+"\u0001"+lead); }
         else enqueueSpeak(lead);
       }
       themTyping(dropPunch, 650);
@@ -8577,22 +8578,45 @@ function playHoneyClip(clipName, done){
   _lastClipFailed = false;
   var finish = function(why, failed){
     if(finished) return; finished = true;
-    a.onended = null; a.onerror = null;
+    a.onended = null; a.onerror = null; a.oncanplay = null; a.onloadeddata = null;
     _lastClipFailed = !!failed;
     if(window.__OBDEBUG && why) toast("CLIP "+why+": "+clipName);
     done();
   };
   _honeyAudioEl = a;   // so clearSpeech() can still stop it
+
+  // Clear any stale handlers from the PREVIOUS clip before we touch src.
+  // Reusing one element means the old clip's onended/onerror can still be
+  // in flight; if we don't detach them, they fire against THIS clip and
+  // either skip it or mark it failed — a random silent line.
+  a.onended = null; a.onerror = null; a.oncanplay = null; a.onloadeddata = null;
   try{ a.pause(); }catch(e){}
-  a.onended = function(){ finish("ended", false); };
-  a.onerror = function(){ finish("error", true); };
-  a.src = HONEY_AUDIO_BASE + clipName + ".mp3";
-  try{ a.currentTime = 0; }catch(e){}
-  var p = a.play();
-  if(p && p.catch){
-    p.then(function(){ if(window.__OBDEBUG) toast("CLIP playing: "+clipName); })
-     .catch(function(err){ finish("BLOCKED "+(err&&err.name||""), true); });
-  }
+
+  // Safety net: if nothing loads or plays within a few seconds, move on
+  // rather than hang the whole queue on one bad clip.
+  var watchdog = setTimeout(function(){ finish("timeout", true); }, 6000);
+  var clearDog = function(){ if(watchdog){ clearTimeout(watchdog); watchdog=null; } };
+
+  a.onerror = function(){ clearDog(); finish("error", true); };
+  a.onended = function(){ clearDog(); finish("ended", false); };
+
+  // Only call play() once the new source is actually ready. Calling play()
+  // in the same tick as setting src is what triggers the
+  // "play() interrupted by new load request" rejection on iOS — the exact
+  // race that silently drops a random clip.
+  a.oncanplay = function(){
+    a.oncanplay = null;
+    var p = a.play();
+    if(p && p.then){
+      p.then(function(){ clearDog(); if(window.__OBDEBUG) toast("CLIP playing: "+clipName); })
+       .catch(function(err){ clearDog(); finish("BLOCKED "+(err&&err.name||""), true); });
+    } else {
+      clearDog();
+    }
+  };
+
+  try{ a.src = HONEY_AUDIO_BASE + clipName + ".mp3"; a.load(); }
+  catch(e){ clearDog(); finish("threw", true); }
 }
 
 function _spDrain(){
