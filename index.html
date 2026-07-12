@@ -5986,8 +5986,10 @@ function fetchWeather(lat,lon){
       // numbers stay on screen and she just gives her warm spoken reaction.
       // Every OTHER voice (free device voices, premium) can say numbers fine —
       // so let them read the whole weather line aloud, like they used to.
+      // Route through enqueueSpeak (the normal queue) so the data line and the
+      // reaction share ONE queue and play in order — never colliding/dropping.
       if((S.voice||"honey")!=="honey" && S.speakerOn){
-        _speakWithChosenVoice(spokenLine, ++_spToken, function(){});
+        enqueueSpeak(spokenLine);
       }
       if(react) setTimeout(()=>themTyping(()=>{
         pushThem(react);                  // warm reaction (Honey speaks this; recorded clip matches the text)
