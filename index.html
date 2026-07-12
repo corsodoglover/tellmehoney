@@ -480,6 +480,81 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .rec-mic{flex:0 0 auto;width:46px;border-radius:13px;background:var(--panel2);
   border:1.5px solid var(--line);font-size:19px;}
 .rec-mic.live{background:var(--red);animation:pulse 1.1s infinite;}
+/* ── Matched icon-action buttons (play / delete / restore) ──
+   All share the play button's size & shape so they line up everywhere. */
+.icon-btn{flex:0 0 auto;width:46px;height:44px;border-radius:13px;font-size:19px;
+  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+  background:var(--panel2);border:1.5px solid var(--line);color:var(--ink,inherit);
+  transition:transform .1s;}
+.icon-btn:active{transform:scale(.95);}
+.icon-play{color:var(--gold);}                    /* ▶︎ play */
+.icon-del{color:#c0392b;border-color:rgba(200,60,40,.4);}   /* 🗑 delete/remove */
+.icon-restore{color:var(--mint,#3a9d6e);border-color:var(--mint,#3a9d6e);} /* ↩︎ restore */
+/* ── Daily Journal ── */
+.jc-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;
+  background:var(--panel2);border:1.5px solid var(--line);border-radius:18px;
+  padding:18px 16px;margin-bottom:12px;cursor:pointer;transition:transform .1s;}
+.jc-card:active{transform:scale(.99);}
+.jc-ic{font-size:30px;flex:0 0 auto;}
+.jc-tx{display:flex;flex-direction:column;gap:3px;}
+.jc-tx b{font-size:16.5px;color:var(--ink,inherit);}
+.jc-tx small{font-size:13px;color:var(--muted);line-height:1.35;}
+.dj-fab{position:absolute;right:18px;bottom:calc(20px + var(--safe-b));width:58px;height:58px;
+  border-radius:50%;background:linear-gradient(180deg,var(--gold),var(--gold2));color:#1a1405;
+  font-size:30px;font-weight:600;box-shadow:0 6px 18px rgba(0,0,0,.28);z-index:20;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;}
+.dj-fab:active{transform:scale(.94);}
+.dj-monthhead{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1px;
+  color:var(--muted);margin:16px 4px 8px;}
+.dj-card{background:var(--panel2);border:1px solid var(--line);border-radius:18px;
+  overflow:hidden;margin-bottom:14px;cursor:pointer;transition:transform .1s;}
+.dj-card:active{transform:scale(.99);}
+.dj-card .dj-cimg{width:100%;height:190px;object-fit:cover;display:block;background:var(--panel);}
+.dj-card .dj-cbody{padding:14px 15px 8px;}
+.dj-card .dj-ctitle{font-size:18px;font-weight:700;color:var(--ink,inherit);line-height:1.3;}
+.dj-card .dj-cpreview{font-size:14px;color:var(--muted);line-height:1.45;margin-top:4px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.dj-card .dj-cfoot{display:flex;align-items:center;gap:8px;padding:8px 15px 13px;
+  border-top:1px solid var(--line);margin-top:8px;font-size:13px;color:var(--muted);font-weight:600;}
+.dj-empty{text-align:center;color:var(--muted);padding:40px 20px;font-size:15px;line-height:1.6;}
+.dj-photostrip{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;}
+.dj-photostrip .dj-ph{position:relative;flex:0 0 auto;}
+.dj-photostrip img{height:120px;border-radius:12px;display:block;}
+.dj-photostrip .dj-phx{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;
+  border-radius:50%;width:24px;height:24px;font-size:14px;cursor:pointer;border:none;
+  display:flex;align-items:center;justify-content:center;}
+.dj-tools{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.dj-tool{padding:9px 14px;border-radius:12px;font-size:14px;font-weight:700;
+  background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold);cursor:pointer;}
+.dj-tool:active{transform:scale(.98);}
+.dj-datelabel{font-size:13px;color:var(--muted);font-weight:600;}
+.dj-titlefield{width:100%;font-size:20px;font-weight:700;padding:8px 2px;border:none;
+  border-bottom:1px solid var(--line);background:transparent;color:var(--ink,inherit);margin-bottom:10px;}
+.dj-bodyfield{width:100%;font-size:15.5px;line-height:1.6;padding:8px 2px;border:none;
+  background:transparent;color:var(--ink,inherit);resize:vertical;min-height:200px;}
+.dj-save{font-size:20px;color:var(--gold);width:40px;height:40px;font-weight:800;background:none;border:none;cursor:pointer;}
+/* Full, inviting record button (prayers "record my voice") */
+.rec-voicebtn{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;
+  padding:12px 18px;border-radius:14px;font-size:15px;font-weight:700;
+  background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold);
+  cursor:pointer;transition:transform .1s,background .15s;}
+.rec-voicebtn:active{transform:scale(.98);}
+.rec-voicebtn.live{background:var(--red);color:#fff;border-color:var(--red);
+  animation:pulse 1.1s infinite;}
+/* Clear delete/remove button in the Prayers list */
+.prayer-del{flex:0 0 auto;padding:7px 12px;border-radius:11px;font-size:13px;font-weight:700;
+  background:rgba(200,60,40,.10);color:#c0392b;border:1.5px solid rgba(200,60,40,.35);cursor:pointer;}
+.prayer-del:active{transform:scale(.97);}
+/* ── ONE consistent delete/remove look across the whole app ── */
+.del-btn{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;
+  padding:7px 13px;border-radius:11px;font-size:13px;font-weight:700;cursor:pointer;
+  background:rgba(200,60,40,.10);color:#c0392b;border:1.5px solid rgba(200,60,40,.38);}
+.del-btn:active{transform:scale(.97);}
+/* the paired "undo/restore/recover" (safe, green) partner */
+.undo-btn{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;
+  padding:7px 13px;border-radius:11px;font-size:13px;font-weight:700;cursor:pointer;
+  background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold);}
+.undo-btn:active{transform:scale(.97);}
 .rec-save{width:100%;padding:15px;border-radius:15px;font-size:16px;font-weight:800;
   background:linear-gradient(180deg,var(--gold),var(--gold2));color:#1a1405;margin-top:2px;}
 .rec-save:active{transform:scale(.99);}
@@ -1396,7 +1471,7 @@ textarea{resize:none;line-height:1.4;}
     <p class="rec-hint" style="margin:2px 4px 14px">Everything Honey can do, all in one cozy place.</p>
     <div class="sl-grid">
       <button class="sl-tile" onclick="slGo('chat')"><span class="sl-ic">💬</span><span class="sl-tx"><b>Just chat</b><small>Talk with Honey</small></span></button>
-      <button class="sl-tile" onclick="slGo('journal')"><span class="sl-ic">📔</span><span class="sl-tx"><b>Journal</b><small>Check in with yourself</small></span></button>
+      <button class="sl-tile" onclick="slGo('journal')"><span class="sl-ic">📔</span><span class="sl-tx"><b>Journal</b><small>Quick check-in or write your day</small></span></button>
       <button class="sl-tile" onclick="slGo('lists')"><span class="sl-ic">🛒</span><span class="sl-tx"><b>Lists &amp; grocery</b><small>Smart shopping lists</small></span></button>
       <button class="sl-tile" onclick="slGo('money')"><span class="sl-ic">💰</span><span class="sl-tx"><b>Honey Money</b><small>Your gentle budget</small></span></button>
       <button class="sl-tile" onclick="slGo('calendar')"><span class="sl-ic">📅</span><span class="sl-tx"><b>Calendar</b><small>Plans &amp; reminders</small></span></button>
@@ -1550,6 +1625,53 @@ textarea{resize:none;line-height:1.4;}
   </div>
 </section>
 
+<!-- JOURNAL CHOICE: quick check-in OR the daily (blog-style) journal -->
+<section class="screen" id="journalChoice">
+  <div class="bar"><button class="back" onclick="goBack()">‹</button>
+    <h2>Journal</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll">
+    <p class="rec-hint" style="margin:2px 4px 16px">Two ways to look inward — a quick feeling, or a real page about your day.</p>
+    <button class="jc-card" onclick="openCheckin()">
+      <span class="jc-ic">🙂</span>
+      <span class="jc-tx"><b>Quick check-in</b><small>Tap a feeling, jot a line. Two seconds.</small></span>
+    </button>
+    <button class="jc-card" onclick="openDailyJournal()">
+      <span class="jc-ic">📔</span>
+      <span class="jc-tx"><b>Daily Journal</b><small>Write your day — add a photo, a title, your thoughts.</small></span>
+    </button>
+  </div>
+</section>
+
+<!-- DAILY JOURNAL: feed of dated entries (Apple-Journal style) -->
+<section class="screen" id="dailyJournal">
+  <div class="bar"><button class="back" onclick="goBack()">‹</button>
+    <h2>Daily Journal</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll">
+    <div id="djFeed"></div>
+  </div>
+  <button class="dj-fab" onclick="djNewEntry()" aria-label="New entry">＋</button>
+</section>
+
+<!-- DAILY JOURNAL ENTRY EDITOR -->
+<section class="screen" id="djEditor">
+  <div class="bar">
+    <button class="back" onclick="djCloseEditor()">‹</button>
+    <h2 id="djEditTitle">New entry</h2>
+    <button class="dj-save" onclick="djSaveEntry()">✓</button>
+  </div>
+  <div class="insights-body scroll">
+    <div id="djPhotoStrip" class="dj-photostrip"></div>
+    <div class="dj-tools">
+      <button class="dj-tool" onclick="document.getElementById('djImgInput').click()">📷 Add photo</button>
+      <input type="file" id="djImgInput" accept="image/*" class="file-hidden" onchange="djAddPhoto(event)">
+      <span id="djDateLabel" class="dj-datelabel"></span>
+    </div>
+    <input id="djTitle" class="dj-titlefield" placeholder="Title">
+    <textarea id="djBody" class="dj-bodyfield" placeholder="Write about your day…" rows="12"></textarea>
+    <button class="del-btn" id="djDeleteBtn" style="display:none;margin-top:6px" onclick="djDeleteEntry()">🗑 Delete this entry</button>
+  </div>
+</section>
+
 <!-- PRAYERS — built-in (keep/delete) + your own (type or record real voice) -->
 <section class="screen" id="prayers">
   <div class="bar"><button class="back" onclick="goBack()">‹</button>
@@ -1562,7 +1684,7 @@ textarea{resize:none;line-height:1.4;}
       <input id="upTitle" placeholder="Title (e.g. Grandma's blessing)" style="width:100%;margin:6px 0;padding:10px;border-radius:10px;border:1px solid var(--line,rgba(0,0,0,.15))">
       <textarea id="upText" rows="3" placeholder="Type the words (optional if you record your voice)" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--line,rgba(0,0,0,.15))"></textarea>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px">
-        <button class="rec-mic" id="upRecBtn" onclick="togglePrayerRec(this)">🎤 Record my voice</button>
+        <button class="rec-voicebtn" id="upRecBtn" onclick="togglePrayerRec(this)">🎤 Record my voice</button>
         <span id="upRecStatus" style="font-size:13px;color:#8a7a52"></span>
       </div>
       <button class="gb-next" style="width:100%;margin-top:12px" onclick="addUserPrayer()">Save this prayer</button>
@@ -1666,7 +1788,7 @@ textarea{resize:none;line-height:1.4;}
 <section class="screen" id="loved">
   <div class="bar"><button class="back" onclick="openProfile()">‹</button>
     <h2>Saved</h2>
-    <button class="act" id="lovedTrashBtn" onclick="trashSelectedLoved()" style="color:var(--red)">Trash</button></div>
+    <button class="act" id="lovedTrashBtn" onclick="trashSelectedLoved()" style="color:#c0392b;font-weight:700">Trash</button></div>
   <div class="insights-body scroll">
     <p class="rec-hint" style="margin:2px 4px 14px">Tap an item to share it as a picture. Check the boxes to select, then Trash.</p>
     <div id="lovedListBody"></div>
@@ -3399,7 +3521,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, checkins:[], nourish:null, learnedItems:{}, money:null, content:{} };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[] };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -3977,7 +4099,7 @@ function openSweetLife(){
 function slGo(where){
   switch(where){
     case 'chat':     if(loadedOrFirst()) enterChat(); break;
-    case 'journal':  openCheckin(); break;
+    case 'journal':  openJournalChoice(); break;
     case 'lists':    openListsHub(); break;
     case 'money':    openHoneyMoney(); break;
     case 'calendar': openCalendar(); break;
@@ -5069,7 +5191,7 @@ var SETUP_LINE={
 
 /* ════ NAV ════ */
 var _navPrev=null, _navCur='welcome', _navOrigin=null;
-var _UTIL_SCREENS=['listsHub','shopping','calendar','jokes','learn','roster','prayers','honeyMoney','checkin','sweetLife','contentSwitches','vault','verses','loved','goalBuilder','goalsManage'];
+var _UTIL_SCREENS=['listsHub','shopping','calendar','jokes','learn','roster','prayers','honeyMoney','checkin','sweetLife','contentSwitches','vault','verses','loved','goalBuilder','goalsManage','journalChoice','dailyJournal','djEditor'];
 function go(id){
   var el=document.getElementById(id);
   if(!el){ // safety: unknown screen — don't go black, fall back to a working screen
@@ -6667,6 +6789,111 @@ function todayCheckinIndex(){
   }
   return -1;
 }
+/* ── DAILY JOURNAL (Apple-Journal style: photo + title + text, dated feed) ──
+   Entries saved in SETTINGS.journal[]. Photos stored as compressed data URLs
+   inside each entry, so it all works offline and travels with the entry. */
+function openJournalChoice(){ go('journalChoice'); }
+function openDailyJournal(){ if(!Array.isArray(SETTINGS.journal)) SETTINGS.journal=[]; go('dailyJournal'); renderJournalFeed(); }
+
+function renderJournalFeed(){
+  var feed=document.getElementById('djFeed'); if(!feed) return;
+  var entries=(SETTINGS.journal||[]).slice().sort(function(a,b){ return b.when-a.when; });
+  if(!entries.length){
+    feed.innerHTML='<div class="dj-empty">Your journal is empty.<br><br>Tap the ＋ to write your first entry —<br>add a photo, a title, and a little about your day. 🍯</div>';
+    return;
+  }
+  var html='', lastMonth='';
+  entries.forEach(function(e){
+    var d=new Date(e.when);
+    var monthKey=d.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    if(monthKey!==lastMonth){ html+='<div class="dj-monthhead">'+esc(monthKey)+'</div>'; lastMonth=monthKey; }
+    var img=(e.photos&&e.photos.length)?'<img class="dj-cimg" src="'+e.photos[0]+'" alt="">':'';
+    var dateStr=d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
+    var preview=e.body?'<div class="dj-cpreview">'+esc(e.body)+'</div>':'';
+    html+='<div class="dj-card" onclick="djOpenEntry(\''+e.id+'\')">'+img+
+      '<div class="dj-cbody">'+(e.title?'<div class="dj-ctitle">'+esc(e.title)+'</div>':'')+preview+'</div>'+
+      '<div class="dj-cfoot">📔 '+esc(dateStr)+'</div></div>';
+  });
+  feed.innerHTML=html;
+}
+
+var _djEditId=null, _djPhotos=[];
+function djNewEntry(){
+  _djEditId=null; _djPhotos=[];
+  document.getElementById('djEditTitle').textContent='New entry';
+  document.getElementById('djTitle').value='';
+  document.getElementById('djBody').value='';
+  document.getElementById('djDeleteBtn').style.display='none';
+  var d=new Date();
+  document.getElementById('djDateLabel').textContent=d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+  renderPhotoStrip();
+  go('djEditor');
+  setTimeout(function(){ try{ document.getElementById('djTitle').focus(); }catch(e){} }, 250);
+}
+function djOpenEntry(id){
+  var e=(SETTINGS.journal||[]).find(function(x){return x.id===id;}); if(!e) return;
+  _djEditId=id; _djPhotos=(e.photos||[]).slice();
+  document.getElementById('djEditTitle').textContent='Entry';
+  document.getElementById('djTitle').value=e.title||'';
+  document.getElementById('djBody').value=e.body||'';
+  document.getElementById('djDeleteBtn').style.display='block';
+  document.getElementById('djDateLabel').textContent=new Date(e.when).toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+  renderPhotoStrip();
+  go('djEditor');
+}
+function renderPhotoStrip(){
+  var strip=document.getElementById('djPhotoStrip'); if(!strip) return;
+  strip.innerHTML=_djPhotos.map(function(src,i){
+    return '<div class="dj-ph"><img src="'+src+'" alt=""><button class="dj-phx" onclick="djRemovePhoto('+i+')">✕</button></div>';
+  }).join('');
+}
+function djAddPhoto(ev){
+  var f=ev.target.files&&ev.target.files[0]; if(!f) return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    // downscale to keep entries small & fast (max ~1200px, jpeg)
+    var img=new Image();
+    img.onload=function(){
+      var max=1200, w=img.width, h=img.height;
+      if(w>max||h>max){ var s=Math.min(max/w,max/h); w=Math.round(w*s); h=Math.round(h*s); }
+      var cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+      cv.getContext('2d').drawImage(img,0,0,w,h);
+      try{ _djPhotos.push(cv.toDataURL('image/jpeg',0.82)); }
+      catch(e){ _djPhotos.push(reader.result); }
+      renderPhotoStrip();
+    };
+    img.onerror=function(){ _djPhotos.push(reader.result); renderPhotoStrip(); };
+    img.src=reader.result;
+  };
+  reader.readAsDataURL(f);
+  ev.target.value='';
+}
+function djRemovePhoto(i){ _djPhotos.splice(i,1); renderPhotoStrip(); }
+function djSaveEntry(){
+  var title=(document.getElementById('djTitle').value||'').trim();
+  var body=(document.getElementById('djBody').value||'').trim();
+  if(!title && !body && !_djPhotos.length){ djCloseEditor(); return; } // nothing to save
+  if(!Array.isArray(SETTINGS.journal)) SETTINGS.journal=[];
+  if(_djEditId){
+    var e=SETTINGS.journal.find(function(x){return x.id===_djEditId;});
+    if(e){ e.title=title; e.body=body; e.photos=_djPhotos.slice(); e.edited=Date.now(); }
+  } else {
+    SETTINGS.journal.push({ id:'j'+Date.now(), when:Date.now(), title:title, body:body, photos:_djPhotos.slice() });
+  }
+  saveSettings();
+  go('dailyJournal'); renderJournalFeed();
+}
+function djCloseEntry(){ go('dailyJournal'); }
+function djCloseEditor(){ go('dailyJournal'); renderJournalFeed(); }
+function djDeleteEntry(){
+  if(!_djEditId) return;
+  if(confirm("Delete this entry? This can't be undone.")){
+    SETTINGS.journal=(SETTINGS.journal||[]).filter(function(x){return x.id!==_djEditId;});
+    saveSettings();
+    go('dailyJournal'); renderJournalFeed();
+  }
+}
+
 function openCheckin(goal){
   _ciGoal=goal||null; _ciMood=null; _ciEditIdx=null;
   go('checkin');
@@ -7008,10 +7235,10 @@ function renderPrayers(){
     html+='<div class="chip" style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:'+(hidden?'rgba(0,0,0,.04)':'var(--warm,rgba(246,207,110,.18))')+';border:1px solid var(--line,rgba(200,150,40,.3));border-radius:12px;padding:10px 12px;margin:6px 0;'+(hidden?'opacity:.55':'')+'">';
     html+='<div style="flex:1"><b>'+esc(p.title)+'</b></div>';
     if(hidden){
-      html+='<button class="rec-mic" onclick="unhidePrayer(\''+p.id+'\')">＋ keep</button>';
+      html+='<button class="icon-btn icon-restore" title="Keep" onclick="unhidePrayer(\''+p.id+'\')">↩︎</button>';
     } else {
-      html+='<button class="rec-mic" onclick="sayBuiltinPrayer(\''+p.id+'\')">▶︎</button>';
-      html+='<button class="chip-x" style="cursor:pointer;color:#c89324;font-weight:700;padding:2px 8px" onclick="hidePrayer(\''+p.id+'\')">✕</button>';
+      html+='<button class="icon-btn icon-play" title="Play" onclick="sayBuiltinPrayer(\''+p.id+'\')">▶︎</button>';
+      html+='<button class="icon-btn icon-del" title="Remove" onclick="hidePrayer(\''+p.id+'\')">🗑</button>';
     }
     html+='</div>';
   });
@@ -7022,8 +7249,8 @@ function renderPrayers(){
     up.forEach(function(p){
       html+='<div class="chip" style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--warm,rgba(246,207,110,.18));border:1px solid var(--line,rgba(200,150,40,.3));border-radius:12px;padding:10px 12px;margin:6px 0">';
       html+='<div style="flex:1"><b>'+esc(p.title||"My prayer")+'</b>'+(p.hasAudio?' <span style="font-size:11px;color:#a08a55">🎤 your voice</span>':'')+'</div>';
-      html+='<button class="rec-mic" onclick="playSavedPrayer(\''+p.id+'\')">▶︎</button>';
-      html+='<button class="chip-x" style="cursor:pointer;color:#c89324;font-weight:700;padding:2px 8px" onclick="removeUserPrayer(\''+p.id+'\')">✕</button>';
+      html+='<button class="icon-btn icon-play" title="Play" onclick="playSavedPrayer(\''+p.id+'\')">▶︎</button>';
+      html+='<button class="icon-btn icon-del" title="Delete" onclick="removeUserPrayer(\''+p.id+'\')">🗑</button>';
       html+='</div>';
     });
   }
@@ -7052,11 +7279,11 @@ function togglePrayerRec(btn){
     _prayerRec.onstop=function(){
       _prayerBlob=new Blob(_prayerChunks,{type:_prayerChunks[0]?_prayerChunks[0].type:"audio/webm"});
       stream.getTracks().forEach(function(t){t.stop();});
-      btn.textContent="🎤 Record my voice"; btn.style.background="";
+      btn.textContent="🎤 Record my voice"; btn.classList.remove("live");
       status.textContent="Recorded ✓ — saved when you tap Save.";
     };
     _prayerRec.start();
-    btn.textContent="⏹ Stop"; btn.style.background="#f3b0a0";
+    btn.textContent="⏹ Stop recording"; btn.classList.add("live");
     status.textContent="Recording… speak gently.";
   }).catch(function(){ status.textContent="Couldn't reach the microphone."; });
 }
@@ -7307,7 +7534,7 @@ function renderGoalsManage(){
       var el=document.createElement('div'); el.className='goal-chip';
       el.innerHTML='<div class="gc-ic">'+goalIcon(g.type)+'</div>'+
         '<div class="gc-tx">'+esc(g.name)+'<div class="gc-rhythm">'+rhythmLabel(g)+'</div></div>'+
-        '<button class="trash-undo" onclick="removeGoal(\''+g.id+'\');event.stopPropagation();" style="color:var(--red);border-color:var(--red)">Remove</button>';
+        '<button class="icon-btn icon-del" title="Remove" onclick="removeGoal(\''+g.id+'\');event.stopPropagation();">🗑</button>';
       box.appendChild(el);
     });
   }
@@ -7317,7 +7544,7 @@ function renderGoalsManage(){
     SETTINGS.goalsTrash.forEach(function(g){
       var r=document.createElement('div'); r.className='trash-row';
       r.innerHTML='<span>'+goalIcon(g.type)+' '+esc(g.name)+'</span>'+
-        '<button class="trash-undo" onclick="restoreGoal(\''+g.id+'\')">Restore</button>';
+        '<button class="icon-btn icon-restore" title="Restore" onclick="restoreGoal(\''+g.id+'\')">↩︎</button>';
       tb.appendChild(r);
     });
   } else { tw.style.display='none'; }
@@ -7531,10 +7758,10 @@ function renderTrash(){
   t.forEach((x,i)=>{
     var row=document.createElement('div'); row.className='trash-row';
     row.innerHTML='<span>• '+esc(x.item)+' <small>('+esc(x.fromName||'list')+')</small></span>'+
-      '<button class="trash-undo">Undo</button>'+
-      '<button class="trash-clear" title="Remove for good" aria-label="Remove for good" style="margin-left:8px;background:none;border:none;color:var(--muted);font-size:18px;font-weight:700;cursor:pointer;padding:0 6px">✕</button>';
-    row.querySelector('.trash-undo').onclick=()=>restoreTrash(i);
-    row.querySelector('.trash-clear').onclick=()=>clearTrashItem(i);
+      '<button class="icon-btn icon-restore" title="Undo">↩︎</button>'+
+      '<button class="icon-btn icon-del" title="Remove for good" aria-label="Remove for good" style="margin-left:8px">🗑</button>';
+    row.querySelector('.icon-restore').onclick=()=>restoreTrash(i);
+    row.querySelector('.icon-del').onclick=()=>clearTrashItem(i);
     w.appendChild(row);
   });
   // "Clear all" at the end of the bin
@@ -11049,10 +11276,10 @@ function agentCard(a,trashed){
   var info='<div class="agent-info"><div class="nm">'+esc(a.name||'Unnamed')+(a.isSelf?' <span class="self-badge">self</span>':'')+'</div><div class="meta">'+esc(meta)+'</div></div>';
   if(trashed){
     c.innerHTML=face+info+'<div class="agent-actions">'+
-      '<button class="act-recover">Recover</button>'+
-      '<button class="act-del">Delete</button></div>';
-    c.querySelector('.act-recover').onclick=()=>{ recoverAgent(a.id); toast(esc(a.name)+' recovered.'); renderRoster(); };
-    c.querySelector('.act-del').onclick=()=>{ deleteAgentForever(a.id); toast('Deleted permanently.'); renderRoster(); };
+      '<button class="icon-btn icon-restore" title="Recover">↩︎</button>'+
+      '<button class="icon-btn icon-del" title="Delete">🗑</button></div>';
+    c.querySelector('.icon-restore').onclick=()=>{ recoverAgent(a.id); toast(esc(a.name)+' recovered.'); renderRoster(); };
+    c.querySelector('.icon-del').onclick=()=>{ deleteAgentForever(a.id); toast('Deleted permanently.'); renderRoster(); };
   } else {
     c.innerHTML=face+info+
       '<button class="agent-call">Call</button>'+
