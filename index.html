@@ -5331,7 +5331,7 @@ function enterChat(){
       if(!coming && !S.isSelf && honeyNeedsSetup()){
         // BOX FIRST — pop the "Set up my Honey" invite up top, so it's already there
         // when Honey references it, and it can't drop in mid-sentence and cut her off.
-        setTimeout(()=>{ showSetupInvite(); resetIdle(); }, 700);
+        setTimeout(()=>{ showSetupInvite(); resetIdle(); }, 1100);
         // THEN Honey says her lines (nothing interrupts — the box is already placed)
         setTimeout(()=>{ themTyping(()=>{
           // Paragraph 1 — intro
@@ -5352,9 +5352,9 @@ function enterChat(){
             });
           };
           if(S.speakerOn){
-            enqueueSpeak("\u0000CLIP:onboard_intro\u0001Oh, one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap change your Honey up top anytime.", function(){ setTimeout(sayPara2, 500); });
+            enqueueSpeak("\u0000CLIP:onboard_intro\u0001Oh, one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap change your Honey up top anytime.", function(){ setTimeout(sayPara2, 1100); });
           } else { setTimeout(sayPara2, 1400); }
-        }); }, 1800);
+        }); }, 2600);
       }
     }); },900);
   },700);
