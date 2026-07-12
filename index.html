@@ -1954,10 +1954,10 @@ textarea{resize:none;line-height:1.4;}
   <div class="rec-sheet">
     <div class="rec-head"><span>📷 Photo Suite</span><button class="rec-x" onclick="closeVideoStudio()">✕</button></div>
     <p class="rec-hint">Add a photo, pick a scene, and share it as a picture or a little video. Free.</p>
-    <p class="rec-hint" id="vidPhoneNote" style="margin:4px 2px 0;font-size:12px;display:none">📱 On iPhone, if a video won’t attach, your phone still sends the picture. Works best in the installed app.</p>
+    <button class="rec-save" id="photoShareTop" onclick="sharePhotoStill()" style="background:var(--gold);color:var(--on-accent);border:none;font-weight:700;margin:2px 0 6px">📤 Share this photo</button>
 
     <div class="vid-stage"><canvas id="vidCanvas" width="540" height="540"></canvas>
-      <div class="vid-noimg" id="vidNoImg">Add a photo to your friend first (Edit → upload a photo), then come back.</div>
+      <div class="vid-noimg" id="vidNoImg" onclick="document.getElementById('vidImgInput').click()" style="cursor:pointer">📸 Tap here to add a favorite photo — of you, a grandbaby, your dog, anyone you love. I'll make it special and ready to share. 🍯</div>
     </div>
 
     <label class="rec-label">Scenes</label>
@@ -5335,14 +5335,14 @@ function enterChat(){
         // THEN Honey says her lines (nothing interrupts — the box is already placed)
         setTimeout(()=>{ themTyping(()=>{
           // Paragraph 1 — intro
-          pushThem("Oh — one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap the \u201CSet up my Honey\u201D button up top anytime.", false, true);
+          pushThem("Oh, one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap change your Honey up top anytime.", false, true);
           resetIdle();
           // Paragraph 2 fires only when paragraph 1 has ACTUALLY finished playing.
           // enqueueSpeak's callback is exact — no polling a queue that briefly
           // looks empty in the 220ms gap between clips.
           var sayPara2 = function(){
             themTyping(function(){
-            pushThem("And see those little taps just above where you type? 👍 👎 ❓ ❤️ — use those to react anytime, quick and easy. Here, let me show you — I'll tell you one:", false, true);
+            pushThem("And see those little taps just above where you type? The thumbs up, thumbs down, question mark, and heart — use those to react anytime, quick and easy. Here, let me show you. I'll tell you one:", false, true);
               resetIdle();
               var tellIt = function(){ try{ tellJoke(false,null,true,ONBOARD_JOKE); }catch(e){} };
               if(S.speakerOn){
@@ -5370,7 +5370,7 @@ function showSetupInvite(){
   var m=document.getElementById('msgs'); if(!m)return;
   if(document.getElementById('setupInviteBtn')) return; // don't double-add
   var wrap=document.createElement('div'); wrap.className='setup-invite';
-  wrap.innerHTML='<button id="setupInviteBtn" class="setup-invite-btn" onclick="editAgent(S.agentId)">✨ Set up my Honey — name &amp; face</button>';
+  wrap.innerHTML='<button id="setupInviteBtn" class="setup-invite-btn" onclick="editAgent(S.agentId)">✨ Change your Honey</button>';
   m.appendChild(wrap);
   m.scrollTop=m.scrollHeight;
 }
@@ -9735,6 +9735,27 @@ function imgFallback(blob,text,fname){
   if(navigator.share){ navigator.share({text:text}).catch(()=>{}); }
   else { try{ navigator.clipboard.writeText(text); }catch(e){} }
   afterShare('Image saved — attach it in your messages.');
+}
+/* Share the current Photo Suite picture (the studio canvas) as a photo.
+   Reuses the same native-share + download-fallback pattern as other images. */
+function sharePhotoStill(){
+  var cv=document.getElementById('vidCanvas');
+  if(!cv){ return; }
+  // make sure the latest frame (photo + scene + caption) is drawn
+  try{ if(typeof vidDrawStill==='function') vidDrawStill(); }catch(e){}
+  var caption=(document.getElementById('vidCaption')&&document.getElementById('vidCaption').value||'').trim();
+  var text=(caption?caption+'\n\n':'')+'🍯 Made with the Tell me Honey app';
+  try{
+    cv.toBlob(function(blob){
+      if(!blob){ setVidStatus('vidStatus','Add a photo first, then share. 🍯'); return; }
+      var file=new File([blob],'honey-photo.png',{type:'image/png'});
+      if(navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
+        navigator.share({files:[file], text:text, title:'A little something for you 🍯'})
+          .then(()=>{ setVidStatus('vidStatus','Shared! 🍯'); })
+          .catch(()=>imgFallback(blob,text,'honey-photo.png'));
+      } else imgFallback(blob,text,'honey-photo.png');
+    }, 'image/png');
+  }catch(e){ setVidStatus('vidStatus','Add a photo first, then share. 🍯'); }
 }
 function shareLovedVideo(){
   // hand off to the video studio prefilled with this joke AND the chosen picture
