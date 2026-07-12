@@ -506,17 +506,26 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .dj-fab:active{transform:scale(.94);}
 .dj-monthhead{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1px;
   color:var(--muted);margin:16px 4px 8px;}
-.dj-card{background:var(--panel2);border:1px solid var(--line);border-radius:18px;
-  overflow:hidden;margin-bottom:14px;cursor:pointer;transition:transform .1s;}
-.dj-card:active{transform:scale(.99);}
-.dj-card .dj-cimg{width:100%;height:190px;object-fit:cover;display:block;background:var(--panel);}
-.dj-card .dj-cbody{padding:14px 15px 8px;}
-.dj-card .dj-ctitle{font-size:18px;font-weight:700;color:var(--ink,inherit);line-height:1.3;}
-.dj-card .dj-cpreview{font-size:14px;color:var(--muted);line-height:1.45;margin-top:4px;
+/* two-across photo-booth grid */
+.dj-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.dj-card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;
+  overflow:hidden;display:flex;flex-direction:column;}
+.dj-ctap{cursor:pointer;flex:1;display:flex;flex-direction:column;}
+.dj-ctap:active{opacity:.85;}
+.dj-card .dj-cimg{width:100%;height:130px;object-fit:cover;display:block;background:var(--panel);}
+.dj-card .dj-noimg{width:100%;height:130px;display:flex;align-items:center;justify-content:center;
+  font-size:34px;background:var(--panel);opacity:.5;}
+.dj-card .dj-cbody{padding:10px 11px 6px;flex:1;}
+.dj-card .dj-ctitle{font-size:15px;font-weight:700;color:var(--ink,inherit);line-height:1.25;}
+.dj-card .dj-cpreview{font-size:12.5px;color:var(--muted);line-height:1.4;margin-top:3px;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.dj-card .dj-cfoot{display:flex;align-items:center;gap:8px;padding:8px 15px 13px;
-  border-top:1px solid var(--line);margin-top:8px;font-size:13px;color:var(--muted);font-weight:600;}
-.dj-empty{text-align:center;color:var(--muted);padding:40px 20px;font-size:15px;line-height:1.6;}
+.dj-card .dj-cfoot{display:flex;align-items:center;justify-content:space-between;
+  padding:7px 11px 10px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);font-weight:600;}
+.dj-cdate{display:inline-flex;align-items:center;gap:4px;}
+.dj-sharebtn{background:none;border:none;font-size:17px;cursor:pointer;padding:0 2px;line-height:1;opacity:.85;}
+.dj-sharebtn:active{transform:scale(.9);}
+.dj-empty{text-align:center;color:var(--muted);padding:40px 20px;font-size:15px;line-height:1.6;
+  grid-column:1 / -1;}
 .dj-photostrip{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;}
 .dj-photostrip .dj-ph{position:relative;flex:0 0 auto;}
 .dj-photostrip img{height:120px;border-radius:12px;display:block;}
@@ -524,6 +533,31 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   border-radius:50%;width:24px;height:24px;font-size:14px;cursor:pointer;border:none;
   display:flex;align-items:center;justify-content:center;}
 .dj-tools{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+/* butterfly-style tool bar */
+.dj-toolbar{display:flex;align-items:center;justify-content:space-around;gap:8px;
+  background:var(--panel2);border:1.5px solid var(--line);border-radius:16px;
+  padding:8px 6px;margin-top:14px;}
+.dj-tbtn{flex:1;font-size:22px;background:none;border:none;cursor:pointer;padding:8px 0;
+  border-radius:12px;transition:background .12s,transform .1s;}
+.dj-tbtn:active{transform:scale(.9);background:rgba(200,150,40,.14);}
+.dj-formatpanel{background:var(--panel2);border:1.5px solid var(--line);border-radius:16px;
+  padding:12px 14px;margin-top:10px;}
+.dj-fmt-row{display:flex;align-items:center;gap:10px;margin:6px 0;}
+.dj-fmt-label{font-size:13px;color:var(--muted);font-weight:700;width:70px;flex:0 0 auto;}
+.dj-fmt-btn{padding:7px 14px;border-radius:11px;font-weight:800;font-size:15px;
+  background:var(--panel);color:var(--gold);border:1.5px solid var(--gold);cursor:pointer;}
+.dj-fmt-btn:active{transform:scale(.96);}
+.dj-fmt-swatch{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.5);
+  cursor:pointer;padding:0;}
+.dj-fmt-swatch:active{transform:scale(.9);}
+.dj-promptbox{background:linear-gradient(135deg,rgba(200,150,40,.16),rgba(200,150,40,.06));
+  border:1.5px solid var(--gold);border-radius:16px;padding:14px 16px;margin-top:12px;
+  font-size:15px;line-height:1.5;color:var(--ink,inherit);}
+.dj-promptbox b{color:var(--gold);}
+.dj-bwtoggle{display:inline-flex;align-items:center;gap:6px;margin:2px 0 8px;
+  padding:8px 14px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;
+  background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold);}
+.dj-bwtoggle:active{transform:scale(.97);}
 .dj-tool{padding:9px 14px;border-radius:12px;font-size:14px;font-weight:700;
   background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold);cursor:pointer;}
 .dj-tool:active{transform:scale(.98);}
@@ -1661,14 +1695,45 @@ textarea{resize:none;line-height:1.4;}
   </div>
   <div class="insights-body scroll">
     <div id="djPhotoStrip" class="dj-photostrip"></div>
-    <div class="dj-tools">
-      <button class="dj-tool" onclick="document.getElementById('djImgInput').click()">📷 Add photo</button>
-      <input type="file" id="djImgInput" accept="image/*" class="file-hidden" onchange="djAddPhoto(event)">
-      <span id="djDateLabel" class="dj-datelabel"></span>
-    </div>
+    <button id="djBWtoggle" class="dj-bwtoggle" style="display:none" onclick="djToggleAllBW()">◑ Black &amp; white</button>
+    <span id="djDateLabel" class="dj-datelabel"></span>
     <input id="djTitle" class="dj-titlefield" placeholder="Title">
-    <textarea id="djBody" class="dj-bodyfield" placeholder="Write about your day…" rows="12"></textarea>
-    <button class="del-btn" id="djDeleteBtn" style="display:none;margin-top:6px" onclick="djDeleteEntry()">🗑 Delete this entry</button>
+    <textarea id="djBody" class="dj-bodyfield" placeholder="Write about your day… (tap the 🎤 on your keyboard to talk instead of type)" rows="10"></textarea>
+
+    <!-- Honey's writing prompt (shows when tapped) -->
+    <div id="djPromptBox" class="dj-promptbox" style="display:none"></div>
+
+    <!-- Butterfly-style tool bar -->
+    <div class="dj-toolbar">
+      <button class="dj-tbtn" title="Photo" onclick="document.getElementById('djImgInput').click()">🖼️</button>
+      <button class="dj-tbtn" title="Camera" onclick="document.getElementById('djCamInput').click()">📷</button>
+      <button class="dj-tbtn" title="Text size &amp; style" onclick="djToggleFormat()">✍️</button>
+      <button class="dj-tbtn" title="A little inspiration" onclick="djPrompt()">🌸</button>
+      <input type="file" id="djImgInput" accept="image/*" class="file-hidden" onchange="djAddPhoto(event)">
+      <input type="file" id="djCamInput" accept="image/*" capture="environment" class="file-hidden" onchange="djAddPhoto(event)">
+    </div>
+
+    <!-- Format panel (font size + style + color) -->
+    <div id="djFormatPanel" class="dj-formatpanel" style="display:none">
+      <div class="dj-fmt-row">
+        <span class="dj-fmt-label">Text size</span>
+        <button class="dj-fmt-btn" onclick="djFontSize(-1)">A−</button>
+        <button class="dj-fmt-btn" onclick="djFontSize(1)">A＋</button>
+      </div>
+      <div class="dj-fmt-row">
+        <span class="dj-fmt-label">Color</span>
+        <button class="dj-fmt-swatch" style="background:#2b2620" onclick="djBodyColor('#2b2620')"></button>
+        <button class="dj-fmt-swatch" style="background:#c0392b" onclick="djBodyColor('#c0392b')"></button>
+        <button class="dj-fmt-swatch" style="background:#1f6b4a" onclick="djBodyColor('#1f6b4a')"></button>
+        <button class="dj-fmt-swatch" style="background:#2c5c8a" onclick="djBodyColor('#2c5c8a')"></button>
+        <button class="dj-fmt-swatch" style="background:#8a6210" onclick="djBodyColor('#8a6210')"></button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="dj-tool" id="djShareBtnEd" style="display:none" onclick="djShareCurrent()">📤 Share this entry</button>
+      <button class="del-btn" id="djDeleteBtn" style="display:none" onclick="djDeleteEntry()">🗑 Delete</button>
+    </div>
   </div>
 </section>
 
@@ -6802,28 +6867,97 @@ function renderJournalFeed(){
     feed.innerHTML='<div class="dj-empty">Your journal is empty.<br><br>Tap the ＋ to write your first entry —<br>add a photo, a title, and a little about your day. 🍯</div>';
     return;
   }
-  var html='', lastMonth='';
+  var html='', lastMonth='', inGrid=false;
   entries.forEach(function(e){
     var d=new Date(e.when);
     var monthKey=d.toLocaleDateString(undefined,{month:'long',year:'numeric'});
-    if(monthKey!==lastMonth){ html+='<div class="dj-monthhead">'+esc(monthKey)+'</div>'; lastMonth=monthKey; }
-    var img=(e.photos&&e.photos.length)?'<img class="dj-cimg" src="'+e.photos[0]+'" alt="">':'';
-    var dateStr=d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
+    if(monthKey!==lastMonth){
+      if(inGrid){ html+='</div>'; inGrid=false; }
+      html+='<div class="dj-monthhead">'+esc(monthKey)+'</div>';
+      html+='<div class="dj-grid">'; inGrid=true;
+      lastMonth=monthKey;
+    }
+    var img=(e.photos&&e.photos.length)?'<img class="dj-cimg" src="'+e.photos[0]+'" alt=""'+(e.bw?' style="filter:grayscale(1) contrast(1.06)"':'')+'>':'<div class="dj-noimg">📔</div>';
+    var dateStr=d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
     var preview=e.body?'<div class="dj-cpreview">'+esc(e.body)+'</div>':'';
-    html+='<div class="dj-card" onclick="djOpenEntry(\''+e.id+'\')">'+img+
-      '<div class="dj-cbody">'+(e.title?'<div class="dj-ctitle">'+esc(e.title)+'</div>':'')+preview+'</div>'+
-      '<div class="dj-cfoot">📔 '+esc(dateStr)+'</div></div>';
+    html+='<div class="dj-card">'+
+      '<div class="dj-ctap" onclick="djOpenEntry(\''+e.id+'\')">'+img+
+        '<div class="dj-cbody">'+(e.title?'<div class="dj-ctitle">'+esc(e.title)+'</div>':'')+preview+'</div></div>'+
+      '<div class="dj-cfoot"><span class="dj-cdate">📔 '+esc(dateStr)+'</span>'+
+        '<button class="dj-sharebtn" title="Share" onclick="djShareEntry(\''+e.id+'\')">📤</button></div>'+
+      '</div>';
   });
+  if(inGrid) html+='</div>';
   feed.innerHTML=html;
 }
 
-var _djEditId=null, _djPhotos=[];
+/* Share an entry (photo + words) to the phone's share sheet */
+function djShareEntry(id){
+  var e=(SETTINGS.journal||[]).find(function(x){return x.id===id;}); if(!e) return;
+  var text=(e.title?e.title+'\n\n':'')+(e.body||'')+'\n\n🍯 From my Tell me Honey journal';
+  var photo=(e.photos&&e.photos.length)?e.photos[0]:null;
+  if(photo){
+    // data URL → blob → File so the picture shares too
+    try{
+      fetch(photo).then(function(r){return r.blob();}).then(function(blob){
+        var file=new File([blob],'journal.jpg',{type:blob.type||'image/jpeg'});
+        if(navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
+          navigator.share({files:[file], text:text, title:e.title||'My journal'}).catch(function(){ djShareText(text); });
+        } else djShareText(text);
+      }).catch(function(){ djShareText(text); });
+    }catch(err){ djShareText(text); }
+  } else djShareText(text);
+}
+function djShareText(text){
+  if(navigator.share){ navigator.share({text:text}).catch(function(){}); }
+  else { try{ navigator.clipboard.writeText(text); toast("Copied — paste it anywhere!"); }catch(e){ toast("Couldn't share here."); } }
+}
+function djShareCurrent(){ if(_djEditId) djShareEntry(_djEditId); }
+
+/* ── Editor tools: format (size/color) + Honey prompts ── */
+var _djFont=16;
+function djToggleFormat(){
+  var p=document.getElementById('djFormatPanel');
+  p.style.display=(p.style.display==='none')?'block':'none';
+}
+function djFontSize(dir){
+  _djFont=Math.max(13,Math.min(26,_djFont+dir*2));
+  var b=document.getElementById('djBody'); if(b) b.style.fontSize=_djFont+'px';
+}
+function djBodyColor(c){
+  var b=document.getElementById('djBody'); if(b) b.style.color=c;
+}
+var DJ_PROMPTS=[
+  "What made you smile today?",
+  "Who are you grateful for right now — and why?",
+  "What's something small that went right today?",
+  "If today had a title, what would it be?",
+  "What do you want to remember about this day a year from now?",
+  "What's on your heart this evening?",
+  "Describe a moment today you'd like to keep.",
+  "What did you learn about yourself lately?",
+  "Who did you talk to today, and how are they?",
+  "What are you looking forward to tomorrow?",
+  "What's a little thing that made you laugh?",
+  "Where did you feel most like yourself today?"
+];
+function djPrompt(){
+  var box=document.getElementById('djPromptBox');
+  var q=DJ_PROMPTS[Math.floor(Math.random()*DJ_PROMPTS.length)];
+  box.innerHTML='<b>🌸 Honey asks:</b> '+esc(q);
+  box.style.display='block';
+  // Honey says it too, in whatever voice is set (free voice reads it; quiet if none)
+  try{ if(S.speakerOn) enqueueSpeak(q); }catch(e){}
+}
+
+var _djEditId=null, _djPhotos=[], _djBW=false;
 function djNewEntry(){
-  _djEditId=null; _djPhotos=[];
+  _djEditId=null; _djPhotos=[]; _djBW=false;
   document.getElementById('djEditTitle').textContent='New entry';
   document.getElementById('djTitle').value='';
   document.getElementById('djBody').value='';
   document.getElementById('djDeleteBtn').style.display='none';
+  document.getElementById('djShareBtnEd').style.display='none';
   var d=new Date();
   document.getElementById('djDateLabel').textContent=d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
   renderPhotoStrip();
@@ -6832,11 +6966,12 @@ function djNewEntry(){
 }
 function djOpenEntry(id){
   var e=(SETTINGS.journal||[]).find(function(x){return x.id===id;}); if(!e) return;
-  _djEditId=id; _djPhotos=(e.photos||[]).slice();
+  _djEditId=id; _djPhotos=(e.photos||[]).slice(); _djBW=!!e.bw;
   document.getElementById('djEditTitle').textContent='Entry';
   document.getElementById('djTitle').value=e.title||'';
   document.getElementById('djBody').value=e.body||'';
   document.getElementById('djDeleteBtn').style.display='block';
+  document.getElementById('djShareBtnEd').style.display='inline-flex';
   document.getElementById('djDateLabel').textContent=new Date(e.when).toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
   renderPhotoStrip();
   go('djEditor');
@@ -6844,9 +6979,17 @@ function djOpenEntry(id){
 function renderPhotoStrip(){
   var strip=document.getElementById('djPhotoStrip'); if(!strip) return;
   strip.innerHTML=_djPhotos.map(function(src,i){
-    return '<div class="dj-ph"><img src="'+src+'" alt=""><button class="dj-phx" onclick="djRemovePhoto('+i+')">✕</button></div>';
+    return '<div class="dj-ph">'+
+      '<img src="'+src+'" alt=""'+(_djBW?' style="filter:grayscale(1) contrast(1.06)"':'')+'>'+
+      '<button class="dj-phx" onclick="djRemovePhoto('+i+')">✕</button>'+
+    '</div>';
   }).join('');
+  // one simple toggle for the whole entry's photo(s)
+  var t=document.getElementById('djBWtoggle');
+  if(t) t.style.display=_djPhotos.length?'inline-flex':'none';
+  if(t) t.textContent=_djBW?'🎨 Color':'◑ Black & white';
 }
+function djToggleAllBW(){ _djBW=!_djBW; renderPhotoStrip(); }
 function djAddPhoto(ev){
   var f=ev.target.files&&ev.target.files[0]; if(!f) return;
   var reader=new FileReader();
@@ -6858,7 +7001,7 @@ function djAddPhoto(ev){
       if(w>max||h>max){ var s=Math.min(max/w,max/h); w=Math.round(w*s); h=Math.round(h*s); }
       var cv=document.createElement('canvas'); cv.width=w; cv.height=h;
       cv.getContext('2d').drawImage(img,0,0,w,h);
-      try{ _djPhotos.push(cv.toDataURL('image/jpeg',0.82)); }
+      try{ _djPhotos.push(cv.toDataURL("image/jpeg",0.82)); }
       catch(e){ _djPhotos.push(reader.result); }
       renderPhotoStrip();
     };
@@ -6876,9 +7019,9 @@ function djSaveEntry(){
   if(!Array.isArray(SETTINGS.journal)) SETTINGS.journal=[];
   if(_djEditId){
     var e=SETTINGS.journal.find(function(x){return x.id===_djEditId;});
-    if(e){ e.title=title; e.body=body; e.photos=_djPhotos.slice(); e.edited=Date.now(); }
+    if(e){ e.title=title; e.body=body; e.photos=_djPhotos.slice(); e.bw=_djBW; e.edited=Date.now(); }
   } else {
-    SETTINGS.journal.push({ id:'j'+Date.now(), when:Date.now(), title:title, body:body, photos:_djPhotos.slice() });
+    SETTINGS.journal.push({ id:'j'+Date.now(), when:Date.now(), title:title, body:body, photos:_djPhotos.slice(), bw:_djBW });
   }
   saveSettings();
   go('dailyJournal'); renderJournalFeed();
