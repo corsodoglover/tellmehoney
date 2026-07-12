@@ -5342,12 +5342,12 @@ function enterChat(){
           // looks empty in the 220ms gap between clips.
           var sayPara2 = function(){
             themTyping(function(){
-            pushThem("And see those little taps just above where you type? The thumbs up, thumbs down, question mark, and heart — use those to react anytime, quick and easy. Here, let me show you. I'll tell you one:", false, true);
+            pushThem("And see those little taps just above where you type? 👎 👍 ❓ ❤️ — use those to react anytime, quick and easy. Here, let me show you. I'll tell you one:", false, true);
               resetIdle();
               var tellIt = function(){ try{ tellJoke(false,null,true,ONBOARD_JOKE); }catch(e){} };
               if(S.speakerOn){
                 // noPre=true: she already said "I'll tell you one:" — no double announcement
-                enqueueSpeak("\u0000CLIP:onboard_reactions\u0001And see those little taps just above where you type? The thumbs up, thumbs down, question mark, and heart — use those to react anytime, quick and easy. Here, let me show you. I'll tell you one:", function(){ setTimeout(tellIt, 500); });
+                enqueueSpeak("\u0000CLIP:onboard_reactions\u0001And see those little taps just above where you type? The thumbs up, thumbs down, question mark, and heart — use those to react anytime, quick and easy. Here, let me show you. I'll tell you one:", function(){ setTimeout(tellIt, 1000); });
               } else { setTimeout(tellIt, 1200); }
             });
           };
