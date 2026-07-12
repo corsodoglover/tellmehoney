@@ -1870,7 +1870,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="vm-item" data-v="black" onclick="setView(&#39;black&#39;)"><span class="ic">⬛️</span>Black screen</button>
     <button class="vm-item" data-v="camera" onclick="setView(&#39;camera&#39;)"><span class="ic">📷</span>My camera</button>
     <div class="vm-sep"></div>
-    <button class="vm-item" onclick="fromViewMenuSwitch(event)"><span class="ic">🔄</span>Switch friend</button>
+    <button class="vm-item" onclick="fromViewMenuEdit()"><span class="ic">✏️</span><span id="vmEditLabel">Change Honey</span></button>
     <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openVoicePicker()"><span class="ic">🎚️</span>Pick a voice</button>
     <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openVideoStudio()"><span class="ic">🎬</span>Video Studio</button>
     <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);pickChatSkin()"><span class="ic">🖼️</span>Background</button>
@@ -7842,12 +7842,16 @@ function vibeColor(s){
 function topMemory(){ var best=null,n=1; for(var k in S.memory){ if(S.memory[k]>n){n=S.memory[k];best=k;} } return best; }
 
 /* ════ SELF-VIEW ════ */
-function toggleViewMenu(e){ e.stopPropagation(); document.getElementById('viewMenu').classList.toggle('on'); }
+function toggleViewMenu(e){ e.stopPropagation();
+  // keep the edit label matched to the current friend's name (Change Sally, Change Carl, etc.)
+  try{ var el=document.getElementById('vmEditLabel'); if(el){ var nm=(S.name&&S.agentId)?S.name:'Honey'; el.textContent='Change '+nm; } }catch(err){}
+  document.getElementById('viewMenu').classList.toggle('on'); }
 document.addEventListener('click',()=>document.getElementById('viewMenu').classList.remove('on'));
 function fromViewMenuSwitch(e){ if(e)e.stopPropagation(); document.getElementById('viewMenu').classList.remove('on');
   buildFriendSwitch(); document.getElementById('friendSwitch').classList.add('on'); }
 function fromViewMenuRoster(){ document.getElementById('viewMenu').classList.remove('on'); endCall(); openRoster(); }
 function fromViewMenuAdd(){ document.getElementById('viewMenu').classList.remove('on'); newAgentFlow(false); }
+function fromViewMenuEdit(){ document.getElementById('viewMenu').classList.remove('on'); if(loadedOrFirst()) editAgent(S.agentId); }
 function setView(v,silent){
   S.selfView=v;
   document.querySelectorAll('.vm-item[data-v]').forEach(b=>b.classList.toggle('sel',b.dataset.v===v));
@@ -8340,8 +8344,13 @@ function _spDrain(){
        always plays in Honey's voice because no voice has been chosen yet. */
     var isOnboard = forced.indexOf("onboard") === 0;
     if(window.__OBDEBUG) toast("forced "+forced.slice(0,18)+" | voice="+(S.voice||"honey")+" | txt="+(spokenText?"yes":"NO"));
-    if(!isOnboard && (S.voice||"honey")!=="honey" && spokenText){
-      _speakWithChosenVoice(spokenText, myToken, next); return;
+    if(!isOnboard && (S.voice||"honey")!=="honey"){
+      // A non-Honey voice is chosen. Honor it: speak the words in that voice.
+      // If there's no text to speak, DON'T fall back to Honey's clip (that
+      // would make Honey suddenly talk over the voice the user picked) —
+      // just move on quietly.
+      if(spokenText){ _speakWithChosenVoice(spokenText, myToken, next); return; }
+      next(); return;
     }
     try{
       playHoneyClip(forced, function(){
