@@ -1216,7 +1216,7 @@ textarea{resize:none;line-height:1.4;}
       <button class="ob-replay" id="obReveal" onclick="obRevealJoke()">tap for it 🔊</button>
       <div id="obAfter" style="display:none;flex-direction:column;align-items:center;width:100%">
         <button class="ob-next" onclick="finishOnboard()">I'm in — let's go 🍯</button>
-        <button class="ob-skip" onclick="finishOnboard()">Just take me in</button>
+        <button class="ob-skip" onclick="finishOnboard()">Let's get started</button>
       </div>
     </div>
 
@@ -5974,6 +5974,10 @@ function fetchWeather(lat,lon){
     var hi=Math.round(day.temperature_2m_max[0]), lo=Math.round(day.temperature_2m_min[0]);
     var line=code[1]+" It's "+t+"°F and "+code[0]+" right now"+
       (Math.abs(feels-t)>=3?" (feels like "+feels+"°)":"")+". High "+hi+"°, low "+lo+"°.";
+    // Spoken version: no leading emoji (voices read the emoji's NAME out loud,
+    // e.g. "sun behind cloud"), and say "degrees" instead of the ° symbol.
+    var spokenLine=("It's "+t+" degrees and "+code[0]+" right now"+
+      (Math.abs(feels-t)>=3?" (feels like "+feels+" degrees)":"")+". High "+hi+", low "+lo+".");
     var react=weatherReaction(c.weather_code,t);
     themTyping(()=>{
       _weatherBusy=false;                 // got a result -> allow asking again
@@ -5983,7 +5987,7 @@ function fetchWeather(lat,lon){
       // Every OTHER voice (free device voices, premium) can say numbers fine —
       // so let them read the whole weather line aloud, like they used to.
       if((S.voice||"honey")!=="honey" && S.speakerOn){
-        _speakWithChosenVoice(line, ++_spToken, function(){});
+        _speakWithChosenVoice(spokenLine, ++_spToken, function(){});
       }
       if(react) setTimeout(()=>themTyping(()=>{
         pushThem(react);                  // warm reaction (Honey speaks this; recorded clip matches the text)
@@ -10315,7 +10319,12 @@ function pzRender(replay){
 }
 
 function pzCell(r,c){ return document.getElementById('pzGrid').rows[r].cells[c]; }
-function pzSay(t){ document.getElementById('pzHoney').textContent=t; if(S.speakerOn && t) enqueueSpeak(t); }
+function pzSay(t){
+  // The puzzle shows its guidance on screen but stays QUIET — narrating every
+  // tap gets repetitive on replay. People can tap in peace. (Honey's voice is
+  // saved for jokes, weather, and greetings — the moments that matter.)
+  document.getElementById('pzHoney').textContent=t;
+}
 
 function pzStartTimer(){
   if(_pzStart) return;
