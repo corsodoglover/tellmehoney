@@ -2059,6 +2059,7 @@ textarea{resize:none;line-height:1.4;}
     <div class="vm-sep"></div>
     <button class="vm-item" onclick="fromViewMenuEdit()"><span class="ic">✏️</span><span id="vmEditLabel">Change Honey</span></button>
     <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openVoicePicker()"><span class="ic">🎚️</span>Pick a voice</button>
+    <button class="vm-item" id="vmVoiceToggle" onclick="toggleSpeaker();document.getElementById(&#39;vmVoiceToggle&#39;).firstChild.nextSibling.textContent=(S.speakerOn?&#39; Voice: on&#39;:&#39; Voice: off&#39;)"><span class="ic">🔊</span> Voice: on</button>
     <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openVideoStudio()"><span class="ic">🎬</span>Video Studio</button>
     <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);pickChatSkin()"><span class="ic">🖼️</span>Background</button>
     <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openInsights()"><span class="ic">🍯</span>Your Honey Pot</button>
@@ -3455,6 +3456,117 @@ var FISH_JOKES = [
   {s:"Why did the fisherman smile all the way home?",p:"The cooler was empty and the evening was not."},
   {s:"Why did the fisherman say fishing is not about fish?",p:"Because he has caught almost none and loved every year of it."}
 ];
+var WISDOM_GREATGRANDMA = [
+{s:"What did Great-Grandma say about a closed mouth?",p:"It never gets fed."},
+{s:"What did Great-Grandma say about people talking behind your back?",p:"It means you're ahead of them."},
+{s:"What did Great-Grandma say about wrestling with a pig?",p:"You both get dirty, but the pig likes it."},
+{s:"What did Great-Grandma say about throwing stones?",p:"Only trees with the best fruit get rocks thrown at them."},
+{s:"What did Great-Grandma say about crying over spilled milk?",p:"Clean it up so nobody slips on it."},
+{s:"What did Great-Grandma say about changing a bad man?",p:"The only thing you'll change is your mind."},
+{s:"What did Great-Grandma say about a watched pot?",p:"It cooks just fine if you leave the kitchen."},
+{s:"What did Great-Grandma say about a loud dog?",p:"The ones that bark the loudest are the easiest to outrun."},
+{s:"What did Great-Grandma say about chasing a dollar?",p:"If you run too fast, it'll spend you before you spend it."},
+{s:"What did Great-Grandma say about putting shoes on a horse?",p:"It doesn't make him a gentleman."},
+{s:"What did Great-Grandma say about waiting for the perfect weather?",p:"You'll end up starving in the shade."},
+{s:"What did Great-Grandma say about the neighbors' opinions?",p:"They don't buy your groceries, so don't let them cook your dinner."},
+{s:"What did Great-Grandma say about trying to argue with a fool?",p:"From a distance, nobody can tell which one is which."},
+{s:"What did Great-Grandma say about dogs barking at the moon?",p:"The moon keeps on shining anyway."},
+{s:"What did Great-Grandma say about looking back too long?",p:"You'll trip over what's right in front of you."},
+{s:"What did Great-Grandma say about a snake shedding its skin?",p:"It's still got the same bite."},
+{s:"What did Great-Grandma say about an empty wagon?",p:"It makes the most noise going down the road."},
+{s:"What did Great-Grandma say about hoarding every penny?",p:"Shrouds don't come with pockets."},
+{s:"What did Great-Grandma say about painting a rotten fence?",p:"The wood's still snapping under the coat."},
+{s:"What did Great-Grandma say about how they treat their mother?",p:"That's the preview for the main attraction."},
+{s:"What did Great-Grandma say about a mate who only speaks in sweet talk?",p:"Sugar dissolves the minute the rain starts."},
+{s:"What did Great-Grandma say about someone who treats the waiter poorly?",p:"Hold onto your purse and walk out the door."},
+{s:"What did Great-Grandma say about a partner who is always the victim?",p:"If they're always fighting dragons, they might be the ones lighting the fire."},
+{s:"What did Great-Grandma say about a partner who is nice to everyone but you?",p:"A street angel makes a house devil."},
+{s:"What did Great-Grandma say about marrying for looks alone?",p:"The prettiest plate doesn't put food on the table."},
+{s:"What did Great-Grandma say about marrying for money?",p:"You'll earn every single penny the hard way."},
+{s:"What did Great-Grandma say about choosing a partner for hard times?",p:"Pick the one you'd want holding the flashlights when the storm hits."},
+{s:"What did Great-Grandma say about looking for perfection?",p:"If you want an angel, you better build heaven first."},
+{s:"What did Great-Grandma say about sharing a roof?",p:"Don't marry someone you can live with; marry the one you can't live without."},
+{s:"What did Great-Grandma say about trying to change a mate after marriage?",p:"You aren't buying a fixer-upper; you're moving into the house as it stands."},
+{s:"What did Great-Grandma say about ignoring your gut feeling?",p:"If your stomach feels uneasy, don't blame the cooking."},
+{s:"What did Great-Grandma say about chasing someone who runs away?",p:"Save your shoes; let them keep walking."},
+{s:"What did Great-Grandma say about a mate who keeps secrets?",p:"Where there's smoke, the basement is already on fire."},
+{s:"What did Great-Grandma say about rushing into love?",p:"The faster the fire burns, the quicker you're left with ashes."},
+{s:"What did Great-Grandma say about keeping score in arguments?",p:"If you both try to win, the marriage loses."},
+{s:"What did Great-Grandma say about going to bed angry?",p:"Stay up and fight it out so you can sleep in peace."},
+{s:"What did Great-Grandma say about airing your marriage troubles to the neighbors?",p:"Keep your laundry in your own yard."},
+{s:"What did Great-Grandma say about the secret to a long marriage?",p:"Two good forgivers living under one roof."},
+{s:"What did Great-Grandma say about a happy home?",p:"It requires a lot of love, a little bit of space, and plenty of good food."},
+{s:"What did Great-Grandma say about telling a lie?",p:"You better have a fantastic memory, because the truth remembers itself."},
+{s:"What did Great-Grandma say about sugarcoating the truth?",p:"A bitter pill cures the illness; a sweet one just rots your teeth."},
+{s:"What did Great-Grandma say about someone who whispers the truth?",p:"The truth doesn't need a megaphone to shake the room."},
+{s:"What did Great-Grandma say about pretending to be something you're not?",p:"An honest penny is worth more than a counterfeit dollar."},
+{s:"What did Great-Grandma say about people who don't like honest words?",p:"The truth only hurts when it's supposed to."},
+{s:"What did Great-Grandma say about trying to speed up time?",p:"You can't bake a three-hour cake in twenty minutes just by turning up the oven."},
+{s:"What did Great-Grandma say about waiting for your turn?",p:"The sun doesn't rush the moon, and they both get a chance to shine."},
+{s:"What did Great-Grandma say about a seed in the dirt?",p:"Digging it up every day to check on it won't make it grow any faster."},
+{s:"What did Great-Grandma say about losing your temper?",p:"A moment of patience saves a lifetime of clean-up."},
+{s:"What did Great-Grandma say about the longest winter?",p:"The snow always melts, no matter how much it likes the ground."},
+{s:"What did Great-Grandma say about giving advice?",p:"Don't sweep my porch until you've scrubbed your own kitchen floor."},
+{s:"What did Great-Grandma say about a loud sermon?",p:"I'd rather see a good example than hear a long speech."},
+{s:"What did Great-Grandma say about pointing fingers?",p:"When you're busy pointing at someone else, three fingers are pointing right back at you."},
+{s:"What did Great-Grandma say about a guide who won't walk the trail?",p:"Don't take directions from someone who hasn't left the front porch."},
+{s:"What did Great-Grandma say about leading the way?",p:"If you want the pack to follow, you better be willing to carry the heaviest load."},
+{s:"What did Great-Grandma say about hitting a wall?",p:"The wall is just there to see if you're willing to find a ladder."},
+{s:"What did Great-Grandma say about a bad day?",p:"The sunset is proof that even the hardest days have an ending."},
+{s:"What did Great-Grandma say about falling down?",p:"As long as you land looking up, you can get back up."},
+{s:"What did Great-Grandma say about a rough sea?",p:"A smooth ocean never made a skilled captain."},
+{s:"What did Great-Grandma say about a slow start?",p:"It doesn't matter how slow you walk, as long as you don't turn around."},
+{s:"What did Great-Grandma say about planting thorns?",p:"Don't expect to harvest roses when you've been scattering weeds."},
+{s:"What did Great-Grandma say about how you treat the ground?",p:"The earth gives back exactly what you put into it, plus interest."},
+{s:"What did Great-Grandma say about throwing dirt?",p:"You're the one who ends up with dirty hands."},
+{s:"What did Great-Grandma say about kindness?",p:"Scatter the seeds generously; you'll need the shade later on."},
+{s:"What did Great-Grandma say about a lazy spring?",p:"If you sleep through the planting, don't look for a bowl at the harvest."},
+{s:"What did Great-Grandma say about true strength?",p:"Speak softly so they have to listen close, but keep your boots laced tight."},
+{s:"What did Great-Grandma say about a quiet person?",p:"Still water runs deep, and it can move a mountain if it wants to."},
+{s:"What did Great-Grandma say about showing your cards?",p:"Let them guess what's in your pocket until it's time to pay the bill."},
+{s:"What did Great-Grandma say about empty threats?",p:"Never raise your fist if you aren't ready to use your hands."},
+{s:"What did Great-Grandma say about keeping your cool?",p:"A gentle smile hides a sharp mind perfectly."},
+{s:"What did Great-Grandma say about a flattering friend?",p:"I'd rather have an honest slap in the face than a deceitful kiss on the cheek."},
+{s:"What did Great-Grandma say about a hard message?",p:"Don't blame the mirror just because you don't like the reflection."},
+{s:"What did Great-Grandma say about keeping quiet when it matters?",p:"Silence in the face of a lie is just a lie with its mouth shut."},
+{s:"What did Great-Grandma say about telling it like it is?",p:"If it looks like a skunk and smells like a skunk, don't call it a kitten."},
+{s:"What did Great-Grandma say about standing alone with the truth?",p:"An honest lone wolf is safer than a pack of wolves pretending to be sheep."},
+{s:"What did Great-Grandma say about carrying a heavy burden?",p:"The load doesn't break you; it's the way you carry it."},
+{s:"What did Great-Grandma say about a storm coming?",p:"Don't pray for the rain to stop; pray for a stronger umbrella."},
+{s:"What did Great-Grandma say about a sharp tongue?",p:"Keep your words soft and sweet, because you never know which ones you'll have to eat."},
+{s:"What did Great-Grandma say about shortcuts?",p:"The longest distance between two points is a shortcut."},
+{s:"What did Great-Grandma say about old age?",p:"The wrinkles just show where the smiles and the battles used to be."},
+{s:"What did Great-Grandma say about a young mind?",p:"A spongy sponge holds the most water."},
+{s:"What did Great-Grandma say about making a mistake?",p:"That's just tuition paid to the school of life."},
+{s:"What did Great-Grandma say about asking questions?",p:"The only silly question is the one you took home with you."},
+{s:"What did Great-Grandma say about trying something new?",p:"You'll never know if you can play the fiddle until you pick up the bow."},
+{s:"What did Great-Grandma say about an old dog?",p:"You can absolutely teach him new tricks if the treat is good enough."},
+{s:"What did Great-Grandma say about a slow learner?",p:"The oak tree takes its time, but it outlasts the weeds."},
+{s:"What did Great-Grandma say about listening?",p:"You have two ears and one mouth for a very good reason."},
+{s:"What did Great-Grandma say about change?",p:"If you don't shed your old feathers, you'll never get to grow new ones."},
+{s:"What did Great-Grandma say about an expert?",p:"He's just a beginner who didn't throw in the towel."},
+{s:"What did Great-Grandma say about looking at the stars?",p:"It reminds your feet how far they can actually walk."},
+{s:"What did Great-Grandma say about a curious child?",p:"Keep him asking 'why' and he'll eventually figure out 'how'."},
+{s:"What did Great-Grandma say about staying in your comfort zone?",p:"A ship in the harbor is safe, but that's not what ships are built for."},
+{s:"What did Great-Grandma say about a rough patch?",p:"The diamond only gets shiny after a whole lot of rubbing."},
+{s:"What did Great-Grandma say about wisdom?",p:"It's the one thing you can pack in your suitcase that doesn't weigh a pound."},
+{s:"What did Great-Grandma say about growing older?",p:"You aren't adding years; you're just collecting beautiful chapters."},
+{s:"What did Great-Grandma say when things were already going great?",p:"The cream always rises right to the top."},
+{s:"What did Great-Grandma say about a good streak of luck?",p:"When the wind is at your back, spread your wings and fly."},
+{s:"What did Great-Grandma say about finding a little success?",p:"That's just the appetizer; the feast is still on the stove."},
+{s:"What did Great-Grandma say about a beautiful sunrise?",p:"The day is only going to get brighter from here."},
+{s:"What did Great-Grandma say about a small win?",p:"A single spark can start a whole celebration."},
+{s:"What did Great-Grandma say about a good idea?",p:"Once the wheel starts turning, you can't stop the momentum."},
+{s:"What did Great-Grandma say about making a little progress?",p:"Every step forward makes the next one twice as easy."},
+{s:"What did Great-Grandma say about a joyful home?",p:"There's always room for more laughter under this roof."},
+{s:"What did Great-Grandma say about a sweet moment?",p:"Honey only gets sweeter the longer it sits."},
+{s:"What did Great-Grandma say about a budding talent?",p:"You've got the seed, now watch the whole garden bloom."},
+{s:"What did Great-Grandma say about catching a big fish?",p:"There's always a bigger one waiting out in the deep water."},
+{s:"What did Great-Grandma say about a joyful heart?",p:"Joy is a well that never runs out of water."},
+{s:"What did Great-Grandma say about a good harvest?",p:"Next year's barns are going to need to be twice as big."},
+{s:"What did Great-Grandma say about a clear blue sky?",p:"It's a wide-open road all the way to the horizon."},
+{s:"What did Great-Grandma say about a celebration?",p:"Keep the music playing; the best song hasn't even started yet."}
+];
 var JOKE_CATEGORIES = [
   {key:"front_porch",      name:"Front Porch Funny", emoji:"\ud83e\ude91", jokes:FRONT_PORCH},
   {key:"dry_toast",        name:"Dry Toast", emoji:"\ud83d\udeac", jokes:DRY_TOAST},
@@ -3465,6 +3577,7 @@ var JOKE_CATEGORIES = [
   {key:"eighties_cool",    name:"Eighties Cool", emoji:"\ud83d\udd76\ufe0f", jokes:EIGHTIES_COOL},
   {key:"straight_face",    name:"Straight Face Assassin", emoji:"\ud83c\udfaf", jokes:STRAIGHT_FACE},
   {key:"zen_master",       name:"Zen Master Laughs", emoji:"\ud83e\udd4b", jokes:ZEN_MASTER},
+  {key:"wisdom_greatgrandma", name:"Great-Grandma's Wisdom", emoji:"\ud83c\udf3b", jokes:WISDOM_GREATGRANDMA},
   {key:"dad_jokes",        name:"Dad Joke Champion", emoji:"\ud83d\udc68", jokes:DAD_JOKES},
   {key:"roast_master",     name:"Roast Master", emoji:"\ud83d\udd25", jokes:ROAST_MASTER},
   {key:"nothing_but_net",  name:"Nothing But Net", emoji:"\ud83c\udfc0", jokes:NOTHING_BUT_NET},
@@ -5282,7 +5395,14 @@ function go(id){
 /* smart back: return to the screen you entered the utility area from
    (usually chat or home), instead of flashing to a blank welcome */
 function goBack(){
-  var dest=_navPrev || _navOrigin;
+  // If we're inside the utility cluster (lists, notes, to-do, etc.) and we entered
+  // it from chat, jump straight back to chat instead of retracing through the hub.
+  var dest;
+  if(_UTIL_SCREENS.indexOf(_navCur)>=0 && _navOrigin && _UTIL_SCREENS.indexOf(_navOrigin)<0){
+    dest=_navOrigin;
+  } else {
+    dest=_navPrev || _navOrigin;
+  }
   if(!dest || !document.getElementById(dest) || dest===_navCur) dest = S.agentId ? 'chat' : 'welcome';
   _navOrigin=null;
   if(dest==='welcome'){ showHome(); return; }
@@ -8219,6 +8339,8 @@ function topMemory(){ var best=null,n=1; for(var k in S.memory){ if(S.memory[k]>
 function toggleViewMenu(e){ e.stopPropagation();
   // keep the edit label matched to the current friend's name (Change Sally, Change Carl, etc.)
   try{ var el=document.getElementById('vmEditLabel'); if(el){ var nm=(S.name&&S.agentId)?S.name:'Honey'; el.textContent='Change '+nm; } }catch(err){}
+  // keep the voice on/off label matched to the current state
+  try{ var vt=document.getElementById('vmVoiceToggle'); if(vt){ vt.firstChild.nextSibling.textContent=(S.speakerOn?' Voice: on':' Voice: off'); } }catch(err){}
   document.getElementById('viewMenu').classList.toggle('on'); }
 document.addEventListener('click',()=>document.getElementById('viewMenu').classList.remove('on'));
 function fromViewMenuSwitch(e){ if(e)e.stopPropagation(); document.getElementById('viewMenu').classList.remove('on');
@@ -8462,6 +8584,226 @@ HONEY_AUDIO_MAP["here's a little something —"]     = "intro_wholesome";
 HONEY_AUDIO_MAP["here's a little something"]       = "intro_wholesome";
 HONEY_AUDIO_MAP["lean in for this one…"]           = "intro_mysterious";
 HONEY_AUDIO_MAP["lean in for this one"]            = "intro_mysterious";
+
+/* ---- Great-Grandma Wisdom clips (218) ---- */
+HONEY_AUDIO_MAP["what did great-grandma say about a closed mouth?"] = "wisdom_greatgrandma_001_setup";
+HONEY_AUDIO_MAP["it never gets fed."] = "wisdom_greatgrandma_001_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about people talking behind your back?"] = "wisdom_greatgrandma_002_setup";
+HONEY_AUDIO_MAP["it means you're ahead of them."] = "wisdom_greatgrandma_002_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about wrestling with a pig?"] = "wisdom_greatgrandma_003_setup";
+HONEY_AUDIO_MAP["you both get dirty, but the pig likes it."] = "wisdom_greatgrandma_003_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about throwing stones?"] = "wisdom_greatgrandma_004_setup";
+HONEY_AUDIO_MAP["only trees with the best fruit get rocks thrown at them."] = "wisdom_greatgrandma_004_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about crying over spilled milk?"] = "wisdom_greatgrandma_005_setup";
+HONEY_AUDIO_MAP["clean it up so nobody slips on it."] = "wisdom_greatgrandma_005_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about changing a bad man?"] = "wisdom_greatgrandma_006_setup";
+HONEY_AUDIO_MAP["the only thing you'll change is your mind."] = "wisdom_greatgrandma_006_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a watched pot?"] = "wisdom_greatgrandma_007_setup";
+HONEY_AUDIO_MAP["it cooks just fine if you leave the kitchen."] = "wisdom_greatgrandma_007_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a loud dog?"] = "wisdom_greatgrandma_008_setup";
+HONEY_AUDIO_MAP["the ones that bark the loudest are the easiest to outrun."] = "wisdom_greatgrandma_008_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about chasing a dollar?"] = "wisdom_greatgrandma_009_setup";
+HONEY_AUDIO_MAP["if you run too fast, it'll spend you before you spend it."] = "wisdom_greatgrandma_009_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about putting shoes on a horse?"] = "wisdom_greatgrandma_010_setup";
+HONEY_AUDIO_MAP["it doesn't make him a gentleman."] = "wisdom_greatgrandma_010_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about waiting for the perfect weather?"] = "wisdom_greatgrandma_011_setup";
+HONEY_AUDIO_MAP["you'll end up starving in the shade."] = "wisdom_greatgrandma_011_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about the neighbors' opinions?"] = "wisdom_greatgrandma_012_setup";
+HONEY_AUDIO_MAP["they don't buy your groceries, so don't let them cook your dinner."] = "wisdom_greatgrandma_012_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about trying to argue with a fool?"] = "wisdom_greatgrandma_013_setup";
+HONEY_AUDIO_MAP["from a distance, nobody can tell which one is which."] = "wisdom_greatgrandma_013_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about dogs barking at the moon?"] = "wisdom_greatgrandma_014_setup";
+HONEY_AUDIO_MAP["the moon keeps on shining anyway."] = "wisdom_greatgrandma_014_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about looking back too long?"] = "wisdom_greatgrandma_015_setup";
+HONEY_AUDIO_MAP["you'll trip over what's right in front of you."] = "wisdom_greatgrandma_015_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a snake shedding its skin?"] = "wisdom_greatgrandma_016_setup";
+HONEY_AUDIO_MAP["it's still got the same bite."] = "wisdom_greatgrandma_016_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about an empty wagon?"] = "wisdom_greatgrandma_017_setup";
+HONEY_AUDIO_MAP["it makes the most noise going down the road."] = "wisdom_greatgrandma_017_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about hoarding every penny?"] = "wisdom_greatgrandma_018_setup";
+HONEY_AUDIO_MAP["shrouds don't come with pockets."] = "wisdom_greatgrandma_018_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about painting a rotten fence?"] = "wisdom_greatgrandma_019_setup";
+HONEY_AUDIO_MAP["the wood's still snapping under the coat."] = "wisdom_greatgrandma_019_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about how they treat their mother?"] = "wisdom_greatgrandma_020_setup";
+HONEY_AUDIO_MAP["that's the preview for the main attraction."] = "wisdom_greatgrandma_020_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a mate who only speaks in sweet talk?"] = "wisdom_greatgrandma_021_setup";
+HONEY_AUDIO_MAP["sugar dissolves the minute the rain starts."] = "wisdom_greatgrandma_021_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about someone who treats the waiter poorly?"] = "wisdom_greatgrandma_022_setup";
+HONEY_AUDIO_MAP["hold onto your purse and walk out the door."] = "wisdom_greatgrandma_022_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a partner who is always the victim?"] = "wisdom_greatgrandma_023_setup";
+HONEY_AUDIO_MAP["if they're always fighting dragons, they might be the ones lighting the fire."] = "wisdom_greatgrandma_023_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a partner who is nice to everyone but you?"] = "wisdom_greatgrandma_024_setup";
+HONEY_AUDIO_MAP["a street angel makes a house devil."] = "wisdom_greatgrandma_024_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about marrying for looks alone?"] = "wisdom_greatgrandma_025_setup";
+HONEY_AUDIO_MAP["the prettiest plate doesn't put food on the table."] = "wisdom_greatgrandma_025_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about marrying for money?"] = "wisdom_greatgrandma_026_setup";
+HONEY_AUDIO_MAP["you'll earn every single penny the hard way."] = "wisdom_greatgrandma_026_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about choosing a partner for hard times?"] = "wisdom_greatgrandma_027_setup";
+HONEY_AUDIO_MAP["pick the one you'd want holding the flashlights when the storm hits."] = "wisdom_greatgrandma_027_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about looking for perfection?"] = "wisdom_greatgrandma_028_setup";
+HONEY_AUDIO_MAP["if you want an angel, you better build heaven first."] = "wisdom_greatgrandma_028_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about sharing a roof?"] = "wisdom_greatgrandma_029_setup";
+HONEY_AUDIO_MAP["don't marry someone you can live with; marry the one you can't live without."] = "wisdom_greatgrandma_029_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about trying to change a mate after marriage?"] = "wisdom_greatgrandma_030_setup";
+HONEY_AUDIO_MAP["you aren't buying a fixer-upper; you're moving into the house as it stands."] = "wisdom_greatgrandma_030_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about ignoring your gut feeling?"] = "wisdom_greatgrandma_031_setup";
+HONEY_AUDIO_MAP["if your stomach feels uneasy, don't blame the cooking."] = "wisdom_greatgrandma_031_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about chasing someone who runs away?"] = "wisdom_greatgrandma_032_setup";
+HONEY_AUDIO_MAP["save your shoes; let them keep walking."] = "wisdom_greatgrandma_032_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a mate who keeps secrets?"] = "wisdom_greatgrandma_033_setup";
+HONEY_AUDIO_MAP["where there's smoke, the basement is already on fire."] = "wisdom_greatgrandma_033_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about rushing into love?"] = "wisdom_greatgrandma_034_setup";
+HONEY_AUDIO_MAP["the faster the fire burns, the quicker you're left with ashes."] = "wisdom_greatgrandma_034_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about keeping score in arguments?"] = "wisdom_greatgrandma_035_setup";
+HONEY_AUDIO_MAP["if you both try to win, the marriage loses."] = "wisdom_greatgrandma_035_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about going to bed angry?"] = "wisdom_greatgrandma_036_setup";
+HONEY_AUDIO_MAP["stay up and fight it out so you can sleep in peace."] = "wisdom_greatgrandma_036_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about airing your marriage troubles to the neighbors?"] = "wisdom_greatgrandma_037_setup";
+HONEY_AUDIO_MAP["keep your laundry in your own yard."] = "wisdom_greatgrandma_037_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about the secret to a long marriage?"] = "wisdom_greatgrandma_038_setup";
+HONEY_AUDIO_MAP["two good forgivers living under one roof."] = "wisdom_greatgrandma_038_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a happy home?"] = "wisdom_greatgrandma_039_setup";
+HONEY_AUDIO_MAP["it requires a lot of love, a little bit of space, and plenty of good food."] = "wisdom_greatgrandma_039_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about telling a lie?"] = "wisdom_greatgrandma_040_setup";
+HONEY_AUDIO_MAP["you better have a fantastic memory, because the truth remembers itself."] = "wisdom_greatgrandma_040_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about sugarcoating the truth?"] = "wisdom_greatgrandma_041_setup";
+HONEY_AUDIO_MAP["a bitter pill cures the illness; a sweet one just rots your teeth."] = "wisdom_greatgrandma_041_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about someone who whispers the truth?"] = "wisdom_greatgrandma_042_setup";
+HONEY_AUDIO_MAP["the truth doesn't need a megaphone to shake the room."] = "wisdom_greatgrandma_042_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about pretending to be something you're not?"] = "wisdom_greatgrandma_043_setup";
+HONEY_AUDIO_MAP["an honest penny is worth more than a counterfeit dollar."] = "wisdom_greatgrandma_043_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about people who don't like honest words?"] = "wisdom_greatgrandma_044_setup";
+HONEY_AUDIO_MAP["the truth only hurts when it's supposed to."] = "wisdom_greatgrandma_044_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about trying to speed up time?"] = "wisdom_greatgrandma_045_setup";
+HONEY_AUDIO_MAP["you can't bake a three-hour cake in twenty minutes just by turning up the oven."] = "wisdom_greatgrandma_045_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about waiting for your turn?"] = "wisdom_greatgrandma_046_setup";
+HONEY_AUDIO_MAP["the sun doesn't rush the moon, and they both get a chance to shine."] = "wisdom_greatgrandma_046_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a seed in the dirt?"] = "wisdom_greatgrandma_047_setup";
+HONEY_AUDIO_MAP["digging it up every day to check on it won't make it grow any faster."] = "wisdom_greatgrandma_047_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about losing your temper?"] = "wisdom_greatgrandma_048_setup";
+HONEY_AUDIO_MAP["a moment of patience saves a lifetime of clean-up."] = "wisdom_greatgrandma_048_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about the longest winter?"] = "wisdom_greatgrandma_049_setup";
+HONEY_AUDIO_MAP["the snow always melts, no matter how much it likes the ground."] = "wisdom_greatgrandma_049_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about giving advice?"] = "wisdom_greatgrandma_050_setup";
+HONEY_AUDIO_MAP["don't sweep my porch until you've scrubbed your own kitchen floor."] = "wisdom_greatgrandma_050_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a loud sermon?"] = "wisdom_greatgrandma_051_setup";
+HONEY_AUDIO_MAP["i'd rather see a good example than hear a long speech."] = "wisdom_greatgrandma_051_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about pointing fingers?"] = "wisdom_greatgrandma_052_setup";
+HONEY_AUDIO_MAP["when you're busy pointing at someone else, three fingers are pointing right back at you."] = "wisdom_greatgrandma_052_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a guide who won't walk the trail?"] = "wisdom_greatgrandma_053_setup";
+HONEY_AUDIO_MAP["don't take directions from someone who hasn't left the front porch."] = "wisdom_greatgrandma_053_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about leading the way?"] = "wisdom_greatgrandma_054_setup";
+HONEY_AUDIO_MAP["if you want the pack to follow, you better be willing to carry the heaviest load."] = "wisdom_greatgrandma_054_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about hitting a wall?"] = "wisdom_greatgrandma_055_setup";
+HONEY_AUDIO_MAP["the wall is just there to see if you're willing to find a ladder."] = "wisdom_greatgrandma_055_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a bad day?"] = "wisdom_greatgrandma_056_setup";
+HONEY_AUDIO_MAP["the sunset is proof that even the hardest days have an ending."] = "wisdom_greatgrandma_056_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about falling down?"] = "wisdom_greatgrandma_057_setup";
+HONEY_AUDIO_MAP["as long as you land looking up, you can get back up."] = "wisdom_greatgrandma_057_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a rough sea?"] = "wisdom_greatgrandma_058_setup";
+HONEY_AUDIO_MAP["a smooth ocean never made a skilled captain."] = "wisdom_greatgrandma_058_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a slow start?"] = "wisdom_greatgrandma_059_setup";
+HONEY_AUDIO_MAP["it doesn't matter how slow you walk, as long as you don't turn around."] = "wisdom_greatgrandma_059_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about planting thorns?"] = "wisdom_greatgrandma_060_setup";
+HONEY_AUDIO_MAP["don't expect to harvest roses when you've been scattering weeds."] = "wisdom_greatgrandma_060_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about how you treat the ground?"] = "wisdom_greatgrandma_061_setup";
+HONEY_AUDIO_MAP["the earth gives back exactly what you put into it, plus interest."] = "wisdom_greatgrandma_061_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about throwing dirt?"] = "wisdom_greatgrandma_062_setup";
+HONEY_AUDIO_MAP["you're the one who ends up with dirty hands."] = "wisdom_greatgrandma_062_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about kindness?"] = "wisdom_greatgrandma_063_setup";
+HONEY_AUDIO_MAP["scatter the seeds generously; you'll need the shade later on."] = "wisdom_greatgrandma_063_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a lazy spring?"] = "wisdom_greatgrandma_064_setup";
+HONEY_AUDIO_MAP["if you sleep through the planting, don't look for a bowl at the harvest."] = "wisdom_greatgrandma_064_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about true strength?"] = "wisdom_greatgrandma_065_setup";
+HONEY_AUDIO_MAP["speak softly so they have to listen close, but keep your boots laced tight."] = "wisdom_greatgrandma_065_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a quiet person?"] = "wisdom_greatgrandma_066_setup";
+HONEY_AUDIO_MAP["still water runs deep, and it can move a mountain if it wants to."] = "wisdom_greatgrandma_066_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about showing your cards?"] = "wisdom_greatgrandma_067_setup";
+HONEY_AUDIO_MAP["let them guess what's in your pocket until it's time to pay the bill."] = "wisdom_greatgrandma_067_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about empty threats?"] = "wisdom_greatgrandma_068_setup";
+HONEY_AUDIO_MAP["never raise your fist if you aren't ready to use your hands."] = "wisdom_greatgrandma_068_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about keeping your cool?"] = "wisdom_greatgrandma_069_setup";
+HONEY_AUDIO_MAP["a gentle smile hides a sharp mind perfectly."] = "wisdom_greatgrandma_069_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a flattering friend?"] = "wisdom_greatgrandma_070_setup";
+HONEY_AUDIO_MAP["i'd rather have an honest slap in the face than a deceitful kiss on the cheek."] = "wisdom_greatgrandma_070_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a hard message?"] = "wisdom_greatgrandma_071_setup";
+HONEY_AUDIO_MAP["don't blame the mirror just because you don't like the reflection."] = "wisdom_greatgrandma_071_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about keeping quiet when it matters?"] = "wisdom_greatgrandma_072_setup";
+HONEY_AUDIO_MAP["silence in the face of a lie is just a lie with its mouth shut."] = "wisdom_greatgrandma_072_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about telling it like it is?"] = "wisdom_greatgrandma_073_setup";
+HONEY_AUDIO_MAP["if it looks like a skunk and smells like a skunk, don't call it a kitten."] = "wisdom_greatgrandma_073_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about standing alone with the truth?"] = "wisdom_greatgrandma_074_setup";
+HONEY_AUDIO_MAP["an honest lone wolf is safer than a pack of wolves pretending to be sheep."] = "wisdom_greatgrandma_074_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about carrying a heavy burden?"] = "wisdom_greatgrandma_075_setup";
+HONEY_AUDIO_MAP["the load doesn't break you; it's the way you carry it."] = "wisdom_greatgrandma_075_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a storm coming?"] = "wisdom_greatgrandma_076_setup";
+HONEY_AUDIO_MAP["don't pray for the rain to stop; pray for a stronger umbrella."] = "wisdom_greatgrandma_076_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a sharp tongue?"] = "wisdom_greatgrandma_077_setup";
+HONEY_AUDIO_MAP["keep your words soft and sweet, because you never know which ones you'll have to eat."] = "wisdom_greatgrandma_077_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about shortcuts?"] = "wisdom_greatgrandma_078_setup";
+HONEY_AUDIO_MAP["the longest distance between two points is a shortcut."] = "wisdom_greatgrandma_078_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about old age?"] = "wisdom_greatgrandma_079_setup";
+HONEY_AUDIO_MAP["the wrinkles just show where the smiles and the battles used to be."] = "wisdom_greatgrandma_079_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a young mind?"] = "wisdom_greatgrandma_080_setup";
+HONEY_AUDIO_MAP["a spongy sponge holds the most water."] = "wisdom_greatgrandma_080_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about making a mistake?"] = "wisdom_greatgrandma_081_setup";
+HONEY_AUDIO_MAP["that's just tuition paid to the school of life."] = "wisdom_greatgrandma_081_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about asking questions?"] = "wisdom_greatgrandma_082_setup";
+HONEY_AUDIO_MAP["the only silly question is the one you took home with you."] = "wisdom_greatgrandma_082_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about trying something new?"] = "wisdom_greatgrandma_083_setup";
+HONEY_AUDIO_MAP["you'll never know if you can play the fiddle until you pick up the bow."] = "wisdom_greatgrandma_083_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about an old dog?"] = "wisdom_greatgrandma_084_setup";
+HONEY_AUDIO_MAP["you can absolutely teach him new tricks if the treat is good enough."] = "wisdom_greatgrandma_084_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a slow learner?"] = "wisdom_greatgrandma_085_setup";
+HONEY_AUDIO_MAP["the oak tree takes its time, but it outlasts the weeds."] = "wisdom_greatgrandma_085_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about listening?"] = "wisdom_greatgrandma_086_setup";
+HONEY_AUDIO_MAP["you have two ears and one mouth for a very good reason."] = "wisdom_greatgrandma_086_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about change?"] = "wisdom_greatgrandma_087_setup";
+HONEY_AUDIO_MAP["if you don't shed your old feathers, you'll never get to grow new ones."] = "wisdom_greatgrandma_087_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about an expert?"] = "wisdom_greatgrandma_088_setup";
+HONEY_AUDIO_MAP["he's just a beginner who didn't throw in the towel."] = "wisdom_greatgrandma_088_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about looking at the stars?"] = "wisdom_greatgrandma_089_setup";
+HONEY_AUDIO_MAP["it reminds your feet how far they can actually walk."] = "wisdom_greatgrandma_089_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a curious child?"] = "wisdom_greatgrandma_090_setup";
+HONEY_AUDIO_MAP["keep him asking 'why' and he'll eventually figure out 'how'."] = "wisdom_greatgrandma_090_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about staying in your comfort zone?"] = "wisdom_greatgrandma_091_setup";
+HONEY_AUDIO_MAP["a ship in the harbor is safe, but that's not what ships are built for."] = "wisdom_greatgrandma_091_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a rough patch?"] = "wisdom_greatgrandma_092_setup";
+HONEY_AUDIO_MAP["the diamond only gets shiny after a whole lot of rubbing."] = "wisdom_greatgrandma_092_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about wisdom?"] = "wisdom_greatgrandma_093_setup";
+HONEY_AUDIO_MAP["it's the one thing you can pack in your suitcase that doesn't weigh a pound."] = "wisdom_greatgrandma_093_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about growing older?"] = "wisdom_greatgrandma_094_setup";
+HONEY_AUDIO_MAP["you aren't adding years; you're just collecting beautiful chapters."] = "wisdom_greatgrandma_094_punch";
+HONEY_AUDIO_MAP["what did great-grandma say when things were already going great?"] = "wisdom_greatgrandma_095_setup";
+HONEY_AUDIO_MAP["the cream always rises right to the top."] = "wisdom_greatgrandma_095_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a good streak of luck?"] = "wisdom_greatgrandma_096_setup";
+HONEY_AUDIO_MAP["when the wind is at your back, spread your wings and fly."] = "wisdom_greatgrandma_096_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about finding a little success?"] = "wisdom_greatgrandma_097_setup";
+HONEY_AUDIO_MAP["that's just the appetizer; the feast is still on the stove."] = "wisdom_greatgrandma_097_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a beautiful sunrise?"] = "wisdom_greatgrandma_098_setup";
+HONEY_AUDIO_MAP["the day is only going to get brighter from here."] = "wisdom_greatgrandma_098_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a small win?"] = "wisdom_greatgrandma_099_setup";
+HONEY_AUDIO_MAP["a single spark can start a whole celebration."] = "wisdom_greatgrandma_099_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a good idea?"] = "wisdom_greatgrandma_100_setup";
+HONEY_AUDIO_MAP["once the wheel starts turning, you can't stop the momentum."] = "wisdom_greatgrandma_100_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about making a little progress?"] = "wisdom_greatgrandma_101_setup";
+HONEY_AUDIO_MAP["every step forward makes the next one twice as easy."] = "wisdom_greatgrandma_101_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a joyful home?"] = "wisdom_greatgrandma_102_setup";
+HONEY_AUDIO_MAP["there's always room for more laughter under this roof."] = "wisdom_greatgrandma_102_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a sweet moment?"] = "wisdom_greatgrandma_103_setup";
+HONEY_AUDIO_MAP["honey only gets sweeter the longer it sits."] = "wisdom_greatgrandma_103_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a budding talent?"] = "wisdom_greatgrandma_104_setup";
+HONEY_AUDIO_MAP["you've got the seed, now watch the whole garden bloom."] = "wisdom_greatgrandma_104_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about catching a big fish?"] = "wisdom_greatgrandma_105_setup";
+HONEY_AUDIO_MAP["there's always a bigger one waiting out in the deep water."] = "wisdom_greatgrandma_105_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a joyful heart?"] = "wisdom_greatgrandma_106_setup";
+HONEY_AUDIO_MAP["joy is a well that never runs out of water."] = "wisdom_greatgrandma_106_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a good harvest?"] = "wisdom_greatgrandma_107_setup";
+HONEY_AUDIO_MAP["next year's barns are going to need to be twice as big."] = "wisdom_greatgrandma_107_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a clear blue sky?"] = "wisdom_greatgrandma_108_setup";
+HONEY_AUDIO_MAP["it's a wide-open road all the way to the horizon."] = "wisdom_greatgrandma_108_punch";
+HONEY_AUDIO_MAP["what did great-grandma say about a celebration?"] = "wisdom_greatgrandma_109_setup";
+HONEY_AUDIO_MAP["keep the music playing; the best song hasn't even started yet."] = "wisdom_greatgrandma_109_punch";
 /* greeting + welcome-back lines */
 HONEY_AUDIO_MAP["ah, awake again. right on time, as always."]='greet_ah_awake_again_right_on_time_as_always';
 HONEY_AUDIO_MAP["ah. right on time, somehow."]='greet_ah_right_on_time_somehow';
@@ -10762,7 +11104,7 @@ function pzTap(r,c,td){
   if(!_pzAnchor){ _pzAnchor=[r,c]; td.classList.add('sel'); pzSay("Good \u2014 now tap the last letter."); return; }
   var cells=pzLine(_pzAnchor[0],_pzAnchor[1],r,c);
   pzCell(_pzAnchor[0],_pzAnchor[1]).classList.remove('sel');
-  if(!cells){ _pzAnchor=null; pzSay("Has to be a straight line, sugar. Try again."); return; }
+  if(!cells){ _pzAnchor=null; pzSay("Has to be a straight line. Try again."); return; }
   var w=pzMatch(cells);
   if(w){
     _pzFound[w]=true;
@@ -10789,14 +11131,14 @@ function pzWin(){
     st.best[p.day]=t;
     msg = (prevBest==null) ? "You did it in "+pzFmt(t)+"." : "Your new best \u2014 "+pzFmt(t)+"!";
     cheer = rand([
-      "Woo! Look at you go, sugar!",
+      "Woo! Look at you go!",
       "That's your fastest yet! I'm so proud.",
       "Speedy! Nobody does it like you."
     ]);
   } else {
     msg = "You finished in "+pzFmt(t)+". Your best is "+pzFmt(prevBest)+".";
     cheer = rand([
-      "Well done, sweetheart! Every one found.",
+      "Well done! Every one found.",
       "There you go \u2014 all of them! Lovely.",
       "You got 'em all. That's my friend."
     ]);
