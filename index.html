@@ -6103,6 +6103,8 @@ function userSays(t){
   if(!/^(add|put|throw|jot)\b/.test(l) && /(what('s| is)?.*(shopping|grocery|groceries|store|household) list|my (shopping|grocery|groceries) list|what.*on my list|show.*(shopping|grocery|groceries) list|what do i need (to (get|buy)|from the store))/.test(l)){ showShopping(); return; }
   // view TO-DO list (and other named lists) — "what's on my to-do list", "show my to do list"
   if(!/^(add|put|throw|jot)\b/.test(l) && /(what('s| is| do i have)?.*to-?do|my to-?do|show.*to-?do|to-?do list)/.test(l)){ ensureLists(); openList("todo"); return; }
+  // view NOTES list — "show me my notes list", "what's on my notes", "open my notes"
+  if(!/^(add|put|throw|jot)\b/.test(l) && /(what('s| is| do i have)?.*notes?|my notes?|show.*notes?|open.*notes?|notes? list)/.test(l)){ ensureLists(); openList("notes"); return; }
   if(/((add|put|throw)\b.*(shopping|grocery|groceries|store|household)? ?list|to (my )?(shopping|grocery|groceries|store|household) list|need to (get|buy|pick up|grab)|need (some |more )?|pick up|out of|running low on|grab some|get some|buy some|add .* to the list)\b/.test(l)
      && /(list|store|grocer|buy|get|pick up|grab|need|out of|running low)/.test(l)
      && !/(remind|calendar|schedule|appointment|meeting)/.test(l)){ doShopping(t); return; }
