@@ -426,6 +426,10 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .agent-card{display:flex;align-items:center;gap:13px;background:var(--panel);
   border:1.5px solid var(--line);border-radius:18px;padding:13px 14px;margin-bottom:11px;}
 .agent-card.trashed{opacity:.6;}
+.agent-card.locked{opacity:.55;filter:grayscale(.7);}
+.agent-card.locked .agent-face,.agent-card.locked .agent-info{filter:grayscale(1);}
+.agent-locked-btn{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#1a1405;
+  font-weight:800;font-size:13px;white-space:nowrap;}
 .agent-face{width:54px;height:54px;border-radius:50%;flex:0 0 auto;overflow:hidden;
   background:radial-gradient(circle at 50% 35%,#2a2d3e,#14161f);display:flex;
   align-items:center;justify-content:center;font-size:26px;border:1px solid var(--line);}
@@ -504,6 +508,11 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   font-size:30px;font-weight:600;box-shadow:0 6px 18px rgba(0,0,0,.28);z-index:20;cursor:pointer;
   display:flex;align-items:center;justify-content:center;}
 .dj-fab:active{transform:scale(.94);}
+.dj-newbtn{display:block;width:100%;margin:4px 0 14px;padding:16px;border:none;border-radius:16px;
+  background:linear-gradient(180deg,var(--gold),var(--gold2));color:#1a1405;
+  font-size:19px;font-weight:800;letter-spacing:.3px;box-shadow:0 4px 14px rgba(0,0,0,.22);
+  cursor:pointer;}
+.dj-newbtn:active{transform:scale(.98);}
 .dj-monthhead{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1px;
   color:var(--muted);margin:16px 4px 8px;}
 /* two-across photo-booth grid */
@@ -992,13 +1001,13 @@ textarea{resize:none;line-height:1.4;}
 @keyframes alive{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.035) translateY(-3px)}}
 @keyframes sway{0%,100%{transform:translateX(0) rotate(0deg)}50%{transform:translateX(5px) rotate(.6deg)}}
 .ft-avatar{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;
-  font-size:170px;line-height:1;animation:alive 5s ease-in-out infinite, sway 11s ease-in-out infinite;transform-origin:center 60%;
+  font-size:170px;line-height:1;animation:alive 7s ease-in-out infinite, sway 15s ease-in-out infinite;transform-origin:center 60%;
   filter:drop-shadow(0 12px 40px rgba(0,0,0,.5));}
-.ft-bg{transform-origin:center 55%;animation:alive 5.5s ease-in-out infinite;}
-/* talking motion — a livelier bob + pulse while she speaks (looks like talking) */
-.ft-avatar.talking{animation:talkbob 0.5s ease-in-out infinite;}
-.ft-bg.talking{animation:talkbob 0.55s ease-in-out infinite;}
-@keyframes talkbob{0%,100%{transform:scale(1.0) translateY(0)}30%{transform:scale(1.025) translateY(-2px)}60%{transform:scale(1.01) translateY(1px)}}
+.ft-bg{transform-origin:center 55%;animation:alive 7.5s ease-in-out infinite;}
+/* talking motion — a gentle, slow bob while she speaks (calm, not jittery) */
+.ft-avatar.talking{animation:talkbob 1.5s ease-in-out infinite;}
+.ft-bg.talking{animation:talkbob 1.6s ease-in-out infinite;}
+@keyframes talkbob{0%,100%{transform:scale(1.0) translateY(0)}30%{transform:scale(1.02) translateY(-2px)}60%{transform:scale(1.008) translateY(1px)}}
 .ft-top{position:relative;z-index:4;display:flex;align-items:center;gap:12px;
   padding:calc(12px + var(--safe-t)) 16px 8px;}
 .ft-top .back{font-size:30px;color:#fff;width:26px;line-height:1;text-shadow:0 1px 6px rgba(0,0,0,.6);}
@@ -1681,9 +1690,9 @@ textarea{resize:none;line-height:1.4;}
   <div class="bar"><button class="back" onclick="goBack()">‹</button>
     <h2>Daily Journal</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll">
+    <button class="dj-newbtn" onclick="djNewEntry()" aria-label="New entry">＋ New Entry</button>
     <div id="djFeed"></div>
   </div>
-  <button class="dj-fab" onclick="djNewEntry()" aria-label="New entry">＋</button>
 </section>
 
 <!-- DAILY JOURNAL ENTRY EDITOR -->
@@ -1995,7 +2004,7 @@ textarea{resize:none;line-height:1.4;}
     </div>
 
     <div class="field"><label>Comedy style</label>
-      <div class="cards" id="styleCards"><button class="scard sel"><div class="em">🎙️</div><div class="nm">The Natural</div><div class="ds">Easy timing, never tries too hard</div></button><button class="scard"><div class="em">🪦</div><div class="nm">Bone Dry</div><div class="ds">Deadpan. Barely a flicker</div></button><button class="scard"><div class="em">🪑</div><div class="nm">Front Porch</div><div class="ds">Southern, slow-cooked, friendly</div></button><button class="scard"><div class="em">🧠</div><div class="nm">Smart Aleck</div><div class="ds">Knows it. Says it anyway</div></button><button class="scard"><div class="em">⚡</div><div class="nm">Wild Hair</div><div class="ds">Unpredictable, high voltage</div></button><button class="scard"><div class="em">🕶️</div><div class="nm">Throwback</div><div class="ds">Pure '80s, totally rad</div></button><button class="scard"><div class="em">🥋</div><div class="nm">Zen &amp; Funny</div><div class="ds">Calm wisdom with a wink</div></button><button class="scard"><div class="em">🔥</div><div class="nm">Roast Lord</div><div class="ds">Affectionate destruction</div></button><button class="scard"><div class="em">🏀</div><div class="nm">Locker Room</div><div class="ds">Sports brain, quick jabs</div></button><button class="scard"><div class="em">👨</div><div class="nm">Dad Mode</div><div class="ds">Groans guaranteed</div></button><button class="scard"><div class="em">🧣</div><div class="nm">True North</div><div class="ds">Cold hands, warm jokes, eh</div></button><button class="scard"><div class="em">🪿</div><div class="nm">Snob Bird</div><div class="ds">Canadian, polite, and judging you</div></button></div>
+      <div class="cards" id="styleCards"><button class="scard sel"><div class="em">🎙️</div><div class="nm">The Natural</div><div class="ds">Easy timing, never tries too hard</div></button><button class="scard"><div class="em">🪦</div><div class="nm">Bone Dry</div><div class="ds">Deadpan zingers, straight face, big grin</div></button><button class="scard"><div class="em">🪑</div><div class="nm">Front Porch</div><div class="ds">Southern, slow-cooked, friendly</div></button><button class="scard"><div class="em">🧠</div><div class="nm">Smart Aleck</div><div class="ds">Knows it. Says it anyway</div></button><button class="scard"><div class="em">⚡</div><div class="nm">Wild Hair</div><div class="ds">Unpredictable, high voltage</div></button><button class="scard"><div class="em">🕶️</div><div class="nm">Throwback</div><div class="ds">Pure '80s, totally rad</div></button><button class="scard"><div class="em">🥋</div><div class="nm">Zen &amp; Funny</div><div class="ds">Calm wisdom with a wink</div></button><button class="scard"><div class="em">🔥</div><div class="nm">Roast Lord</div><div class="ds">Affectionate destruction</div></button><button class="scard"><div class="em">🏀</div><div class="nm">Locker Room</div><div class="ds">Sports brain, quick jabs</div></button><button class="scard"><div class="em">👨</div><div class="nm">Dad Mode</div><div class="ds">Groans guaranteed</div></button><button class="scard"><div class="em">🧣</div><div class="nm">True North</div><div class="ds">Cold hands, warm jokes, eh</div></button><button class="scard"><div class="em">🪿</div><div class="nm">Snob Bird</div><div class="ds">Canadian, polite, and judging you</div></button></div>
     </div>
 
     <div class="row2">
@@ -5306,7 +5315,7 @@ function importBackup(file){
 }
 var STYLES=[
   {k:"natural",     nm:"The Natural",   em:"\ud83c\udf99\ufe0f", ds:"Easy timing, never tries too hard", cats:["front_porch"]},
-  {k:"bone_dry",    nm:"Bone Dry",      em:"\ud83e\udea6", ds:"Deadpan. Barely a flicker", cats:["dry_toast","dry_toast_office","straight_face"]},
+  {k:"bone_dry",    nm:"Bone Dry",      em:"\ud83e\udea6", ds:"Deadpan zingers, straight face, big grin", cats:["dry_toast","dry_toast_office","straight_face"]},
   {k:"front_porch", nm:"Front Porch",   em:"\ud83e\ude91", ds:"Southern, slow-cooked, friendly", cats:["front_porch"]},
   {k:"smart_aleck", nm:"Smart Aleck",   em:"\ud83e\udde0", ds:"Knows it. Says it anyway", cats:["smart_aleck"]},
   {k:"wild_hair",   nm:"Wild Hair",     em:"\u26a1", ds:"Unpredictable, high voltage", cats:["wild_hair","wild_hair","wild_hair","redneck_genius"]},
@@ -5317,7 +5326,7 @@ var STYLES=[
   {k:"dad_mode",    nm:"Dad Mode",      em:"\ud83d\udc68", ds:"Groans guaranteed", cats:["dad_jokes"]},
   {k:"true_north",  nm:"True North",    em:"\ud83e\udde3", ds:"Cold hands, warm jokes, eh", cats:["northerner"]},
   {k:"snob_bird",   nm:"Snob Bird",     em:"\ud83e\udebf", ds:"Canadian, polite, and judging you", cats:["snob_bird"]},
-  {k:"cat",         nm:"Cat Logic",     em:"\ud83d\udc31", ds:"He owns the house. You just pay for it", cats:["cat"]},
+  {k:"cat",         nm:"A Cat's Logic",     em:"\ud83d\udc31", ds:"He owns the house. You just pay for it", cats:["cat"]},
   {k:"good_dog",    nm:"Good Dog",      em:"\ud83d\udc36", ds:"Thrilled you came home. It's been minutes", cats:["dog"]},
   {k:"gone_fishing",nm:"Gone Fishing",  em:"\ud83d\udc1f", ds:"The one that got away, and other true stories", cats:["fish"]},
   {k:"great_grandma",nm:"Great-Grandma", em:"\ud83c\udf3b", ds:"Front-porch wisdom, passed down warm", cats:["wisdom_greatgrandma"]}
@@ -5358,14 +5367,19 @@ var WELCOME_BACK={
   Wholesome:["Hi friend, welcome back. I'm so glad you returned.","Aw, you came back. That made my whole day, thank you.","Hey you. Good to have you back — really."],
   Mysterious:["You returned. I had a feeling you would.","Welcome back. I never fully sleep, you know.","Ah, awake again. Right on time, as always."]
 };
-var SETUP_LINE={
-  Warm:"Alright, here's one for you —",
-  Flirty:"Okay, just for you —",
-  Sarcastic:"Brace yourself, comedy incoming —",
-  Chill:"So, no pressure, but —",
-  Hyper:"OKAY OKAY listen to this one —",
-  Wholesome:"Here's a little something —",
-  Mysterious:"Lean in for this one…"
+/* Pre-joke intro lines. Only these 7 have recorded Honey clips, so every
+   line here MUST be one of the 7 (any other text would play silently).
+   Each personality gets a POOL that leads with its own line but mixes in a
+   few others that fit its tone — so Honey doesn't repeat the same lead-in
+   over and over. tellJoke() picks one at random from the pool. */
+var SETUP_LINES={
+  Warm:["Alright, here's one for you —","Here's a little something —","So, no pressure, but —","Lean in for this one…"],
+  Flirty:["Okay, just for you —","Lean in for this one…","Alright, here's one for you —","So, no pressure, but —"],
+  Sarcastic:["Brace yourself, comedy incoming —","OKAY OKAY listen to this one —","So, no pressure, but —","Alright, here's one for you —"],
+  Chill:["So, no pressure, but —","Here's a little something —","Alright, here's one for you —","Lean in for this one…"],
+  Hyper:["OKAY OKAY listen to this one —","Brace yourself, comedy incoming —","Alright, here's one for you —","Okay, just for you —"],
+  Wholesome:["Here's a little something —","Alright, here's one for you —","So, no pressure, but —","Lean in for this one…"],
+  Mysterious:["Lean in for this one…","Here's a little something —","Alright, here's one for you —","So, no pressure, but —"]
 };
 
 /* ════ NAV ════ */
@@ -5639,7 +5653,7 @@ function enterChat(){
       if(!coming && !S.isSelf && honeyNeedsSetup()){
         // BOX FIRST — pop the "Set up my Honey" invite up top, so it's already there
         // when Honey references it, and it can't drop in mid-sentence and cut her off.
-        setTimeout(()=>{ showSetupInvite(); resetIdle(); }, 1100);
+        setTimeout(()=>{ showSetupInvite(); resetIdle(); }, 1400);
         // THEN Honey says her lines (nothing interrupts — the box is already placed)
         setTimeout(()=>{ themTyping(()=>{
           // Paragraph 1 — intro
@@ -5655,14 +5669,14 @@ function enterChat(){
               var tellIt = function(){ try{ tellJoke(false,null,true,ONBOARD_JOKE); }catch(e){} };
               if(S.speakerOn){
                 // noPre=true: she already said "I'll tell you one:" — no double announcement
-                enqueueSpeak("\u0000CLIP:onboard_reactions\u0001And see those little taps just above where you type? The thumbs up, thumbs down, question mark, and heart — use those to react anytime, quick and easy. Here, let me show you. I'll tell you one:", function(){ setTimeout(tellIt, 1000); });
-              } else { setTimeout(tellIt, 1200); }
+                enqueueSpeak("\u0000CLIP:onboard_reactions\u0001And see those little taps just above where you type? The thumbs up, thumbs down, question mark, and heart — use those to react anytime, quick and easy. Here, let me show you. I'll tell you one:", function(){ setTimeout(tellIt, 1600); });
+              } else { setTimeout(tellIt, 1800); }
             });
           };
           if(S.speakerOn){
-            enqueueSpeak("\u0000CLIP:onboard_intro\u0001Oh, one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap change your Honey up top anytime.", function(){ setTimeout(sayPara2, 1100); });
-          } else { setTimeout(sayPara2, 1400); }
-        }); }, 2600);
+            enqueueSpeak("\u0000CLIP:onboard_intro\u0001Oh, one thing before we get cozy: I'm your Honey. Want to give me a name and a face, so I'm really yours? Tap change your Honey up top anytime.", function(){ setTimeout(sayPara2, 1900); });
+          } else { setTimeout(sayPara2, 2400); }
+        }); }, 3200);
       }
     }); },900);
   },700);
@@ -6105,7 +6119,8 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
 
 function tellJoke(surprise,forceCat,noPre,fixedJoke){
   themTyping(()=>{
-    var pre=SETUP_LINE[S.vibe];
+    var _pool = SETUP_LINES[S.vibe] || SETUP_LINES.Warm;
+    var pre = rand(_pool);
     setTimeout(()=>{
       themTyping(()=>{ var j = fixedJoke ? {s:fixedJoke.s, p:fixedJoke.p, ci:fixedJoke.ci} : getJoke(surprise,forceCat);
         j.roast = (forceCat===catIdx("roast_master") && S.vibe!=='Sarcastic');
@@ -6208,9 +6223,14 @@ function userSays(t){
     // play RIGHT NOW on the tap (delayed playback gets autoplay-blocked)
     S.speakerOn=true;
     enqueueSpeak("\u0000CLIP:"+cat+"_"+String(fidx+1).padStart(2,'0')+"\u0001"+arr[fidx]);
+    // mark THIS fact as the current shareable/loveable item so Share/♥ target it,
+    // not whatever joke came before it (was defaulting to the stale last joke)
+    S.lastShareable={ text:arr[fidx], kind:'fact' };
+    S.lastWasJoke=false; S.lastJoke=null;
     themTyping(()=>{
       pushThemText(vibeColor(arr[fidx]));
       pushAction("🔊 Read it aloud", null, false, null, function(){ replayClip(cat+"_"+String(fidx+1).padStart(2,'0'), arr[fidx]); });
+      pushAction("📤 Share this fact", null, false, null, function(){ openLoveShare(arr[fidx], 'fact'); });
     });
     return;
   }
@@ -6987,7 +7007,7 @@ function renderJournalFeed(){
   var feed=document.getElementById('djFeed'); if(!feed) return;
   var entries=(SETTINGS.journal||[]).slice().sort(function(a,b){ return b.when-a.when; });
   if(!entries.length){
-    feed.innerHTML='<div class="dj-empty">Your journal is empty.<br><br>Tap the ＋ to write your first entry —<br>add a photo, a title, and a little about your day. 🍯</div>';
+    feed.innerHTML='<div class="dj-empty">Your journal is empty.<br><br>Tap ＋ New Entry up top to start —<br>add a photo, a title, and a little about your day. 🍯</div>';
     return;
   }
   var html='', lastMonth='', inGrid=false;
@@ -11344,11 +11364,11 @@ function openLovedQuick(){
    feel cheated — and Apple asks questions. */
 var TIER_INFO=[
   { id:"pint",   mo:"Free", yr:"", life:"", tag:"You're here",
-    feats:["Honey's own voice, always","Talk & swap jokes anytime","A verse or a prayer you can share","20 phrases in every language","Journal & mood check-ins","Calendars & lists","1 friend"] },
+    feats:["Honey's own voice, always","Talk & swap jokes anytime","Share verses, pics & videos — unlimited","A little language practice to enjoy","Word puzzles & fun memory games","Interactive journal & emoji mood check-ins","Steps, sleep & wellness — with Apple Health (soon)","Create calendars & call on lists","1 friend"] },
   { id:"quart",  mo:"$8.99/mo", yr:"$59/yr — save 45%", life:"$59/yr — locked & guaranteed", tag:"Most popular",
-    feats:["Everything in Pint","Honey remembers you","Her richer, gentle voices","Every phrase, every language","She answers in her own words","Bring photos to life — 2 videos a week","A little circle — two friends"] },
+    feats:["Everything in Pint","Honey AI remembers you","Her richer, gentle voices","Premium AI voices spoken like a friend","More language practice, always growing","She answers in her own words","Bring photos & videos to life with AI","Two friends"] },
   { id:"gallon", mo:"$16.99/mo", yr:"$119/yr — save 42%", life:"$119/yr — locked & guaranteed", tag:"Everybody wants a Gallon",
-    feats:["Everything in Quart","Honey at her most lifelike","New language packs, free — always","Record your own keepsakes","5 AI videos a week","Three friends in your circle"] }
+    feats:["Everything in Quart","Honey AI at her most lifelike","Clone and enjoy your own AI voice","Enjoy Premium AI voices for chat, story time & interactive games","New story, journal & language packs, free — always","Record & save your own keepsakes","More AI photo & videos to share!","Three friends"] }
 ];
 function openTiers(){
   document.getElementById('welcome').classList.remove('sleeping','waking');
@@ -11673,6 +11693,10 @@ function newAgentFlow(asSelf){
   // tier friend limit (the "self" / first friend is always allowed)
   var lim=tier().friends;
   if(lim>=0) lim += (SETTINGS.perks&&SETTINGS.perks.extraFriends)||0;
+  // First-week taste: everyone gets the full Gallon circle (3 friends) to enjoy.
+  // After the trial, extra friends aren't deleted — they show darkened/locked
+  // until they upgrade (see renderFriendRoster).
+  if(lim>=0 && trialActive() && lim<TIERS.gallon.friends) lim=TIERS.gallon.friends;
   if(!asSelf && lim>=0 && activeAgents().length>=lim){
     toast("That's all the friends a "+tierName()+" holds. Pour a bigger size for more. 🍯");
     openTiers(); return;
@@ -11746,7 +11770,16 @@ function renderRoster(){
   var live=activeAgents().slice().sort((a,b)=>(b.isSelf?1:0)-(a.isSelf?1:0)), gone=trashedAgents();
   var list=document.getElementById('rosterList'); list.innerHTML='';
   document.getElementById('rosterEmpty').style.display=(live.length||gone.length)?'none':'block';
-  live.forEach(a=>list.appendChild(agentCard(a,false)));
+  // Which friends are beyond what the current tier holds? Those made during the
+  // free week stay VISIBLE but darkened/locked once the trial ends — never deleted.
+  var lim=tier().friends;
+  if(lim>=0) lim += (SETTINGS.perks&&SETTINGS.perks.extraFriends)||0;
+  if(lim>=0 && trialActive() && lim<TIERS.gallon.friends) lim=TIERS.gallon.friends;
+  live.forEach(function(a,i){
+    // self + the first (lim) friends are unlocked; the rest are locked (over limit)
+    var locked = (lim>=0 && !a.isSelf && i>=lim);
+    list.appendChild(agentCard(a,false,locked));
+  });
   var th=document.getElementById('trashHead'), tl=document.getElementById('trashList');
   tl.innerHTML='';
   if(gone.length){ th.style.display='flex'; gone.forEach(a=>tl.appendChild(agentCard(a,true))); }
@@ -11757,8 +11790,8 @@ function agentFaceHTML(a){
   if(a.noFace) return potFaceHTML();
   return a.avatar || (a.gender==='F'?'👩':a.gender==='M'?'👨':'🧑');
 }
-function agentCard(a,trashed){
-  var c=document.createElement('div'); c.className='agent-card'+(trashed?' trashed':'');
+function agentCard(a,trashed,locked){
+  var c=document.createElement('div'); c.className='agent-card'+(trashed?' trashed':'')+(locked?' locked':'');
   var meta=(a.isSelf?'You · ':'')+(STYLES[a.style]?STYLES[a.style].nm:'')+' · '+a.vibe+(a.age?' · '+a.age:'');
   var face='<div class="agent-face'+(a.photo?' has-photo':'')+'">'+agentFaceHTML(a)+'</div>';
   var info='<div class="agent-info"><div class="nm">'+esc(a.name||'Unnamed')+(a.isSelf?' <span class="self-badge">self</span>':'')+'</div><div class="meta">'+esc(meta)+'</div></div>';
@@ -11768,6 +11801,9 @@ function agentCard(a,trashed){
       '<button class="icon-btn icon-del" title="Delete">🗑</button></div>';
     c.querySelector('.icon-restore').onclick=()=>{ recoverAgent(a.id); toast(esc(a.name)+' recovered.'); renderRoster(); };
     c.querySelector('.icon-del').onclick=()=>{ deleteAgentForever(a.id); toast('Deleted permanently.'); renderRoster(); };
+  } else if(locked){
+    c.innerHTML=face+info+'<button class="agent-call agent-locked-btn">🔒 Upgrade to keep</button>';
+    c.querySelector('.agent-locked-btn').onclick=()=>openTiers();
   } else {
     c.innerHTML=face+info+
       '<button class="agent-call">Call</button>'+
