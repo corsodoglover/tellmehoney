@@ -503,6 +503,13 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .jc-tx{display:flex;flex-direction:column;gap:3px;}
 .jc-tx b{font-size:16.5px;color:var(--ink,inherit);}
 .jc-tx small{font-size:13px;color:var(--muted);line-height:1.35;}
+.jc-sectlabel{font-family:var(--body);font-size:12px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--dim);margin:20px 4px 10px;font-weight:700;}
+.jc-cardghost{background:transparent;border-style:dashed;opacity:.9;}
+.store-owned-note{background:color-mix(in srgb, var(--gold) 12%, var(--panel2));
+  border:1px solid color-mix(in srgb, var(--gold) 26%, var(--line));border-radius:14px;
+  padding:13px 15px;margin:4px 0 12px;font-size:14px;color:var(--ink);cursor:pointer;line-height:1.5;}
+.store-owned-note b{color:var(--gold2);}
 .dj-fab{position:absolute;right:18px;bottom:calc(20px + var(--safe-b));width:58px;height:58px;
   border-radius:50%;background:linear-gradient(180deg,var(--gold),var(--gold2));color:#1a1405;
   font-size:30px;font-weight:600;box-shadow:0 6px 18px rgba(0,0,0,.28);z-index:20;cursor:pointer;
@@ -536,6 +543,19 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .dj-empty{text-align:center;color:var(--muted);padding:40px 20px;font-size:15px;line-height:1.6;
   grid-column:1 / -1;}
 .dj-photostrip{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;}
+.dj-doodlebtn{display:block;width:100%;margin:4px 0 12px;padding:12px;border:1.5px dashed var(--line);
+  border-radius:14px;background:transparent;color:var(--ink,#3a3220);font-size:16px;font-weight:700;cursor:pointer;}
+.dj-doodlebtn:active{transform:scale(.98);}
+.dj-doodlewrap{margin:4px 0 14px;}
+.dj-doodlecanvas{width:100%;height:auto;aspect-ratio:5/3;background:#fffdf8;border:1.5px solid var(--line);
+  border-radius:14px;touch-action:none;display:block;cursor:crosshair;}
+.dj-doodlebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;}
+.dj-dcolor{width:30px;height:30px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px var(--line);
+  cursor:pointer;padding:0;flex:0 0 auto;}
+.dj-dcolor.sel{box-shadow:0 0 0 2.5px var(--gold);transform:scale(1.12);}
+.dj-dtool{padding:9px 13px;border:1.5px solid var(--line);border-radius:12px;background:var(--panel);
+  color:var(--ink,#3a3220);font-size:14px;font-weight:700;cursor:pointer;}
+.dj-dsave{margin-left:auto;background:linear-gradient(180deg,var(--gold),var(--gold2));color:#1a1405;border:none;}
 .dj-photostrip .dj-ph{position:relative;flex:0 0 auto;}
 .dj-photostrip img{height:120px;border-radius:12px;display:block;}
 .dj-photostrip .dj-phx{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;
@@ -1217,6 +1237,62 @@ textarea{resize:none;line-height:1.4;}
 .store-note{text-align:center;color:var(--dim);font-size:13px;padding:0 16px 10px;}
 .store-h{font-family:var(--display);font-size:17px;color:var(--ink);margin:18px 4px 2px;}
 .store-sub{color:var(--dim);font-size:13px;margin:0 4px 10px;}
+/* ── Devotional journal reader — elegant, theme-aware (uses skin variables) ── */
+.dev-scroll{height:100%;overflow-y:auto;padding:0 20px calc(30px + var(--safe-b));
+  background:
+    radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(--gold) 14%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--panel2), var(--bg));}
+.dev-progresswrap{height:5px;border-radius:4px;background:var(--line);margin:8px 2px 14px;overflow:hidden;}
+.dev-progressbar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--gold2));
+  width:0;transition:width .4s ease;}
+.dev-daynum{text-align:center;font-family:var(--body);font-size:12.5px;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--dim);margin-bottom:6px;}
+.dev-page{background:var(--panel);border:1px solid var(--line);border-radius:var(--r,22px);
+  padding:26px 22px 24px;box-shadow:0 10px 34px rgba(0,0,0,.10);}
+.dev-daytitle{font-family:var(--display);font-size:27px;line-height:1.2;color:var(--ink);
+  text-align:center;margin:2px 0 20px;font-weight:600;}
+.dev-daytitle::after{content:"";display:block;width:44px;height:2px;margin:14px auto 0;
+  background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;}
+.dev-verse{position:relative;background:color-mix(in srgb, var(--gold) 9%, var(--panel));
+  border:1px solid color-mix(in srgb, var(--gold) 30%, var(--line));border-radius:var(--rs,14px);
+  padding:20px 20px 16px;margin-bottom:20px;text-align:center;}
+.dev-verse .qmark{font-family:var(--display);font-size:44px;line-height:0;color:var(--gold);
+  opacity:.5;display:block;height:22px;}
+.dev-verse .vtext{font-family:var(--display);font-style:italic;font-size:18px;line-height:1.55;
+  color:var(--ink);margin:4px 6px 10px;}
+.dev-verse .vref{font-family:var(--body);font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--gold2);font-weight:700;}
+.dev-reflection{font-family:var(--body);font-size:16.5px;line-height:1.72;color:var(--ink);
+  margin-bottom:20px;}
+.dev-honey{display:flex;gap:11px;align-items:flex-start;
+  background:color-mix(in srgb, var(--gold) 12%, var(--panel2));
+  border:1px solid color-mix(in srgb, var(--gold) 22%, var(--line));
+  border-radius:var(--rs,14px);padding:15px 16px;margin-bottom:22px;}
+.dev-honey .hpot{font-size:22px;line-height:1.3;flex:0 0 auto;}
+.dev-honey .htext{font-family:var(--body);font-size:15px;line-height:1.6;color:var(--ink);}
+.dev-honey .htext b{color:var(--gold2);}
+.dev-prompt-label{font-family:var(--body);font-size:12.5px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold2);font-weight:700;margin-bottom:8px;}
+.dev-prompt{font-family:var(--display);font-size:18px;line-height:1.5;color:var(--ink);
+  font-style:italic;margin-bottom:16px;}
+.dev-writebox{width:100%;min-height:130px;background:var(--panel2);color:var(--ink);
+  border:1px solid var(--line);border-radius:var(--rs,14px);padding:15px;font-family:var(--body);
+  font-size:16px;line-height:1.6;resize:vertical;box-sizing:border-box;}
+.dev-writebox::placeholder{color:var(--dim);font-style:italic;}
+.dev-saverow{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;}
+.dev-savednote{font-size:13px;color:var(--gold2);font-weight:700;opacity:0;transition:opacity .3s;}
+.dev-savednote.show{opacity:1;}
+.dev-doodlebtn2,.dev-savebtn{border:none;border-radius:12px;padding:11px 16px;font-size:14.5px;
+  font-weight:800;cursor:pointer;}
+.dev-doodlebtn2{background:transparent;border:1.5px dashed color-mix(in srgb, var(--gold) 45%, var(--line));
+  color:var(--ink);}
+.dev-savebtn{background:linear-gradient(180deg,var(--gold),var(--gold2));color:var(--on-accent);margin-left:auto;}
+.dev-nav{display:flex;gap:12px;margin-top:20px;}
+.dev-navbtn{flex:1;padding:15px;border-radius:16px;border:1.5px solid var(--line);background:var(--panel);
+  color:var(--ink);font-size:16px;font-weight:800;cursor:pointer;}
+.dev-navbtn:disabled{opacity:.4;}
+.dev-navnext{background:linear-gradient(180deg,var(--gold),var(--gold2));color:var(--on-accent);border:none;}
+.dev-doodlewrap2{margin:12px 0 4px;}
 .store-list{display:flex;flex-direction:column;gap:10px;}
 .store-card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;
   padding:14px;display:flex;align-items:center;gap:12px;}
@@ -1682,6 +1758,7 @@ textarea{resize:none;line-height:1.4;}
       <span class="jc-ic">📔</span>
       <span class="jc-tx"><b>Daily Journal</b><small>Write your day — add a photo, a title, your thoughts.</small></span>
     </button>
+    <div id="jcDevotionals"></div>
   </div>
 </section>
 
@@ -1708,6 +1785,22 @@ textarea{resize:none;line-height:1.4;}
     <span id="djDateLabel" class="dj-datelabel"></span>
     <input id="djTitle" class="dj-titlefield" placeholder="Title">
     <textarea id="djBody" class="dj-bodyfield" placeholder="Write about your day… (tap the 🎤 on your keyboard to talk instead of type)" rows="10"></textarea>
+
+    <!-- Doodle pad -->
+    <button id="djDoodleToggle" class="dj-doodlebtn" onclick="djToggleDoodle()">✏️ Add a doodle</button>
+    <div id="djDoodleWrap" class="dj-doodlewrap" style="display:none">
+      <canvas id="djDoodleCanvas" class="dj-doodlecanvas" width="600" height="360"></canvas>
+      <div class="dj-doodlebar">
+        <button class="dj-dcolor" data-color="#3a3220" style="background:#3a3220" onclick="djDoodleColor('#3a3220',this)" aria-label="Dark"></button>
+        <button class="dj-dcolor" data-color="#B9561F" style="background:#B9561F" onclick="djDoodleColor('#B9561F',this)" aria-label="Rust"></button>
+        <button class="dj-dcolor" data-color="#BE9E57" style="background:#BE9E57" onclick="djDoodleColor('#BE9E57',this)" aria-label="Gold"></button>
+        <button class="dj-dcolor" data-color="#5b8cff" style="background:#5b8cff" onclick="djDoodleColor('#5b8cff',this)" aria-label="Blue"></button>
+        <button class="dj-dcolor" data-color="#34c759" style="background:#34c759" onclick="djDoodleColor('#34c759',this)" aria-label="Green"></button>
+        <button class="dj-dtool" onclick="djDoodleErase(this)">Eraser</button>
+        <button class="dj-dtool" onclick="djDoodleClear()">Clear</button>
+        <button class="dj-dtool dj-dsave" onclick="djDoodleSave()">Add to entry</button>
+      </div>
+    </div>
 
     <!-- Honey's writing prompt (shows when tapped) -->
     <div id="djPromptBox" class="dj-promptbox" style="display:none"></div>
@@ -1800,6 +1893,10 @@ textarea{resize:none;line-height:1.4;}
     <div class="store-bal" id="storeBal"></div>
     <div class="store-note" id="storeTierNote"></div>
 
+    <h3 class="store-h">📚 Books &amp; Journals</h3>
+    <div class="store-sub">Guided devotional journals — read a page a day, and write your heart.</div>
+    <div class="store-list" id="storeBooks"></div>
+
     <h3 class="store-h">🗣️ Language Packs</h3>
     <div class="store-sub" id="storeLangSub"></div>
     <div class="store-list" id="storePacks"></div>
@@ -1807,10 +1904,24 @@ textarea{resize:none;line-height:1.4;}
     <h3 class="store-h">🎬 Video Top-Ups</h3>
     <div class="store-sub">Extra AI videos, on top of your weekly ones.</div>
     <div class="store-list" id="storeVideo"></div>
+  </div>
+</section>
 
-    <h3 class="store-h">📚 Books &amp; Journals</h3>
-    <div class="store-sub">Coming soon — Honey&#39;s books and printable journals.</div>
-    <div class="store-list" id="storeBooks"></div>
+<!-- DEVOTIONAL JOURNAL READER -->
+<section class="screen" id="devReader">
+  <div class="bar">
+    <button class="back" onclick="devClose()">‹</button>
+    <h2 id="devReaderTitle">Journal</h2>
+    <span style="width:40px"></span>
+  </div>
+  <div class="dev-scroll" id="devScroll">
+    <div class="dev-progresswrap"><div class="dev-progressbar" id="devProgressBar"></div></div>
+    <div class="dev-daynum" id="devDayNum">Day 1 of 30</div>
+    <div class="dev-page" id="devPage"><!-- filled by devRenderDay --></div>
+    <div class="dev-nav">
+      <button class="dev-navbtn" id="devPrevBtn" onclick="devPrevDay()">‹ Back</button>
+      <button class="dev-navbtn dev-navnext" id="devNextBtn" onclick="devNextDay()">Next ›</button>
+    </div>
   </div>
 </section>
 
@@ -4463,8 +4574,8 @@ function setTab(id){
 
 var PACKS = [
   {id:"lang_travel",   em:"✈️", nm:"Travel Talk",     ds:"Airports, hotels, ordering dinner abroad", coins:300, usd:"2.99", kind:"lang"},
-  {id:"lang_grandkids",em:"🧸", nm:"Grandkid Words",  ds:"Sweet little phrases to say to the babies", coins:300, usd:"2.99", kind:"lang"},
-  {id:"lang_church",   em:"⛪", nm:"Sunday Words",    ds:"Blessings, greetings, and grace",           coins:300, usd:"2.99", kind:"lang"},
+  {id:"lang_grandkids",em:"🧸", nm:"Kid Words",       ds:"Sweet little phrases for the little ones",  coins:300, usd:"2.99", kind:"lang"},
+  {id:"lang_church",   em:"⛪", nm:"Blessings & Grace", ds:"Blessings, greetings, and grace",           coins:300, usd:"2.99", kind:"lang"},
   {id:"lang_kitchen",  em:"🍳", nm:"Kitchen Table",   ds:"Cooking, sharing, and second helpings",     coins:300, usd:"2.99", kind:"lang"}
 ];
 
@@ -4550,10 +4661,35 @@ function renderStore(){
   }
 
   var books = document.getElementById('storeBooks');
-  books.innerHTML = '<div class="store-card"><div class="sc-em">📖</div>'
+  books.innerHTML='';
+  // Devotional journals FOR SALE. Once purchased, a journal leaves this shelf and
+  // lives in the Journal area ("its shelf"). Test build: "Try free" stands in for Apple purchase.
+  var forSale=Object.keys(JOURNALS).filter(function(jid){ return !ownsJournal(jid); });
+  forSale.forEach(function(jid){
+    var j=JOURNALS[jid];
+    books.innerHTML += '<div class="store-card"><div class="sc-em">'+j.em+'</div>'
+      + '<div class="sc-mid"><div class="sc-nm">'+esc(j.title)+'</div>'
+      + '<div class="sc-ds">'+esc(j.sub)+' \u00b7 '+j.days.length+' days</div></div>'
+      + '<div class="sc-buy"><button class="sc-btn" onclick="devTestUnlock(\''+jid+'\')">Try free</button></div></div>';
+  });
+  // little note pointing owners to their shelf
+  var ownedCount=Object.keys(JOURNALS).filter(function(jid){ return ownsJournal(jid); }).length;
+  if(ownedCount){
+    books.innerHTML += '<div class="store-owned-note" onclick="openJournalChoice()">\ud83c\udf3f You own '
+      + ownedCount + ' journal'+(ownedCount>1?'s':'')+' \u2014 open '+(ownedCount>1?'them':'it')
+      + ' anytime in your <b>Journal</b>. Tap here \u203a</div>';
+  }
+  books.innerHTML += '<div class="store-card"><div class="sc-em">\ud83d\udcd6</div>'
     + '<div class="sc-mid"><div class="sc-nm">Honey Over Money</div>'
     + '<div class="sc-ds">Verses, word searches, and a little sass</div></div>'
     + '<div class="sc-buy"><button class="sc-btn" disabled>Soon</button></div></div>';
+}
+function devTestUnlock(jid){
+  grantJournal(jid);
+  var j=JOURNALS[jid];
+  toast((j?j.title:'Journal')+" is on your shelf \ud83c\udf3f");
+  renderStore();
+  setTimeout(function(){ devOpen(jid); }, 500);
 }
 
 function buyVideoTopup(n, coins){
@@ -4600,7 +4736,14 @@ var VERSES={
  {r:"Ecclesiastes 7:8",t:"Better is the end of a thing than the beginning thereof: and the patient in spirit is better than the proud in spirit."},
  {r:"Psalm 37:7",t:"Rest in the LORD, and wait patiently for him."},
  {r:"Romans 8:25",t:"But if we hope for that we see not, then do we with patience wait for it."},
- {r:"Isaiah 40:31",t:"But they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary; and they shall walk, and not faint."}],
+ {r:"Isaiah 40:31",t:"But they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary; and they shall walk, and not faint."},
+ {r:"Psalm 27:14",t:"Wait on the LORD: be of good courage, and he shall strengthen thine heart: wait, I say, on the LORD."},
+ {r:"Lamentations 3:25",t:"The LORD is good unto them that wait for him, to the soul that seeketh him."},
+ {r:"Psalm 40:1",t:"I waited patiently for the LORD; and he inclined unto me, and heard my cry."},
+ {r:"Habakkuk 2:3",t:"For the vision is yet for an appointed time, but at the end it shall speak, and not lie: though it tarry, wait for it; because it will surely come, it will not tarry."},
+ {r:"James 5:7",t:"Be patient therefore, brethren, unto the coming of the Lord. Behold, the husbandman waiteth for the precious fruit of the earth, and hath long patience for it."},
+ {r:"Psalm 130:5",t:"I wait for the LORD, my soul doth wait, and in his word do I hope."},
+ {r:"Colossians 1:11",t:"Strengthened with all might, according to his glorious power, unto all patience and longsuffering with joyfulness."}],
 "Kindness":[
  {r:"Ephesians 4:32",t:"And be ye kind one to another, tenderhearted, forgiving one another, even as God for Christ's sake hath forgiven you."},
  {r:"Proverbs 11:17",t:"The merciful man doeth good to his own soul: but he that is cruel troubleth his own flesh."},
@@ -4617,7 +4760,14 @@ var VERSES={
  {r:"Psalm 118:24",t:"This is the day which the LORD hath made; we will rejoice and be glad in it."},
  {r:"John 16:24",t:"Ask, and ye shall receive, that your joy may be full."},
  {r:"Psalm 126:5",t:"They that sow in tears shall reap in joy."},
- {r:"Galatians 5:22-23",t:"But the fruit of the Spirit is love, joy, peace, longsuffering, gentleness, goodness, faith, meekness, temperance: against such there is no law."}],
+ {r:"Galatians 5:22-23",t:"But the fruit of the Spirit is love, joy, peace, longsuffering, gentleness, goodness, faith, meekness, temperance: against such there is no law."},
+ {r:"Psalm 28:7",t:"The LORD is my strength and my shield; my heart trusted in him, and I am helped: therefore my heart greatly rejoiceth; and with my song will I praise him."},
+ {r:"Isaiah 55:12",t:"For ye shall go out with joy, and be led forth with peace: the mountains and the hills shall break forth before you into singing."},
+ {r:"Romans 15:13",t:"Now the God of hope fill you with all joy and peace in believing, that ye may abound in hope, through the power of the Holy Ghost."},
+ {r:"Psalm 5:11",t:"But let all those that put their trust in thee rejoice: let them ever shout for joy, because thou defendest them."},
+ {r:"John 15:11",t:"These things have I spoken unto you, that my joy might remain in you, and that your joy might be full."},
+ {r:"Psalm 100:1-2",t:"Make a joyful noise unto the LORD, all ye lands. Serve the LORD with gladness: come before his presence with singing."},
+ {r:"1 Peter 1:8",t:"Whom having not seen, ye love; in whom, though now ye see him not, yet believing, ye rejoice with joy unspeakable and full of glory."}],
 "Sorrow & Comfort":[
  {r:"Psalm 34:18",t:"The LORD is nigh unto them that are of a broken heart; and saveth such as be of a contrite spirit."},
  {r:"Matthew 5:4",t:"Blessed are they that mourn: for they shall be comforted."},
@@ -4626,7 +4776,14 @@ var VERSES={
  {r:"Psalm 23:4",t:"Yea, though I walk through the valley of the shadow of death, I will fear no evil: for thou art with me; thy rod and thy staff they comfort me."},
  {r:"Isaiah 41:10",t:"Fear thou not; for I am with thee: be not dismayed; for I am thy God: I will strengthen thee; yea, I will help thee."},
  {r:"John 14:27",t:"Peace I leave with you, my peace I give unto you: let not your heart be troubled, neither let it be afraid."},
- {r:"Revelation 21:4",t:"And God shall wipe away all tears from their eyes; and there shall be no more death, neither sorrow, nor crying, neither shall there be any more pain."}],
+ {r:"Revelation 21:4",t:"And God shall wipe away all tears from their eyes; and there shall be no more death, neither sorrow, nor crying, neither shall there be any more pain: for the former things are passed away."},
+ {r:"Psalm 30:5",t:"For his anger endureth but a moment; in his favour is life: weeping may endure for a night, but joy cometh in the morning."},
+ {r:"2 Corinthians 4:17",t:"For our light affliction, which is but for a moment, worketh for us a far more exceeding and eternal weight of glory."},
+ {r:"Psalm 42:11",t:"Why art thou cast down, O my soul? and why art thou disquieted within me? hope thou in God: for I shall yet praise him, who is the health of my countenance, and my God."},
+ {r:"Psalm 55:22",t:"Cast thy burden upon the LORD, and he shall sustain thee: he shall never suffer the righteous to be moved."},
+ {r:"Isaiah 43:2",t:"When thou passest through the waters, I will be with thee; and through the rivers, they shall not overflow thee."},
+ {r:"Psalm 121:1-2",t:"I will lift up mine eyes unto the hills, from whence cometh my help. My help cometh from the LORD, which made heaven and earth."},
+ {r:"Nahum 1:7",t:"The LORD is good, a strong hold in the day of trouble; and he knoweth them that trust in him."}],
 "Grief & Loss":[
  {r:"Psalm 46:1",t:"God is our refuge and strength, a very present help in trouble."},
  {r:"John 11:25",t:"I am the resurrection, and the life: he that believeth in me, though he were dead, yet shall he live."},
@@ -4644,7 +4801,14 @@ var VERSES={
  {r:"Psalm 4:8",t:"I will both lay me down in peace, and sleep: for thou, LORD, only makest me dwell in safety."},
  {r:"John 14:1",t:"Let not your heart be troubled: ye believe in God, believe also in me."},
  {r:"Psalm 55:22",t:"Cast thy burden upon the LORD, and he shall sustain thee: he shall never suffer the righteous to be moved."},
- {r:"Colossians 3:15",t:"And let the peace of God rule in your hearts, to the which also ye are called in one body; and be ye thankful."}],
+ {r:"Colossians 3:15",t:"And let the peace of God rule in your hearts, to the which also ye are called in one body; and be ye thankful."},
+ {r:"John 14:27",t:"Peace I leave with you, my peace I give unto you: not as the world giveth, give I unto you. Let not your heart be troubled, neither let it be afraid."},
+ {r:"Psalm 29:11",t:"The LORD will give strength unto his people; the LORD will bless his people with peace."},
+ {r:"Isaiah 32:17",t:"And the work of righteousness shall be peace; and the effect of righteousness quietness and assurance for ever."},
+ {r:"Numbers 6:26",t:"The LORD lift up his countenance upon thee, and give thee peace."},
+ {r:"John 16:33",t:"These things I have spoken unto you, that in me ye might have peace. In the world ye shall have tribulation: but be of good cheer; I have overcome the world."},
+ {r:"Psalm 34:14",t:"Depart from evil, and do good; seek peace, and pursue it."},
+ {r:"2 Thessalonians 3:16",t:"Now the Lord of peace himself give you peace always by all means. The Lord be with you all."}],
 "Strength & Courage":[
  {r:"Philippians 4:13",t:"I can do all things through Christ which strengtheneth me."},
  {r:"Joshua 1:9",t:"Be strong and of a good courage; be not afraid, neither be thou dismayed: for the LORD thy God is with thee whithersoever thou goest."},
@@ -4677,7 +4841,14 @@ var VERSES={
  {r:"Psalm 107:1",t:"O give thanks unto the LORD, for he is good: for his mercy endureth for ever."},
  {r:"Colossians 3:17",t:"And whatsoever ye do in word or deed, do all in the name of the Lord Jesus, giving thanks to God and the Father by him."},
  {r:"James 1:17",t:"Every good gift and every perfect gift is from above, and cometh down from the Father of lights."},
- {r:"Psalm 9:1",t:"I will praise thee, O LORD, with my whole heart; I will shew forth all thy marvellous works."}],
+ {r:"Psalm 9:1",t:"I will praise thee, O LORD, with my whole heart; I will shew forth all thy marvellous works."},
+ {r:"Psalm 103:2",t:"Bless the LORD, O my soul, and forget not all his benefits."},
+ {r:"Psalm 118:1",t:"O give thanks unto the LORD; for he is good: because his mercy endureth for ever."},
+ {r:"Ephesians 5:20",t:"Giving thanks always for all things unto God and the Father in the name of our Lord Jesus Christ."},
+ {r:"Philippians 4:6",t:"Be careful for nothing; but in every thing by prayer and supplication with thanksgiving let your requests be made known unto God."},
+ {r:"Psalm 95:2",t:"Let us come before his presence with thanksgiving, and make a joyful noise unto him with psalms."},
+ {r:"1 Chronicles 16:34",t:"O give thanks unto the LORD; for he is good; for his mercy endureth for ever."},
+ {r:"Colossians 2:7",t:"Rooted and built up in him, and stablished in the faith, as ye have been taught, abounding therein with thanksgiving."}],
 "Forgiveness":[
  {r:"1 John 1:9",t:"If we confess our sins, he is faithful and just to forgive us our sins, and to cleanse us from all unrighteousness."},
  {r:"Colossians 3:13",t:"Forbearing one another, and forgiving one another, if any man have a quarrel against any: even as Christ forgave you, so also do ye."},
@@ -7000,7 +7171,31 @@ function todayCheckinIndex(){
 /* ── DAILY JOURNAL (Apple-Journal style: photo + title + text, dated feed) ──
    Entries saved in SETTINGS.journal[]. Photos stored as compressed data URLs
    inside each entry, so it all works offline and travels with the entry. */
-function openJournalChoice(){ go('journalChoice'); }
+function openJournalChoice(){ go('journalChoice'); renderJournalHub(); }
+function renderJournalHub(){
+  var wrap=document.getElementById('jcDevotionals'); if(!wrap) return;
+  var owned=Object.keys(JOURNALS).filter(function(id){ return ownsJournal(id); });
+  var html='';
+  if(owned.length){
+    html+='<div class="jc-sectlabel">Your devotional journals</div>';
+    owned.forEach(function(id){
+      var j=JOURNALS[id];
+      var prog=(SETTINGS.journalProgress&&SETTINGS.journalProgress[id])||0;
+      var doneDay=Math.min(prog+1, j.days.length);
+      var pct=Math.round((doneDay/j.days.length)*100);
+      html+='<button class="jc-card" onclick="devOpen(\''+id+'\')">'+
+        '<span class="jc-ic">'+j.em+'</span>'+
+        '<span class="jc-tx"><b>'+esc(j.title)+'</b>'+
+        '<small>Day '+doneDay+' of '+j.days.length+' \u00b7 '+pct+'% along</small></span></button>';
+    });
+  }
+  // gentle link to find more in the store
+  html+='<button class="jc-card jc-cardghost" onclick="openStore()">'+
+    '<span class="jc-ic">\ud83d\udcda</span>'+
+    '<span class="jc-tx"><b>'+(owned.length?'Find more journals':'Guided devotional journals')+'</b>'+
+    '<small>'+(owned.length?'Browse the Store for another season.':'Read a page a day \u2014 find them in the Store.')+'</small></span></button>';
+  wrap.innerHTML=html;
+}
 function openDailyJournal(){ if(!Array.isArray(SETTINGS.journal)) SETTINGS.journal=[]; go('dailyJournal'); renderJournalFeed(); }
 
 function renderJournalFeed(){
@@ -7104,8 +7299,15 @@ function djNewEntry(){
   var d=new Date();
   document.getElementById('djDateLabel').textContent=d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
   renderPhotoStrip();
+  djHideDoodle();
   go('djEditor');
   setTimeout(function(){ try{ document.getElementById('djTitle').focus(); }catch(e){} }, 250);
+}
+function djHideDoodle(){
+  var wrap=document.getElementById('djDoodleWrap'); if(wrap) wrap.style.display='none';
+  var btn=document.getElementById('djDoodleToggle'); if(btn) btn.textContent='✏️ Add a doodle';
+  var cv=document.getElementById('djDoodleCanvas'); if(cv){ try{ cv.getContext('2d').clearRect(0,0,cv.width,cv.height); }catch(e){} }
+  _djDoodleDirty=false;
 }
 function djOpenEntry(id){
   var e=(SETTINGS.journal||[]).find(function(x){return x.id===id;}); if(!e) return;
@@ -7117,6 +7319,7 @@ function djOpenEntry(id){
   document.getElementById('djShareBtnEd').style.display='inline-flex';
   document.getElementById('djDateLabel').textContent=new Date(e.when).toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
   renderPhotoStrip();
+  djHideDoodle();
   go('djEditor');
 }
 function renderPhotoStrip(){
@@ -7155,6 +7358,71 @@ function djAddPhoto(ev){
   ev.target.value='';
 }
 function djRemovePhoto(i){ _djPhotos.splice(i,1); renderPhotoStrip(); }
+
+/* ── DOODLE PAD ── finger/mouse drawing that saves into the entry like a photo ── */
+var _djDoodleColor='#3a3220', _djDoodleErasing=false, _djDrawing=false, _djDoodleDirty=false;
+function djToggleDoodle(){
+  var wrap=document.getElementById('djDoodleWrap');
+  var btn=document.getElementById('djDoodleToggle');
+  if(!wrap) return;
+  var showing = wrap.style.display!=='none';
+  if(showing){ wrap.style.display='none'; if(btn) btn.textContent='✏️ Add a doodle'; }
+  else {
+    wrap.style.display='block'; if(btn) btn.textContent='✏️ Hide doodle pad';
+    djDoodleInit();
+  }
+}
+function djDoodleInit(){
+  var cv=document.getElementById('djDoodleCanvas'); if(!cv||cv._wired) return;
+  var ctx=cv.getContext('2d');
+  ctx.lineCap='round'; ctx.lineJoin='round'; ctx.lineWidth=3.5; ctx.strokeStyle=_djDoodleColor;
+  // default-select the first color swatch
+  var first=document.querySelector('.dj-dcolor'); if(first) first.classList.add('sel');
+  function pos(e){
+    var r=cv.getBoundingClientRect();
+    var t=e.touches?e.touches[0]:e;
+    return { x:(t.clientX-r.left)*(cv.width/r.width), y:(t.clientY-r.top)*(cv.height/r.height) };
+  }
+  function start(e){ e.preventDefault(); _djDrawing=true; var p=pos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }
+  function move(e){ if(!_djDrawing)return; e.preventDefault(); var p=pos(e);
+    ctx.strokeStyle=_djDoodleErasing?'#fffdf8':_djDoodleColor;
+    ctx.lineWidth=_djDoodleErasing?18:3.5;
+    ctx.lineTo(p.x,p.y); ctx.stroke(); _djDoodleDirty=true; }
+  function end(e){ _djDrawing=false; }
+  cv.addEventListener('mousedown',start); cv.addEventListener('mousemove',move);
+  window.addEventListener('mouseup',end);
+  cv.addEventListener('touchstart',start,{passive:false});
+  cv.addEventListener('touchmove',move,{passive:false});
+  cv.addEventListener('touchend',end);
+  cv._wired=true;
+}
+function djDoodleColor(c,el){ _djDoodleColor=c; _djDoodleErasing=false;
+  document.querySelectorAll('.dj-dcolor').forEach(function(b){b.classList.remove('sel');});
+  if(el) el.classList.add('sel');
+  document.querySelectorAll('.dj-dtool').forEach(function(b){ if(b.textContent==='Eraser') b.classList.remove('sel'); });
+}
+function djDoodleErase(el){ _djDoodleErasing=true;
+  document.querySelectorAll('.dj-dcolor').forEach(function(b){b.classList.remove('sel');});
+  if(el){ document.querySelectorAll('.dj-dtool').forEach(function(b){if(b.textContent==='Eraser')b.classList.remove('sel');}); el.classList.add('sel'); }
+}
+function djDoodleClear(){
+  var cv=document.getElementById('djDoodleCanvas'); if(!cv)return;
+  cv.getContext('2d').clearRect(0,0,cv.width,cv.height); _djDoodleDirty=false;
+}
+function djDoodleSave(){
+  var cv=document.getElementById('djDoodleCanvas'); if(!cv)return;
+  if(!_djDoodleDirty){ toast("Draw something first 🖍️"); return; }
+  // paint the doodle onto a cream background so it isn't transparent, then store like a photo
+  var out=document.createElement('canvas'); out.width=cv.width; out.height=cv.height;
+  var octx=out.getContext('2d'); octx.fillStyle='#fffdf8'; octx.fillRect(0,0,out.width,out.height);
+  octx.drawImage(cv,0,0);
+  try{ _djPhotos.push(out.toDataURL("image/jpeg",0.85)); }catch(e){ _djPhotos.push(out.toDataURL()); }
+  renderPhotoStrip();
+  djDoodleClear();
+  var wrap=document.getElementById('djDoodleWrap'); if(wrap) wrap.style.display='none';
+  var btn=document.getElementById('djDoodleToggle'); if(btn) btn.textContent='✏️ Add a doodle';
+  toast("Doodle added to your entry! 🎨");
+}
 function djSaveEntry(){
   var title=(document.getElementById('djTitle').value||'').trim();
   var body=(document.getElementById('djBody').value||'').trim();
@@ -10588,7 +10856,36 @@ var LEARN_LANGS = {
     {en:"Cheers!",          say:"¡Salud!"},
     {en:"Happy birthday",   say:"Feliz cumpleaños"},
     {en:"Good luck",        say:"Buena suerte"},
-    {en:"Congratulations",  say:"Felicidades"}
+    {en:"Congratulations",  say:"Felicidades"},
+    {en:"— ✈️ Travel Talk —", say:"— Para viajar —"},
+    {en:"Where is the airport?", say:"¿Dónde está el aeropuerto?"},
+    {en:"I have a reservation", say:"Tengo una reservación"},
+    {en:"A table for two, please", say:"Una mesa para dos, por favor"},
+    {en:"The check, please", say:"La cuenta, por favor"},
+    {en:"Can you help me?",  say:"¿Puede ayudarme?"},
+    {en:"I would like…",     say:"Me gustaría…"},
+    {en:"How do I get there?", say:"¿Cómo llego allí?"},
+    {en:"— 🧸 Kid Words —", say:"— Para los pequeños —"},
+    {en:"I love you so much", say:"Te quiero mucho"},
+    {en:"Give me a hug",     say:"Dame un abrazo"},
+    {en:"You are my sunshine", say:"Eres mi sol"},
+    {en:"Sweet dreams",      say:"Dulces sueños"},
+    {en:"Good job!",         say:"¡Buen trabajo!"},
+    {en:"Come here, little one", say:"Ven aquí, pequeño"},
+    {en:"— ⛪ Blessings & Grace —", say:"— Bendiciones —"},
+    {en:"God bless you",     say:"Dios te bendiga"},
+    {en:"Peace be with you", say:"La paz sea contigo"},
+    {en:"Let us pray",       say:"Oremos"},
+    {en:"Thanks be to God",  say:"Gracias a Dios"},
+    {en:"Amen",              say:"Amén"},
+    {en:"Bless this food",   say:"Bendice estos alimentos"},
+    {en:"— 🍳 Kitchen Table —", say:"— En la cocina —"},
+    {en:"Dinner is ready",   say:"La cena está lista"},
+    {en:"Would you like more?", say:"¿Quieres más?"},
+    {en:"It's delicious",    say:"Está delicioso"},
+    {en:"Have a seat",       say:"Siéntate"},
+    {en:"Help yourself",     say:"Sírvete"},
+    {en:"Enjoy your meal",   say:"Buen provecho"}
   ]},
   fr: { nm:"French", flag:"🇫🇷", free:true, phrases:[
     {en:"Hello",            say:"Bonjour"},
@@ -10633,7 +10930,36 @@ var LEARN_LANGS = {
     {en:"Cheers!",          say:"Santé !"},
     {en:"Happy birthday",   say:"Joyeux anniversaire"},
     {en:"Good luck",        say:"Bonne chance"},
-    {en:"Congratulations",  say:"Félicitations"}
+    {en:"Congratulations",  say:"Félicitations"},
+    {en:"— ✈️ Travel Talk —", say:"— Pour voyager —"},
+    {en:"Where is the airport?", say:"Où est l'aéroport ?"},
+    {en:"I have a reservation", say:"J'ai une réservation"},
+    {en:"A table for two, please", say:"Une table pour deux, s'il vous plaît"},
+    {en:"The check, please", say:"L'addition, s'il vous plaît"},
+    {en:"Can you help me?",  say:"Pouvez-vous m'aider ?"},
+    {en:"I would like…",     say:"Je voudrais…"},
+    {en:"How do I get there?", say:"Comment y aller ?"},
+    {en:"— 🧸 Kid Words —", say:"— Pour les petits —"},
+    {en:"I love you so much", say:"Je t'aime très fort"},
+    {en:"Give me a hug",     say:"Fais-moi un câlin"},
+    {en:"You are my sunshine", say:"Tu es mon rayon de soleil"},
+    {en:"Sweet dreams",      say:"Fais de beaux rêves"},
+    {en:"Good job!",         say:"Bravo !"},
+    {en:"Come here, little one", say:"Viens ici, mon petit"},
+    {en:"— ⛪ Blessings & Grace —", say:"— Bénédictions —"},
+    {en:"God bless you",     say:"Que Dieu te bénisse"},
+    {en:"Peace be with you", say:"La paix soit avec toi"},
+    {en:"Let us pray",       say:"Prions"},
+    {en:"Thanks be to God",  say:"Grâce à Dieu"},
+    {en:"Amen",              say:"Amen"},
+    {en:"Bless this food",   say:"Bénis ce repas"},
+    {en:"— 🍳 Kitchen Table —", say:"— À la cuisine —"},
+    {en:"Dinner is ready",   say:"Le dîner est prêt"},
+    {en:"Would you like more?", say:"En voulez-vous encore ?"},
+    {en:"It's delicious",    say:"C'est délicieux"},
+    {en:"Have a seat",       say:"Assieds-toi"},
+    {en:"Help yourself",     say:"Sers-toi"},
+    {en:"Enjoy your meal",   say:"Bon appétit"}
   ]},
   de: { nm:"German", flag:"🇩🇪", free:true, phrases:[
     {en:"Hello",            say:"Hallo"},
@@ -10679,7 +11005,36 @@ var LEARN_LANGS = {
     {en:"Cheers!",          say:"Prost!"},
     {en:"Happy birthday",   say:"Alles Gute zum Geburtstag"},
     {en:"Good luck",        say:"Viel Glück"},
-    {en:"Congratulations",  say:"Herzlichen Glückwunsch"}
+    {en:"Congratulations",  say:"Herzlichen Glückwunsch"},
+    {en:"— ✈️ Travel Talk —", say:"— Zum Reisen —"},
+    {en:"Where is the airport?", say:"Wo ist der Flughafen?"},
+    {en:"I have a reservation", say:"Ich habe eine Reservierung"},
+    {en:"A table for two, please", say:"Einen Tisch für zwei, bitte"},
+    {en:"The check, please", say:"Die Rechnung, bitte"},
+    {en:"Can you help me?",  say:"Können Sie mir helfen?"},
+    {en:"I would like…",     say:"Ich hätte gern…"},
+    {en:"How do I get there?", say:"Wie komme ich dorthin?"},
+    {en:"— 🧸 Kid Words —", say:"— Für die Kleinen —"},
+    {en:"I love you so much", say:"Ich hab dich ganz doll lieb"},
+    {en:"Give me a hug",     say:"Gib mir eine Umarmung"},
+    {en:"You are my sunshine", say:"Du bist mein Sonnenschein"},
+    {en:"Sweet dreams",      say:"Träum süß"},
+    {en:"Good job!",         say:"Gut gemacht!"},
+    {en:"Come here, little one", say:"Komm her, Kleines"},
+    {en:"— ⛪ Blessings & Grace —", say:"— Segenswünsche —"},
+    {en:"God bless you",     say:"Gott segne dich"},
+    {en:"Peace be with you", say:"Friede sei mit dir"},
+    {en:"Let us pray",       say:"Lasst uns beten"},
+    {en:"Thanks be to God",  say:"Gott sei Dank"},
+    {en:"Amen",              say:"Amen"},
+    {en:"Bless this food",   say:"Segne diese Speise"},
+    {en:"— 🍳 Kitchen Table —", say:"— In der Küche —"},
+    {en:"Dinner is ready",   say:"Das Essen ist fertig"},
+    {en:"Would you like more?", say:"Möchten Sie mehr?"},
+    {en:"It's delicious",    say:"Es ist köstlich"},
+    {en:"Have a seat",       say:"Setz dich"},
+    {en:"Help yourself",     say:"Greif zu"},
+    {en:"Enjoy your meal",   say:"Guten Appetit"}
   ]},
   it: { nm:"Italian", flag:"🇮🇹", free:true, phrases:[
     {en:"Hello / Hi",       say:"Ciao"},
@@ -10725,7 +11080,36 @@ var LEARN_LANGS = {
     {en:"Cheers!",          say:"Salute!"},
     {en:"Happy birthday",   say:"Buon compleanno"},
     {en:"Good luck",        say:"Buona fortuna"},
-    {en:"Congratulations",  say:"Congratulazioni"}
+    {en:"Congratulations",  say:"Congratulazioni"},
+    {en:"— ✈️ Travel Talk —", say:"— Per viaggiare —"},
+    {en:"Where is the airport?", say:"Dov'è l'aeroporto?"},
+    {en:"I have a reservation", say:"Ho una prenotazione"},
+    {en:"A table for two, please", say:"Un tavolo per due, per favore"},
+    {en:"The check, please", say:"Il conto, per favore"},
+    {en:"Can you help me?",  say:"Può aiutarmi?"},
+    {en:"I would like…",     say:"Vorrei…"},
+    {en:"How do I get there?", say:"Come ci arrivo?"},
+    {en:"— 🧸 Kid Words —", say:"— Per i piccoli —"},
+    {en:"I love you so much", say:"Ti voglio tanto bene"},
+    {en:"Give me a hug",     say:"Dammi un abbraccio"},
+    {en:"You are my sunshine", say:"Sei il mio sole"},
+    {en:"Sweet dreams",      say:"Sogni d'oro"},
+    {en:"Good job!",         say:"Bravo!"},
+    {en:"Come here, little one", say:"Vieni qui, piccolo"},
+    {en:"— ⛪ Blessings & Grace —", say:"— Benedizioni —"},
+    {en:"God bless you",     say:"Dio ti benedica"},
+    {en:"Peace be with you", say:"La pace sia con te"},
+    {en:"Let us pray",       say:"Preghiamo"},
+    {en:"Thanks be to God",  say:"Grazie a Dio"},
+    {en:"Amen",              say:"Amen"},
+    {en:"Bless this food",   say:"Benedici questo cibo"},
+    {en:"— 🍳 Kitchen Table —", say:"— In cucina —"},
+    {en:"Dinner is ready",   say:"La cena è pronta"},
+    {en:"Would you like more?", say:"Ne vuoi ancora?"},
+    {en:"It's delicious",    say:"È delizioso"},
+    {en:"Have a seat",       say:"Siediti"},
+    {en:"Help yourself",     say:"Serviti pure"},
+    {en:"Enjoy your meal",   say:"Buon appetito"}
   ]},
   ja: { nm:"Japanese", flag:"🇯🇵", free:true, phrases:[
     {en:"Hello",            say:"こんにちは (Konnichiwa)"},
@@ -10771,7 +11155,36 @@ var LEARN_LANGS = {
     {en:"Cheers!",          say:"かんぱい！ (Kanpai!)"},
     {en:"Happy birthday",   say:"おたんじょうびおめでとう (Otanjōbi omedetō)"},
     {en:"Good luck",        say:"がんばって (Ganbatte)"},
-    {en:"Congratulations",  say:"おめでとうございます (Omedetō gozaimasu)"}
+    {en:"Congratulations",  say:"おめでとうございます (Omedetō gozaimasu)"},
+    {en:"— ✈️ Travel Talk —", say:"— 旅行 (Ryokō) —"},
+    {en:"Where is the airport?", say:"空港はどこですか (Kūkō wa doko desu ka)"},
+    {en:"I have a reservation", say:"予約があります (Yoyaku ga arimasu)"},
+    {en:"A table for two, please", say:"二人です (Futari desu)"},
+    {en:"The check, please", say:"お会計お願いします (Okaikei onegaishimasu)"},
+    {en:"Can you help me?",  say:"手伝ってください (Tetsudatte kudasai)"},
+    {en:"I would like…",     say:"…をください (…o kudasai)"},
+    {en:"How do I get there?", say:"どうやって行きますか (Dōyatte ikimasu ka)"},
+    {en:"— 🧸 Kid Words —", say:"— こども (Kodomo) —"},
+    {en:"I love you so much", say:"だいすきだよ (Daisuki da yo)"},
+    {en:"Give me a hug",     say:"ぎゅっとして (Gyutto shite)"},
+    {en:"You are my sunshine", say:"あなたは私の宝物 (Anata wa watashi no takaramono)"},
+    {en:"Sweet dreams",      say:"いいゆめを (Ii yume o)"},
+    {en:"Good job!",         say:"よくできました (Yoku dekimashita)"},
+    {en:"Come here, little one", say:"おいで (Oide)"},
+    {en:"— ⛪ Blessings & Grace —", say:"— いのり (Inori) —"},
+    {en:"God bless you",     say:"神のご加護を (Kami no gokago o)"},
+    {en:"Peace be with you", say:"平安がありますように (Heian ga arimasu yō ni)"},
+    {en:"Let us pray",       say:"祈りましょう (Inorimashō)"},
+    {en:"Thanks be to God",  say:"神に感謝します (Kami ni kansha shimasu)"},
+    {en:"Amen",              say:"アーメン (Āmen)"},
+    {en:"Bless this food",   say:"いただきます (Itadakimasu)"},
+    {en:"— 🍳 Kitchen Table —", say:"— だいどころ (Daidokoro) —"},
+    {en:"Dinner is ready",   say:"ごはんですよ (Gohan desu yo)"},
+    {en:"Would you like more?", say:"おかわりは (Okawari wa)"},
+    {en:"It's delicious",    say:"おいしい (Oishii)"},
+    {en:"Have a seat",       say:"どうぞ座って (Dōzo suwatte)"},
+    {en:"Help yourself",     say:"どうぞ召し上がれ (Dōzo meshiagare)"},
+    {en:"Enjoy your meal",   say:"いただきます (Itadakimasu)"}
   ]}
 };
 // curated, kid-safe facts — keep simple and verified
@@ -11362,6 +11775,766 @@ function openLovedQuick(){
 /* What each tier PROMISES. Keep this honest against TIERS above,
    which is what the code actually enforces. If they drift, people
    feel cheated — and Apple asks questions. */
+/* ═══ DEVOTIONAL JOURNALS ═══ theme-aware reader; content lives here, entries save per day */
+var JOURNALS = {
+  patience: {
+    id:"patience", title:"A Season of Patience", sub:"A 30-day walk toward a calmer heart",
+    em:"🌿", days:[
+      {t:"The Beginning of Waiting", v:"Rest in the Lord, and wait patiently for him.", vr:"Psalm 37:7",
+       r:"Patience does not begin with gritted teeth. It begins with rest. Before you are asked to endure anything, you are invited simply to rest in the One who holds the outcome. Today, you need not fix, force, or hurry. You need only begin.",
+       h:"Take a slow breath, friend. You don't have to have it all figured out by lunch. Even the good Lord took His time and called each day \"good\" before moving on to the next.",
+       p:"What is one thing you've been trying to force or hurry lately? What would it look like to set it down, just for today?"},
+      {t:"The Long Middle", v:"", vr:"",
+       r:"Most of patience isn't the beginning or the end — it's the long middle, where nothing seems to be happening. The waiting room. The in-between. Today, be gentle with yourself in the middle of things. You are not behind. You are simply not finished, and that is a very different thing.",
+       h:"Did you know bread dough has to rest before it rises? If you rush it, it never gets soft and light. Some of your best rising is happening right now, quietly, while you wait.",
+       p:"Where in your life are you stuck in \"the long middle\" right now? What might help you be kinder to yourself in it?"},
+      {t:"Renewed Strength", v:"But they that wait upon the Lord shall renew their strength; they shall mount up with wings as eagles.", vr:"Isaiah 40:31",
+       r:"The world says waiting drains us. Scripture says the opposite: those who wait upon the Lord are renewed. There is a strength that comes only to the ones willing to wait for it — a strength that soars rather than strains. Your waiting today is not weakness. It is where your wings are being made ready.",
+       h:"Did you know an eagle doesn't flap to climb high? It waits for the rising warm air, spreads its wings, and lets itself be lifted. Sometimes the strength is in the waiting, not the striving.",
+       p:"Where do you feel most weary right now? Speak that weariness honestly, and ask for renewed strength in it."},
+      {t:"Small and Steady", v:"", vr:"",
+       r:"We tend to admire the big, dramatic leap. But most good things in a life are built the slow way — one small, steady, faithful step at a time. You don't have to change everything today. You only have to take the next small step, and then rest. Steady is its own kind of strong.",
+       h:"You know the story — slow and steady won the race. That tortoise wasn't fast, wasn't flashy, and never once panicked. He just kept going, and he tells that story with a smile to this day.",
+       p:"What is one small, steady step you could take this week — not a giant leap, just a step?"},
+      {t:"The Harvest in Due Season", v:"And let us not be weary in well doing: for in due season we shall reap, if we faint not.", vr:"Galatians 6:9",
+       r:"The farmer doesn't dig up the seed each morning to check on it. He trusts the season. So much of patience is simply refusing to give up in the quiet stretch where nothing seems to be happening. But \"due season\" is a promise. What you plant in faith today, you won't always see today. Keep on.",
+       h:"A gardener's secret: most seeds do their first growing down in the dark, growing roots, long before a single green leaf pokes up. If you can't see progress yet, you may just be busy growing roots.",
+       p:"What good thing are you tempted to give up on because you haven't seen results yet? Write yourself a word of encouragement to \"faint not.\""},
+      {t:"Letting the Day Be Enough", v:"", vr:"",
+       r:"Some days, patience simply means letting today be enough. Not solving tomorrow. Not carrying next week on your shoulders before it arrives. Just this day, its small joys and its small duties, received with an open hand. Tomorrow will have its own grace when it comes.",
+       h:"There's an old, wise line worth keeping close: don't borrow trouble from tomorrow. Tomorrow isn't even here yet, and it comes with its own strength packed in its bag.",
+       p:"What worry about tomorrow are you carrying today? What would it feel like to set it down until tomorrow actually arrives?"},
+      {t:"Patient in Hope", v:"But if we hope for that we see not, then do we with patience wait for it.", vr:"Romans 8:25",
+       r:"Hope and patience are quiet partners. We wait most patiently for the things we truly believe are coming. When the waiting feels long today, let it be a sign of how much good you're still hoping for. The waiting is not empty. It is hope, holding on.",
+       h:"Every seed a gardener plants is a little act of hope — a belief that spring is coming, even in the cold. You've planted more hope than you know.",
+       p:"What are you hoping for right now that you can't yet see? Write it down as a hope, not a worry."},
+      {t:"The Gift of Slowness", v:"", vr:"",
+       r:"We live in a hurried world that treats slowness like a flaw. But slowness is often where the good things live — the long talk, the unhurried meal, the walk with no destination. Today, let yourself be a little slow on purpose. You may find you weren't behind at all; you were just moving at the speed of what matters.",
+       h:"Honey takes its sweet time, you know. It never spoils, never rushes, and it's all the sweeter for the wait. Good things often are.",
+       p:"What is one thing you could do slowly and on purpose today, just to savor it?"},
+      {t:"Better Than the Proud", v:"Better is the end of a thing than the beginning thereof: and the patient in spirit is better than the proud in spirit.", vr:"Ecclesiastes 7:8",
+       r:"Pride is loud at the start; it wants everything now and wants to be seen wanting it. But patience is quiet, and it waits for the end of the matter — where the real blessing so often lives. To be patient in spirit is not to be weak. It is to be strong enough to trust that the end will be better than the beginning.",
+       h:"The last chapter of a good book is usually the best one. You're not at your ending yet — so the best part may still be coming.",
+       p:"Think of something whose \"end\" turned out better than its rocky beginning. What did that teach you about waiting?"},
+      {t:"When Others Are Slow", v:"", vr:"",
+       r:"Patience isn't only about waiting on circumstances — it's about waiting on people. The slow driver, the forgetful friend, the loved one who just isn't ready yet. Today, extend a little of the grace you'd hope to receive. Everyone is carrying something you can't see, moving at a speed you don't fully understand.",
+       h:"Be gentle. Everyone you meet is fighting a battle you know nothing about — and a kind word costs you nothing but blesses more than you'll ever know.",
+       p:"Who in your life is testing your patience right now? What might be going on beneath the surface for them?"},
+      {t:"The Perfect Work", v:"But let patience have her perfect work, that ye may be perfect and entire, wanting nothing.", vr:"James 1:4",
+       r:"Notice that patience has work to do — and the work is done in you, not around you. The waiting is not wasted time; it is the very tool that shapes you into someone whole. What feels like delay is often the slow, faithful hand of God finishing something good.",
+       h:"Did you know a pearl is made from a single grain of sand that wouldn't leave? The oyster doesn't fight it — it just keeps gently working, day after day, until the irritation becomes something beautiful. Your patience is doing the very same thing.",
+       p:"Look back on a past season of waiting. What did it grow in you that you couldn't have gained any faster way?"},
+      {t:"Patience With Yourself", v:"", vr:"",
+       r:"We are often gentlest with everyone but ourselves. We forgive a friend's stumble in a heartbeat, then scold ourselves for the same thing. Today, turn some of that kindness inward. You are a work in progress, and progress — by its very nature — takes time. Be as patient with yourself as you would be with someone you love.",
+       h:"Talk to yourself like someone you're rooting for. You'd never tell a friend the harsh things you sometimes tell yourself — so give yourself the kind voice too.",
+       p:"Where have you been impatient or hard on yourself lately? Write yourself the gentle words you'd give a dear friend."},
+      {t:"Continuing in Prayer", v:"Rejoicing in hope; patient in tribulation; continuing instant in prayer.", vr:"Romans 12:12",
+       r:"When the waiting gets hard, this little verse gives us the whole map: rejoice in hope, stay patient in the trouble, and keep on praying. Prayer is how we stay company with God through the long wait — not a vending machine for quick answers, but a hand to hold in the meantime.",
+       h:"Prayer isn't just for the big emergencies. A quiet \"help me be patient today\" first thing in the morning can change the whole shape of a day.",
+       p:"Write a short, honest prayer about something you're waiting on. Simple words are perfectly enough."},
+      {t:"The Roots You Can't See", v:"", vr:"",
+       r:"There is a kind of bamboo that shows almost nothing above ground for years — and then shoots up many feet in a single season. All that quiet time, it was growing roots deep enough to hold the height that was coming. Your unseen seasons are not nothing. They are roots.",
+       h:"Nobody claps for the roots, but the whole tree stands because of them. The quiet, unseen work you're doing right now matters more than you think.",
+       p:"What \"roots\" might you be growing right now, in a season where nothing seems visible yet?"},
+      {t:"Waiting Renews", v:"They that wait upon the Lord shall renew their strength; they shall run, and not be weary; and they shall walk, and not faint.", vr:"Isaiah 40:31",
+       r:"We've met this promise before, and here it is again — because it's worth returning to. Notice how it ends: not always with soaring, but sometimes just with walking, and not fainting. Some seasons, simply not giving up is the victory. To keep walking and not faint is its own kind of strength, freshly given.",
+       h:"Some days, showing up is the whole win. You don't have to soar today. Walking, and not fainting, counts — and it counts a lot.",
+       p:"Where do you just need strength to \"keep walking\" right now? Name it, and ask for enough for today."},
+      {t:"Halfway, and Held", v:"", vr:"",
+       r:"You're halfway through this journey now. Look back at the days behind you — you didn't rush them, and here you still are. That's the quiet truth about patience: it isn't glamorous, but it carries you. You are being held through this season, one ordinary day at a time.",
+       h:"Halfway is worth celebrating, friend. You've kept showing up for fifteen days — that's not nothing, that's faithfulness. I'm proud of you.",
+       p:"What have you noticed in yourself over these first two weeks? Any small shift worth celebrating?"},
+      {t:"Rest and Wait", v:"Rest in the Lord, and wait patiently for him.", vr:"Psalm 37:7",
+       r:"Rest and wait. Two of the hardest words for a busy heart. But notice they come together — the waiting is meant to be restful, not frantic. You are not required to pace the floor of your own life. You are invited to sit down inside the wait and let it be a kind of rest.",
+       h:"Even the busiest bee sleeps. Rest isn't laziness — it's how you're built. God gave us evenings for a reason.",
+       p:"What would \"restful waiting\" look like for you this week, instead of anxious waiting?"},
+      {t:"The Slow Yes", v:"", vr:"",
+       r:"Not every good thing arrives with a bang. Some of life's biggest yeses come slowly — a healing that takes months, a relationship that mends one kind word at a time, a dream that unfolds so gradually you almost miss it. Watch for the slow yeses today. They are just as real as the fast ones, and often sweeter.",
+       h:"A sunrise doesn't rush. It comes up slow and quiet, and it lights the whole sky anyway. Your good things can arrive that way too.",
+       p:"Where might a \"slow yes\" already be unfolding in your life, if you look closely?"},
+      {t:"Patience in Trouble", v:"Rejoicing in hope; patient in tribulation; continuing instant in prayer.", vr:"Romans 12:12",
+       r:"\"Patient in tribulation\" — that's the hard one, isn't it. It's easy to be patient when life is gentle. But this verse asks for patience precisely when things are difficult. Not a grim endurance, but a settled trust that even hard seasons are passing through, not staying forever.",
+       h:"This too shall pass — one of the truest little sayings there is. Hard days have an expiration date, even when they don't feel like it.",
+       p:"What hard thing are you being asked to be patient in right now? Write one honest sentence about it, and one hopeful one."},
+      {t:"The Company of the Waiting", v:"", vr:"",
+       r:"You are not the only one waiting. All around you, quietly, people are waiting too — for news, for healing, for a change, for a loved one to come home. There's a strange comfort in that. You are part of a great, unseen fellowship of the patient. You are in very good company today.",
+       h:"You're never as alone in the waiting as it feels. Somewhere close by, someone is holding on for the very same kind of thing. We wait together.",
+       p:"Who else do you know who is waiting on something right now? How might you encourage them today?"},
+      {t:"Faint Not", v:"And let us not be weary in well doing: for in due season we shall reap, if we faint not.", vr:"Galatians 6:9",
+       r:"Three weeks in, this is the verse for the tired. \"Let us not be weary in well doing.\" There's a particular kind of exhaustion that comes not from doing wrong, but from doing right for a long time with no visible reward. To you, today, this promise: the reaping is coming. Don't quit in the last stretch before the harvest.",
+       h:"The darkest part of the night is right before dawn. If you're weary, it may mean you're closer to the morning than you think.",
+       p:"Where are you weary in \"well doing\" — tired of doing the right thing with no reward yet? Write yourself a reason to keep going."},
+      {t:"The Beauty of Unfinished", v:"", vr:"",
+       r:"A garden mid-spring is not finished, and it is beautiful anyway. A child is not finished growing, and is a wonder every single day. You do not have to be complete to be worthy, or done to be good. There is real beauty in the unfinished — in the becoming. You are allowed to be a work in progress and a delight at the very same time.",
+       h:"Even a half-built house has folks living happily inside, making it a home as they go. You get to enjoy your life while it's still being built.",
+       p:"What \"unfinished\" part of your life could you choose to find beautiful today, just as it is?"},
+      {t:"Wait, and Rest Again", v:"Rest in the Lord, and wait patiently for him.", vr:"Psalm 37:7",
+       r:"By now this verse may feel like an old friend. That's the point — some truths we don't learn once, we learn again and again, a little deeper each time. Rest in the Lord. Wait patiently. Not because you've mastered it, but because you keep coming back to it. That returning is faith.",
+       h:"You don't have to get patience perfect. You just have to keep coming back to it, like a favorite chair. Sit down. Rest. Begin again.",
+       p:"What truth have you had to learn \"again and again\" in your life? What does returning to it teach you?"},
+      {t:"Enough for Today", v:"", vr:"",
+       r:"Manna, the old story goes, could only be gathered one day at a time — you couldn't stockpile tomorrow's portion. Patience works the same way. You are given exactly enough grace for today, not a drop more, and not a drop less. Stop trying to gather next week's strength. Today's portion is here, and it is enough.",
+       h:"You have enough for today. Not for every worry you can imagine — just for today. And today is really all you're being asked to carry.",
+       p:"What would change if you trusted you had \"enough for today\" — and let tomorrow's portion wait for tomorrow?"},
+      {t:"Perfect and Entire", v:"But let patience have her perfect work, that ye may be perfect and entire, wanting nothing.", vr:"James 1:4",
+       r:"\"Wanting nothing.\" What a promise for a restless heart. The patient work being done in you is aiming at wholeness — a settledness that isn't always grasping for the next thing. You are being made complete, slowly, by the very patience you're practicing. Nothing about this season is wasted.",
+       h:"Wholeness doesn't come in a hurry. It's stitched together slowly, like a quilt — one patient square at a time, until it's warm enough to cover a whole life.",
+       p:"Where do you long to feel more \"whole\" or settled? How might patience be quietly building that in you?"},
+      {t:"The Kindness of Delay", v:"", vr:"",
+       r:"Sometimes the thing we wanted right now would not have been good for us right now. Looking back, many of us can see it — the \"no\" that was really a \"not yet,\" the delay that spared us, the closed door that turned us toward a better one. Not every delay is a denial. Some delays are a kindness wearing a disappointing disguise.",
+       h:"Some of the best things in your life came from a \"no\" you once cried over. The delays have been kinder to you than you knew.",
+       p:"Can you think of a past delay or \"no\" that turned out to be a gift? What did it protect or prepare you for?"},
+      {t:"Wait for It", v:"But if we hope for that we see not, then do we with patience wait for it.", vr:"Romans 8:25",
+       r:"\"Wait for it.\" The very act of waiting is an act of faith that something is worth waiting for. You don't wait for things you've given up on. So let today's waiting be a quiet declaration: I still believe good is coming. That belief, held gently through the long days, is one of the bravest things a heart can do.",
+       h:"Waiting is just hope with its work clothes on. Every day you keep waiting, you're quietly saying: I still believe.",
+       p:"What good thing are you still choosing to believe is coming? Write it as a brave declaration."},
+      {t:"Gratitude in the Wait", v:"", vr:"",
+       r:"It's easy to think happiness begins when the waiting ends — when the thing finally arrives. But so much life happens in the meantime. There are gifts scattered all through the waiting season, if we lift our eyes to see them. Gratitude is what turns a waiting room into a place where good things are still quietly happening.",
+       h:"Count three small good things today — the warm cup, the kind text, the quiet moment. The waiting season is full of little gifts hiding in plain sight.",
+       p:"List three good things present in your life right now, in the middle of the waiting. Don't wait to be grateful."},
+      {t:"Strength for the Long Walk", v:"They shall run, and not be weary; and they shall walk, and not faint.", vr:"Isaiah 40:31",
+       r:"As this journey nears its end, hold onto the gentlest part of the promise: to walk and not faint. Life is mostly walking, not soaring — ordinary days, ordinary steps. And the promise is that you'll be given exactly enough to keep walking. Not always fast. Not always high. But faithfully, all the way home.",
+       h:"You've walked twenty-nine days of this with me. Look at that — you didn't faint. You just kept walking, and here you are.",
+       p:"What's one long \"walk\" in your life you're still on? What would help you keep walking, one step at a time?"},
+      {t:"The Patient in Spirit", v:"", vr:"",
+       r:"You've reached the end of thirty days — patiently, one at a time. That's exactly how a patient spirit is built: not in a burst, but in a season of small, faithful returns. You are more patient than you were thirty days ago, not because everything got easier, but because you kept showing up. Carry that gently forward. The waiting isn't over — but you are no longer waiting the same.",
+       h:"Look what you did — thirty days, one at a time, and you never once had to rush it. That's the whole secret, and now it's yours. I'm so proud of you, friend.",
+       p:"Look back over these thirty days. What has patience taught you? Write a note to the person you were on Day 1."}
+    ]
+  },
+  peace: {
+    id:"peace", title:"A Season of Peace", sub:"A 30-day walk toward a settled heart",
+    em:"🕊️", days:[
+      {t:"Come and Rest", v:"Come unto me, all ye that labour and are heavy laden, and I will give you rest.", vr:"Matthew 11:28",
+       r:"Peace doesn't begin with fixing everything. It begins with coming — just as you are, tired hands and all. You don't have to earn rest or clean yourself up first. The invitation is simply to come, and to lay the load down for a while. Let today be the day you stop carrying what was never yours to carry alone.",
+       h:"You know how a dog circles three times before he lies down? He's just getting settled. Take your own three circles today, friend, and then rest. You've earned the settling.",
+       p:"What are you carrying today that feels too heavy? Name it, and imagine setting it down for just this one day."},
+      {t:"The Quiet Underneath", v:"", vr:"",
+       r:"There's a kind of quiet that isn't about silence — it's a settledness underneath all the noise. The dishes still clatter, the phone still rings, but somewhere below it, a person can be at peace. Today, don't wait for the noise to stop. Look for the quiet that lives underneath it, the part of you that can be still even when the day isn't.",
+       h:"Down at the bottom of the ocean, it's perfectly calm, no matter how the storms toss the top. You've got a bottom-of-the-ocean place in you too. Visit it today.",
+       p:"Where do you find your quiet — a chair, a window, a walk, a cup of coffee? Describe your quiet place."},
+      {t:"Perfect Peace", v:"Thou wilt keep him in perfect peace, whose mind is stayed on thee: because he trusteth in thee.", vr:"Isaiah 26:3",
+       r:"Notice the secret in this verse: the peace comes from where the mind is *stayed* — where it rests, where it leans. A mind that runs in anxious circles finds no peace; a mind that leans on something steady finds it. Today, when the worries start spinning, gently turn your thoughts back to what is trustworthy and unchanging.",
+       h:"A boat stays calm not because the water is calm, but because it's anchored. Your peace works the same way. It's not about calm water — it's about a good anchor.",
+       p:"Where does your mind run when it's anxious? What steadier thing could you gently turn it toward instead?"},
+      {t:"One Thing at a Time", v:"", vr:"",
+       r:"Much of our unrest comes from carrying the whole week at once — every task, every worry, stacked up in the mind like too many plates. But you were only ever meant to carry one moment at a time. Today, set down the pile. Pick up just the next thing, and only that. Peace often lives in the space between doing one thing and starting the next.",
+       h:"Even a juggler only ever touches one ball at a time — the rest are just in the air, waiting their turn. You don't have to hold them all at once either.",
+       p:"What's the ONE thing that actually needs your attention today? Let the rest wait its turn."},
+      {t:"Cast Your Care", v:"Casting all your care upon him; for he careth for you.", vr:"1 Peter 5:7",
+       r:"The word here is *casting* — like throwing a fishing line out over the water. It's an active thing, a letting-go on purpose. Worry has a way of creeping back into our hands the moment we set it down, so peace is often something we choose again and again. And the reason we can cast it away? Because he careth for you. The caring is already there, waiting.",
+       h:"Did you know worrying is like a rocking chair? It gives you something to do but never gets you anywhere. Cast the care instead — it travels a lot farther than worry ever will.",
+       p:"What's one worry you could \"cast\" today — hand off, let go of, stop turning over? Write it down, then imagine releasing it."},
+      {t:"Enough Light for the Next Step", v:"", vr:"",
+       r:"We often want the whole road lit up before we'll take a step. But peace rarely comes from seeing the whole way — it comes from trusting there's enough light for the next step, and then the next. You don't need the full map today. You just need to see far enough to move forward a little, in peace.",
+       h:"A lantern only lights a few feet ahead, but folks have walked all the way home by one for hundreds of years. You don't need floodlights. You need one good step's worth of light.",
+       p:"What's the very next step in front of you — not the whole journey, just the next step? Can you make peace with only seeing that far?"},
+      {t:"Peace in the Storm", v:"These things I have spoken unto you, that in me ye might have peace. In the world ye shall have tribulation: but be of good cheer; I have overcome the world.", vr:"John 16:33",
+       r:"Notice this verse doesn't promise a life without storms — it promises peace *in* them. Trouble will come; that's simply the honest truth of living. But peace was never meant to be the absence of trouble. It's a steadiness that holds even while the trouble rages. You can be at peace and in a storm at the very same time.",
+       h:"There's a bird called the storm petrel that actually flies calmly through gales that ground every other bird. Peace in the storm isn't a fairy tale — some creatures are built for exactly that. So are you.",
+       p:"Think of a past storm you made it through. What helped you find steadiness in the middle of it?"},
+      {t:"Let It Be Unfinished", v:"", vr:"",
+       r:"Some of our unrest is simply the ache of things left undone — the list that never empties, the project half-finished, the conversation still open. But no one in the history of the world has ever gone to bed with everything finished. Peace means making friends with the unfinished. You are allowed to rest tonight even though tomorrow still has things in it.",
+       h:"Even God rested on the seventh day, and He surely could've kept going. If the Maker of everything took a day off with more He could've done, so can you.",
+       p:"What unfinished thing is stealing your peace? Can you give yourself permission to leave it unfinished, just for tonight?"},
+      {t:"The Peace That Passes Understanding", v:"And the peace of God, which passeth all understanding, shall keep your hearts and minds through Christ Jesus.", vr:"Philippians 4:7",
+       r:"Here is a peace that doesn't make sense — a peace you can feel even when the circumstances say you shouldn't. It \"passeth understanding,\" meaning you can't reason your way into it or figure out why it's there. It just settles over a heart like a warm blanket, unexplained. Don't wait to understand your peace before you accept it. Some gifts you just receive.",
+       h:"You don't have to understand how electricity works to turn on the light and enjoy it. Same with peace. You can just flip the switch and sit in the warm glow.",
+       p:"Have you ever felt a peace that didn't quite make sense given what was happening? Write about it."},
+      {t:"The Weight of Comparison", v:"", vr:"",
+       r:"So much of our peace leaks away through comparison — measuring our insides against everyone else's outsides, our quiet ordinary day against their highlight reel. But a garden doesn't fret that it isn't a forest, and a candle doesn't envy the sun. You have your own light to give, your own small good work to do. Peace grows when you stop running someone else's race.",
+       h:"Comparison is the thief of joy, they say — and it's a pickpocket of peace, too. Keep your eyes on your own row and you'll be surprised how much calmer the walking gets.",
+       p:"Where has comparison been stealing your peace lately? What's one thing that's uniquely good about your own life, your own row?"},
+      {t:"Lie Down in Peace", v:"I will both lay me down in peace, and sleep: for thou, LORD, only makest me dwell in safety.", vr:"Psalm 4:8",
+       r:"There's a special kind of peace reserved for the end of the day — the peace that lets you actually sleep. So many lie down at night and keep working in their minds, rehearsing tomorrow, replaying today. But this verse offers a settledness that lets the body and mind finally rest. You are held through the night. You can lay it all down now.",
+       h:"Notice how a baby sleeps with both hands wide open, holding onto nothing? That's trust. Somewhere along the way we started sleeping with our fists clenched. Try opening your hands tonight.",
+       p:"What keeps you up at night? Write it here so you can leave it on the page instead of carrying it to your pillow."},
+      {t:"Small Peaceful Things", v:"", vr:"",
+       r:"Peace isn't only found in big spiritual moments — it hides in small ordinary things. The warm mug in your hands. The first cool air of morning. A folded pile of clean towels. The particular quiet of a house at dawn. Today, go looking for the small peaceful things. They've been there all along, waiting to be noticed.",
+       h:"The Japanese have a lovely idea — they'll sit and enjoy a single cup of tea like it's an event worth their whole attention. There's more peace in one cup fully enjoyed than in ten gulped down.",
+       p:"List three small, ordinary things that bring you a flicker of peace. Notice them fully today."},
+      {t:"Be Still", v:"Be still, and know that I am God.", vr:"Psalm 46:10",
+       r:"Two commands, and the first is the hardest: *be still.* We are so practiced at doing that stillness feels almost wrong, like we're getting away with something. But stillness isn't laziness — it's the doorway to knowing. You can't hear a whisper in a hurricane of activity. Today, build one small still moment into your day, and just be. The knowing comes in the quiet.",
+       h:"You can't see your reflection in choppy water — only in still water. Sometimes we have to get still before we can even see ourselves clearly again.",
+       p:"When did you last sit in true stillness — no phone, no task, no noise? Try five minutes today, and write what came up."},
+      {t:"Letting Others Off the Hook", v:"", vr:"",
+       r:"A surprising amount of our unrest is the weight of a grudge — the small resentments we carry, the ways we keep score. But carrying anger is like gripping a hot coal to throw at someone; we're the ones who get burned. Peace often begins the moment we let someone off the hook — not because they earned it, but because we're tired of carrying it. Forgiveness is a gift you give your own peace.",
+       h:"Holding a grudge is heavy lifting, and you've been at it a while. Set it down and feel how much lighter your arms are. Your peace will thank you.",
+       p:"Is there a resentment you've been carrying? What would it feel like to set it down — not for them, but for your own peace?"},
+      {t:"Strength and Peace", v:"The LORD will give strength unto his people; the LORD will bless his people with peace.", vr:"Psalm 29:11",
+       r:"Halfway through, notice how strength and peace arrive together in this verse. They aren't opposites — the peaceful person isn't the weak one. It takes real strength to stay calm, to not react, to keep a settled heart when everything invites panic. The peace you're building these days isn't fragile. It's a kind of strength, quietly growing in you.",
+       h:"Fifteen days in, friend. That's real. A peaceful heart isn't built in a weekend — it's built one steady day at a time, like the one you're living right now.",
+       p:"Look back over these two weeks. Where have you felt even a little more peace than before? Celebrate that."},
+      {t:"The Peace of Good Enough", v:"", vr:"",
+       r:"Perfectionism is peace's quiet enemy. It whispers that nothing is ever done well enough, that you should have done more, tried harder, gotten it just right. But \"good enough\" is a peaceful place to live. Most of what matters was done imperfectly by tired people doing their best. Let today's work be good enough. It probably already is.",
+       h:"There's an old quilting tradition of sewing one wrong stitch on purpose, because only God is perfect. Maybe there's peace in leaving one crooked stitch in your day too.",
+       p:"Where are you holding yourself to \"perfect\" when \"good enough\" would do? Give yourself permission to be good enough today."},
+      {t:"Let Not Your Heart Be Troubled", v:"Let not your heart be troubled: ye believe in God, believe also in me.", vr:"John 14:1",
+       r:"\"Let not your heart be troubled\" — spoken not as a scold, but as a comfort, on the hardest of nights. Notice it's something we're invited to allow, a choice we get to make about where the heart settles. We can't always control what happens, but we have more say than we think over whether we let it trouble us all the way down. Today, when trouble knocks, you get a vote about how far in it comes.",
+       h:"Birds will fly over your head — you can't stop that. But you can keep them from building a nest in your hair. Same with troubling thoughts. Let them pass on through.",
+       p:"What troubling thought has \"built a nest\" lately? How might you gently let it fly on by instead of settling in?"},
+      {t:"The Gift of Margin", v:"", vr:"",
+       r:"A page crammed edge to edge is hard to read; it's the margin, the white space, that lets the words breathe. Our days are the same. When every minute is packed, there's no room for peace to live. Today, guard a little margin — a few unscheduled minutes, a slow morning, a pause between things. Peace needs a little white space to settle into.",
+       h:"Music isn't just the notes, it's the rests between them — that's what makes it a song instead of noise. Your day needs its rests too. That's what makes it a life instead of a scramble.",
+       p:"Where could you build a little \"margin\" into your day — some unscheduled white space? What would you do with it?"},
+      {t:"Seek Peace and Pursue It", v:"Depart from evil, and do good; seek peace, and pursue it.", vr:"Psalm 34:14",
+       r:"Peace isn't only something that happens to us — this verse says to *seek* it and *pursue* it, like something worth chasing. That means some of our peace is a choice: choosing the calmer response, stepping away from what stirs us up, actively making room for quiet. Today, don't just wait for peace to find you. Go after it. Pursue it like it matters, because it does.",
+       h:"You wouldn't wait around hoping a garden plants itself. Peace is a bit of a garden too — you tend it, you pursue it, and then one day you look up and it's blooming.",
+       p:"What's one thing that reliably stirs you up that you could step away from? And one thing that brings peace you could pursue more?"},
+      {t:"When You Can't Fix It", v:"", vr:"",
+       r:"Some things simply cannot be fixed — a diagnosis, a loss, a person who won't change, a situation beyond our reach. And here's a hard, freeing truth: peace doesn't require fixing everything. Sometimes peace is releasing what was never in your power, and tending only to what is. You are not responsible for outcomes you cannot control. Lay those down. Peace lives on the other side of that surrender.",
+       h:"There's real wisdom in that old prayer — grant me the serenity to accept what I can't change, courage to change what I can, and the wisdom to know the difference. Most of our peace lives in knowing the difference.",
+       p:"What are you trying to fix that isn't yours to fix? What would it feel like to release it and tend only to what you can control?"},
+      {t:"Quietness and Assurance", v:"And the work of righteousness shall be peace; and the effect of righteousness quietness and assurance for ever.", vr:"Isaiah 32:17",
+       r:"There's a peace that comes from simply doing the next right thing. When we act with integrity — keeping our word, being honest, doing the small good in front of us — a quiet assurance settles in. Much of our unrest is the low hum of things left undone or done wrong. Today, do one right thing well, and notice the quiet that follows.",
+       h:"A clear conscience makes the softest pillow there is. You can't buy that kind of rest, but you can earn it, one honest choice at a time.",
+       p:"Is there one \"right thing\" you've been avoiding that would bring you peace to finally do? What is it?"},
+      {t:"Breathe", v:"", vr:"",
+       r:"When we're anxious, the very first thing to go is our breath — it goes shallow and quick, and the body reads it as danger. But you carry a peacemaker with you everywhere: your own slow breath. A long, slow exhale tells your whole body it's safe now. Today, when unrest rises, don't fight it with your mind first. Fight it with your breath. Slow and deep. In, and out.",
+       h:"Even the word \"spirit\" comes from an old word for breath. Something holy in just breathing slow. Try it right now — a nice long breath out. There. Feel that?",
+       p:"Take three slow breaths right now, longer on the way out. How does your body feel afterward? Describe it."},
+      {t:"The God of All Peace", v:"Now the Lord of peace himself give you peace always by all means. The Lord be with you all.", vr:"2 Thessalonians 3:16",
+       r:"Notice the fullness of this blessing: peace *always*, by *all means.* Not peace on the good days only, not peace when things go your way — but peace available in every season, by every path. There is no situation so tangled that peace can't reach it, no day so hard that peace is locked out. Wherever you are today, peace can find you there.",
+       h:"Water finds its way into every crack and low place — nothing keeps it out for long. Peace is like that too. It'll find the low places in you and fill them, if you let it.",
+       p:"Where in your life do you most need peace to \"find its way in\" right now? Invite it into that place."},
+      {t:"The Company You Keep", v:"", vr:"",
+       r:"Peace is contagious — and so is its opposite. The people and voices we surround ourselves with shape our inner weather more than we realize. Some company leaves us stirred up and anxious; some leaves us calmer and kinder. Today, notice what you're taking in — the conversations, the news, the scrolling. Choose a little more of what brings peace, a little less of what steals it.",
+       h:"You become like the five people you spend the most time with, they say. Might as well pick a few peaceful ones. Even a peaceful book or a quiet hymn counts as good company.",
+       p:"What \"company\" (people, media, habits) tends to steal your peace? What tends to restore it? How might you adjust the mix?"},
+      {t:"Peace Like a River", v:"For ye shall go out with joy, and be led forth with peace: the mountains and the hills shall break forth before you into singing.", vr:"Isaiah 55:12",
+       r:"Peace is pictured here not as a still pond but as a river — moving, alive, carrying you forward. Real peace isn't a frozen calm where nothing happens; it's a settledness that moves with you through a full and active life. You can be busy and at peace. You can be going out into a hard day and still be \"led forth with peace.\" The river keeps flowing, and so can you.",
+       h:"A river's never in a hurry, but it always gets where it's going. There's a lesson in that — you can move steadily toward your day without the frantic rushing.",
+       p:"What would it look like to move through a busy day \"led forth with peace\" rather than rushed and frazzled? Picture it."},
+      {t:"Enough", v:"", vr:"",
+       r:"So much anxiety comes from the fear that there won't be enough — enough time, enough money, enough energy, enough of us to go around. But peace often begins with a quiet, radical thought: for today, there is enough. Enough for this day's needs. You've had enough every day so far, or you wouldn't be here. Trust that today holds enough too.",
+       h:"The old story of the loaves and fishes started with almost nothing and fed a crowd with baskets left over. Funny how \"not enough\" has a way of becoming enough when it's shared and trusted.",
+       p:"Where does the fear of \"not enough\" steal your peace? Can you find evidence that, so far, there has always been enough?"},
+      {t:"My Peace I Give", v:"Peace I leave with you, my peace I give unto you: not as the world giveth, give I unto you. Let not your heart be troubled, neither let it be afraid.", vr:"John 14:27",
+       r:"The world gives a fragile kind of peace — the kind that lasts only as long as everything goes well, and shatters at the first bad news. But there's another kind offered here, a peace \"not as the world giveth\" — one that doesn't depend on your circumstances staying calm. It's a peace given *to* you, a gift to receive and keep. Reach out and take it today.",
+       h:"The world's peace is like a house of cards — lovely till the first breeze. The other kind is built on rock. Same word, two very different foundations. Build on the rock, friend.",
+       p:"What kind of peace have you been depending on — the fragile \"everything's fine\" kind, or something sturdier? Write about the difference."},
+      {t:"Gratitude Quiets the Heart", v:"", vr:"",
+       r:"It's nearly impossible to be anxious and grateful at the very same moment — they can't quite share the same breath. Gratitude gently crowds out worry, not by denying what's hard, but by making room for what's good alongside it. Today, when the anxious thoughts crowd in, answer them with thanks. Name one good thing. Then another. Watch the heart grow quiet.",
+       h:"You can't count your worries and your blessings at the very same time — the mind only holds one list at a time. Might as well count the good one. It's the better math anyway.",
+       p:"List five things you're grateful for right now. Notice how naming them shifts the weather inside you."},
+      {t:"Rooted", v:"And let the peace of God rule in your hearts, to the which also ye are called in one body; and be ye thankful.", vr:"Colossians 3:15",
+       r:"Notice the strong word: let peace *rule* in your heart — let it be the thing in charge, the one that gets the final say. Most of us let worry rule, or hurry, or fear. But peace can be given the throne instead, made the deciding voice when the day gets loud. As this journey nears its close, imagine handing peace the crown. Let it rule.",
+       h:"A tree with deep roots doesn't argue with the wind — it just sways and holds. Twenty-nine days of tending your peace has grown some roots in you. Feel how much steadier you sway.",
+       p:"If peace were \"ruling\" your heart today, what would you do differently? How would you respond to the day's challenges?"},
+      {t:"Carry It With You", v:"", vr:"",
+       r:"You've reached the end of thirty days of tending your peace. Here's the beautiful thing: peace was never a place you had to arrive at — it's a companion you can carry. You don't leave it here on the last page. You take it with you, into ordinary Tuesdays and hard phone calls and long nights. You are more practiced at peace now, and that practice goes with you. Well done, friend.",
+       h:"Look what you did — thirty days of choosing stillness in a world that never stops shouting. That's not small. Carry your peace out the door with you now. It's yours to keep.",
+       p:"Look back over these thirty days. What has peace taught you? Write a note to carry forward into the days ahead."}
+    ]
+  },
+  gratitude: {
+    id:"gratitude", title:"A Season of Gratitude", sub:"A 30-day walk toward a thankful heart",
+    em:"🙌", days:[
+      {t:"Give Thanks", v:"O give thanks unto the LORD; for he is good: because his mercy endureth for ever.", vr:"Psalm 118:1",
+       r:"Gratitude starts simply — with the choice to give thanks. Not because everything is perfect, but because there is good to be found even on ordinary days. Today you begin a season of looking for the good, and the practice itself will change how you see. The grateful eye finds more to be grateful for. Let's begin looking.",
+       h:"Gratitude is like a muscle, friend — the more you use it, the stronger it gets. Today's your first little lift. Don't worry if it feels awkward; that's just how strong things start.",
+       p:"What's one good thing — even a small one — you can give thanks for right now, at the very start of this journey?"},
+      {t:"The Overlooked Gifts", v:"", vr:"",
+       r:"We're quick to notice what's missing and slow to notice what's here. The roof that didn't leak, the body that carried us through the day, the water that came when we turned the tap — a thousand quiet gifts we walk right past. Today, slow down enough to notice the overlooked. Gratitude often isn't about getting more; it's about finally seeing what we already have.",
+       h:"You never notice the air until it's your turn to be short of breath. Same with most blessings — they're quiet until they're gone. Let's notice a few while they're still here, shall we?",
+       p:"Name three \"overlooked\" gifts you usually walk right past. Really see them today."},
+      {t:"Bless the Lord, Forget Not", v:"Bless the LORD, O my soul, and forget not all his benefits.", vr:"Psalm 103:2",
+       r:"\"Forget not\" — because forgetting is exactly what we do. The good things fade from memory while the worries stay sharp and loud. This verse is a gentle command to remember on purpose, to keep a running list of benefits so they don't slip away. Today, practice remembering. Call to mind the good that's easy to forget.",
+       h:"The mind is like flypaper for the bad and Teflon for the good — the hard stuff sticks and the blessings slide right off. Gratitude is just how we make the good stuff stick a little longer.",
+       p:"What's a benefit or blessing from this past year that you'd almost forgotten? Write it down so it sticks."},
+      {t:"Thank You for the Hands", v:"", vr:"",
+       r:"Nearly everything in your life came through someone's hands. The farmer who grew your food, the driver who brought it, the person who built your chair, the ones who raised you. We like to think we're self-made, but the truth is we're held up by more hands than we could ever count. Today, feel the quiet gratitude of being carried by so many.",
+       h:"Somebody planted trees they'd never sit under just so shade would be waiting for you. That's most of life, really — enjoying shade from trees other people planted. Kind, isn't it?",
+       p:"Whose hands made your day possible today — near or far, known or unknown? Give thanks for a few of them."},
+      {t:"Every Good Gift", v:"Every good gift and every perfect gift is from above, and cometh down from the Father of lights.", vr:"James 1:17",
+       r:"When something good comes, we're quick to credit luck, or timing, or our own cleverness. But this verse invites a different posture: to see the good things as *gifts* — given, not earned; received, not seized. There's a deep peace in gratitude that comes from realizing you didn't have to arrange all your own blessings. Some just came down, freely, like light.",
+       h:"Sunlight falls on everyone the same, no bill in the mail. The best things usually work that way — freely given, more than we deserve, asking nothing back but a grateful heart.",
+       p:"Name a good thing in your life you didn't earn or arrange — something that simply came to you as a gift."},
+      {t:"Grateful for the Ordinary Day", v:"", vr:"",
+       r:"We save our gratitude for big moments — the celebrations, the good news, the milestones. But most of life is ordinary days, and there's a quiet gift in them too. A regular Tuesday with nothing wrong is its own kind of blessing, one we usually only appreciate once it's interrupted. Today, be grateful for the ordinary. It's more precious than it looks.",
+       h:"\"Boring\" days are underrated, friend. Ask anybody who's been through a real emergency — they'd give anything for one plain, ordinary, nothing-wrong afternoon. You might be having one right now.",
+       p:"What's ordinary and good about today? Practice being grateful for a plain, unremarkable blessing."},
+      {t:"In Everything Give Thanks", v:"In every thing give thanks: for this is the will of God in Christ Jesus concerning you.", vr:"1 Thessalonians 5:18",
+       r:"Notice it says give thanks *in* everything, not *for* everything. We're not asked to be grateful that hard things happen — but to find something to be thankful for even while they do. There's almost always a thread of good running through even a hard day: a kindness, a small mercy, a lesson. Gratitude doesn't deny the hard. It just refuses to let the hard have the whole story.",
+       h:"Even the darkest storm cloud has a little silver where the sun hits its edge. You don't have to love the cloud to be grateful for the silver. Both can be true at once.",
+       p:"Think of something hard you're walking through. Can you find one thing *within* it to give thanks for — not for the hard itself, but a thread of good running through it?"},
+      {t:"The Gift of Your Body", v:"", vr:"",
+       r:"Your body has done an astonishing amount of quiet work today without a word of thanks — a heart that beat a hundred thousand times, lungs that never stopped, eyes that read these words. We tend to notice our bodies only when they hurt or disappoint us. Today, thank your body for its faithful, unglamorous work. It's been carrying you your whole life.",
+       h:"Your heart will beat around two and a half billion times in a lifetime, and it never once asks for a day off. That's a faithful little worker in there. Might be worth a quiet thank you.",
+       p:"What is one thing your body did for you today that you usually take for granted? Thank it."},
+      {t:"Enter With Thanksgiving", v:"Enter into his gates with thanksgiving, and into his courts with praise: be thankful unto him, and bless his name.", vr:"Psalm 100:4",
+       r:"Notice how gratitude is the doorway — the way in. Thanksgiving isn't the reward we give after good things happen; it's how we enter into good things in the first place. When we start with thanks, everything after feels different. Today, try entering your day through the gate of gratitude, before anything has even happened. Watch how it changes the room you walk into.",
+       h:"How you walk into a room changes the whole room. Walk in grumbling, and grumble finds you. Walk in grateful, and you'd be surprised what shows up to meet you.",
+       p:"How did you \"enter\" your day today — through what gate? What would it look like to start tomorrow with thanks first?"},
+      {t:"Thankful for the People", v:"", vr:"",
+       r:"Of all our gifts, people are the greatest — and the easiest to take for granted. The ones we see every day, who fold into the background of our lives, are often the ones we'd miss most. Today, don't let the familiar faces go unappreciated. Say the thank-you out loud. Tell someone what they mean to you. Gratitude shared is gratitude doubled.",
+       h:"Nobody ever regretted saying \"I'm grateful for you\" out loud. The words cost nothing and they land like gold. Say them today to somebody who won't be expecting it.",
+       p:"Who in your life do you appreciate but rarely tell? Write what you'd want them to know — then maybe tell them."},
+      {t:"His Mercy Endures", v:"O give thanks unto the LORD; for he is good; for his mercy endureth for ever.", vr:"1 Chronicles 16:34",
+       r:"Some things run out — energy, patience, money, time. But this verse points to a mercy that *endures for ever*, a well that never goes dry. On the days you feel you've used up everyone's patience, including your own, there's a mercy that hasn't run out and never will. That's worth a deep breath of gratitude. You have not exhausted the goodness aimed at you.",
+       h:"Every single morning the sun comes up again, fresh, like the day before is forgiven. Mercy's a lot like sunrise that way — new every morning, and it never sends a final notice.",
+       p:"Where do you need to remember that mercy hasn't run out — for others, or for yourself? Give thanks for the well that doesn't go dry."},
+      {t:"The Gratitude of Hindsight", v:"", vr:"",
+       r:"Some gifts we can only be grateful for looking backward. The job we didn't get that freed us for a better one. The hard season that made us who we are. The detour that turned out to be the way. Today, look back with gratitude at something that didn't feel like a gift at the time but became one. Hindsight has a way of turning old troubles into thanksgivings.",
+       h:"You can only connect the dots looking backward, someone wise once said. Some of the best dots in your life looked like nothing but trouble when you were living them. Funny how that works out.",
+       p:"What past hardship can you now, with hindsight, feel grateful for? What did it give you that you couldn't see at the time?"},
+      {t:"Thanks in the Name", v:"Giving thanks always for all things unto God and the Father in the name of our Lord Jesus Christ.", vr:"Ephesians 5:20",
+       r:"\"Always\" and \"all things\" — this is gratitude as a way of life, not an occasional mood. It's easy to be thankful now and then, when things go well. But the invitation here is to make thanksgiving the constant background music of a life, humming along under everything. Today, practice a thankfulness that isn't waiting for a special occasion — a gratitude that runs always, for all things.",
+       h:"Some folks have a spirit of gratitude that just seems to shine out of them no matter what — you know the type. They weren't born that way. They practiced, one thank-you at a time, till it became who they are.",
+       p:"What would it take for gratitude to become your \"background music\" — a constant, not just an occasional mood? Write about it."},
+      {t:"The Gift of This Home", v:"", vr:"",
+       r:"Wherever you're sitting right now — a house, an apartment, a single room — it's holding you safe today. Four walls, a roof, a place to lay your head. It's easy to see only what we wish were different about our homes; harder to feel grateful for the shelter itself. But a warm, dry place to be is a gift millions long for. Today, be thankful for the place that holds you.",
+       h:"Home isn't about how grand it is — it's about being held. A little cabin with love in it beats a mansion with none, every single time. Be grateful for wherever your love lives.",
+       p:"What do you love about the place you call home — not what you'd change, but what you're grateful for? Name it."},
+      {t:"Whole Heart", v:"I will praise thee, O LORD, with my whole heart; I will shew forth all thy marvellous works.", vr:"Psalm 9:1",
+       r:"Halfway through, notice the fullness in this verse: praise with the *whole* heart, not a distracted corner of it. So often our gratitude is half-hearted — a quick \"thanks\" tossed over the shoulder on the way to the next thing. But whole-hearted gratitude, the kind that stops and really means it, does something to a person. It fills the emptiness. Today, be grateful with your whole heart, not just a piece of it.",
+       h:"Fifteen days of practicing gratitude, friend — that's a real habit forming. You're teaching your heart a new default, and it's taking. I can tell. Keep going.",
+       p:"Look back on these two weeks of gratitude. Has anything shifted in how you see your ordinary days? Write about it."},
+      {t:"Grateful for Enough", v:"", vr:"",
+       r:"Advertising runs on making us feel like we don't have enough — a newer, nicer, better version is always just out of reach. But gratitude is the quiet rebellion that says: what I have is enough. Not that we can't hope or grow, but that we can be at peace right now, with today's portion. Enough is a feeling, not an amount. And gratitude is how we finally feel it.",
+       h:"The happiest folks aren't the ones with the most — they're the ones who want the least. Contentment's a kind of wealth no store can sell you. You just decide you have enough, and suddenly you're rich.",
+       p:"Where do you already have \"enough\" that you sometimes forget to feel grateful for? Sit with that feeling of enough today."},
+      {t:"Come With Thanksgiving", v:"Let us come before his presence with thanksgiving, and make a joyful noise unto him with psalms.", vr:"Psalm 95:2",
+       r:"There's a joyfulness woven into real gratitude — a \"joyful noise,\" not a solemn duty. Thanksgiving at its best isn't grim or forced; it bubbles up, it wants to be expressed, it makes a happy sound. Today, let your gratitude be a little noisy. Hum, sing, say it out loud, laugh at something good. Joy and thanks were always meant to travel together.",
+       h:"Ever notice how you can't hum a tune and feel sorry for yourself at the same time? Try it. A little joyful noise is medicine, and gratitude is the melody.",
+       p:"When did you last feel gratitude bubble up into joy — a \"joyful noise\"? What made it happen?"},
+      {t:"The Gift of Difficulty", v:"", vr:"",
+       r:"Here's a harder gratitude: being thankful for the difficult people and situations that stretched us. The demanding boss who made us better. The hard year that grew our roots. The challenge we didn't want that revealed strength we didn't know we had. Not every difficulty is a gift, but many turn out to be, in the end. Today, consider giving thanks for something hard that made you who you are.",
+       h:"A diamond is just a lump of coal that handled its pressure well. Some of the most valuable things in you were made under pressure you'd never have chosen. Worth a grudging thank-you, maybe.",
+       p:"What difficulty, in hindsight, shaped you for the better? Can you find gratitude for it, even a little?"},
+      {t:"Good and Good Forever", v:"O give thanks unto the LORD, for he is good: for his mercy endureth for ever.", vr:"Psalm 107:1",
+       r:"This little verse repeats through the Psalms like a chorus you can't shake — a reminder worth returning to again and again. At the root of all our gratitude is one steady truth: goodness is real, and it lasts. On the days when the world feels harsh and short on kindness, this is the anchor. There is a goodness underneath everything that does not run out. Give thanks for that.",
+       h:"Some songs you sing so many times they become part of you. \"God is good\" is one worth singing till it's in your bones — especially on the days you're having trouble believing it.",
+       p:"What evidence of goodness have you seen recently — in the world, in a person, in your own life? Give thanks for it."},
+      {t:"A Gratitude Walk", v:"", vr:"",
+       r:"Gratitude doesn't have to stay in your head — sometimes it helps to take it for a walk. Step outside, or even just to a window, and simply notice: the color of the sky, the shape of a tree, the ordinary miracle of weather. The world is quietly generous with beauty, offering it free to anyone who looks up. Today, take your gratitude outdoors and let the world fill it up.",
+       h:"There's a whole sky putting on a free show every single evening, and most folks are inside missing it. Step out and catch a sunset sometime. Best ticket in town, and it's on the house.",
+       p:"Go to a window or outside. Name three beautiful things you can see right now. Describe one of them."},
+      {t:"Rooted in Thanks", v:"Rooted and built up in him, and stablished in the faith, as ye have been taught, abounding therein with thanksgiving.", vr:"Colossians 2:7",
+       r:"Notice the word \"abounding\" — gratitude that overflows, spills over, runs past the brim. Three weeks in, gratitude should be starting to feel less like a task and more like a well that keeps filling. When thankfulness becomes your root system, it steadies you in every weather. Today, feel how much more naturally the thanks comes than it did on Day 1. It's taking root.",
+       h:"A cup that's overflowing has to be filled first — you can't pour from empty. All this gratitude you've been practicing is filling your cup, friend. Soon it'll be spilling over onto everyone near you.",
+       p:"Is your gratitude starting to \"abound\" — to overflow more easily than before? Where do you notice it spilling over?"},
+      {t:"Thankful for Second Chances", v:"", vr:"",
+       r:"Few gifts are sweeter than a second chance — the do-over, the fresh start, the morning after a hard night when you get to begin again. We've all needed one. We've all, hopefully, been given one. Today, be grateful for the second chances you've received, and maybe for the ones you've offered others. Grace is one of life's greatest gifts, and it usually comes disguised as a plain new day.",
+       h:"Every morning is a fresh sheet of paper with no mistakes on it yet, as somebody's grandmother liked to say. What a gift, to get a clean page every single day. Most of us have needed more than a few.",
+       p:"What second chance are you grateful for — one you received, or one you gave? Write about it."},
+      {t:"Thanks in All Circumstances", v:"Be careful for nothing; but in every thing by prayer and supplication with thanksgiving let your requests be made known unto God.", vr:"Philippians 4:6",
+       r:"Notice that thanksgiving is tucked right in beside asking. Even when we bring our worries and needs, we're invited to wrap them in gratitude. It's a way of remembering, in the middle of what we lack, all that we've already been given. Today, when you find yourself asking for something, try adding a thank-you for something. Gratitude and need can share the same prayer.",
+       h:"It's hard to stay anxious while you're counting blessings — the two just won't sit still in the same chair. Try wrapping your worries in a little thanks and watch them shrink down to size.",
+       p:"Write down something you're worried about or asking for — then wrap it in thanks by naming what you already have."},
+      {t:"The Gift of Memory", v:"", vr:"",
+       r:"What a gift it is to remember — to carry the faces of people we love, the sound of old laughter, the places that shaped us, all tucked safely inside. Memory lets us keep what time takes away. Today, be grateful for a good memory, one you can revisit anytime for free. The people and moments that made you are still with you, held in the quiet album of your mind.",
+       h:"A good memory is a gift that keeps on giving — you can unwrap it as many times as you like and it never wears out. Go pull out a favorite one today and enjoy it all over again.",
+       p:"Describe one treasured memory you're grateful to carry. Let yourself enjoy revisiting it."},
+      {t:"Thanks for the Small Mercies", v:"It is of the LORD's mercies that we are not consumed, because his compassions fail not. They are new every morning: great is thy faithfulness.", vr:"Lamentations 3:22-23",
+       r:"\"New every morning\" — that's the gift hiding in plain sight. Every single day arrives with a fresh supply of mercy, not leftover from yesterday but newly made for today. However you spent yesterday's grace, today's is already waiting, full and untouched. Give thanks that you don't have to ration mercy. There's a new batch every morning, faithful as the sunrise.",
+       h:"Fresh mercy every morning, like warm bread from the oven — yesterday's is gone but today's is already rising. You never have to make do with stale grace. Isn't that a comfort?",
+       p:"What \"new mercy\" has this morning brought you? Give thanks for something fresh about today."},
+      {t:"Gratitude Changes the Giver", v:"", vr:"",
+       r:"Here's the quiet secret of a grateful life: it changes the one who practices it more than anyone else. The grateful person isn't grateful because they have more — they have more *because* they're grateful. Thanksgiving reshapes the heart that holds it, softening it, filling it, teaching it to see gifts everywhere. You've been changing these past weeks. Gratitude has been quietly reworking you from the inside.",
+       h:"Gratitude's a boomerang, friend — you throw it out into the world and it comes right back and changes you. Nobody practices thankfulness and stays the same. You're proof of that.",
+       p:"How have you changed over these weeks of practicing gratitude? What feels different inside?"},
+      {t:"Praise for the Marvelous", v:"Make a joyful noise unto the LORD, all ye lands. Serve the LORD with gladness: come before his presence with singing.", vr:"Psalm 100:1-2",
+       r:"Sometimes gratitude grows so full it can't stay quiet — it wants to sing. There's a gladness in this verse that spills right out into music. You don't have to have a good voice; you just have to have a grateful heart. Today, let your thankfulness make some kind of joyful noise — a hummed hymn, a spoken thanks, a genuine smile. Gladness is gratitude wearing its Sunday best.",
+       h:"They say the bird doesn't sing because it has an answer — it sings because it has a song. You've got a song of thanks in you too by now. Let a little of it out today.",
+       p:"What makes you want to \"make a joyful noise\" — what fills you with such gladness you could sing about it? Write it down."},
+      {t:"The Gift of Right Now", v:"", vr:"",
+       r:"This present moment — this very one, as you read these words — is a gift you'll never get back and never get again. We spend so much of life in the past's regrets or the future's worries that we forget to be grateful for the only moment we actually have: now. Today, be thankful for right now. The breath you're taking. The quiet of this page. This one irreplaceable moment of your one precious life.",
+       h:"They call it the present because it's a gift — and it's the only one that comes wrapped fresh every single second. Most folks are too busy to open it. Not you, not today.",
+       p:"Pause and notice this exact moment. What's good about right now — this breath, this quiet, this page? Give thanks for it."},
+      {t:"A Thankful Life", v:"And whatsoever ye do in word or deed, do all in the name of the Lord Jesus, giving thanks to God and the Father by him.", vr:"Colossians 3:17",
+       r:"\"Whatsoever ye do\" — this is gratitude grown all the way into a way of living, threaded through every word and deed. As this journey nears its close, imagine gratitude not as a thing you do sometimes but as the air you move through — a thankfulness underneath the whole day, coloring how you speak, work, and love. That's the destination: not a grateful moment, but a grateful life.",
+       h:"Twenty-nine days ago gratitude was an exercise. Now look at you — it's becoming a way of being. That's the whole goal, friend: not to *do* thankful things, but to *be* a thankful soul.",
+       p:"What would it mean for your whole life — not just moments — to be shaped by gratitude? Describe that life."},
+      {t:"Count It All", v:"", vr:"",
+       r:"You've reached the end of thirty days of counting your blessings. Look back at all you've named — the overlooked gifts, the people, the second chances, the ordinary miracles. They were always there; you just weren't always looking. Now you know how to look. That's the gift you carry out of this season: not a full list, but a grateful eye that will keep finding more, every single day, for the rest of your life. Well done.",
+       h:"Look what you did — thirty days of finding the good, and now finding it comes natural. The list never really ends, you know. You'll be counting blessings till you're old and gray, and then you'll count some more. What a way to live.",
+       p:"Look back over these thirty days of gratitude. What has thankfulness taught you? Write a note to carry forward."}
+    ]
+  },
+  comfort: {
+    id:"comfort", title:"A Season of Comfort", sub:"A 30-day walk for grief and hard times",
+    em:"🌷", days:[
+      {t:"You Don't Have to Be Okay Today", v:"", vr:"",
+       r:"Let's begin with permission: you don't have to be okay today. Not for me, not for anyone. This journal isn't here to hurry you out of what you're feeling — it's here to sit with you in it. Grief and hard seasons aren't problems to solve; they're valleys to walk through, slowly, with a hand to hold. Wherever you are today is allowed. Let's just begin, gently.",
+       h:"There's no wrong way to hurt, friend, and no schedule you're behind on. Come sit a while. We'll take this one slow, easy day at a time, and I'll be right here beside you.",
+       p:"How are you, really — not the answer you give others, but the true one? Write it here. This page won't rush you."},
+      {t:"Near to the Brokenhearted", v:"The LORD is nigh unto them that are of a broken heart; and saveth such as be of a contrite spirit.", vr:"Psalm 34:18",
+       r:"When the heart breaks, it can feel like being utterly alone — like no one could possibly be close to this much pain. But this verse says something the opposite of alone: that nearness comes *toward* the broken heart, not away from it. You are not too much. Your grief hasn't driven comfort away. If anything, it has drawn nearness closer. You are not walking this alone, even when it feels that way.",
+       h:"When a lamb is hurt, the shepherd doesn't wait for it to get better before he comes — he comes *because* it's hurt. Nearness isn't earned by being okay. It comes straight toward the ache.",
+       p:"Where do you feel most alone in what you're carrying? Even naming it invites some nearness in. Write it down."},
+      {t:"Let the Tears Come", v:"", vr:"",
+       r:"Somewhere we learned to apologize for tears, to swallow them, to be \"strong.\" But tears are not weakness — they're the heart's own way of carrying grief out into the open where it can be released. Every tear is love with nowhere left to go. Today, if the tears come, let them. They're not a failure. They're one of the truest, most human forms of healing there is.",
+       h:"Did you know tears of grief are chemically different from ordinary tears? Your body literally weeps out the stress — it's built to cry for a reason. So don't hold them back, friend. Let your body do its good work.",
+       p:"What have you been holding back tears about? You don't have to hold them here. Write about what makes them come."},
+      {t:"Blessed Are They That Mourn", v:"Blessed are they that mourn: for they shall be comforted.", vr:"Matthew 5:4",
+       r:"What a strange and tender thing — to call the mourning *blessed.* Not because grief is good, but because comfort is promised right to the ones who hurt. The mourning aren't overlooked or left behind; they're specifically the ones the comfort is coming for. If you are mourning today, you are exactly the person this promise was made for. The comfort is on its way to you.",
+       h:"Comfort has a way of finding the ones who need it most — like warmth finding cold hands. You're not forgotten in your sorrow. You're first in line for the comfort.",
+       p:"What would comfort look like for you right now — not a fix, just comfort? Describe what your heart needs today."},
+      {t:"The Weight of the Morning", v:"", vr:"",
+       r:"For the grieving, mornings can be the hardest — that cruel half-second of waking before you remember, and then the remembering lands all over again. If your mornings are heavy right now, know that this is one of the most common and human parts of grief. You're not doing it wrong. Be extra gentle with yourself in those first waking minutes. The morning will get lighter, slowly. For now, just make it to the coffee.",
+       h:"Some mornings the bravest thing you'll do all day is put your feet on the floor. That counts, friend. That counts as courage. Don't let anyone tell you different.",
+       p:"What are your mornings like right now? What's one small, gentle thing that might make them a little easier?"},
+      {t:"He Heals the Brokenhearted", v:"He healeth the broken in heart, and bindeth up their wounds.", vr:"Psalm 147:3",
+       r:"Notice the tenderness of the image: not a heart forced to hurry up and heal, but one gently *bound up*, the way you'd carefully wrap a wound so it can mend in its own time. Healing isn't rushed here. It's patient, careful, unhurried work. Your broken heart isn't being told to get over it. It's being bound up, gently, and healing will come — not on anyone's schedule but the slow, sure schedule of real mending.",
+       h:"A broken bone heals stronger at the break, they say — but only if you don't keep bumping it. Give your heart the same patience you'd give a mending bone. Rest it. Protect it. Let it knit.",
+       p:"What wound are you asking to heal too quickly? What would it look like to give it the patience it needs?"},
+      {t:"Grief Is Love", v:"", vr:"",
+       r:"Here is a truth worth holding close: grief is not the opposite of love — it's the proof of it. We only grieve what we loved. The depth of the ache is a measure of the depth of the love, and that love isn't gone just because someone or something is. Your grief is love that's still here, still real, still yours to carry. It doesn't shrink the love. It honors it.",
+       h:"Somebody once said grief is just love with no place to go. Isn't that the truest thing? All that love is still in you. It just aches now because it can't be delivered the way it used to.",
+       p:"What or whom does your grief honor? Write about the love beneath the ache — the love that's still with you."},
+      {t:"Through the Valley", v:"Yea, though I walk through the valley of the shadow of death, I will fear no evil: for thou art with me; thy rod and thy staff they comfort me.", vr:"Psalm 23:4",
+       r:"Notice the small, crucial word: *through.* You walk *through* the valley — you don't set up camp there forever. Valleys have far sides. And you don't walk it alone; the whole comfort of this verse is the presence walking beside you in the dark. You may not be able to see the far side yet, and that's alright. Just keep walking, one step, and know you're accompanied every step of the way.",
+       h:"A valley's the low place *between* two hills — which means there's always higher ground coming, even when you can't see it yet. You're passing through, friend. You're not staying. Keep walking.",
+       p:"What \"valley\" are you walking through right now? What would it mean to trust it's a \"through,\" not a forever?"},
+      {t:"On the Days You Can't", v:"", vr:"",
+       r:"Some days in grief, you simply can't — can't cook, can't call anyone, can't do the thing on the list. And that has to be okay, because it's the honest truth of hard seasons. You are running on a kind of exhaustion most people can't see. Lower the bar. Let some things go undone. Survival is enough of an accomplishment on the hardest days. Be as kind to yourself as you'd be to a dear friend in your shoes.",
+       h:"When you're healing, your body's doing invisible heavy lifting — that's why you're so tired. Give yourself the grace you'd give someone recovering from surgery. Because in a way, you are.",
+       p:"What can you let go of today — a task, an expectation, a \"should\"? Give yourself permission right here."},
+      {t:"The God of All Comfort", v:"Blessed be God, even the Father of our Lord Jesus Christ, the Father of mercies, and the God of all comfort; who comforteth us in all our tribulation.", vr:"2 Corinthians 1:3-4",
+       r:"\"The God of *all* comfort\" — not some comfort, not comfort for certain approved sorrows, but all of it. There is no grief so specific, no ache so strange or private, that comfort can't reach it. Whatever the particular shape of your sorrow, there's a comfort shaped to fit it. And notice the verse continues — those who are comforted go on to comfort others. Your pain, someday, may become someone else's comfort. But not yet. For now, just receive.",
+       h:"Comfort's a funny thing — it flows downhill from those who've been comforted to those still hurting. One day the comfort you're receiving now will pour right out of you to someone who needs it. But that's for later. Today, just let it fill you.",
+       p:"Where do you most need comfort to reach right now? Write it, and imagine a comfort shaped exactly to fit it."},
+      {t:"The Ones Who Stay", v:"", vr:"",
+       r:"In hard seasons, you learn who your people really are — the ones who show up, who sit with you in silence, who don't need you to be okay. Today, if you have even one person like that, that's a treasure worth naming. And if you're feeling short on them, know that reaching out — even a small text, even to one person — is not weakness. It's how we're meant to carry heavy things: together, never alone.",
+       h:"The best kind of friend in a hard time isn't the one with the perfect words — it's the one who just sits close and stays. Silence shared beats advice given, nearly every time. Let someone sit with you.",
+       p:"Who has \"stayed\" with you in this hard season? Or who could you reach out to, even in a small way, today?"},
+      {t:"Weeping and Morning", v:"Weeping may endure for a night, but joy cometh in the morning.", vr:"Psalm 30:5",
+       r:"This verse doesn't rush your grief — it honors the night. Weeping *may endure* — it's allowed to stay a while, sometimes a long while. But notice the quiet promise tucked at the end: morning is coming. Not that grief ends overnight, but that this darkness is not the final word. Joy — real joy — has a way of returning, softer and changed, but real. The night is real. And so is the morning that follows it.",
+       h:"The night is always darkest just before dawn, and the dawn always comes — it has never once failed to. Your morning is coming too, friend. Not because I hope so, but because that's just how nights work.",
+       p:"What does \"morning\" — even a small return of light — look like for you? You don't have to be there yet. Just imagine it."},
+      {t:"Let Them Say the Name", v:"", vr:"",
+       r:"When we've lost someone, the world often goes strangely quiet about them — people avoid the name, afraid of stirring up pain. But most grieving hearts long for the opposite: to hear the name, to tell the stories, to keep the memory alive out loud. If that's you, give yourself permission to speak of who you've lost. And if someone shares a memory with you, receive it as the gift it is. Love spoken aloud keeps the beloved close.",
+       h:"Saying a lost loved one's name isn't reopening the wound — it's tending the flame. They lived. They mattered. Speaking of them keeps that true. So say the name, friend, as often as your heart needs to.",
+       p:"Write about someone or something you've lost. Tell a story, say the name, let the memory breathe."},
+      {t:"He Will Not Fail You", v:"And the LORD, he it is that doth go before thee; he will be with thee, he will not fail thee, neither forsake thee: fear not, neither be dismayed.", vr:"Deuteronomy 31:8",
+       r:"Grief can make us feel abandoned — by people, by God, by the life we thought we'd have. But this verse stacks up promise after promise against that fear: goes *before* you, is *with* you, will not *fail* you, will not *forsake* you. Even when you feel utterly let down, you are not forsaken. The presence hasn't left, even in the silence. Especially in the silence.",
+       h:"On a beach, the footprints go two sets, then one — and the one set, the old story says, is where you were carried. The hardest stretches, when you felt most alone, may be exactly where you were being carried all along.",
+       p:"Where have you felt forsaken or let down in this season? Write it honestly. Then consider: might you have been carried?"},
+      {t:"Grief Comes in Waves", v:"", vr:"",
+       r:"Halfway through, here's something that helps so many: grief isn't a straight line that gets steadily better. It comes in waves — days you feel almost yourself, then a song or a smell or an empty chair knocks you flat again. This isn't backsliding. This is exactly how grief moves. When a wave comes, don't panic that you're \"going backward.\" Let it wash through. It will recede again. The waves do get farther apart, in time.",
+       h:"Even the ocean doesn't crash all the time — the big waves come, then the calm, then another wave. Grief breathes like the tide. When a wave knocks you down, just remember: the calm always comes back around too.",
+       p:"Have you noticed your grief coming in waves? Describe a recent wave — and the calm that eventually followed it."},
+      {t:"Fear Thou Not", v:"Fear thou not; for I am with thee: be not dismayed; for I am thy God: I will strengthen thee; yea, I will help thee.", vr:"Isaiah 41:10",
+       r:"Loss often brings fear right along with the sorrow — fear of the future, fear of facing it alone, fear of a life reshaped by absence. This verse answers the fear directly and repeatedly, like a hand on the shoulder saying: not alone, not alone, not alone. You will be strengthened. You will be helped. You don't have to summon courage from nowhere — it will be given, enough for each day, as each day comes.",
+       h:"Courage isn't the absence of fear, friend — it's being scared and taking the next small step anyway. And you don't even have to find that courage yourself. It gets handed to you, fresh, each morning you need it.",
+       p:"What are you afraid of in this season? Write the fear plainly. Then write what strength or help you'd need to face it."},
+      {t:"The Comfort of Small Routines", v:"", vr:"",
+       r:"When life falls apart, small routines become quiet anchors — the morning cup, the made bed, the short walk, the same chair. They may feel almost silly against the size of the grief, but they're not. They're the little rails that keep us on track when everything else has come loose. Today, tend one small routine, however humble. It's a way of telling yourself: life still holds, in small steady ways, even now.",
+       h:"When the storm's raging, sailors reach for the handrail — not because it stops the storm, but because it keeps them steady through it. Your little routines are handrails, friend. Hold on to them. No shame in that.",
+       p:"What small routine steadies you? How could you lean on it a little more this week?"},
+      {t:"Turned to Dancing", v:"Thou hast turned for me my mourning into dancing: thou hast put off my sackcloth, and girded me with gladness.", vr:"Psalm 30:11",
+       r:"This is a verse from the far side of grief — a testimony that mourning does not have the last word forever. There's no timeline attached, no pressure to hurry there. But it plants a seed of hope: what feels like permanent sackcloth can, in time, be exchanged for gladness. You may not feel any dancing in you today, and that's completely alright. But it's coming — a changed, gentler gladness, in its own good time.",
+       h:"The same feet that shuffle heavy through a hard season will dance again someday — maybe a slower dance, maybe a wiser one, but a dance. Don't rush it. Just know your feet remember how.",
+       p:"What did gladness or lightness feel like, before this hard season? Write about it — not to force it back, just to remember it exists."},
+      {t:"Guilt and Grief", v:"", vr:"",
+       r:"Grief often arrives tangled up with guilt — the things we wish we'd said, the visit we didn't make, the \"if only\" that loops in the mind at 3 a.m. Please hear this gently: you did the best you could with what you knew and had at the time. Hindsight makes everyone wiser than they could have been in the moment. Lay down the guilt where you can. It isn't a debt you owe. Grief is heavy enough to carry without it.",
+       h:"Nobody gets it all right, friend — not with the people we love most, not ever. Loving imperfectly is just how humans love. The love was real even where it stumbled. Let the \"if onlys\" rest.",
+       p:"What guilt or \"if only\" have you been carrying? Write it here — and then consider setting it down. You did your best."},
+      {t:"Come Unto Me", v:"Come unto me, all ye that labour and are heavy laden, and I will give you rest.", vr:"Matthew 11:28",
+       r:"\"Heavy laden\" — that's grief, isn't it. The weight you carry that others can't see. This invitation is for exactly that weight. Not \"come once you've pulled yourself together,\" but come *now*, heavy as you are, and find rest. You don't have to carry the whole load one more solitary step by yourself. There is rest available — real rest for a bone-tired heart. Come and lay it down.",
+       h:"A tired traveler doesn't clean up before resting at the inn — they just fall gratefully into the bed. Come as weary and worn as you are, friend. The rest isn't for the tidy. It's for the tired.",
+       p:"What weight would you set down right now if you could? Write it here as a way of beginning to lay it down."},
+      {t:"Let People Help", v:"", vr:"",
+       r:"Many of us are far better at giving help than receiving it — and grief has a way of forcing us to let others in. When someone offers to bring a meal, run an errand, or just sit with you, saying yes isn't weakness. It's a gift you give *them*, too — people long to help those they love and often don't know how. Today, if help is offered, consider receiving it. You don't have to carry this alone, and you were never meant to.",
+       h:"Letting someone help you is its own kind of generosity — you're giving them the joy of being useful to someone they love. So say yes to the casserole, friend. You'd bring one too.",
+       p:"What kind of help do you need but hesitate to accept? Who might be waiting for the chance to give it?"},
+      {t:"A Very Present Help", v:"God is our refuge and strength, a very present help in trouble.", vr:"Psalm 46:1",
+       r:"Notice the words \"very present\" — not distant, not delayed, not help that arrives after the trouble has passed. Present *in* the trouble, right in the thick of it. When you're in the middle of the hard thing, that's precisely where the refuge is. You don't have to make it through to some safer place before you find shelter. The shelter is here, in the storm, with you now.",
+       h:"A storm shelter's no good if it's across town — you need it right where you are when the wind hits. That's the kind of help this is, friend. Not far off. Right here, right now, in the thick of it.",
+       p:"Where do you most need a \"refuge\" right in the middle of things today? Write about what shelter would feel like."},
+      {t:"The Second Firsts", v:"", vr:"",
+       r:"After a loss, there are the first firsts — the first birthday, first holiday, first empty season — and everyone knows to brace for those. But the second year holds its own quiet grief, when the world has moved on and expects you to have, too. If you're in the long middle of grief, past the casseroles and cards, please know: your sorrow is still valid. There's no expiration date on missing someone you love. Take all the time your heart needs.",
+       h:"Grief doesn't check a calendar, friend. Some folks will expect you \"back to normal\" by now, but you get to grieve on love's timeline, not theirs. However long it takes is exactly how long it takes.",
+       p:"Do you feel any pressure to \"be over it\" by now? Give yourself permission here to grieve on your own timeline."},
+      {t:"He Will Wipe Away Tears", v:"And God shall wipe away all tears from their eyes; and there shall be no more death, neither sorrow, nor crying, neither shall there be any more pain: for the former things are passed away.", vr:"Revelation 21:4",
+       r:"This is the great promise the grieving hold onto: that sorrow is not forever, that a day is coming when every tear is personally wiped away, and pain and loss are simply no more. It doesn't erase today's ache — but it frames it. This grief, as real and heavy as it is, is not the end of the story. There's a final chapter where all of this is made right, and no goodbye is permanent. Hold that hope on the hard days.",
+       h:"Imagine a hand gentle enough to wipe away every tear you've ever cried, one by one, till there's not a trace left. That day is coming, friend. This sorrow has a final page, and it's a good one.",
+       p:"What comfort do you find (or want to find) in the hope that sorrow isn't the end of the story? Write about it."},
+      {t:"Grief Changes Shape", v:"", vr:"",
+       r:"Here's something the long-grieved will tell you: grief never fully disappears, but it does change shape. In time, the sharp, breath-stealing pain softens into something more like a tender ache, a bittersweetness, even a warmth when you remember. You don't \"get over\" a great love — you grow around it, until the love takes up more room than the loss. The grief becomes a quieter companion. Different, but not gone. And that's as it should be.",
+       h:"They say you don't get smaller than your grief — you grow bigger around it. The loss stays the same size, but your life grows and grows around it, till there's room for joy again right alongside the ache. Both, together. That's healing.",
+       p:"Has your grief changed shape at all over time? Or if it's still sharp, what would you want it to soften into someday?"},
+      {t:"Passing Through the Waters", v:"When thou passest through the waters, I will be with thee; and through the rivers, they shall not overflow thee.", vr:"Isaiah 43:2",
+       r:"Notice, again, that word: *through.* Not around the deep waters, not spared them — but through, and accompanied, and not overwhelmed. This verse doesn't promise a life without floods. It promises that the floods won't have the final say, that you'll pass through them and come out the other side. The waters are real. So is the promise that they will not overflow you. You are going to make it through.",
+       h:"A little boat rides out storms that would swamp it, so long as it keeps taking on less water than it bails. You're bailing, friend, one day at a time. And you're staying afloat. Look — you're still here.",
+       p:"What \"deep waters\" are you passing through? Write about staying afloat — the bailing you're doing, day by day."},
+      {t:"Finding Beauty Again", v:"", vr:"",
+       r:"There often comes a strange, tender moment in grief — the first time something feels beautiful again. A sunset, a song, a child's laugh — and you feel it, really feel it, and then maybe feel guilty for feeling it. Please hear this: letting beauty back in is not betraying your grief or the one you've lost. It's part of healing. The love that grieves also gives you permission to live and to feel joy again. Beauty returning is not disloyalty. It's life insisting on itself, gently.",
+       h:"Flowers grow on battlefields, friend — beauty has a stubborn way of returning to the hardest ground. When you feel it come back, don't push it away out of guilt. Let it in. You're allowed. You're so allowed.",
+       p:"Have you felt any flicker of beauty or lightness returning? Write about it — and give yourself permission to welcome it."},
+      {t:"The Lord Is Good", v:"The LORD is good, a strong hold in the day of trouble; and he knoweth them that trust in him.", vr:"Nahum 1:7",
+       r:"\"A strong hold in the day of trouble\" — a place to run to, to shelter in, to hold onto when the ground gives way. And notice the last part: *he knoweth them.* You are known. Your particular grief, your specific ache, the exact shape of what you've lost — it's not a mystery or a statistic. You are known by name, in your sorrow, held by One who sees exactly what you carry. You are not a stranger to the comfort coming toward you.",
+       h:"Being truly known is one of the deepest comforts there is — to not have to explain, because someone already understands the whole of it. You're known that way, friend, right down to the tears you cry when no one's watching.",
+       p:"What do you wish someone truly understood about your grief? Write it here, to the One who already knows."},
+      {t:"Carrying Them Forward", v:"", vr:"",
+       r:"As this journey nears its close, here's a comfort to carry: those we've loved and lost are not entirely gone — they live on in us. In the way you laugh like them, the values they gave you, the recipes and sayings and small habits you carry forward. You are, in part, a living memorial to everyone who loved you and shaped you. Grieving them and carrying them forward aren't opposites. To live well, marked by their love, is one of the truest ways to honor them.",
+       h:"Every kind thing you do that they taught you, every way you love that they showed you — that's them, still moving through the world in you. You're carrying them forward, friend. They're not as gone as they feel.",
+       p:"How do you carry a lost loved one forward — in your habits, values, laugh, or love? Write about the ways they live on in you."},
+      {t:"Gentle With Yourself, Always", v:"", vr:"",
+       r:"You've reached the end of thirty days of sitting with your sorrow — and that took real courage, to keep showing up to the ache instead of running from it. Here's the truth to carry out of this season: healing isn't a finish line you cross once. It's a gentleness you keep practicing, a kindness toward yourself that you'll need again and again. The grief may return in waves for the rest of your life, softer each time. And each time, you'll know how to be tender with yourself. That's what you take with you. Be gentle, always. You've earned it.",
+       h:"Look what you did — thirty days of tending a tender heart, and you didn't give up on yourself once. Carry that gentleness out the door with you, friend. On the hard days ahead, be as kind to yourself as I've tried to be with you. You deserve exactly that.",
+       p:"Look back over these thirty days. What has this tender season taught you? Write a gentle note to carry forward."}
+    ]
+  },
+  joy: {
+    id:"joy", title:"A Season of Joy", sub:"A 30-day walk toward a glad heart",
+    em:"😊", days:[
+      {t:"This Is the Day", v:"This is the day which the LORD hath made; we will rejoice and be glad in it.", vr:"Psalm 118:24",
+       r:"Joy begins with a decision about today — *this* day, the one you're in, not some better day you're waiting for. It's easy to postpone gladness until things settle down, until the timing's right, until we've earned it. But this day, ordinary as it is, was made — and it's ours to be glad in. Let's begin this journey by choosing joy in the day we've actually got. That's where all real joy starts.",
+       h:"There's only ever one day you can be glad in, friend, and it's this one. Yesterday's spent and tomorrow's not here yet. So let's not waste today waiting for a better one. This is the day.",
+       p:"What's one thing about *this* day — right now — you can choose to be glad about? Start there."},
+      {t:"Joy Isn't Happiness", v:"", vr:"",
+       r:"Here's a distinction worth knowing: happiness depends on what's happening — good news, good weather, things going our way. But joy runs deeper. Joy is a settled gladness that can hum along even under a gray sky, even on a hard day. Happiness is a visitor; joy can be a resident. This journey isn't about pretending everything's wonderful. It's about growing the deeper kind of gladness that doesn't need perfect conditions.",
+       h:"Happiness is like a sunny day — lovely, but it comes and goes. Joy is more like a fireplace: you can light it even when it's storming outside. We're building you a fireplace, friend, not chasing sunshine.",
+       p:"Can you think of a time you felt real joy even when things weren't \"happy\"? What was that like?"},
+      {t:"The Joy of the Lord Is Your Strength", v:"Neither be ye sorry; for the joy of the LORD is your strength.", vr:"Nehemiah 8:10",
+       r:"Notice something surprising: joy is called a *strength.* We tend to think of joy as a luxury, a nice extra once the important, serious business is handled. But this verse flips it — joy is what holds you up, what gives you the energy to keep going. A joyful heart is a strong heart. When you tend your joy, you're not being frivolous. You're building the strength you'll need for everything else.",
+       h:"You know how much lighter a heavy load feels when you're humming a tune? That's not your imagination — joy really does give you strength to carry things. It's not the icing, friend. It's fuel.",
+       p:"Where do you need strength right now? How might tending a little joy actually help you find it?"},
+      {t:"Little Sparks", v:"", vr:"",
+       r:"Joy rarely arrives as a bonfire — more often it's little sparks scattered through an ordinary day. The first sip of good coffee. A dog's ridiculous happiness to see you. A song that comes on at just the right moment. A joke that makes you snort. We miss most of our joy not because it isn't there, but because we're not watching for the sparks. Today, go looking for the little ones. They add up to more than you'd think.",
+       h:"A whole night sky is just a scatter of little sparks, and look how it lights up the dark. Your day's the same — a handful of small joys, if you'll notice them, and suddenly the whole thing glows.",
+       p:"What little \"sparks\" of joy have flickered through your day so far? Name three, however small."},
+      {t:"Joy Comes in the Morning", v:"Weeping may endure for a night, but joy cometh in the morning.", vr:"Psalm 30:5",
+       r:"This verse holds both truths at once — the night of weeping is real, and so is the morning of joy. It doesn't pretend hard nights don't happen. But it insists they don't get the final word. Joy has a way of returning, faithfully, like the sunrise — not because you forced it, but because that's simply how life is built to move: through the dark and out again into light. If you're in a long night, hold on. Morning is coming, and it always brings joy with it.",
+       h:"The sun has never once forgotten to come up, in all of history. Joy's a lot like that sunrise, friend — faithful, dependable, and it always comes back around, even after the longest night.",
+       p:"Where have you seen \"joy come in the morning\" after a hard time in your life? Write about that return of light."},
+      {t:"Permission to Be Silly", v:"", vr:"",
+       r:"Somewhere on the way to being responsible grown-ups, many of us packed away our silliness like a toy in the attic. But joy and playfulness are close cousins — the ability to be a little goofy, to laugh at yourself, to do something just because it's fun. Today, give yourself permission to be silly. Dance in the kitchen, make the joke, be delighted by something small. Dignity is overrated. Joy is not.",
+       h:"Ever watch how a child finds joy in a cardboard box or a puddle? They haven't learned to be too dignified for delight yet. There's a bit of that kid still in you, friend. Let 'em out to play today.",
+       p:"What's something silly or playful that brings you joy that you rarely let yourself do? Do it today."},
+      {t:"Fullness of Joy", v:"Thou wilt shew me the path of life: in thy presence is fulness of joy; at thy right hand there are pleasures for evermore.", vr:"Psalm 16:11",
+       r:"\"Fulness of joy\" — not a trickle, not a rationed sip, but fullness. This verse points to joy not as something we manufacture through effort, but something we find in presence — in connection, in nearness, in slowing down enough to be *with*. So much of our joylessness is really just hurry and distraction. Today, practice presence: be fully where you are, with who you're with. Fullness of joy often waits right there.",
+       h:"Joy doesn't live in the rushing, friend — it lives in the being-here. You can't taste your dinner while you're already thinking about the dishes. Slow down and *be* somewhere, and you'll be surprised what fullness shows up.",
+       p:"When did you last feel fully present — really *with* someone or something? How could you practice that today?"},
+      {t:"Joy Is Contagious", v:"", vr:"",
+       r:"Joy spreads. A genuine laugh, a warm smile, a delighted person — they change the whole feeling of a room. When you tend your own joy, you're not only doing yourself good; you're becoming a little source of light for everyone around you. Today, notice how your gladness ripples outward. And notice, too, how easily you can catch joy from others. We warm each other up. That's a gift we give just by being glad.",
+       h:"A smile is the only thing that gets bigger the more you give it away. Catch one, pass it on, and it multiplies right down the line. You never know how far one grin travels, friend.",
+       p:"Who spreads joy to you? And who might you spread a little joy to today? Write about the ripple."},
+      {t:"Rejoice Always", v:"Rejoice in the Lord alway: and again I say, Rejoice.", vr:"Philippians 4:4",
+       r:"It says it twice — \"again I say, Rejoice\" — as if to make sure we heard it. And here's the remarkable thing: these words were written by a man in prison. This isn't the easy joy of someone whose life is going perfectly. It's a chosen joy, a decided-on gladness that doesn't wait for good circumstances. Joy, it turns out, can be a discipline as much as a feeling — something we return to on purpose, again and again.",
+       h:"Some of the most joyful people you'll ever meet have had the hardest lives — they just decided joy wasn't going to wait for permission from their circumstances. That's a choice available to you too, friend. Rejoice. And again, rejoice.",
+       p:"What would it look like to \"choose joy\" today, regardless of your circumstances? Where could you rejoice on purpose?"},
+      {t:"The Joy of Making Something", v:"", vr:"",
+       r:"There's a particular joy in making things — a meal, a garden, a mended shirt, a doodle, a fixed fence, a written note. Humans are makers, and something in us lights up when we bring something into being with our own hands. It doesn't have to be good or impressive. The joy is in the making itself. Today, make something small, just for the gladness of it. Creating is one of the purest joys there is.",
+       h:"Ever notice how good you feel after you've *made* something, even something simple? That's not an accident, friend — you were built to create. A little making is good for the soul. Go make a mess and enjoy it.",
+       p:"What do you love making — cooking, crafting, growing, fixing, writing? When did it last bring you joy? (Maybe doodle something below.)"},
+      {t:"Joy Unspeakable", v:"Whom having not seen, ye love; in whom, though now ye see him not, yet believing, ye rejoice with joy unspeakable and full of glory.", vr:"1 Peter 1:8",
+       r:"\"Joy unspeakable\" — a gladness so deep that words can't quite reach it. We've all felt flickers of it: a moment so beautiful or full that language fails, and all you can do is take it in. Those moments aren't rare because joy is rare — they're rare because we rush past them. Today, when a moment of unspeakable goodness comes, don't reach for words. Just receive it. Let it be too big for language. Let it fill you all the way up.",
+       h:"The best moments in life usually leave you speechless, don't they? A newborn's grip, a breathtaking view, a hand you've held for fifty years. Some joys are too big for words. Just soak those in, friend. No need to describe them.",
+       p:"When have you felt a joy too big for words? Try to describe the indescribable — or just the feeling it left behind."},
+      {t:"Laughter", v:"", vr:"",
+       r:"Laughter is joy's loveliest sound — and it's medicine, plain and simple. It loosens the chest, lightens the load, and connects us to each other faster than almost anything. A good belly laugh can turn a whole day around. Today, go find something to laugh at — a funny show, a silly memory, a friend who cracks you up. Don't take yourself too seriously. Laughter is holy, in its way. It's the body's way of saying life is still good.",
+       h:"They've actually measured it — a good laugh lowers your blood pressure and floods you with the good stuff. Laughter really is the best medicine, and the pharmacy's always open. When's the last time you had a real good one?",
+       p:"What's the last thing that made you truly laugh? What could you do to laugh like that again today?"},
+      {t:"Joy in the Morning Light", v:"But let all those that put their trust in thee rejoice: let them ever shout for joy, because thou defendest them.", vr:"Psalm 5:11",
+       r:"There's a boldness to joy in this verse — \"shout for joy,\" not whisper it politely. Real gladness sometimes wants to be loud, expressed, celebrated out loud rather than kept quietly to oneself. We're often shy about our joy, tucking it away as if it's not quite proper. But joy shared and voiced grows bigger. Today, let your joy be a little bold. Say the glad thing out loud. Celebrate the good thing openly. Joy was never meant to be kept in a whisper.",
+       h:"Ever notice how folks will shout at a ballgame but go quiet about the good things in their own lives? Flip that, friend. Get loud about your blessings. Joy grows when you let it make some noise.",
+       p:"What good thing in your life do you tend to keep quiet about? Say it \"out loud\" here — celebrate it boldly."},
+      {t:"Joy in Small Beauty", v:"", vr:"",
+       r:"Beauty and joy are old friends. A flower pushing up through a sidewalk crack. Light through a curtain. The particular blue of a morning sky. Beauty is scattered everywhere, free for the noticing, and each bit of it is a small invitation to joy. The trouble is we walk past most of it, eyes down, minds elsewhere. Today, lift your eyes and go hunting for beauty. It's more abundant than you remember, and every piece of it is a little dose of gladness.",
+       h:"There's a Japanese idea of stopping to notice the little beautiful things — a leaf, a shadow, a bit of light. They think it's worth building a whole practice around. And they're right, friend. Beauty's everywhere, waiting to gladden you.",
+       p:"What's the most beautiful small thing you've noticed today? Describe it. (Or doodle it below.)"},
+      {t:"Joy and Peace in Believing", v:"Now the God of hope fill you with all joy and peace in believing, that ye may abound in hope, through the power of the Holy Ghost.", vr:"Romans 15:13",
+       r:"Halfway through, notice how this verse links joy to hope — joy fills us so that we \"abound in hope.\" Joy and hope feed each other: the more gladness we let in, the more we believe good things are still possible, and the more hope we carry, the easier joy comes. It's an upward spiral, and you're on it. These two weeks of tending your joy have been quietly building your hope, too. Feel how they lift each other.",
+       h:"Fifteen days of tending joy, friend — that's a real turning. You're not just feeling gladder; you're getting more hopeful, and the two keep boosting each other higher. Keep climbing that happy spiral. It's taking you somewhere good.",
+       p:"Look back over these two weeks of joy. Do you feel more hopeful, too? Write about how they've grown together."},
+      {t:"The Joy of Being Useful", v:"", vr:"",
+       r:"There's a deep, quiet joy in being useful — in helping, contributing, doing something that matters to someone else. We're wired for it. A person who feels needed and useful carries a gladness that a person with nothing to do never quite finds. Today, do one small useful thing for someone. Not out of duty, but for the joy of it. Being a help to others is one of life's most reliable sources of gladness. It fills you up even as you pour out.",
+       h:"The happiest folks in any nursing home are the ones who still find ways to be useful — sharing, helping, mattering. Turns out being needed is one of joy's best-kept secrets. Go be useful to somebody today, friend. It'll gladden you more than them.",
+       p:"When did being useful to someone last bring you joy? Who could you help, in some small way, today?"},
+      {t:"Rejoice With Singing", v:"The LORD thy God in the midst of thee is mighty; he will save; he will rejoice over thee with joy; he will rest in his love, he will joy over thee with singing.", vr:"Zephaniah 3:17",
+       r:"Here's a stunning picture: you are not only the one who rejoices — you are rejoiced *over.* Imagine being sung over, delighted in, the object of someone's gladness. We so often feel like a burden, a disappointment, not-quite-enough. But this verse says the opposite is true: you are a delight, someone worth singing over. Let that sink in today. You are not merely tolerated. You are a joy to Someone. Carry that gladness with you.",
+       h:"Ever watch a mama hum over her sleeping baby, just delighting in the little thing? That's the picture here, friend — you, being delighted over exactly like that. You're not a bother. You're somebody's joy. Believe it.",
+       p:"How does it feel to imagine being \"rejoiced over\" — delighted in just as you are? Write about it."},
+      {t:"Joy Doesn't Deny the Hard", v:"", vr:"",
+       r:"Let's be honest — some seasons make joy feel far away, even inappropriate. But real joy doesn't require denying what's hard; it lives right alongside it. You can grieve and still laugh. You can be worried and still notice a sunset. Joy isn't pretending the hard isn't hard. It's refusing to let the hard swallow every good thing. Today, if you're in a difficult stretch, look for the joy that lives *beside* the struggle, not instead of it. Both can be true.",
+       h:"A garden can have weeds and roses at the very same time, friend — pulling the roses out won't help the weeds any. So let the joy grow right alongside the hard. You don't have to wait for a weed-free life to enjoy the roses.",
+       p:"What hard thing are you carrying? Can you find one bit of joy that lives right beside it? Name both."},
+      {t:"Joy Full and Remaining", v:"These things have I spoken unto you, that my joy might remain in you, and that your joy might be full.", vr:"John 15:11",
+       r:"Two beautiful words here: *remain* and *full.* Not a joy that flickers and vanishes, but one that stays; not a half-measure, but fullness. This is the kind of joy worth building toward — one that puts down roots and lives in you steadily, not just visiting on good days. You've been growing exactly this kind of joy these past weeks — the remaining kind, the full kind. It's becoming less a mood and more a home you live in.",
+       h:"There's a difference between a joy that visits and a joy that moves in and stays, friend. You've been building the kind that stays. Furniture and all. It's setting up house in you, and it doesn't plan to leave.",
+       p:"Does your joy feel more like a visitor or a resident these days? What would help it \"remain\" and stay full?"},
+      {t:"The Joy of Gratitude", v:"", vr:"",
+       r:"Joy and gratitude are so tightly woven they can be hard to tell apart. When we truly notice and give thanks for the good in our lives, joy nearly always follows — they arrive together, hand in hand. The quickest path back to joy, on a flat gray day, is often just to start counting blessings. Name the good, and the gladness comes. Today, let gratitude be the doorway. Count what's good, and watch joy walk right in behind it.",
+       h:"Grateful folks are joyful folks — it's near impossible to separate the two. Count your blessings and joy shows up like it was invited, because it was. Try it, friend. Name three good things and see what walks in.",
+       p:"Name three things you're grateful for right now. Notice the joy that follows the naming."},
+      {t:"Go Out With Joy", v:"For ye shall go out with joy, and be led forth with peace: the mountains and the hills shall break forth before you into singing.", vr:"Isaiah 55:12",
+       r:"What a picture — a whole world breaking into song, the very hills singing as you go out. Three weeks in, joy should be starting to color the way you move through the world, the way you \"go out\" into your days. When your heart is glad, the ordinary world seems to sparkle more; even the hills seem to sing. That's not the world changing — it's you, seeing it with joy-brightened eyes. Today, go out with joy and watch how the world seems to sing back.",
+       h:"When your heart's glad, the whole world looks brighter — same trees, same sky, but suddenly they're singing. That's the gift of a joyful heart, friend: it turns up the color on everything. Go out today and let the hills sing for you.",
+       p:"How does the world look different when you \"go out with joy\"? Describe a moment when gladness made everything brighter."},
+      {t:"The Joy of Enough", v:"", vr:"",
+       r:"So much joy is stolen by the endless wanting of more — the next thing, the better version, the upgrade always just out of reach. But joy lives in enough. When you can look at your ordinary life and feel that it's enough — that you have enough, are enough, that this is enough — a deep gladness settles in that no new purchase ever brings. Today, practice the joy of enough. Let what you have be plenty, just for today. Contentment is joy's quiet foundation.",
+       h:"The secret to a joyful life isn't getting everything you want, friend — it's wanting what you've already got. Contentment's a kind of quiet joy that money can't buy and advertising can't sell. You just decide you have enough, and there it is.",
+       p:"Where in your life do you already have \"enough\" to feel joyful about? Sit with the gladness of enough today."},
+      {t:"Ask, and Your Joy Be Full", v:"Ask, and ye shall receive, that your joy may be full.", vr:"John 16:24",
+       r:"Notice the purpose tucked at the end: \"that your joy may be full.\" Joy is not an afterthought here — it's the whole point of the asking. There's an invitation woven through this verse: you're allowed to want joy, to ask for it, to pursue a full glad heart as a worthy goal, not a selfish one. So often we feel guilty prioritizing our own gladness. But a full joy in you overflows to everyone around you. Ask for joy. Reach for it. It's meant to be full.",
+       h:"You're allowed to want to be happy, friend — it's not selfish, it's how you're built. A full, glad heart spills right over onto everyone near you. So go ahead and ask for joy, reach for it, chase it down. It's meant to be full to the brim.",
+       p:"What would \"full joy\" look like in your life? Give yourself permission to want it and reach for it. Describe it."},
+      {t:"The Joy of Old Songs", v:"", vr:"",
+       r:"Music has a special key to the heart — an old familiar song can unlock a joy that words can't reach, carrying us straight back to good times and good people. Today, put on a song you love, one tied to happy memories. Let it fill the room and lift your spirits. There's a reason we've made music since the beginning of time. Few things summon joy as fast as a beloved tune. Sing along, even badly. Especially badly.",
+       h:"A song can carry you clean back to a kitchen dance or a summer drive from forty years ago, quick as anything. Music's got a shortcut straight to joy, friend. Go play an old favorite and let it take you somewhere happy.",
+       p:"What song reliably brings you joy? What memory or feeling does it carry? Play it today."},
+      {t:"Joy in the Ordinary", v:"Serve the LORD with gladness: come before his presence with singing.", vr:"Psalm 100:2",
+       r:"\"With gladness\" — notice how even ordinary duties can be carried with joy. Much of life is regular tasks: dishes, errands, work, the same routines. We tend to see these as joy's enemies, the boring stuff to get through. But this verse suggests even the daily service of living can be done *with gladness* — hummed through instead of trudged through. The task doesn't change; the heart carrying it does. Today, try doing an ordinary thing with unexpected gladness. See how it transforms.",
+       h:"Ever notice how the same chore feels totally different depending on your mood? The dishes don't change — you do. Try washing them with a little gladness sometime, friend, humming a tune. Same dishes, whole different day.",
+       p:"What ordinary task could you do \"with gladness\" today instead of just trudging through it? Try it and write what changed."},
+      {t:"Joy Is Resilient", v:"", vr:"",
+       r:"Here's something remarkable about joy: it's tougher than it looks. It survives hard seasons, springs back after loss, finds its way through cracks in the worst circumstances. History's most joyful people often weren't the ones with the easiest lives — they were the ones who kept choosing joy anyway, and found it kept returning. Your capacity for joy hasn't been used up by whatever you've been through. If anything, it's been strengthened. Joy is resilient. So are you.",
+       h:"You know those little flowers that grow right up through the cracks in the pavement? That's joy, friend — stubborn, resilient, finding a way through the hardest ground. It's been growing in you all along, through everything. Tougher than it looks. Just like you.",
+       p:"When has your joy proven resilient — springing back after a hard time? Write about your own toughness."},
+      {t:"Praise With the Whole Heart", v:"The LORD is my strength and my shield; my heart trusted in him, and I am helped: therefore my heart greatly rejoiceth; and with my song will I praise him.", vr:"Psalm 28:7",
+       r:"Trace the sequence in this verse: trust leads to help, help leads to rejoicing, rejoicing bursts into song. Joy has a natural momentum — one gladness leads to the next, building until it wants to sing. As this journey nears its close, notice how much more easily joy flows in you now than it did on Day 1. The trust you've built, the blessings you've counted, the beauty you've noticed — it's all been building toward a heart that \"greatly rejoiceth.\" Let it sing today.",
+       h:"Twenty-seven days ago joy took some effort. Now look — your heart \"greatly rejoiceth\" almost on its own. That's a heart that's learned how to be glad, friend. It's practically singing. Let it.",
+       p:"What makes your heart \"greatly rejoice\" these days? Has it gotten easier over these weeks? Write about it."},
+      {t:"Joy Shared Is Doubled", v:"", vr:"",
+       r:"There's an old truth: joy shared is joy doubled, while sorrow shared is sorrow halved. When something good happens, telling someone who loves you doesn't just report the joy — it multiplies it. Today, share a joy. Call someone with good news, however small. Tell a friend about the thing that delighted you. Let someone celebrate with you. Joy was never meant to be hoarded alone. It grows when it's given away, and comes back to you larger than it left.",
+       h:"A joy kept to yourself is nice, but a joy shared just about doubles, friend. Call somebody up with your good news, even the little stuff. Let 'em be glad right alongside you. That's what joy's for.",
+       p:"What joy could you share with someone today — a piece of good news, a delight, a celebration? Who would love to hear it?"},
+      {t:"Fruit of the Spirit", v:"But the fruit of the Spirit is love, joy, peace, longsuffering, gentleness, goodness, faith, meekness, temperance: against such there is no law.", vr:"Galatians 5:22-23",
+       r:"Notice that joy is called a *fruit* — something that grows, in season, from a well-tended life. Fruit doesn't appear overnight or by force; it develops slowly, quietly, from good roots and steady care. That's exactly what's been happening in you these past weeks. You haven't been manufacturing joy through willpower — you've been growing it, tending the soil, and now the fruit is ripening. As this journey closes, know that joy is now growing naturally in you. Fruit, in season. Well tended.",
+       h:"You can't force fruit to grow, friend — you just tend the tree and wait, and one day there it is, ripe and sweet. That's what your joy's been doing all these weeks: quietly ripening. And now look at it. Fruit, in season. You grew that.",
+       p:"How has joy \"grown\" in you like fruit over these weeks — quietly, from good tending? Write about the harvest."},
+      {t:"Carry the Gladness", v:"", vr:"",
+       r:"You've reached the end of thirty days of tending your joy. Look back at all you've practiced — choosing gladness, noticing sparks, sharing joy, laughing, being present, finding beauty. Here's the truth to carry out of this season: joy was never something to chase and catch. It was a garden to tend, and you've tended it well. It's growing in you now, and it'll keep growing as long as you keep noticing, choosing, and sharing it. You take the gladness with you. Go be a source of light. Well done, friend — and rejoice, and again, rejoice.",
+       h:"Look what you did — thirty days of tending gladness, and now it's rooted deep in you. You don't leave your joy here on the last page, friend. You carry it right out the door and let it spill onto everyone you meet. Go on and shine. The world needs your particular light.",
+       p:"Look back over these thirty days of joy. What has gladness taught you? Write a note to carry the joy forward."}
+    ]
+  }
+};
+
+/* ── Devotional journal: ownership, opening, rendering, saving ── */
+function ownsJournal(id){ return !!(SETTINGS.journalsOwned && SETTINGS.journalsOwned[id]); }
+function grantJournal(id){
+  if(!SETTINGS.journalsOwned) SETTINGS.journalsOwned={};
+  SETTINGS.journalsOwned[id]=true; saveSettings();
+}
+var _devJ=null, _devDay=0;
+function devOpen(id){
+  var j=JOURNALS[id]; if(!j) return;
+  _devJ=j;
+  // resume where they left off, if saved
+  _devDay=(SETTINGS.journalProgress&&SETTINGS.journalProgress[id])||0;
+  if(_devDay>=j.days.length) _devDay=0;
+  document.getElementById('devReaderTitle').textContent=j.title;
+  go('devReader');
+  devRenderDay();
+  document.getElementById('devScroll').scrollTop=0;
+}
+function devClose(){ devSaveCurrent(); go('journalChoice'); renderJournalHub(); }
+function _devKey(){ return _devJ.id+'_'+_devDay; }
+function devRenderDay(){
+  var j=_devJ, i=_devDay, d=j.days[i];
+  document.getElementById('devDayNum').textContent='Day '+(i+1)+' of '+j.days.length;
+  document.getElementById('devProgressBar').style.width=(((i+1)/j.days.length)*100)+'%';
+  var entries=(SETTINGS.journalEntries&&SETTINGS.journalEntries[_devKey()])||'';
+  var html='';
+  html+='<div class="dev-daytitle">'+esc(d.t)+'</div>';
+  if(d.v){
+    html+='<div class="dev-verse"><span class="qmark">\u201C</span>'+
+      '<div class="vtext">'+esc(d.v)+'</div>'+
+      '<div class="vref">'+esc(d.vr)+'</div></div>';
+  }
+  html+='<div class="dev-reflection">'+esc(d.r)+'</div>';
+  html+='<div class="dev-honey"><span class="hpot">\ud83c\udf6f</span><div class="htext"><b>Honey\u2019s Little Something:</b> '+esc(d.h)+'</div></div>';
+  html+='<div class="dev-prompt-label">Today\u2019s Reflection</div>';
+  html+='<div class="dev-prompt">'+esc(d.p)+'</div>';
+  html+='<textarea class="dev-writebox" id="devWrite" placeholder="Write your heart here\u2026 (tap the \ud83c\udfa4 on your keyboard to talk instead of type)" oninput="devMarkUnsaved()">'+esc(entries)+'</textarea>';
+  html+='<div class="dev-saverow">'+
+        '<button class="dev-doodlebtn2" onclick="devToggleDoodle()">\u270f\ufe0f Add a doodle</button>'+
+        '<span class="dev-savednote" id="devSavedNote">Saved \u2713</span>'+
+        '<button class="dev-savebtn" onclick="devSaveCurrent(true)">Save</button></div>';
+  html+='<div class="dev-doodlewrap2" id="devDoodleWrap2" style="display:none">'+
+        '<canvas id="devDoodleCanvas" class="dj-doodlecanvas" width="600" height="360"></canvas>'+
+        '<div class="dj-doodlebar">'+
+        '<button class="dj-dcolor sel" style="background:var(--ink)" onclick="devDColor(\'var(--ink)\',this)"></button>'+
+        '<button class="dj-dcolor" style="background:var(--gold2)" onclick="devDColor(\'#B9561F\',this)"></button>'+
+        '<button class="dj-dcolor" style="background:var(--blue)" onclick="devDColor(\'#5b8cff\',this)"></button>'+
+        '<button class="dj-dcolor" style="background:var(--mint)" onclick="devDColor(\'#34c759\',this)"></button>'+
+        '<button class="dj-dtool" onclick="devDErase(this)">Eraser</button>'+
+        '<button class="dj-dtool" onclick="devDClear()">Clear</button>'+
+        '<button class="dj-dtool dj-dsave" onclick="devDSave()">Keep doodle</button></div>'+
+        '<div id="devDoodleThumbs" class="dj-photostrip"></div></div>';
+  // show any saved doodles for this day
+  document.getElementById('devPage').innerHTML=html;
+  renderDevDoodleThumbs();
+  document.getElementById('devPrevBtn').disabled=(i===0);
+  var nb=document.getElementById('devNextBtn');
+  nb.textContent=(i===j.days.length-1)?'Finish \u2713':'Next \u203a';
+  _devSaved=true;
+}
+var _devSaved=true;
+function devMarkUnsaved(){ _devSaved=false; var n=document.getElementById('devSavedNote'); if(n)n.classList.remove('show'); }
+function devSaveCurrent(showNote){
+  if(!_devJ) return;
+  var box=document.getElementById('devWrite'); if(!box) return;
+  if(!SETTINGS.journalEntries) SETTINGS.journalEntries={};
+  SETTINGS.journalEntries[_devKey()]=box.value;
+  if(!SETTINGS.journalProgress) SETTINGS.journalProgress={};
+  SETTINGS.journalProgress[_devJ.id]=Math.max(SETTINGS.journalProgress[_devJ.id]||0,_devDay);
+  saveSettings(); _devSaved=true;
+  if(showNote){ var n=document.getElementById('devSavedNote'); if(n){ n.classList.add('show'); setTimeout(function(){n.classList.remove('show');},1800);} }
+}
+function devNextDay(){
+  devSaveCurrent();
+  if(_devDay>=_devJ.days.length-1){ toast("You finished this journal \ud83c\udf3f Beautiful work."); devClose(); return; }
+  _devDay++; devRenderDay(); document.getElementById('devScroll').scrollTop=0;
+}
+function devPrevDay(){
+  devSaveCurrent();
+  if(_devDay<=0) return;
+  _devDay--; devRenderDay(); document.getElementById('devScroll').scrollTop=0;
+}
+/* doodle inside devotional (reuses the dj doodle engine, own canvas) */
+var _devDColor='var(--ink)', _devDErasing=false, _devDrawing=false, _devDDirty=false, _devDoodles=[];
+function devToggleDoodle(){
+  var w=document.getElementById('devDoodleWrap2'); if(!w)return;
+  var showing=w.style.display!=='none';
+  w.style.display=showing?'none':'block';
+  if(!showing) devDInit();
+}
+function devDInit(){
+  var cv=document.getElementById('devDoodleCanvas'); if(!cv||cv._wired)return;
+  var ctx=cv.getContext('2d'); ctx.lineCap='round'; ctx.lineJoin='round';
+  function pos(e){ var r=cv.getBoundingClientRect(); var t=e.touches?e.touches[0]:e;
+    return {x:(t.clientX-r.left)*(cv.width/r.width), y:(t.clientY-r.top)*(cv.height/r.height)}; }
+  function col(){ var c=_devDColor; if(c.indexOf('var(')===0){ c=getComputedStyle(document.body).getPropertyValue(c.slice(4,-1)).trim()||'#333'; } return c; }
+  function start(e){ e.preventDefault(); _devDrawing=true; var p=pos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }
+  function move(e){ if(!_devDrawing)return; e.preventDefault(); var p=pos(e);
+    ctx.strokeStyle=_devDErasing?'#fffdf8':col(); ctx.lineWidth=_devDErasing?18:3.5;
+    ctx.lineTo(p.x,p.y); ctx.stroke(); _devDDirty=true; }
+  function end(){ _devDrawing=false; }
+  cv.addEventListener('mousedown',start); cv.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+  cv.addEventListener('touchstart',start,{passive:false}); cv.addEventListener('touchmove',move,{passive:false}); cv.addEventListener('touchend',end);
+  cv._wired=true;
+}
+function devDColor(c,el){ _devDColor=c; _devDErasing=false;
+  document.querySelectorAll('#devDoodleWrap2 .dj-dcolor').forEach(function(b){b.classList.remove('sel');}); if(el)el.classList.add('sel'); }
+function devDErase(el){ _devDErasing=true;
+  document.querySelectorAll('#devDoodleWrap2 .dj-dcolor').forEach(function(b){b.classList.remove('sel');}); }
+function devDClear(){ var cv=document.getElementById('devDoodleCanvas'); if(cv){ cv.getContext('2d').clearRect(0,0,cv.width,cv.height);} _devDDirty=false; }
+function devDSave(){
+  var cv=document.getElementById('devDoodleCanvas'); if(!cv)return;
+  if(!_devDDirty){ toast("Draw something first \ud83d\udd8d\ufe0f"); return; }
+  var out=document.createElement('canvas'); out.width=cv.width; out.height=cv.height;
+  var octx=out.getContext('2d'); octx.fillStyle='#fffdf8'; octx.fillRect(0,0,out.width,out.height); octx.drawImage(cv,0,0);
+  var data; try{ data=out.toDataURL("image/jpeg",0.85); }catch(e){ data=out.toDataURL(); }
+  if(!SETTINGS.journalDoodles) SETTINGS.journalDoodles={};
+  if(!SETTINGS.journalDoodles[_devKey()]) SETTINGS.journalDoodles[_devKey()]=[];
+  SETTINGS.journalDoodles[_devKey()].push(data); saveSettings();
+  devDClear(); document.getElementById('devDoodleWrap2').style.display='none';
+  renderDevDoodleThumbs(); toast("Doodle saved to this day \ud83c\udfa8");
+}
+function renderDevDoodleThumbs(){
+  var wrap=document.getElementById('devDoodleThumbs'); if(!wrap)return;
+  var arr=(SETTINGS.journalDoodles&&SETTINGS.journalDoodles[_devKey()])||[];
+  wrap.innerHTML=arr.map(function(src,i){
+    return '<div class="dj-ph"><img src="'+src+'"><button class="dj-phx" onclick="devDRemove('+i+')">\u2715</button></div>';
+  }).join('');
+}
+function devDRemove(i){ var arr=SETTINGS.journalDoodles[_devKey()]; if(arr){ arr.splice(i,1); saveSettings(); renderDevDoodleThumbs(); } }
+
 var TIER_INFO=[
   { id:"pint",   mo:"Free", yr:"", life:"", tag:"You're here",
     feats:["Honey's own voice, always","Talk & swap jokes anytime","Share verses, pics & videos — unlimited","A little language practice to enjoy","Word puzzles & fun memory games","Interactive journal & emoji mood check-ins","Steps, sleep & wellness — with Apple Health (soon)","Create calendars & call on lists","1 friend"] },
