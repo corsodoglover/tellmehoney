@@ -3972,6 +3972,10 @@ var S = {
 };
 /* cloud TTS config is global (not per-friend), kept in its own store */
 var CLOUD={ enabled:false, provider:"openai", key:"", voice:"alloy", elKey:"", elVoice:"" };
+/* Secure premium-voice proxy (Supabase Edge Function). The OpenAI key lives on the
+   server, never here. This publishable key is public by design — safe in the app. */
+var PREMIUM_VOICE_URL="https://gphzfuhruwlwvitktqjg.supabase.co/functions/v1/premium-voice";
+var PREMIUM_VOICE_KEY="sb_publishable_nbEP86Y1jOqjyQT77ins-w_ADLcLpJw";
 
 /* ════ HONEY POT INSIGHTS (on-device word-choice analysis) ════
    Six life themes (colored honey bands) + a stress "smoke" layer,
@@ -9089,7 +9093,7 @@ function cloudReady(){
   var allowed = isOwner() || tierAtLeast('quart');
   if(!allowed) return false;
   if(CLOUD.provider==='elevenlabs') return !!(CLOUD.elKey && CLOUD.elVoice);
-  return !!CLOUD.key;
+  return true; // OpenAI premium voices now go through the secure proxy — no user key needed
 }
 
 /* ════ HONEY VOICE (her real recorded voice) + universal audio stop ════ */
@@ -9822,11 +9826,12 @@ function cloudSpeak(t){
         voice_settings:{ stability:0.75, similarity_boost:0.9, style:0.0, use_speaker_boost:true, speed:clampNum(S.rate||0.85,0.7,1.2) } })
     });
   } else {
-    req=fetch("https://api.openai.com/v1/audio/speech",{
+    // Premium OpenAI voices now go through our SECURE PROXY (Supabase Edge Function).
+    // The OpenAI key lives safely on the server — never in the app.
+    req=fetch(PREMIUM_VOICE_URL,{
       method:"POST",
-      headers:{ "Authorization":"Bearer "+CLOUD.key, "Content-Type":"application/json" },
-      body:JSON.stringify({ model:"gpt-4o-mini-tts", voice:CLOUD.voice||"coral", input:t, speed:clampNum(S.rate||0.9,0.5,2),
-        instructions:vibeVoiceDirection() })
+      headers:{ "apikey":PREMIUM_VOICE_KEY, "Content-Type":"application/json" },
+      body:JSON.stringify({ voice:CLOUD.voice||"coral", text:t, instructions:voiceDirection(CLOUD.voice) })
     });
   }
   req.then(r=>{ if(!r.ok){ return r.text().then(txt=>{
@@ -9928,12 +9933,33 @@ function onCloudToggle(on){ CLOUD.enabled=on; saveCloud();
   }
   renderVoiceGrid(); }
 var CLOUD_VOICES=["coral","sage","marin","cedar","nova","shimmer","ballad","ash","verse","alloy","echo","fable","onyx"];
+/* ══ VOICE CHARACTERS ══ Friendly name + personality direction for each premium voice.
+   Users see the friendly name (never the OpenAI base name). The "dir" is a director's
+   note sent to the voice so it PERFORMS as that character. */
+var VOICE_CHARACTERS={
+  ash:    { nm:"Asher",  em:"🏄", dir:"You are Asher, a laid-back South African surfer. Speak with a warm, relaxed South African accent, easygoing and charming, with a little sun-kissed swagger. Unhurried, friendly, and effortlessly cool." },
+  cedar:  { nm:"Collin", em:"👨‍🍳", dir:"You are Collin, a passionate, playful chef who adores food and life. Speak with warm, theatrical flair and cheeky charm — light, flirty food-loving delight, all sweetness and fun, never crude. Savor your words like a delicious meal." },
+  shimmer:{ nm:"Sue",    em:"👵", dir:"You are Sue, a gentle, soft-spoken grandmother — a lifelong teacher, endlessly patient and kind. Speak slowly and tenderly, warm and encouraging, with a soothing New-England-meets-Southern gentleness, like tucking someone in with a kind word." },
+  ballad: { nm:"Billy",  em:"👦", dir:"You are Billy, a bright, playful young boy — cheerful, curious, full of giggly energy. Speak with youthful, animated excitement, light and bouncy, like a kid who just can't wait to tell you something fun." },
+  sage:   { nm:"Shelby", em:"👧", dir:"You are Shelby, a sweet young girl — cheerful, gentle, and a little giggly. Speak with soft, youthful sweetness and bright innocent delight, like a kind little girl sharing a secret." },
+  coral:  { nm:"Corin",  em:"☀️", dir:"You are Corin, a bubbly, upbeat best friend who is always excited for you. Speak with bright, warm enthusiasm and a big smile you can hear — encouraging, fun, and full of sunshine." },
+  marin:  { nm:"Maria",  em:"💃", dir:"You are Maria, a warm, wise auntie with a little sparkle. Speak with warm confidence and affectionate wisdom, playful and reassuring, like the favorite aunt who always knows just what to say." },
+  nova:   { nm:"Nell",   em:"🌸", dir:"You are Nell, a cheerful Southern belle full of sweet-tea charm. Speak with a warm, gracious Southern lilt, friendly and bright, all hospitality and honey." },
+  verse:  { nm:"Van",    em:"📖", dir:"You are Van, a chill poet and storyteller. Speak smoothly and thoughtfully, calm and a little dreamy, savoring words like a gentle storyteller by a fire." },
+  alloy:  { nm:"Allen",  em:"🙂", dir:"You are Allen, an easygoing, friendly everyday buddy. Speak in a natural, relaxed, approachable way — the pleasant, down-to-earth friend everybody likes." },
+  echo:   { nm:"Ernest", em:"👴", dir:"You are Ernest, a fun, mischievous grandpa full of playful trouble. Speak with a warm, gravelly twinkle, cracking jokes with a chuckle, like the grandpa who's always got a wink and a corny gag ready." },
+  fable:  { nm:"Felix",  em:"☘️", dir:"You are Felix, a cheerful, charming Irishman with the gift of the gab. Speak with a warm, lively Irish lilt, full of good humor and twinkle — friendly, playful, and full of that easy Irish charm, like a beloved friend spinning a tale at the pub." },
+  onyx:   { nm:"Drew",   em:"🌊", dir:"You are Drew, a deep, calm, reassuring presence. Speak low, steady, and soothing, grounded and warm, like the steady friend whose voice makes everything feel okay." }
+};
+function voiceCharacter(v){ return VOICE_CHARACTERS[v] || null; }
+function voiceFriendlyName(v){ var c=VOICE_CHARACTERS[v]; return c ? c.nm : v; }
+function voiceDirection(v){ var c=VOICE_CHARACTERS[v]; return c ? c.dir : ""; }
 function renderCloudVoices(){
   var w=document.getElementById('cloudVoices'); w.innerHTML='';
   // sensible default by the friend's gender (female friend → warm female voice)
   if(!CLOUD.voice){ CLOUD.voice = S.gender==='M' ? 'onyx' : 'shimmer'; }
   CLOUD_VOICES.forEach(v=>{ var b=document.createElement('button'); b.className='cv'+(CLOUD.voice===v?' sel':'');
-    b.textContent=v; b.onclick=()=>{ CLOUD.voice=v; renderCloudVoices(); }; w.appendChild(b); });
+    var c=VOICE_CHARACTERS[v]; b.textContent=(c?(c.em+' '+c.nm):v); b.onclick=()=>{ CLOUD.voice=v; renderCloudVoices(); }; w.appendChild(b); });
 }
 function setProvider(p){
   CLOUD.provider=p; saveCloud();
@@ -12028,14 +12054,13 @@ function sayLearnDevice(text, langCode){
 }
 function sayLearnOpenAI(text){
   try{
-    fetch("https://api.openai.com/v1/audio/speech",{
+    fetch(PREMIUM_VOICE_URL,{
       method:"POST",
-      headers:{ "Authorization":"Bearer "+CLOUD.key, "Content-Type":"application/json" },
-      body:JSON.stringify({ model:"gpt-4o-mini-tts", voice:CLOUD.voice||"nova", input:text, speed:0.92,
-        instructions:"Speak warmly and naturally, like a kind Southern friend — gentle, unhurried, with a smile in your voice." })
+      headers:{ "apikey":PREMIUM_VOICE_KEY, "Content-Type":"application/json" },
+      body:JSON.stringify({ voice:CLOUD.voice||"nova", text:text })
     }).then(r=>{ if(!r.ok) throw new Error("status "+r.status); return r.blob(); })
     .then(blob=>{ stopAllAudio(); var a=new Audio(URL.createObjectURL(blob)); a.play(); })
-    .catch(e=>{ /* fall back to device voice if the key fails */ sayLearnDevice(text, curLearnLang); });
+    .catch(e=>{ /* fall back to device voice if the proxy fails */ sayLearnDevice(text, curLearnLang); });
   }catch(e){ sayLearnDevice(text, curLearnLang); }
 }
 function tellLearnFact(catId){
