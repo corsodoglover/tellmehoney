@@ -9627,11 +9627,10 @@ function _spDrain(){
        always plays in Honey's voice because no voice has been chosen yet. */
     var isOnboard = forced.indexOf("onboard") === 0;
     if(window.__OBDEBUG) toast("forced "+forced.slice(0,18)+" | voice="+(S.voice||"honey")+" | txt="+(spokenText?"yes":"NO"));
+    // If the person is NOT on Honey's own voice (any device or premium voice),
+    // NEVER play Honey's recorded clip. Speak the words in the chosen voice only.
+    // This is the hard guard against Honey's clip AND the premium voice both firing.
     if(!isOnboard && (S.voice||"honey")!=="honey"){
-      // A non-Honey voice is chosen. Honor it: speak the words in that voice.
-      // If there's no text to speak, DON'T fall back to Honey's clip (that
-      // would make Honey suddenly talk over the voice the user picked) —
-      // just move on quietly.
       if(spokenText){ _speakWithChosenVoice(spokenText, myToken, next); return; }
       next(); return;
     }
@@ -9932,7 +9931,7 @@ function renderCloudVoices(){
   var w=document.getElementById('cloudVoices'); w.innerHTML='';
   // sensible default by the friend's gender (female friend → warm female voice)
   if(!CLOUD.voice){ CLOUD.voice = S.gender==='M' ? 'onyx' : 'shimmer'; }
-  CLOUD_VOICES.forEach(v=>{ var b=document.createElement('button'); b.className='cv'+(CLOUD.voice===v?' sel':'');
+  CLOUD_VOICES.forEach(v=>{ var b=document.createElement('button'); b.className='cv'+((S.voice===v)?' sel':'');
     var c=VOICE_CHARACTERS[v]; b.textContent=(c?(c.em+' '+c.nm):v);
     b.onclick=()=>{
       CLOUD.voice=v;
