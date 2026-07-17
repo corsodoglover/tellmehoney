@@ -3975,6 +3975,8 @@ var CLOUD={ enabled:false, provider:"openai", key:"", voice:"alloy", elKey:"", e
 /* Secure premium-voice proxy (Supabase Edge Function). The OpenAI key lives on the
    server, never here. This publishable key is public by design — safe in the app. */
 var PREMIUM_VOICE_URL="https://gphzfuhruwlwvitktqjg.supabase.co/functions/v1/premium-voice";
+var HONEY_VOICE_URL="https://gphzfuhruwlwvitktqjg.supabase.co/functions/v1/honey-voice";
+var AI_MEDIA_URL="https://gphzfuhruwlwvitktqjg.supabase.co/functions/v1/ai-media";
 var PREMIUM_VOICE_KEY="sb_publishable_nbEP86Y1jOqjyQT77ins-w_ADLcLpJw";
 
 /* ════ HONEY POT INSIGHTS (on-device word-choice analysis) ════
@@ -9092,7 +9094,7 @@ function cloudReady(){
   if(CLOUD.enabled===false) return false;
   var allowed = isOwner() || tierAtLeast('quart');
   if(!allowed) return false;
-  if(CLOUD.provider==='elevenlabs') return !!(CLOUD.elKey && CLOUD.elVoice);
+  if(CLOUD.provider==='elevenlabs') return true; // Honey's cloned voice now goes through the secure proxy — no user key needed
   return true; // OpenAI premium voices now go through the secure proxy — no user key needed
 }
 
@@ -9817,13 +9819,12 @@ function cloudSpeak(t){
   speakQueue++; setTalking(true); if(listening) pauseListening();
   var req;
   if(CLOUD.provider==='elevenlabs'){
-    if(!CLOUD.elKey || !CLOUD.elVoice){ speakQueue=Math.max(0,speakQueue-1); setTalking(false);
-      toast("Add your ElevenLabs key and Voice ID first."); return; }
-    req=fetch("https://api.elevenlabs.io/v1/text-to-speech/"+encodeURIComponent(CLOUD.elVoice),{
+    // Honey's cloned voice now goes through the SECURE PROXY.
+    // The ElevenLabs key AND voice ID live safely on the server — never in the app.
+    req=fetch(HONEY_VOICE_URL,{
       method:"POST",
-      headers:{ "xi-api-key":CLOUD.elKey, "Content-Type":"application/json", "Accept":"audio/mpeg" },
-      body:JSON.stringify({ text:t, model_id:"eleven_turbo_v2_5",
-        voice_settings:{ stability:0.75, similarity_boost:0.9, style:0.0, use_speaker_boost:true, speed:clampNum(S.rate||0.85,0.7,1.2) } })
+      headers:{ "apikey":PREMIUM_VOICE_KEY, "Content-Type":"application/json" },
+      body:JSON.stringify({ text:t, speed:clampNum(S.rate||0.85,0.7,1.2) })
     });
   } else {
     // Premium OpenAI voices now go through our SECURE PROXY (Supabase Edge Function).
@@ -10603,31 +10604,31 @@ function editImageAI(){
   var prompt=(document.getElementById('editPrompt').value||'').trim();
   if(!prompt){ setVidStatus('editStatus','Describe how to recreate the image first.'); return; }
   setVidStatus('editStatus','Recreating your image… (Nano Banana)');
-  fetch('https://queue.fal.run/fal-ai/nano-banana/edit',{
+  fetch(AI_MEDIA_URL,{
     method:'POST',
-    headers:{ 'Authorization':'Key '+VIDCFG.key, 'Content-Type':'application/json' },
-    body:JSON.stringify({ prompt:prompt, image_urls:[S.photo] })
+    headers:{ 'apikey':PREMIUM_VOICE_KEY, 'Content-Type':'application/json' },
+    body:JSON.stringify({ mode:'submit', kind:'image', prompt:prompt, image_url:S.photo })
   }).then(r=>r.json()).then(j=>{
-    if(j.detail){ setVidStatus('editStatus','Error: '+(typeof j.detail==='string'?j.detail:'check your key & access')); return; }
-    var statusUrl=j.status_url || (j.request_id ? 'https://queue.fal.run/fal-ai/nano-banana/requests/'+j.request_id+'/status' : null);
-    var resultUrl=j.response_url || (j.request_id ? 'https://queue.fal.run/fal-ai/nano-banana/requests/'+j.request_id : null);
-    if(statusUrl && resultUrl){ pollEditImage(statusUrl, resultUrl); }
-    else setVidStatus('editStatus','Unexpected response. Check your Fal.ai key.');
-  }).catch(e=>setVidStatus('editStatus','Request failed: '+e.message+' (use the live link in Chrome).'));
+    if(j.error){ setVidStatus('editStatus','Error: '+(typeof j.error==='string'?j.error:'check the service')); return; }
+    if(j.request_id){ pollEditImage(j.request_id); }
+    else setVidStatus('editStatus','Unexpected response. Please try again.');
+  }).catch(e=>setVidStatus('editStatus','Request failed: '+e.message));
 }
-function pollEditImage(statusUrl, resultUrl){
+function pollEditImage(reqId){
   var tries=0;
   function check(){
     tries++;
-    fetch(statusUrl,{headers:{'Authorization':'Key '+VIDCFG.key}}).then(r=>r.json()).then(j=>{
+    fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({mode:'status',kind:'image',request_id:reqId})}).then(r=>r.json()).then(j=>{
       if(j.status==='COMPLETED'){
-        fetch(resultUrl,{headers:{'Authorization':'Key '+VIDCFG.key}}).then(r=>r.json()).then(res=>{
+        fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
+          body:JSON.stringify({mode:'result',kind:'image',request_id:reqId})}).then(r=>r.json()).then(res=>{
           var out = (res.images && res.images[0] && (res.images[0].url||res.images[0])) || (res.image && (res.image.url||res.image)) || res.url;
           if(out){ aiEditedImage=out; setVidStatus('editStatus','Done! Recreated image ready — it\'ll be used for the video below. <a href="'+out+'" target="_blank">View</a>'); }
-          else setVidStatus('editStatus','Finished, but no image came back. Check your Fal.ai dashboard.');
+          else setVidStatus('editStatus','Finished, but no image came back. Try again.');
         });
-      } else if(j.status==='FAILED'){ setVidStatus('editStatus','Edit failed. '+(j.error||'Check your account/credits.'));
-      } else if(tries>40){ setVidStatus('editStatus','Still working — check your Fal.ai dashboard.');
+      } else if(j.status==='FAILED'){ setVidStatus('editStatus','Edit failed. '+(j.error||'Please try again.'));
+      } else if(tries>40){ setVidStatus('editStatus','Still working — please check back in a moment.');
       } else { setVidStatus('editStatus','Recreating… ('+(j.status||'in queue')+') '+tries*3+'s'); setTimeout(check,3000); }
     }).catch(e=>setVidStatus('editStatus','Polling failed: '+e.message));
   }
@@ -10760,39 +10761,37 @@ function generateAIVideo(){
     return;
   }
   VIDCFG.key=document.getElementById('vidKey').value.trim();
-  if(!VIDCFG.key){ setVidStatus('aiVidStatus','Paste your Fal.ai API key first.'); return; }
   var srcImage = aiEditedImage || S.photo;
   if(!srcImage){ setVidStatus('aiVidStatus','Add a photo to your friend first.'); return; }
   if(!isOwner()) useAIVideo();   // count it against today's allowance
-  setVidStatus('aiVidStatus','Sending your image to Fal.ai… this can take a minute.');
-  // Fal.ai queue API — image-to-video (~3 sec). User's key, billed to their account.
-  fetch('https://queue.fal.run/fal-ai/stable-video',{
+  setVidStatus('aiVidStatus','Sending your image… this can take a minute.');
+  fetch(AI_MEDIA_URL,{
     method:'POST',
-    headers:{ 'Authorization':'Key '+VIDCFG.key, 'Content-Type':'application/json' },
-    body:JSON.stringify({ image_url:srcImage, motion_bucket_id:127, cond_aug:0.02, fps:8 })
+    headers:{ 'apikey':PREMIUM_VOICE_KEY, 'Content-Type':'application/json' },
+    body:JSON.stringify({ mode:'submit', kind:'video', image_url:srcImage })
   }).then(r=>r.json()).then(j=>{
-    if(j.detail){ setVidStatus('aiVidStatus','Error: '+(typeof j.detail==='string'?j.detail:'check your key & access')); return; }
-    var statusUrl=j.status_url || (j.request_id ? 'https://queue.fal.run/fal-ai/stable-video/requests/'+j.request_id+'/status' : null);
-    var resultUrl=j.response_url || (j.request_id ? 'https://queue.fal.run/fal-ai/stable-video/requests/'+j.request_id : null);
-    if(statusUrl && resultUrl){ pollAIVideo(statusUrl, resultUrl); }
-    else setVidStatus('aiVidStatus','Unexpected response. Check your Fal.ai key and model access.');
-  }).catch(e=>setVidStatus('aiVidStatus','Request failed: '+e.message+' (open the live link in Chrome, not the preview).'));
+    if(j.error){ setVidStatus('aiVidStatus','Error: '+(typeof j.error==='string'?j.error:'please try again')); return; }
+    if(j.request_id){ pollAIVideo(j.request_id); }
+    else setVidStatus('aiVidStatus','Unexpected response. Please try again.');
+  }).catch(e=>setVidStatus('aiVidStatus','Request failed: '+e.message));
 }
-function pollAIVideo(statusUrl, resultUrl){
+function pollAIVideo(reqId){
   var tries=0;
   function check(){
     tries++;
-    fetch(statusUrl,{headers:{'Authorization':'Key '+VIDCFG.key}}).then(r=>r.json()).then(j=>{
+    fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({mode:'status',kind:'video',request_id:reqId})}).then(r=>r.json()).then(j=>{
       if(j.status==='COMPLETED'){
-        fetch(resultUrl,{headers:{'Authorization':'Key '+VIDCFG.key}}).then(r=>r.json()).then(res=>{
+        fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
+          body:JSON.stringify({mode:'result',kind:'video',request_id:reqId})}).then(r=>r.json()).then(res=>{
           var out = (res.video && (res.video.url||res.video)) || (res.output && res.output.video) || res.url;
           if(out) setVidStatus('aiVidStatus','Done! <a href="'+out+'" download="ai-video.mp4" target="_blank">Download your AI video</a>');
-          else setVidStatus('aiVidStatus','Finished, but no video URL came back. Check your Fal.ai dashboard.');
+          else setVidStatus('aiVidStatus','Finished, but no video URL came back. Please try again.');
         });
       } else if(j.status==='FAILED'){
-        setVidStatus('aiVidStatus','Generation failed. '+(j.error||'Check your Fal.ai account/credits.'));
+        setVidStatus('aiVidStatus','Generation failed. '+(j.error||'Please try again.'));
       } else if(tries>40){
-        setVidStatus('aiVidStatus','Still working — check your Fal.ai dashboard for the result.');
+        setVidStatus('aiVidStatus','Still working — please check back in a moment.');
       } else {
         setVidStatus('aiVidStatus','Generating… ('+(j.status||'in queue')+') '+tries*3+'s');
         setTimeout(check,3000);
