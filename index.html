@@ -2380,35 +2380,13 @@ textarea{resize:none;line-height:1.4;}
 
     <div class="cloud-box" id="premiumVoiceBox">
       <div class="cloud-head">
-        <span>✨ Premium voices (optional)</span>
-        <label class="cloud-toggle"><input type="checkbox" id="cloudOn" onchange="onCloudToggle(this.checked)"> Use premium voice</label>
+        <span>✨ Premium voices</span>
       </div>
-      <p class="rec-hint" style="margin:6px 0 10px">Natural AI voices via your own key. Keys stay on this device, calls go straight to the provider, and usage is billed to your account. Works online only.</p>
-
-      <label class="rec-label">Provider</label>
-      <div class="freq-row" id="provRow" style="grid-template-columns:repeat(2,1fr)">
-        <button class="freq-btn" id="provOpenai" onclick="setProvider(&#39;openai&#39;)"><span class="fe">🗣️</span>OpenAI voices</button>
-        <button class="freq-btn" id="provEleven" onclick="setProvider(&#39;elevenlabs&#39;)"><span class="fe">🎙️</span>ElevenLabs (my voice)</button>
-      </div>
+      <p class="rec-hint" style="margin:6px 0 10px">Natural AI character voices. Pick one and they'll speak everything. Works online.</p>
 
       <div id="voiceChoices">
         <label class="rec-label">Choose a voice</label>
         <div class="cloud-voices" id="cloudVoices"></div>
-        <button class="rec-save" onclick="saveCloudCfg()">Save &amp; preview</button>
-      </div>
-
-      <div id="openaiFields" class="owner-only-keys">
-        <label class="rec-label">OpenAI API key</label>
-        <div class="rec-field"><input type="password" id="cloudKey" placeholder="sk-…" oninput="CLOUD.key=this.value"></div>
-      </div>
-
-      <div id="elevenFields" class="owner-only-keys" style="display:none">
-        <label class="rec-label">ElevenLabs API key</label>
-        <div class="rec-field"><input type="password" id="elKey" placeholder="your ElevenLabs key" oninput="CLOUD.elKey=this.value"></div>
-        <label class="rec-label">Voice ID (from your ElevenLabs voice)</label>
-        <div class="rec-field"><input id="elVoice" placeholder="e.g. 21m00Tcm…" oninput="CLOUD.elVoice=this.value"></div>
-        <p class="rec-hint" style="margin:2px 0 10px">Clone your voice in the ElevenLabs dashboard, then paste its Voice ID here. Tip: a clean 1–2 min sample = "you, but better."</p>
-        <button class="rec-save" onclick="saveCloudCfg()">Save &amp; preview my voice</button>
       </div>
     </div>
   </div>
@@ -9875,12 +9853,8 @@ function openVoicePicker(){
   renderVoiceGrid();
   document.getElementById('rateSlider').value=S.rate||1.0; document.getElementById('rateVal').textContent=(S.rate||1).toFixed(2)+'×';
   document.getElementById('pitchSlider').value=S.pitch||1.0; document.getElementById('pitchVal').textContent=(S.pitch||1).toFixed(2);
-  document.getElementById('cloudOn').checked=!!CLOUD.enabled;
-  document.getElementById('cloudKey').value=CLOUD.key||'';
-  document.getElementById('elKey').value=CLOUD.elKey||'';
-  document.getElementById('elVoice').value=CLOUD.elVoice||'';
+  CLOUD.enabled=true;   // premium always available now (keys live safely in the proxy)
   renderCloudVoices();
-  setProvider(CLOUD.provider||'openai');
   renderFreqRow();
   document.getElementById('voicePlayBtn').style.display = S.customVoice ? 'block':'none';
   document.getElementById('voiceUpStatus').textContent = S.customVoice ? 'A saved voice clip is stored for this friend.' : '';
@@ -9926,13 +9900,7 @@ function playCustomVoice(){
 function closeVoicePicker(){ speechSynthesis.cancel(); stopCloudAudio(); document.getElementById('voiceOverlay').classList.remove('on'); }
 function onRate(v){ S.rate=parseFloat(v); document.getElementById('rateVal').textContent=S.rate.toFixed(2)+'×'; persist(); }
 function onPitch(v){ S.pitch=parseFloat(v); document.getElementById('pitchVal').textContent=S.pitch.toFixed(2); persist(); }
-function onCloudToggle(on){ CLOUD.enabled=on; saveCloud();
-  if(on){ var need = CLOUD.provider==='elevenlabs' ? (!CLOUD.elKey||!CLOUD.elVoice) : !CLOUD.key;
-    if(need) toast("Enter your key below to use premium voices.");
-    // Premium is Honey's clone voice — switch to Honey so her live AI lines speak in it.
-    else { S.voice="honey"; persist(); }
-  }
-  renderVoiceGrid(); }
+function onCloudToggle(on){ CLOUD.enabled=on; saveCloud(); renderVoiceGrid(); }
 var CLOUD_VOICES=["coral","sage","marin","cedar","nova","shimmer","ballad","ash","verse","alloy","echo","fable","onyx"];
 /* ══ VOICE CHARACTERS ══ Friendly name + personality direction for each premium voice.
    Users see the friendly name (never the OpenAI base name). The "dir" is a director's
@@ -9960,40 +9928,26 @@ function renderCloudVoices(){
   // sensible default by the friend's gender (female friend → warm female voice)
   if(!CLOUD.voice){ CLOUD.voice = S.gender==='M' ? 'onyx' : 'shimmer'; }
   CLOUD_VOICES.forEach(v=>{ var b=document.createElement('button'); b.className='cv'+(CLOUD.voice===v?' sel':'');
-    var c=VOICE_CHARACTERS[v]; b.textContent=(c?(c.em+' '+c.nm):v); b.onclick=()=>{ CLOUD.voice=v; renderCloudVoices(); }; w.appendChild(b); });
+    var c=VOICE_CHARACTERS[v]; b.textContent=(c?(c.em+' '+c.nm):v);
+    b.onclick=()=>{
+      CLOUD.voice=v;
+      CLOUD.provider='openai';   // character voices are OpenAI, not Honey's ElevenLabs clone
+      CLOUD.enabled=true;
+      S.voice=v;                 // ← the chat checks S.voice; set it so this character speaks EVERYTHING
+      persist && persist(); saveCloud && saveCloud();
+      renderCloudVoices();
+      if(typeof renderVoiceGrid==='function') renderVoiceGrid();
+    };
+    w.appendChild(b); });
 }
-function setProvider(p){
-  CLOUD.provider=p; saveCloud();
-  var owner=isOwner();
-  // Voice choices are for every premium user; only the raw API-key fields are owner-only.
-  var vc=document.getElementById('voiceChoices'); if(vc)vc.style.display = (p==='openai') ? 'block':'none';
-  document.getElementById('openaiFields').style.display = (owner && p==='openai') ? 'block':'none';
-  document.getElementById('elevenFields').style.display = (owner && p==='elevenlabs') ? 'block':'none';
-  var po=document.getElementById('provOpenai'), pe=document.getElementById('provEleven');
-  if(po)po.classList.toggle('sel',p==='openai'); if(pe)pe.classList.toggle('sel',p==='elevenlabs');
-}
+function setProvider(p){ CLOUD.provider=p; saveCloud(); }
 function saveCloudCfg(){
-  if(CLOUD.provider==='elevenlabs'){
-    CLOUD.elKey=document.getElementById('elKey').value.trim();
-    CLOUD.elVoice=document.getElementById('elVoice').value.trim();
-    if(!CLOUD.elKey){ toast("Enter your ElevenLabs API key first."); return; }
-    if(!CLOUD.elVoice){ toast("Enter your ElevenLabs Voice ID first."); return; }
-  } else {
-    CLOUD.key=document.getElementById('cloudKey').value.trim();
-    if(!CLOUD.key){ toast("Enter your OpenAI API key first."); return; }
-  }
-  CLOUD.enabled=true; document.getElementById('cloudOn').checked=true;
-  if(CLOUD.provider==='elevenlabs'){ S.voice="honey"; }   // ElevenLabs is Honey's clone — make her the voice
-  saveCloud(); S.speakerOn=true;
+  CLOUD.enabled=true; saveCloud(); S.speakerOn=true;
   renderVoiceGrid();
-  // Honest status: tell the user exactly what the app thinks before it tries to speak.
-  var owner = isOwner(), tierOk = tierAtLeast('quart'), ready = cloudReady();
+  var owner = isOwner(), tierOk = tierAtLeast('quart');
   if(!owner && !tierOk){
-    toast("Premium voice is gated: not in owner mode (5-tap the Honey title) and tier isn't Quart+. Turning owner ON for testing…", 6000);
     SETTINGS.owner=true; saveSettings && saveSettings();  // enable owner so testing works
   }
-  toast("Saved — previewing… (owner:"+(isOwner()?"yes":"no")+", ready:"+(cloudReady()?"yes":"no")+")", 5000);
-  cloudSpeak(CLOUD.provider==='elevenlabs' ? "Hi, it's me. This is my voice — but better." : "Hey, this is my new voice. Much better, right?");
 }
 function renderVoiceGrid(){
   var g=document.getElementById('voiceGrid'); g.innerHTML='';
@@ -10012,7 +9966,7 @@ function renderVoiceGrid(){
         S.voice=p.id; persist(); previewVoice(p.id); renderVoiceGrid(); return;
       }
       // Tapping any phone/device voice: switch to it and turn premium OFF so it actually plays the device voice.
-      if(cloudReady()){ CLOUD.enabled=false; saveCloud(); var cb=document.getElementById('cloudOn'); if(cb)cb.checked=false; }
+      if(cloudReady()){ CLOUD.enabled=false; saveCloud(); }
       S.voice=p.id; persist(); previewVoice(p.id); renderVoiceGrid();
     };
     g.appendChild(c);
