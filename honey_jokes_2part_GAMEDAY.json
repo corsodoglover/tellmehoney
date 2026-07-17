@@ -1,0 +1,1570 @@
+[
+ {
+  "id": "joke_gameday_001_setup",
+  "text": "What's my favorite golf club?"
+ },
+ {
+  "id": "joke_gameday_001_punch",
+  "text": "Whichever one I haven't thrown yet."
+ },
+ {
+  "id": "joke_gameday_002_setup",
+  "text": "Why did my golf ball go left?"
+ },
+ {
+  "id": "joke_gameday_002_punch",
+  "text": "Because I aimed right. It always listens to the opposite."
+ },
+ {
+  "id": "joke_gameday_003_setup",
+  "text": "What do you call a golfer with a perfect swing?"
+ },
+ {
+  "id": "joke_gameday_003_punch",
+  "text": "Someone I've never met."
+ },
+ {
+  "id": "joke_gameday_004_setup",
+  "text": "Why is my slice so reliable?"
+ },
+ {
+  "id": "joke_gameday_004_punch",
+  "text": "It's the only part of my game that shows up every single time."
+ },
+ {
+  "id": "joke_gameday_005_setup",
+  "text": "What's the hardest shot in golf?"
+ },
+ {
+  "id": "joke_gameday_005_punch",
+  "text": "The one right after you say, watch this."
+ },
+ {
+  "id": "joke_gameday_006_setup",
+  "text": "Why did I buy new clubs?"
+ },
+ {
+  "id": "joke_gameday_006_punch",
+  "text": "So I'd have something new to blame."
+ },
+ {
+  "id": "joke_gameday_007_setup",
+  "text": "What's my handicap?"
+ },
+ {
+  "id": "joke_gameday_007_punch",
+  "text": "Honesty, mostly."
+ },
+ {
+  "id": "joke_gameday_008_setup",
+  "text": "Why do I always find the sand trap?"
+ },
+ {
+  "id": "joke_gameday_008_punch",
+  "text": "My ball loves the beach more than I do."
+ },
+ {
+  "id": "joke_gameday_009_setup",
+  "text": "What did I shoot today?"
+ },
+ {
+  "id": "joke_gameday_009_punch",
+  "text": "I stopped counting when I ran out of fingers, and then toes."
+ },
+ {
+  "id": "joke_gameday_010_setup",
+  "text": "What's the golfer's favorite kind of music?"
+ },
+ {
+  "id": "joke_gameday_010_punch",
+  "text": "Anything with a good swing to it."
+ },
+ {
+  "id": "joke_gameday_011_setup",
+  "text": "What do you call it when you hit the ball straight?"
+ },
+ {
+  "id": "joke_gameday_011_punch",
+  "text": "An accident. A wonderful, unrepeatable accident."
+ },
+ {
+  "id": "joke_gameday_012_setup",
+  "text": "What's the most-used word on a golf course?"
+ },
+ {
+  "id": "joke_gameday_012_punch",
+  "text": "Fore — followed by a lot of quieter words."
+ },
+ {
+  "id": "joke_gameday_013_setup",
+  "text": "What's the difference between my golf ball and my car keys?"
+ },
+ {
+  "id": "joke_gameday_013_punch",
+  "text": "I can actually find my car keys."
+ },
+ {
+  "id": "joke_gameday_014_setup",
+  "text": "Why was my drive so bad?"
+ },
+ {
+  "id": "joke_gameday_014_punch",
+  "text": "The wind, obviously. The wind that only exists when I swing."
+ },
+ {
+  "id": "joke_gameday_015_setup",
+  "text": "What ruined my game today?"
+ },
+ {
+  "id": "joke_gameday_015_punch",
+  "text": "The course. They clearly moved the holes."
+ },
+ {
+  "id": "joke_gameday_016_setup",
+  "text": "Why did I miss the easy shot?"
+ },
+ {
+  "id": "joke_gameday_016_punch",
+  "text": "A butterfly looked at me funny."
+ },
+ {
+  "id": "joke_gameday_017_setup",
+  "text": "Why is the 19th hole everyone's favorite?"
+ },
+ {
+  "id": "joke_gameday_017_punch",
+  "text": "It's the only one nobody ever bogeys."
+ },
+ {
+  "id": "joke_gameday_018_setup",
+  "text": "What did the golfer order after 18 holes?"
+ },
+ {
+  "id": "joke_gameday_018_punch",
+  "text": "Everything. It was a long, character-building day."
+ },
+ {
+  "id": "joke_gameday_019_setup",
+  "text": "Why do golfers love the clubhouse?"
+ },
+ {
+  "id": "joke_gameday_019_punch",
+  "text": "It's where every terrible round becomes a great story."
+ },
+ {
+  "id": "joke_gameday_020_setup",
+  "text": "How do you know someone loves golf?"
+ },
+ {
+  "id": "joke_gameday_020_punch",
+  "text": "Don't worry, they'll tell you. Then tell you again."
+ },
+ {
+  "id": "joke_gameday_021_setup",
+  "text": "What's a golf widow?"
+ },
+ {
+  "id": "joke_gameday_021_punch",
+  "text": "Someone who married a person and a set of clubs."
+ },
+ {
+  "id": "joke_gameday_022_setup",
+  "text": "Why did the golfer check the weather ten times?"
+ },
+ {
+  "id": "joke_gameday_022_punch",
+  "text": "He was praying, mostly."
+ },
+ {
+  "id": "joke_gameday_023_setup",
+  "text": "What do golfers dream about?"
+ },
+ {
+  "id": "joke_gameday_023_punch",
+  "text": "That one perfect shot that keeps them coming back forever."
+ },
+ {
+  "id": "joke_gameday_024_setup",
+  "text": "Why does a golfer play in the rain?"
+ },
+ {
+  "id": "joke_gameday_024_punch",
+  "text": "Because the course was open, and that's reason enough."
+ },
+ {
+  "id": "joke_gameday_025_setup",
+  "text": "What did the golfer name his dog?"
+ },
+ {
+  "id": "joke_gameday_025_punch",
+  "text": "Birdie. It was the only one he could count on."
+ },
+ {
+  "id": "joke_gameday_026_setup",
+  "text": "What's the best part of golf for a beginner?"
+ },
+ {
+  "id": "joke_gameday_026_punch",
+  "text": "Every single shot is a brand-new adventure."
+ },
+ {
+  "id": "joke_gameday_027_setup",
+  "text": "Did you know golf teaches a lesson about the past?"
+ },
+ {
+  "id": "joke_gameday_027_punch",
+  "text": "You can't change the last swing — only the grip you take on the next one."
+ },
+ {
+  "id": "joke_gameday_028_setup",
+  "text": "What does golf teach about mistakes?"
+ },
+ {
+  "id": "joke_gameday_028_punch",
+  "text": "Every round has a bad hole. Don't let one ruin the whole game."
+ },
+ {
+  "id": "joke_gameday_029_setup",
+  "text": "Why do they say to play the ball where it lies?"
+ },
+ {
+  "id": "joke_gameday_029_punch",
+  "text": "In golf and in life, you start from where you actually are, not where you wish you were."
+ },
+ {
+  "id": "joke_gameday_030_setup",
+  "text": "What's the wisest rule in golf?"
+ },
+ {
+  "id": "joke_gameday_030_punch",
+  "text": "The only shot that matters is the next one."
+ },
+ {
+  "id": "joke_gameday_031_setup",
+  "text": "What does golf say about patience?"
+ },
+ {
+  "id": "joke_gameday_031_punch",
+  "text": "You can't force a good shot. You settle, you breathe, and you let it happen."
+ },
+ {
+  "id": "joke_gameday_032_setup",
+  "text": "Why is honesty called the soul of golf?"
+ },
+ {
+  "id": "joke_gameday_032_punch",
+  "text": "You keep your own score — so the game is really a mirror of your character."
+ },
+ {
+  "id": "joke_gameday_033_setup",
+  "text": "What does a missed putt teach you?"
+ },
+ {
+  "id": "joke_gameday_033_punch",
+  "text": "Shake it off and walk to the next hole. Life gives you another swing too."
+ },
+ {
+  "id": "joke_gameday_034_setup",
+  "text": "Why do golfers say keep your head down?"
+ },
+ {
+  "id": "joke_gameday_034_punch",
+  "text": "Same as life — stay focused on what's in front of you, not the crowd."
+ },
+ {
+  "id": "joke_gameday_035_setup",
+  "text": "What does golf teach about comparison?"
+ },
+ {
+  "id": "joke_gameday_035_punch",
+  "text": "You play your own ball. Somebody else's game is none of your business."
+ },
+ {
+  "id": "joke_gameday_036_setup",
+  "text": "Why is the follow-through so important?"
+ },
+ {
+  "id": "joke_gameday_036_punch",
+  "text": "How you finish matters as much as how you start — on the course and off."
+ },
+ {
+  "id": "joke_gameday_037_setup",
+  "text": "Why do they say golf is a game of misses?"
+ },
+ {
+  "id": "joke_gameday_037_punch",
+  "text": "Nobody hits it perfect. You just try to make your misses a little better each time."
+ },
+ {
+  "id": "joke_gameday_038_setup",
+  "text": "Why do golfers replace their divots?"
+ },
+ {
+  "id": "joke_gameday_038_punch",
+  "text": "You leave a place better than you found it. That's just good living."
+ },
+ {
+  "id": "joke_gameday_039_setup",
+  "text": "Why do golfers keep coming back after a bad day?"
+ },
+ {
+  "id": "joke_gameday_039_punch",
+  "text": "Because tomorrow's fairway doesn't remember today's slice."
+ },
+ {
+  "id": "joke_gameday_040_setup",
+  "text": "Why do the seniors tee off early?"
+ },
+ {
+  "id": "joke_gameday_040_punch",
+  "text": "So they can nap with a clear conscience."
+ },
+ {
+  "id": "joke_gameday_041_setup",
+  "text": "What's a mulligan?"
+ },
+ {
+  "id": "joke_gameday_041_punch",
+  "text": "A do-over — golf's gentle way of saying everybody deserves a second chance."
+ },
+ {
+  "id": "joke_gameday_042_setup",
+  "text": "Why is a hole-in-one so special?"
+ },
+ {
+  "id": "joke_gameday_042_punch",
+  "text": "It's the one time the whole round goes exactly as you dreamed."
+ },
+ {
+  "id": "joke_gameday_043_setup",
+  "text": "What did the golf ball say to the club?"
+ },
+ {
+  "id": "joke_gameday_043_punch",
+  "text": "See you around, hopefully in the right direction this time."
+ },
+ {
+  "id": "joke_gameday_044_setup",
+  "text": "Why can't you play basketball with pigs?"
+ },
+ {
+  "id": "joke_gameday_044_punch",
+  "text": "They always hog the ball."
+ },
+ {
+  "id": "joke_gameday_045_setup",
+  "text": "Why was the basketball court always wet?"
+ },
+ {
+  "id": "joke_gameday_045_punch",
+  "text": "The players kept dribbling."
+ },
+ {
+  "id": "joke_gameday_046_setup",
+  "text": "What do you call a basketball player who misses every shot?"
+ },
+ {
+  "id": "joke_gameday_046_punch",
+  "text": "Consistent."
+ },
+ {
+  "id": "joke_gameday_047_setup",
+  "text": "Why did the football coach go to the bank?"
+ },
+ {
+  "id": "joke_gameday_047_punch",
+  "text": "To get his quarterback."
+ },
+ {
+  "id": "joke_gameday_048_setup",
+  "text": "Why did the football team go to the bakery?"
+ },
+ {
+  "id": "joke_gameday_048_punch",
+  "text": "They needed a good roll."
+ },
+ {
+  "id": "joke_gameday_049_setup",
+  "text": "What has 18 legs and catches flies?"
+ },
+ {
+  "id": "joke_gameday_049_punch",
+  "text": "A baseball team."
+ },
+ {
+  "id": "joke_gameday_050_setup",
+  "text": "Why did the soccer ball quit the team?"
+ },
+ {
+  "id": "joke_gameday_050_punch",
+  "text": "It was tired of being kicked around."
+ },
+ {
+  "id": "joke_gameday_051_setup",
+  "text": "What lights up a soccer stadium?"
+ },
+ {
+  "id": "joke_gameday_051_punch",
+  "text": "A soccer match."
+ },
+ {
+  "id": "joke_gameday_052_setup",
+  "text": "Why did the hockey player bring a broom?"
+ },
+ {
+  "id": "joke_gameday_052_punch",
+  "text": "For the sweep."
+ },
+ {
+  "id": "joke_gameday_053_setup",
+  "text": "What do you call a polite hockey player?"
+ },
+ {
+  "id": "joke_gameday_053_punch",
+  "text": "Canadian."
+ },
+ {
+  "id": "joke_gameday_054_setup",
+  "text": "Why was the hockey rink so quiet?"
+ },
+ {
+  "id": "joke_gameday_054_punch",
+  "text": "Everyone was on thin ice."
+ },
+ {
+  "id": "joke_gameday_055_setup",
+  "text": "Why did the hockey puck go to school?"
+ },
+ {
+  "id": "joke_gameday_055_punch",
+  "text": "To stop getting slapped around."
+ },
+ {
+  "id": "joke_gameday_056_setup",
+  "text": "Why is tennis such a loud sport?"
+ },
+ {
+  "id": "joke_gameday_056_punch",
+  "text": "Everyone raises a racket."
+ },
+ {
+  "id": "joke_gameday_057_setup",
+  "text": "What do you call a tennis champion with a cold?"
+ },
+ {
+  "id": "joke_gameday_057_punch",
+  "text": "A real sneeze-ball."
+ },
+ {
+  "id": "joke_gameday_058_setup",
+  "text": "Why are tennis players bad at relationships?"
+ },
+ {
+  "id": "joke_gameday_058_punch",
+  "text": "Love means nothing to them."
+ },
+ {
+  "id": "joke_gameday_059_setup",
+  "text": "Why don't boxers tell jokes?"
+ },
+ {
+  "id": "joke_gameday_059_punch",
+  "text": "They always deliver a punchline too hard."
+ },
+ {
+  "id": "joke_gameday_060_setup",
+  "text": "What do you call a boxer who loves gardening?"
+ },
+ {
+  "id": "joke_gameday_060_punch",
+  "text": "Someone who really knows how to plant one."
+ },
+ {
+  "id": "joke_gameday_061_setup",
+  "text": "Why was the boxer so calm?"
+ },
+ {
+  "id": "joke_gameday_061_punch",
+  "text": "He knew how to roll with the punches."
+ },
+ {
+  "id": "joke_gameday_062_setup",
+  "text": "Why did the swimmer bring a bar of soap?"
+ },
+ {
+  "id": "joke_gameday_062_punch",
+  "text": "In case he wanted to make a clean lap."
+ },
+ {
+  "id": "joke_gameday_063_setup",
+  "text": "What swim stroke do sheep do best?"
+ },
+ {
+  "id": "joke_gameday_063_punch",
+  "text": "The baaa-ckstroke."
+ },
+ {
+  "id": "joke_gameday_064_setup",
+  "text": "Why was the track star good at math?"
+ },
+ {
+  "id": "joke_gameday_064_punch",
+  "text": "He was always running the numbers."
+ },
+ {
+  "id": "joke_gameday_065_setup",
+  "text": "Why did the bowling pins lie down?"
+ },
+ {
+  "id": "joke_gameday_065_punch",
+  "text": "They were on strike."
+ },
+ {
+  "id": "joke_gameday_066_setup",
+  "text": "Why was the bowling alley so quiet?"
+ },
+ {
+  "id": "joke_gameday_066_punch",
+  "text": "You could hear a pin drop."
+ },
+ {
+  "id": "joke_gameday_067_setup",
+  "text": "What do you call a bowler who tells jokes?"
+ },
+ {
+  "id": "joke_gameday_067_punch",
+  "text": "A real strike of genius."
+ },
+ {
+  "id": "joke_gameday_068_setup",
+  "text": "Why did the bowling ball go to therapy?"
+ },
+ {
+  "id": "joke_gameday_068_punch",
+  "text": "It kept ending up in the gutter."
+ },
+ {
+  "id": "joke_gameday_069_setup",
+  "text": "Why are bowlers so calm?"
+ },
+ {
+  "id": "joke_gameday_069_punch",
+  "text": "They know how to spare their feelings."
+ },
+ {
+  "id": "joke_gameday_070_setup",
+  "text": "Why do cyclists make good storytellers?"
+ },
+ {
+  "id": "joke_gameday_070_punch",
+  "text": "They always put a spin on it."
+ },
+ {
+  "id": "joke_gameday_071_setup",
+  "text": "What do you call a cyclist who won't pedal?"
+ },
+ {
+  "id": "joke_gameday_071_punch",
+  "text": "Stationary."
+ },
+ {
+  "id": "joke_gameday_072_setup",
+  "text": "Why was the gymnast good at finances?"
+ },
+ {
+  "id": "joke_gameday_072_punch",
+  "text": "She was very flexible with her balance."
+ },
+ {
+  "id": "joke_gameday_073_setup",
+  "text": "What's a golfer's favorite letter?"
+ },
+ {
+  "id": "joke_gameday_073_punch",
+  "text": "The tee."
+ },
+ {
+  "id": "joke_gameday_074_setup",
+  "text": "Why is ping pong such a polite sport?"
+ },
+ {
+  "id": "joke_gameday_074_punch",
+  "text": "Everyone takes turns and says sorry."
+ },
+ {
+  "id": "joke_gameday_075_setup",
+  "text": "Why did the ping pong ball get promoted?"
+ },
+ {
+  "id": "joke_gameday_075_punch",
+  "text": "It always bounced back."
+ },
+ {
+  "id": "joke_gameday_076_setup",
+  "text": "What's the hardest position in sports?"
+ },
+ {
+  "id": "joke_gameday_076_punch",
+  "text": "The recliner, and I've mastered it."
+ },
+ {
+  "id": "joke_gameday_077_setup",
+  "text": "What's a couch coach's specialty?"
+ },
+ {
+  "id": "joke_gameday_077_punch",
+  "text": "Perfect plays, three seconds after they happen."
+ },
+ {
+  "id": "joke_gameday_078_setup",
+  "text": "Why did grandpa yell at the TV?"
+ },
+ {
+  "id": "joke_gameday_078_punch",
+  "text": "The players couldn't hear him, but tradition is tradition."
+ },
+ {
+  "id": "joke_gameday_079_setup",
+  "text": "What's the best snack for watching sports?"
+ },
+ {
+  "id": "joke_gameday_079_punch",
+  "text": "Whatever's within arm's reach of the recliner."
+ },
+ {
+  "id": "joke_gameday_080_setup",
+  "text": "Why do old-timers love the good old days of sports?"
+ },
+ {
+  "id": "joke_gameday_080_punch",
+  "text": "Everybody was faster, tougher, and uphill both ways."
+ },
+ {
+  "id": "joke_gameday_081_setup",
+  "text": "What did grandpa say about modern athletes?"
+ },
+ {
+  "id": "joke_gameday_081_punch",
+  "text": "Talented, sure, but can they fix a fence?"
+ },
+ {
+  "id": "joke_gameday_082_setup",
+  "text": "What's the fastest sport?"
+ },
+ {
+  "id": "joke_gameday_082_punch",
+  "text": "Whichever one gets you to the snack table quickest."
+ },
+ {
+  "id": "joke_gameday_083_setup",
+  "text": "Why did the scoreboard go to school?"
+ },
+ {
+  "id": "joke_gameday_083_punch",
+  "text": "It wanted to keep count."
+ },
+ {
+  "id": "joke_gameday_084_setup",
+  "text": "What do you call a sport with no rules?"
+ },
+ {
+  "id": "joke_gameday_084_punch",
+  "text": "A family reunion."
+ },
+ {
+  "id": "joke_gameday_085_setup",
+  "text": "What's the secret to any sport?"
+ },
+ {
+  "id": "joke_gameday_085_punch",
+  "text": "Show up, try hard, and blame the ref."
+ },
+ {
+  "id": "joke_nowwhere_001_setup",
+  "text": "What's the fastest way to forget why you came upstairs?"
+ },
+ {
+  "id": "joke_nowwhere_001_punch",
+  "text": "Arrive upstairs."
+ },
+ {
+  "id": "joke_nowwhere_002_setup",
+  "text": "Why did I open the fridge?"
+ },
+ {
+  "id": "joke_nowwhere_002_punch",
+  "text": "To ask it a question I've since forgotten."
+ },
+ {
+  "id": "joke_nowwhere_003_setup",
+  "text": "Why did I go to the garage?"
+ },
+ {
+  "id": "joke_nowwhere_003_punch",
+  "text": "The garage knows. I don't."
+ },
+ {
+  "id": "joke_nowwhere_004_setup",
+  "text": "Why did I come in here?"
+ },
+ {
+  "id": "joke_nowwhere_004_punch",
+  "text": "Ask me later. Much later."
+ },
+ {
+  "id": "joke_nowwhere_005_setup",
+  "text": "What's my superpower?"
+ },
+ {
+  "id": "joke_nowwhere_005_punch",
+  "text": "Forgetting the plan between the couch and the kitchen."
+ },
+ {
+  "id": "joke_nowwhere_006_setup",
+  "text": "What's harder than finding my glasses?"
+ },
+ {
+  "id": "joke_nowwhere_006_punch",
+  "text": "Finding them without my glasses."
+ },
+ {
+  "id": "joke_nowwhere_007_setup",
+  "text": "Why was I calling my own phone?"
+ },
+ {
+  "id": "joke_nowwhere_007_punch",
+  "text": "To find the phone I was calling with. Details."
+ },
+ {
+  "id": "joke_nowwhere_008_setup",
+  "text": "Where's my phone?"
+ },
+ {
+  "id": "joke_nowwhere_008_punch",
+  "text": "In my hand. Don't tell anyone."
+ },
+ {
+  "id": "joke_nowwhere_009_setup",
+  "text": "Why did I panic about my phone?"
+ },
+ {
+  "id": "joke_nowwhere_009_punch",
+  "text": "I was using the flashlight on it to look for it."
+ },
+ {
+  "id": "joke_nowwhere_010_setup",
+  "text": "What's more embarrassing than losing your phone?"
+ },
+ {
+  "id": "joke_nowwhere_010_punch",
+  "text": "Talking on it while you look for it."
+ },
+ {
+  "id": "joke_nowwhere_011_setup",
+  "text": "Where did I leave my keys?"
+ },
+ {
+  "id": "joke_nowwhere_011_punch",
+  "text": "Somewhere so safe even I can't find them."
+ },
+ {
+  "id": "joke_nowwhere_012_setup",
+  "text": "Why do I own three sets of keys?"
+ },
+ {
+  "id": "joke_nowwhere_012_punch",
+  "text": "So I can lose them in rotation."
+ },
+ {
+  "id": "joke_nowwhere_013_setup",
+  "text": "Why is remembering names so hard?"
+ },
+ {
+  "id": "joke_nowwhere_013_punch",
+  "text": "My brain files them under 'later' and loses the folder."
+ },
+ {
+  "id": "joke_nowwhere_014_setup",
+  "text": "How do I remember a name now?"
+ },
+ {
+  "id": "joke_nowwhere_014_punch",
+  "text": "I don't. I remember their dog's name perfectly, though."
+ },
+ {
+  "id": "joke_nowwhere_015_setup",
+  "text": "Why did I read that page twice?"
+ },
+ {
+  "id": "joke_nowwhere_015_punch",
+  "text": "The first time was just a warm-up, apparently."
+ },
+ {
+  "id": "joke_nowwhere_016_setup",
+  "text": "Now where was I?"
+ },
+ {
+  "id": "joke_nowwhere_016_punch",
+  "text": "That's the title of my autobiography."
+ },
+ {
+  "id": "joke_nowwhere_017_setup",
+  "text": "Why did I stop talking mid-sentence?"
+ },
+ {
+  "id": "joke_nowwhere_017_punch",
+  "text": "The thought left without saying goodbye."
+ },
+ {
+  "id": "joke_nowwhere_018_setup",
+  "text": "Why did I walk over here to tell you something?"
+ },
+ {
+  "id": "joke_nowwhere_018_punch",
+  "text": "And now we wait together."
+ },
+ {
+  "id": "joke_nowwhere_019_setup",
+  "text": "What's worse than losing your train of thought?"
+ },
+ {
+  "id": "joke_nowwhere_019_punch",
+  "text": "Watching it leave the station without you."
+ },
+ {
+  "id": "joke_nowwhere_020_setup",
+  "text": "Why did I go to the store for milk?"
+ },
+ {
+  "id": "joke_nowwhere_020_punch",
+  "text": "I came home with everything but milk."
+ },
+ {
+  "id": "joke_nowwhere_021_setup",
+  "text": "What's the one thing I always forget at the store?"
+ },
+ {
+  "id": "joke_nowwhere_021_punch",
+  "text": "The list. It's on the counter, waving."
+ },
+ {
+  "id": "joke_nowwhere_022_setup",
+  "text": "Why do I make a grocery list?"
+ },
+ {
+  "id": "joke_nowwhere_022_punch",
+  "text": "To leave at home as tradition demands."
+ },
+ {
+  "id": "joke_nowwhere_023_setup",
+  "text": "What did I go to the store for?"
+ },
+ {
+  "id": "joke_nowwhere_023_punch",
+  "text": "Twelve dollars says it wasn't the forty dollars of stuff I bought."
+ },
+ {
+  "id": "joke_nowwhere_024_setup",
+  "text": "Why did I go back to the store?"
+ },
+ {
+  "id": "joke_nowwhere_024_punch",
+  "text": "For the thing I went the first time for."
+ },
+ {
+  "id": "joke_nowwhere_025_setup",
+  "text": "Where's my coffee?"
+ },
+ {
+  "id": "joke_nowwhere_025_punch",
+  "text": "In the microwave, where I reheat it four times daily."
+ },
+ {
+  "id": "joke_nowwhere_026_setup",
+  "text": "Why did I microwave my coffee again?"
+ },
+ {
+  "id": "joke_nowwhere_026_punch",
+  "text": "Same reason as the last three times: I forgot it."
+ },
+ {
+  "id": "joke_nowwhere_027_setup",
+  "text": "What did I do with my to-do list?"
+ },
+ {
+  "id": "joke_nowwhere_027_punch",
+  "text": "Added 'find the list' to a new list."
+ },
+ {
+  "id": "joke_nowwhere_028_setup",
+  "text": "Why did I leave the room and come back empty-handed?"
+ },
+ {
+  "id": "joke_nowwhere_028_punch",
+  "text": "The errand and I parted ways in the hall."
+ },
+ {
+  "id": "joke_nowwhere_029_setup",
+  "text": "Why is the remote in the bathroom?"
+ },
+ {
+  "id": "joke_nowwhere_029_punch",
+  "text": "Ask the person who put it there. Oh. That's me."
+ },
+ {
+  "id": "joke_nowwhere_030_setup",
+  "text": "Where did I put my coffee cup?"
+ },
+ {
+  "id": "joke_nowwhere_030_punch",
+  "text": "It'll turn up. It always does. Usually cold."
+ },
+ {
+  "id": "joke_nowwhere_031_setup",
+  "text": "Why did I set a reminder?"
+ },
+ {
+  "id": "joke_nowwhere_031_punch",
+  "text": "To remind me about the other reminder I ignored."
+ },
+ {
+  "id": "joke_nowwhere_032_setup",
+  "text": "What's the point of a calendar?"
+ },
+ {
+  "id": "joke_nowwhere_032_punch",
+  "text": "To show me what I forgot in a very organized way."
+ },
+ {
+  "id": "joke_nowwhere_033_setup",
+  "text": "Why did I write it on my hand?"
+ },
+ {
+  "id": "joke_nowwhere_033_punch",
+  "text": "So I could wash it off before reading it."
+ },
+ {
+  "id": "joke_nowwhere_034_setup",
+  "text": "What did I come in here to do?"
+ },
+ {
+  "id": "joke_nowwhere_034_punch",
+  "text": "Great question. Riveting mystery. No answer."
+ },
+ {
+  "id": "joke_nowwhere_035_setup",
+  "text": "Why do I open a new browser tab?"
+ },
+ {
+  "id": "joke_nowwhere_035_punch",
+  "text": "To forget what I opened the last twelve for."
+ },
+ {
+  "id": "joke_nowwhere_036_setup",
+  "text": "What's my most-used phrase?"
+ },
+ {
+  "id": "joke_nowwhere_036_punch",
+  "text": "It'll come to me."
+ },
+ {
+  "id": "joke_nowwhere_037_setup",
+  "text": "Why do I say 'it'll come to me'?"
+ },
+ {
+  "id": "joke_nowwhere_037_punch",
+  "text": "It rarely does, but hope is free."
+ },
+ {
+  "id": "joke_nowwhere_038_setup",
+  "text": "When does the forgotten thought return?"
+ },
+ {
+  "id": "joke_nowwhere_038_punch",
+  "text": "The moment it's no longer useful."
+ },
+ {
+  "id": "joke_nowwhere_039_setup",
+  "text": "Why did I laugh in the middle of the store?"
+ },
+ {
+  "id": "joke_nowwhere_039_punch",
+  "text": "I finally remembered the joke from this morning."
+ },
+ {
+  "id": "joke_nowwhere_040_setup",
+  "text": "What's my brain's filing system?"
+ },
+ {
+  "id": "joke_nowwhere_040_punch",
+  "text": "Everything important goes under 'miscellaneous, good luck.'"
+ },
+ {
+  "id": "joke_nowwhere_041_setup",
+  "text": "Why is my memory like a sieve?"
+ },
+ {
+  "id": "joke_nowwhere_041_punch",
+  "text": "It keeps the song lyrics from 1975 and loses lunch."
+ },
+ {
+  "id": "joke_nowwhere_042_setup",
+  "text": "What does my brain remember perfectly?"
+ },
+ {
+  "id": "joke_nowwhere_042_punch",
+  "text": "An embarrassing thing I did in the ninth grade."
+ },
+ {
+  "id": "joke_nowwhere_043_setup",
+  "text": "Why can't I remember why I came here?"
+ },
+ {
+  "id": "joke_nowwhere_043_punch",
+  "text": "But I can sing every word of a jingle from decades ago."
+ },
+ {
+  "id": "joke_nowwhere_044_setup",
+  "text": "What's my memory's specialty?"
+ },
+ {
+  "id": "joke_nowwhere_044_punch",
+  "text": "Total recall of the one thing I'd love to forget."
+ },
+ {
+  "id": "joke_nowwhere_045_setup",
+  "text": "Why is my short-term memory so short?"
+ },
+ {
+  "id": "joke_nowwhere_045_punch",
+  "text": "It's more of a suggestion, really."
+ },
+ {
+  "id": "joke_nowwhere_046_setup",
+  "text": "Why do I feel better after forgetting something?"
+ },
+ {
+  "id": "joke_nowwhere_046_punch",
+  "text": "Because you just admitted you do it too."
+ },
+ {
+  "id": "joke_nowwhere_047_setup",
+  "text": "What's the secret club nobody remembers joining?"
+ },
+ {
+  "id": "joke_nowwhere_047_punch",
+  "text": "The 'why did I come in here' society."
+ },
+ {
+  "id": "joke_nowwhere_048_setup",
+  "text": "How do you know you're in good company?"
+ },
+ {
+  "id": "joke_nowwhere_048_punch",
+  "text": "Everybody nods when you say 'now where was I.'"
+ },
+ {
+  "id": "joke_nowwhere_049_setup",
+  "text": "Why is forgetting so universal?"
+ },
+ {
+  "id": "joke_nowwhere_049_punch",
+  "text": "It's the one thing we all do and none of us remember doing."
+ },
+ {
+  "id": "joke_nowwhere_050_setup",
+  "text": "Why shouldn't you worry about forgetting?"
+ },
+ {
+  "id": "joke_nowwhere_050_punch",
+  "text": "Half the room just did the exact same thing."
+ },
+ {
+  "id": "joke_nowwhere_051_setup",
+  "text": "What's the last place I always look?"
+ },
+ {
+  "id": "joke_nowwhere_051_punch",
+  "text": "The place it was the whole time."
+ },
+ {
+  "id": "joke_nowwhere_052_setup",
+  "text": "Why do I always forget where I parked?"
+ },
+ {
+  "id": "joke_nowwhere_052_punch",
+  "text": "The car moves when I'm not looking. That's my story."
+ },
+ {
+  "id": "joke_nowwhere_053_setup",
+  "text": "Why did I start telling this joke?"
+ },
+ {
+  "id": "joke_nowwhere_053_punch",
+  "text": "And that, my friend, is the whole punchline."
+ },
+ {
+  "id": "joke_animalfarm_001_setup",
+  "text": "Why couldn't the pony sing at church?"
+ },
+ {
+  "id": "joke_animalfarm_001_punch",
+  "text": "She was a little hoarse."
+ },
+ {
+  "id": "joke_animalfarm_002_setup",
+  "text": "What did the rider say to her nervous horse?"
+ },
+ {
+  "id": "joke_animalfarm_002_punch",
+  "text": "Hay, settle down."
+ },
+ {
+  "id": "joke_animalfarm_003_setup",
+  "text": "Why did the horse cross the arena?"
+ },
+ {
+  "id": "joke_animalfarm_003_punch",
+  "text": "To get to the other stride."
+ },
+ {
+  "id": "joke_animalfarm_004_setup",
+  "text": "Why did the horse sit down at dinner?"
+ },
+ {
+  "id": "joke_animalfarm_004_punch",
+  "text": "He was told to hold his horses."
+ },
+ {
+  "id": "joke_animalfarm_005_setup",
+  "text": "What do you call a horse that lives next door?"
+ },
+ {
+  "id": "joke_animalfarm_005_punch",
+  "text": "Your neigh-bor."
+ },
+ {
+  "id": "joke_animalfarm_006_setup",
+  "text": "Why did the horse get a job?"
+ },
+ {
+  "id": "joke_animalfarm_006_punch",
+  "text": "He wanted a stable income."
+ },
+ {
+  "id": "joke_animalfarm_007_setup",
+  "text": "Why don't horses gossip?"
+ },
+ {
+  "id": "joke_animalfarm_007_punch",
+  "text": "They'd rather keep it in the stable."
+ },
+ {
+  "id": "joke_animalfarm_008_setup",
+  "text": "Why did the horse win the debate?"
+ },
+ {
+  "id": "joke_animalfarm_008_punch",
+  "text": "He had a strong mane point."
+ },
+ {
+  "id": "joke_animalfarm_009_setup",
+  "text": "What's a cow's favorite subject?"
+ },
+ {
+  "id": "joke_animalfarm_009_punch",
+  "text": "Cow-culus."
+ },
+ {
+  "id": "joke_animalfarm_010_setup",
+  "text": "Why did the cow cross the road?"
+ },
+ {
+  "id": "joke_animalfarm_010_punch",
+  "text": "To get to the udder side."
+ },
+ {
+  "id": "joke_animalfarm_011_setup",
+  "text": "What do you call a sleeping bull?"
+ },
+ {
+  "id": "joke_animalfarm_011_punch",
+  "text": "A bulldozer."
+ },
+ {
+  "id": "joke_animalfarm_012_setup",
+  "text": "What music do cows love?"
+ },
+ {
+  "id": "joke_animalfarm_012_punch",
+  "text": "Anything with a good moo-sic beat."
+ },
+ {
+  "id": "joke_animalfarm_013_setup",
+  "text": "Why don't cows ever hurry?"
+ },
+ {
+  "id": "joke_animalfarm_013_punch",
+  "text": "They believe good things come to those who graze."
+ },
+ {
+  "id": "joke_animalfarm_014_setup",
+  "text": "What's a cow's favorite holiday?"
+ },
+ {
+  "id": "joke_animalfarm_014_punch",
+  "text": "Moo Year's Day."
+ },
+ {
+  "id": "joke_animalfarm_015_setup",
+  "text": "Why did the cow join the gym?"
+ },
+ {
+  "id": "joke_animalfarm_015_punch",
+  "text": "She wanted to work on her calves."
+ },
+ {
+  "id": "joke_animalfarm_016_setup",
+  "text": "What did the little calf say when she was scared?"
+ },
+ {
+  "id": "joke_animalfarm_016_punch",
+  "text": "I want my mooo-mmy."
+ },
+ {
+  "id": "joke_animalfarm_017_setup",
+  "text": "What do you call a pig that does karate?"
+ },
+ {
+  "id": "joke_animalfarm_017_punch",
+  "text": "A pork chop."
+ },
+ {
+  "id": "joke_animalfarm_018_setup",
+  "text": "What's a pig's favorite ballet move?"
+ },
+ {
+  "id": "joke_animalfarm_018_punch",
+  "text": "The pork-de-bras."
+ },
+ {
+  "id": "joke_animalfarm_019_setup",
+  "text": "Why did the pig become a chef?"
+ },
+ {
+  "id": "joke_animalfarm_019_punch",
+  "text": "He was great at bringing home the bacon."
+ },
+ {
+  "id": "joke_animalfarm_020_setup",
+  "text": "What do you call a pig that tells jokes?"
+ },
+ {
+  "id": "joke_animalfarm_020_punch",
+  "text": "A ham."
+ },
+ {
+  "id": "joke_animalfarm_021_setup",
+  "text": "Why was the little pig always so happy?"
+ },
+ {
+  "id": "joke_animalfarm_021_punch",
+  "text": "He was in hog heaven."
+ },
+ {
+  "id": "joke_animalfarm_022_setup",
+  "text": "What did the pig say on a hot day?"
+ },
+ {
+  "id": "joke_animalfarm_022_punch",
+  "text": "I'm absolutely bacon out here."
+ },
+ {
+  "id": "joke_animalfarm_023_setup",
+  "text": "Why don't pigs drive very well?"
+ },
+ {
+  "id": "joke_animalfarm_023_punch",
+  "text": "They always hog the road."
+ },
+ {
+  "id": "joke_animalfarm_024_setup",
+  "text": "What do you call a pig that studies the sky?"
+ },
+ {
+  "id": "joke_animalfarm_024_punch",
+  "text": "He's just waiting for the day pigs fly."
+ },
+ {
+  "id": "joke_animalfarm_025_setup",
+  "text": "Why did the pig sit in the shade?"
+ },
+ {
+  "id": "joke_animalfarm_025_punch",
+  "text": "He didn't want to be a hot dog."
+ },
+ {
+  "id": "joke_animalfarm_026_setup",
+  "text": "What's a pig's favorite color?"
+ },
+ {
+  "id": "joke_animalfarm_026_punch",
+  "text": "Mahog-any."
+ },
+ {
+  "id": "joke_animalfarm_027_setup",
+  "text": "Why did the chicken join the band?"
+ },
+ {
+  "id": "joke_animalfarm_027_punch",
+  "text": "She had the drumsticks."
+ },
+ {
+  "id": "joke_animalfarm_028_setup",
+  "text": "What do you call a funny chicken?"
+ },
+ {
+  "id": "joke_animalfarm_028_punch",
+  "text": "A comedi-hen."
+ },
+ {
+  "id": "joke_animalfarm_029_setup",
+  "text": "What did the egg say to the comedian chicken?"
+ },
+ {
+  "id": "joke_animalfarm_029_punch",
+  "text": "You crack me up."
+ },
+ {
+  "id": "joke_animalfarm_030_setup",
+  "text": "Why did the hen bring a suitcase?"
+ },
+ {
+  "id": "joke_animalfarm_030_punch",
+  "text": "She was ready to fly the coop."
+ },
+ {
+  "id": "joke_animalfarm_031_setup",
+  "text": "Why did the little chick get in trouble?"
+ },
+ {
+  "id": "joke_animalfarm_031_punch",
+  "text": "She used fowl language."
+ },
+ {
+  "id": "joke_animalfarm_032_setup",
+  "text": "Why was the chicken good at baseball?"
+ },
+ {
+  "id": "joke_animalfarm_032_punch",
+  "text": "She kept hitting fowl balls."
+ },
+ {
+  "id": "joke_animalfarm_033_setup",
+  "text": "What do you call a proud mother hen?"
+ },
+ {
+  "id": "joke_animalfarm_033_punch",
+  "text": "Egg-static."
+ },
+ {
+  "id": "joke_animalfarm_034_setup",
+  "text": "Why did the fainting goat leave the party?"
+ },
+ {
+  "id": "joke_animalfarm_034_punch",
+  "text": "Someone yelled surprise."
+ },
+ {
+  "id": "joke_animalfarm_035_setup",
+  "text": "What did the fainting goat say before the loud noise?"
+ },
+ {
+  "id": "joke_animalfarm_035_punch",
+  "text": "Nothing — he was already on the ground."
+ },
+ {
+  "id": "joke_animalfarm_036_setup",
+  "text": "What do you call a goat that tells jokes?"
+ },
+ {
+  "id": "joke_animalfarm_036_punch",
+  "text": "A real kidder."
+ },
+ {
+  "id": "joke_animalfarm_037_setup",
+  "text": "Why did the fainting goat avoid the marching band?"
+ },
+ {
+  "id": "joke_animalfarm_037_punch",
+  "text": "One cymbal crash and it's nap time."
+ },
+ {
+  "id": "joke_animalfarm_038_setup",
+  "text": "What do you call a baby goat with a big imagination?"
+ },
+ {
+  "id": "joke_animalfarm_038_punch",
+  "text": "A kidder with kid dreams."
+ },
+ {
+  "id": "joke_animalfarm_039_setup",
+  "text": "What's a goat's favorite kind of story?"
+ },
+ {
+  "id": "joke_animalfarm_039_punch",
+  "text": "One with a big cliff-hanger, which he can climb."
+ },
+ {
+  "id": "joke_animalfarm_040_setup",
+  "text": "What did the goat say to the picky eater?"
+ },
+ {
+  "id": "joke_animalfarm_040_punch",
+  "text": "You don't know what you're missing — I'll eat anything."
+ },
+ {
+  "id": "joke_animalfarm_041_setup",
+  "text": "Why was the fainting goat bad at surprises?"
+ },
+ {
+  "id": "joke_animalfarm_041_punch",
+  "text": "He always fell for them."
+ },
+ {
+  "id": "joke_animalfarm_042_setup",
+  "text": "What do you call a sheep with no legs?"
+ },
+ {
+  "id": "joke_animalfarm_042_punch",
+  "text": "A cloud."
+ },
+ {
+  "id": "joke_animalfarm_043_setup",
+  "text": "What's a sheep's favorite kind of music?"
+ },
+ {
+  "id": "joke_animalfarm_043_punch",
+  "text": "Anything with a good baaa-lad."
+ },
+ {
+  "id": "joke_animalfarm_044_setup",
+  "text": "Why did the sheep stay up late?"
+ },
+ {
+  "id": "joke_animalfarm_044_punch",
+  "text": "She couldn't stop counting herself."
+ },
+ {
+  "id": "joke_animalfarm_045_setup",
+  "text": "What do you call a sheep covered in chocolate?"
+ },
+ {
+  "id": "joke_animalfarm_045_punch",
+  "text": "A candy baaa-r."
+ },
+ {
+  "id": "joke_animalfarm_046_setup",
+  "text": "What's a sheep's favorite dessert?"
+ },
+ {
+  "id": "joke_animalfarm_046_punch",
+  "text": "A baaa-nana split."
+ },
+ {
+  "id": "joke_animalfarm_047_setup",
+  "text": "Why did the sheep cross the road?"
+ },
+ {
+  "id": "joke_animalfarm_047_punch",
+  "text": "To get to the baaa-ber shop."
+ },
+ {
+  "id": "joke_animalfarm_048_setup",
+  "text": "What do you call a sheep that karate-chops?"
+ },
+ {
+  "id": "joke_animalfarm_048_punch",
+  "text": "A lamb chop."
+ },
+ {
+  "id": "joke_animalfarm_049_setup",
+  "text": "Why did the duck get a bill?"
+ },
+ {
+  "id": "joke_animalfarm_049_punch",
+  "text": "He forgot to pay for lunch."
+ },
+ {
+  "id": "joke_animalfarm_050_setup",
+  "text": "What do you call a duck that tells jokes?"
+ },
+ {
+  "id": "joke_animalfarm_050_punch",
+  "text": "A wise-quacker."
+ },
+ {
+  "id": "joke_animalfarm_051_setup",
+  "text": "Why did the duck cross the road?"
+ },
+ {
+  "id": "joke_animalfarm_051_punch",
+  "text": "To prove he wasn't chicken."
+ },
+ {
+  "id": "joke_animalfarm_052_setup",
+  "text": "What time does a duck wake up?"
+ },
+ {
+  "id": "joke_animalfarm_052_punch",
+  "text": "At the quack of dawn."
+ },
+ {
+  "id": "joke_animalfarm_053_setup",
+  "text": "Why was the duck such a good doctor?"
+ },
+ {
+  "id": "joke_animalfarm_053_punch",
+  "text": "He had a great bill of health."
+ },
+ {
+  "id": "joke_animalfarm_054_setup",
+  "text": "What's a duck's favorite snack?"
+ },
+ {
+  "id": "joke_animalfarm_054_punch",
+  "text": "Cheese and quackers."
+ },
+ {
+  "id": "joke_animalfarm_055_setup",
+  "text": "What did one duck say to the other?"
+ },
+ {
+  "id": "joke_animalfarm_055_punch",
+  "text": "You quack me up."
+ },
+ {
+  "id": "joke_animalfarm_056_setup",
+  "text": "Why did the donkey refuse to move?"
+ },
+ {
+  "id": "joke_animalfarm_056_punch",
+  "text": "He was just being his stubborn self."
+ },
+ {
+  "id": "joke_animalfarm_057_setup",
+  "text": "What do you call a donkey with three legs?"
+ },
+ {
+  "id": "joke_animalfarm_057_punch",
+  "text": "A wonky donkey."
+ },
+ {
+  "id": "joke_animalfarm_058_setup",
+  "text": "What's a donkey's favorite subject?"
+ },
+ {
+  "id": "joke_animalfarm_058_punch",
+  "text": "Hee-story."
+ }
+]

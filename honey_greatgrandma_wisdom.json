@@ -1,0 +1,874 @@
+[
+  {
+    "id": "wisdom_greatgrandma_001_setup",
+    "text": "What did Great-Grandma say about a closed mouth?"
+  },
+  {
+    "id": "wisdom_greatgrandma_001_punch",
+    "text": "It never gets fed."
+  },
+  {
+    "id": "wisdom_greatgrandma_002_setup",
+    "text": "What did Great-Grandma say about people talking behind your back?"
+  },
+  {
+    "id": "wisdom_greatgrandma_002_punch",
+    "text": "It means you're ahead of them."
+  },
+  {
+    "id": "wisdom_greatgrandma_003_setup",
+    "text": "What did Great-Grandma say about wrestling with a pig?"
+  },
+  {
+    "id": "wisdom_greatgrandma_003_punch",
+    "text": "You both get dirty, but the pig likes it."
+  },
+  {
+    "id": "wisdom_greatgrandma_004_setup",
+    "text": "What did Great-Grandma say about throwing stones?"
+  },
+  {
+    "id": "wisdom_greatgrandma_004_punch",
+    "text": "Only trees with the best fruit get rocks thrown at them."
+  },
+  {
+    "id": "wisdom_greatgrandma_005_setup",
+    "text": "What did Great-Grandma say about crying over spilled milk?"
+  },
+  {
+    "id": "wisdom_greatgrandma_005_punch",
+    "text": "Clean it up so nobody slips on it."
+  },
+  {
+    "id": "wisdom_greatgrandma_006_setup",
+    "text": "What did Great-Grandma say about changing a bad man?"
+  },
+  {
+    "id": "wisdom_greatgrandma_006_punch",
+    "text": "The only thing you'll change is your mind."
+  },
+  {
+    "id": "wisdom_greatgrandma_007_setup",
+    "text": "What did Great-Grandma say about a watched pot?"
+  },
+  {
+    "id": "wisdom_greatgrandma_007_punch",
+    "text": "It cooks just fine if you leave the kitchen."
+  },
+  {
+    "id": "wisdom_greatgrandma_008_setup",
+    "text": "What did Great-Grandma say about a loud dog?"
+  },
+  {
+    "id": "wisdom_greatgrandma_008_punch",
+    "text": "The ones that bark the loudest are the easiest to outrun."
+  },
+  {
+    "id": "wisdom_greatgrandma_009_setup",
+    "text": "What did Great-Grandma say about chasing a dollar?"
+  },
+  {
+    "id": "wisdom_greatgrandma_009_punch",
+    "text": "If you run too fast, it'll spend you before you spend it."
+  },
+  {
+    "id": "wisdom_greatgrandma_010_setup",
+    "text": "What did Great-Grandma say about putting shoes on a horse?"
+  },
+  {
+    "id": "wisdom_greatgrandma_010_punch",
+    "text": "It doesn't make him a gentleman."
+  },
+  {
+    "id": "wisdom_greatgrandma_011_setup",
+    "text": "What did Great-Grandma say about waiting for the perfect weather?"
+  },
+  {
+    "id": "wisdom_greatgrandma_011_punch",
+    "text": "You'll end up starving in the shade."
+  },
+  {
+    "id": "wisdom_greatgrandma_012_setup",
+    "text": "What did Great-Grandma say about the neighbors' opinions?"
+  },
+  {
+    "id": "wisdom_greatgrandma_012_punch",
+    "text": "They don't buy your groceries, so don't let them cook your dinner."
+  },
+  {
+    "id": "wisdom_greatgrandma_013_setup",
+    "text": "What did Great-Grandma say about trying to argue with a fool?"
+  },
+  {
+    "id": "wisdom_greatgrandma_013_punch",
+    "text": "From a distance, nobody can tell which one is which."
+  },
+  {
+    "id": "wisdom_greatgrandma_014_setup",
+    "text": "What did Great-Grandma say about dogs barking at the moon?"
+  },
+  {
+    "id": "wisdom_greatgrandma_014_punch",
+    "text": "The moon keeps on shining anyway."
+  },
+  {
+    "id": "wisdom_greatgrandma_015_setup",
+    "text": "What did Great-Grandma say about looking back too long?"
+  },
+  {
+    "id": "wisdom_greatgrandma_015_punch",
+    "text": "You'll trip over what's right in front of you."
+  },
+  {
+    "id": "wisdom_greatgrandma_016_setup",
+    "text": "What did Great-Grandma say about a snake shedding its skin?"
+  },
+  {
+    "id": "wisdom_greatgrandma_016_punch",
+    "text": "It's still got the same bite."
+  },
+  {
+    "id": "wisdom_greatgrandma_017_setup",
+    "text": "What did Great-Grandma say about an empty wagon?"
+  },
+  {
+    "id": "wisdom_greatgrandma_017_punch",
+    "text": "It makes the most noise going down the road."
+  },
+  {
+    "id": "wisdom_greatgrandma_018_setup",
+    "text": "What did Great-Grandma say about hoarding every penny?"
+  },
+  {
+    "id": "wisdom_greatgrandma_018_punch",
+    "text": "Shrouds don't come with pockets."
+  },
+  {
+    "id": "wisdom_greatgrandma_019_setup",
+    "text": "What did Great-Grandma say about painting a rotten fence?"
+  },
+  {
+    "id": "wisdom_greatgrandma_019_punch",
+    "text": "The wood's still snapping under the coat."
+  },
+  {
+    "id": "wisdom_greatgrandma_020_setup",
+    "text": "What did Great-Grandma say about how they treat their mother?"
+  },
+  {
+    "id": "wisdom_greatgrandma_020_punch",
+    "text": "That's the preview for the main attraction."
+  },
+  {
+    "id": "wisdom_greatgrandma_021_setup",
+    "text": "What did Great-Grandma say about a mate who only speaks in sweet talk?"
+  },
+  {
+    "id": "wisdom_greatgrandma_021_punch",
+    "text": "Sugar dissolves the minute the rain starts."
+  },
+  {
+    "id": "wisdom_greatgrandma_022_setup",
+    "text": "What did Great-Grandma say about someone who treats the waiter poorly?"
+  },
+  {
+    "id": "wisdom_greatgrandma_022_punch",
+    "text": "Hold onto your purse and walk out the door."
+  },
+  {
+    "id": "wisdom_greatgrandma_023_setup",
+    "text": "What did Great-Grandma say about a partner who is always the victim?"
+  },
+  {
+    "id": "wisdom_greatgrandma_023_punch",
+    "text": "If they're always fighting dragons, they might be the ones lighting the fire."
+  },
+  {
+    "id": "wisdom_greatgrandma_024_setup",
+    "text": "What did Great-Grandma say about a partner who is nice to everyone but you?"
+  },
+  {
+    "id": "wisdom_greatgrandma_024_punch",
+    "text": "A street angel makes a house devil."
+  },
+  {
+    "id": "wisdom_greatgrandma_025_setup",
+    "text": "What did Great-Grandma say about marrying for looks alone?"
+  },
+  {
+    "id": "wisdom_greatgrandma_025_punch",
+    "text": "The prettiest plate doesn't put food on the table."
+  },
+  {
+    "id": "wisdom_greatgrandma_026_setup",
+    "text": "What did Great-Grandma say about marrying for money?"
+  },
+  {
+    "id": "wisdom_greatgrandma_026_punch",
+    "text": "You'll earn every single penny the hard way."
+  },
+  {
+    "id": "wisdom_greatgrandma_027_setup",
+    "text": "What did Great-Grandma say about choosing a partner for hard times?"
+  },
+  {
+    "id": "wisdom_greatgrandma_027_punch",
+    "text": "Pick the one you'd want holding the flashlights when the storm hits."
+  },
+  {
+    "id": "wisdom_greatgrandma_028_setup",
+    "text": "What did Great-Grandma say about looking for perfection?"
+  },
+  {
+    "id": "wisdom_greatgrandma_028_punch",
+    "text": "If you want an angel, you better build heaven first."
+  },
+  {
+    "id": "wisdom_greatgrandma_029_setup",
+    "text": "What did Great-Grandma say about sharing a roof?"
+  },
+  {
+    "id": "wisdom_greatgrandma_029_punch",
+    "text": "Don't marry someone you can live with; marry the one you can't live without."
+  },
+  {
+    "id": "wisdom_greatgrandma_030_setup",
+    "text": "What did Great-Grandma say about trying to change a mate after marriage?"
+  },
+  {
+    "id": "wisdom_greatgrandma_030_punch",
+    "text": "You aren't buying a fixer-upper; you're moving into the house as it stands."
+  },
+  {
+    "id": "wisdom_greatgrandma_031_setup",
+    "text": "What did Great-Grandma say about ignoring your gut feeling?"
+  },
+  {
+    "id": "wisdom_greatgrandma_031_punch",
+    "text": "If your stomach feels uneasy, don't blame the cooking."
+  },
+  {
+    "id": "wisdom_greatgrandma_032_setup",
+    "text": "What did Great-Grandma say about chasing someone who runs away?"
+  },
+  {
+    "id": "wisdom_greatgrandma_032_punch",
+    "text": "Save your shoes; let them keep walking."
+  },
+  {
+    "id": "wisdom_greatgrandma_033_setup",
+    "text": "What did Great-Grandma say about a mate who keeps secrets?"
+  },
+  {
+    "id": "wisdom_greatgrandma_033_punch",
+    "text": "Where there's smoke, the basement is already on fire."
+  },
+  {
+    "id": "wisdom_greatgrandma_034_setup",
+    "text": "What did Great-Grandma say about rushing into love?"
+  },
+  {
+    "id": "wisdom_greatgrandma_034_punch",
+    "text": "The faster the fire burns, the quicker you're left with ashes."
+  },
+  {
+    "id": "wisdom_greatgrandma_035_setup",
+    "text": "What did Great-Grandma say about keeping score in arguments?"
+  },
+  {
+    "id": "wisdom_greatgrandma_035_punch",
+    "text": "If you both try to win, the marriage loses."
+  },
+  {
+    "id": "wisdom_greatgrandma_036_setup",
+    "text": "What did Great-Grandma say about going to bed angry?"
+  },
+  {
+    "id": "wisdom_greatgrandma_036_punch",
+    "text": "Stay up and fight it out so you can sleep in peace."
+  },
+  {
+    "id": "wisdom_greatgrandma_037_setup",
+    "text": "What did Great-Grandma say about airing your marriage troubles to the neighbors?"
+  },
+  {
+    "id": "wisdom_greatgrandma_037_punch",
+    "text": "Keep your laundry in your own yard."
+  },
+  {
+    "id": "wisdom_greatgrandma_038_setup",
+    "text": "What did Great-Grandma say about the secret to a long marriage?"
+  },
+  {
+    "id": "wisdom_greatgrandma_038_punch",
+    "text": "Two good forgivers living under one roof."
+  },
+  {
+    "id": "wisdom_greatgrandma_039_setup",
+    "text": "What did Great-Grandma say about a happy home?"
+  },
+  {
+    "id": "wisdom_greatgrandma_039_punch",
+    "text": "It requires a lot of love, a little bit of space, and plenty of good food."
+  },
+  {
+    "id": "wisdom_greatgrandma_040_setup",
+    "text": "What did Great-Grandma say about telling a lie?"
+  },
+  {
+    "id": "wisdom_greatgrandma_040_punch",
+    "text": "You better have a fantastic memory, because the truth remembers itself."
+  },
+  {
+    "id": "wisdom_greatgrandma_041_setup",
+    "text": "What did Great-Grandma say about sugarcoating the truth?"
+  },
+  {
+    "id": "wisdom_greatgrandma_041_punch",
+    "text": "A bitter pill cures the illness; a sweet one just rots your teeth."
+  },
+  {
+    "id": "wisdom_greatgrandma_042_setup",
+    "text": "What did Great-Grandma say about someone who whispers the truth?"
+  },
+  {
+    "id": "wisdom_greatgrandma_042_punch",
+    "text": "The truth doesn't need a megaphone to shake the room."
+  },
+  {
+    "id": "wisdom_greatgrandma_043_setup",
+    "text": "What did Great-Grandma say about pretending to be something you're not?"
+  },
+  {
+    "id": "wisdom_greatgrandma_043_punch",
+    "text": "An honest penny is worth more than a counterfeit dollar."
+  },
+  {
+    "id": "wisdom_greatgrandma_044_setup",
+    "text": "What did Great-Grandma say about people who don't like honest words?"
+  },
+  {
+    "id": "wisdom_greatgrandma_044_punch",
+    "text": "The truth only hurts when it's supposed to."
+  },
+  {
+    "id": "wisdom_greatgrandma_045_setup",
+    "text": "What did Great-Grandma say about trying to speed up time?"
+  },
+  {
+    "id": "wisdom_greatgrandma_045_punch",
+    "text": "You can't bake a three-hour cake in twenty minutes just by turning up the oven."
+  },
+  {
+    "id": "wisdom_greatgrandma_046_setup",
+    "text": "What did Great-Grandma say about waiting for your turn?"
+  },
+  {
+    "id": "wisdom_greatgrandma_046_punch",
+    "text": "The sun doesn't rush the moon, and they both get a chance to shine."
+  },
+  {
+    "id": "wisdom_greatgrandma_047_setup",
+    "text": "What did Great-Grandma say about a seed in the dirt?"
+  },
+  {
+    "id": "wisdom_greatgrandma_047_punch",
+    "text": "Digging it up every day to check on it won't make it grow any faster."
+  },
+  {
+    "id": "wisdom_greatgrandma_048_setup",
+    "text": "What did Great-Grandma say about losing your temper?"
+  },
+  {
+    "id": "wisdom_greatgrandma_048_punch",
+    "text": "A moment of patience saves a lifetime of clean-up."
+  },
+  {
+    "id": "wisdom_greatgrandma_049_setup",
+    "text": "What did Great-Grandma say about the longest winter?"
+  },
+  {
+    "id": "wisdom_greatgrandma_049_punch",
+    "text": "The snow always melts, no matter how much it likes the ground."
+  },
+  {
+    "id": "wisdom_greatgrandma_050_setup",
+    "text": "What did Great-Grandma say about giving advice?"
+  },
+  {
+    "id": "wisdom_greatgrandma_050_punch",
+    "text": "Don't sweep my porch until you've scrubbed your own kitchen floor."
+  },
+  {
+    "id": "wisdom_greatgrandma_051_setup",
+    "text": "What did Great-Grandma say about a loud sermon?"
+  },
+  {
+    "id": "wisdom_greatgrandma_051_punch",
+    "text": "I'd rather see a good example than hear a long speech."
+  },
+  {
+    "id": "wisdom_greatgrandma_052_setup",
+    "text": "What did Great-Grandma say about pointing fingers?"
+  },
+  {
+    "id": "wisdom_greatgrandma_052_punch",
+    "text": "When you're busy pointing at someone else, three fingers are pointing right back at you."
+  },
+  {
+    "id": "wisdom_greatgrandma_053_setup",
+    "text": "What did Great-Grandma say about a guide who won't walk the trail?"
+  },
+  {
+    "id": "wisdom_greatgrandma_053_punch",
+    "text": "Don't take directions from someone who hasn't left the front porch."
+  },
+  {
+    "id": "wisdom_greatgrandma_054_setup",
+    "text": "What did Great-Grandma say about leading the way?"
+  },
+  {
+    "id": "wisdom_greatgrandma_054_punch",
+    "text": "If you want the pack to follow, you better be willing to carry the heaviest load."
+  },
+  {
+    "id": "wisdom_greatgrandma_055_setup",
+    "text": "What did Great-Grandma say about hitting a wall?"
+  },
+  {
+    "id": "wisdom_greatgrandma_055_punch",
+    "text": "The wall is just there to see if you're willing to find a ladder."
+  },
+  {
+    "id": "wisdom_greatgrandma_056_setup",
+    "text": "What did Great-Grandma say about a bad day?"
+  },
+  {
+    "id": "wisdom_greatgrandma_056_punch",
+    "text": "The sunset is proof that even the hardest days have an ending."
+  },
+  {
+    "id": "wisdom_greatgrandma_057_setup",
+    "text": "What did Great-Grandma say about falling down?"
+  },
+  {
+    "id": "wisdom_greatgrandma_057_punch",
+    "text": "As long as you land looking up, you can get back up."
+  },
+  {
+    "id": "wisdom_greatgrandma_058_setup",
+    "text": "What did Great-Grandma say about a rough sea?"
+  },
+  {
+    "id": "wisdom_greatgrandma_058_punch",
+    "text": "A smooth ocean never made a skilled captain."
+  },
+  {
+    "id": "wisdom_greatgrandma_059_setup",
+    "text": "What did Great-Grandma say about a slow start?"
+  },
+  {
+    "id": "wisdom_greatgrandma_059_punch",
+    "text": "It doesn't matter how slow you walk, as long as you don't turn around."
+  },
+  {
+    "id": "wisdom_greatgrandma_060_setup",
+    "text": "What did Great-Grandma say about planting thorns?"
+  },
+  {
+    "id": "wisdom_greatgrandma_060_punch",
+    "text": "Don't expect to harvest roses when you've been scattering weeds."
+  },
+  {
+    "id": "wisdom_greatgrandma_061_setup",
+    "text": "What did Great-Grandma say about how you treat the ground?"
+  },
+  {
+    "id": "wisdom_greatgrandma_061_punch",
+    "text": "The earth gives back exactly what you put into it, plus interest."
+  },
+  {
+    "id": "wisdom_greatgrandma_062_setup",
+    "text": "What did Great-Grandma say about throwing dirt?"
+  },
+  {
+    "id": "wisdom_greatgrandma_062_punch",
+    "text": "You're the one who ends up with dirty hands."
+  },
+  {
+    "id": "wisdom_greatgrandma_063_setup",
+    "text": "What did Great-Grandma say about kindness?"
+  },
+  {
+    "id": "wisdom_greatgrandma_063_punch",
+    "text": "Scatter the seeds generously; you'll need the shade later on."
+  },
+  {
+    "id": "wisdom_greatgrandma_064_setup",
+    "text": "What did Great-Grandma say about a lazy spring?"
+  },
+  {
+    "id": "wisdom_greatgrandma_064_punch",
+    "text": "If you sleep through the planting, don't look for a bowl at the harvest."
+  },
+  {
+    "id": "wisdom_greatgrandma_065_setup",
+    "text": "What did Great-Grandma say about true strength?"
+  },
+  {
+    "id": "wisdom_greatgrandma_065_punch",
+    "text": "Speak softly so they have to listen close, but keep your boots laced tight."
+  },
+  {
+    "id": "wisdom_greatgrandma_066_setup",
+    "text": "What did Great-Grandma say about a quiet person?"
+  },
+  {
+    "id": "wisdom_greatgrandma_066_punch",
+    "text": "Still water runs deep, and it can move a mountain if it wants to."
+  },
+  {
+    "id": "wisdom_greatgrandma_067_setup",
+    "text": "What did Great-Grandma say about showing your cards?"
+  },
+  {
+    "id": "wisdom_greatgrandma_067_punch",
+    "text": "Let them guess what's in your pocket until it's time to pay the bill."
+  },
+  {
+    "id": "wisdom_greatgrandma_068_setup",
+    "text": "What did Great-Grandma say about empty threats?"
+  },
+  {
+    "id": "wisdom_greatgrandma_068_punch",
+    "text": "Never raise your fist if you aren't ready to use your hands."
+  },
+  {
+    "id": "wisdom_greatgrandma_069_setup",
+    "text": "What did Great-Grandma say about keeping your cool?"
+  },
+  {
+    "id": "wisdom_greatgrandma_069_punch",
+    "text": "A gentle smile hides a sharp mind perfectly."
+  },
+  {
+    "id": "wisdom_greatgrandma_070_setup",
+    "text": "What did Great-Grandma say about a flattering friend?"
+  },
+  {
+    "id": "wisdom_greatgrandma_070_punch",
+    "text": "I'd rather have an honest slap in the face than a deceitful kiss on the cheek."
+  },
+  {
+    "id": "wisdom_greatgrandma_071_setup",
+    "text": "What did Great-Grandma say about a hard message?"
+  },
+  {
+    "id": "wisdom_greatgrandma_071_punch",
+    "text": "Don't blame the mirror just because you don't like the reflection."
+  },
+  {
+    "id": "wisdom_greatgrandma_072_setup",
+    "text": "What did Great-Grandma say about keeping quiet when it matters?"
+  },
+  {
+    "id": "wisdom_greatgrandma_072_punch",
+    "text": "Silence in the face of a lie is just a lie with its mouth shut."
+  },
+  {
+    "id": "wisdom_greatgrandma_073_setup",
+    "text": "What did Great-Grandma say about telling it like it is?"
+  },
+  {
+    "id": "wisdom_greatgrandma_073_punch",
+    "text": "If it looks like a skunk and smells like a skunk, don't call it a kitten."
+  },
+  {
+    "id": "wisdom_greatgrandma_074_setup",
+    "text": "What did Great-Grandma say about standing alone with the truth?"
+  },
+  {
+    "id": "wisdom_greatgrandma_074_punch",
+    "text": "An honest lone wolf is safer than a pack of wolves pretending to be sheep."
+  },
+  {
+    "id": "wisdom_greatgrandma_075_setup",
+    "text": "What did Great-Grandma say about carrying a heavy burden?"
+  },
+  {
+    "id": "wisdom_greatgrandma_075_punch",
+    "text": "The load doesn't break you; it's the way you carry it."
+  },
+  {
+    "id": "wisdom_greatgrandma_076_setup",
+    "text": "What did Great-Grandma say about a storm coming?"
+  },
+  {
+    "id": "wisdom_greatgrandma_076_punch",
+    "text": "Don't pray for the rain to stop; pray for a stronger umbrella."
+  },
+  {
+    "id": "wisdom_greatgrandma_077_setup",
+    "text": "What did Great-Grandma say about a sharp tongue?"
+  },
+  {
+    "id": "wisdom_greatgrandma_077_punch",
+    "text": "Keep your words soft and sweet, because you never know which ones you'll have to eat."
+  },
+  {
+    "id": "wisdom_greatgrandma_078_setup",
+    "text": "What did Great-Grandma say about shortcuts?"
+  },
+  {
+    "id": "wisdom_greatgrandma_078_punch",
+    "text": "The longest distance between two points is a shortcut."
+  },
+  {
+    "id": "wisdom_greatgrandma_079_setup",
+    "text": "What did Great-Grandma say about old age?"
+  },
+  {
+    "id": "wisdom_greatgrandma_079_punch",
+    "text": "The wrinkles just show where the smiles and the battles used to be."
+  },
+  {
+    "id": "wisdom_greatgrandma_080_setup",
+    "text": "What did Great-Grandma say about a young mind?"
+  },
+  {
+    "id": "wisdom_greatgrandma_080_punch",
+    "text": "A spongy sponge holds the most water."
+  },
+  {
+    "id": "wisdom_greatgrandma_081_setup",
+    "text": "What did Great-Grandma say about making a mistake?"
+  },
+  {
+    "id": "wisdom_greatgrandma_081_punch",
+    "text": "That's just tuition paid to the school of life."
+  },
+  {
+    "id": "wisdom_greatgrandma_082_setup",
+    "text": "What did Great-Grandma say about asking questions?"
+  },
+  {
+    "id": "wisdom_greatgrandma_082_punch",
+    "text": "The only silly question is the one you took home with you."
+  },
+  {
+    "id": "wisdom_greatgrandma_083_setup",
+    "text": "What did Great-Grandma say about trying something new?"
+  },
+  {
+    "id": "wisdom_greatgrandma_083_punch",
+    "text": "You'll never know if you can play the fiddle until you pick up the bow."
+  },
+  {
+    "id": "wisdom_greatgrandma_084_setup",
+    "text": "What did Great-Grandma say about an old dog?"
+  },
+  {
+    "id": "wisdom_greatgrandma_084_punch",
+    "text": "You can absolutely teach him new tricks if the treat is good enough."
+  },
+  {
+    "id": "wisdom_greatgrandma_085_setup",
+    "text": "What did Great-Grandma say about a slow learner?"
+  },
+  {
+    "id": "wisdom_greatgrandma_085_punch",
+    "text": "The oak tree takes its time, but it outlasts the weeds."
+  },
+  {
+    "id": "wisdom_greatgrandma_086_setup",
+    "text": "What did Great-Grandma say about listening?"
+  },
+  {
+    "id": "wisdom_greatgrandma_086_punch",
+    "text": "You have two ears and one mouth for a very good reason."
+  },
+  {
+    "id": "wisdom_greatgrandma_087_setup",
+    "text": "What did Great-Grandma say about change?"
+  },
+  {
+    "id": "wisdom_greatgrandma_087_punch",
+    "text": "If you don't shed your old feathers, you'll never get to grow new ones."
+  },
+  {
+    "id": "wisdom_greatgrandma_088_setup",
+    "text": "What did Great-Grandma say about an expert?"
+  },
+  {
+    "id": "wisdom_greatgrandma_088_punch",
+    "text": "He's just a beginner who didn't throw in the towel."
+  },
+  {
+    "id": "wisdom_greatgrandma_089_setup",
+    "text": "What did Great-Grandma say about looking at the stars?"
+  },
+  {
+    "id": "wisdom_greatgrandma_089_punch",
+    "text": "It reminds your feet how far they can actually walk."
+  },
+  {
+    "id": "wisdom_greatgrandma_090_setup",
+    "text": "What did Great-Grandma say about a curious child?"
+  },
+  {
+    "id": "wisdom_greatgrandma_090_punch",
+    "text": "Keep him asking 'why' and he'll eventually figure out 'how'."
+  },
+  {
+    "id": "wisdom_greatgrandma_091_setup",
+    "text": "What did Great-Grandma say about staying in your comfort zone?"
+  },
+  {
+    "id": "wisdom_greatgrandma_091_punch",
+    "text": "A ship in the harbor is safe, but that's not what ships are built for."
+  },
+  {
+    "id": "wisdom_greatgrandma_092_setup",
+    "text": "What did Great-Grandma say about a rough patch?"
+  },
+  {
+    "id": "wisdom_greatgrandma_092_punch",
+    "text": "The diamond only gets shiny after a whole lot of rubbing."
+  },
+  {
+    "id": "wisdom_greatgrandma_093_setup",
+    "text": "What did Great-Grandma say about wisdom?"
+  },
+  {
+    "id": "wisdom_greatgrandma_093_punch",
+    "text": "It's the one thing you can pack in your suitcase that doesn't weigh a pound."
+  },
+  {
+    "id": "wisdom_greatgrandma_094_setup",
+    "text": "What did Great-Grandma say about growing older?"
+  },
+  {
+    "id": "wisdom_greatgrandma_094_punch",
+    "text": "You aren't adding years; you're just collecting beautiful chapters."
+  },
+  {
+    "id": "wisdom_greatgrandma_095_setup",
+    "text": "What did Great-Grandma say when things were already going great?"
+  },
+  {
+    "id": "wisdom_greatgrandma_095_punch",
+    "text": "The cream always rises right to the top."
+  },
+  {
+    "id": "wisdom_greatgrandma_096_setup",
+    "text": "What did Great-Grandma say about a good streak of luck?"
+  },
+  {
+    "id": "wisdom_greatgrandma_096_punch",
+    "text": "When the wind is at your back, spread your wings and fly."
+  },
+  {
+    "id": "wisdom_greatgrandma_097_setup",
+    "text": "What did Great-Grandma say about finding a little success?"
+  },
+  {
+    "id": "wisdom_greatgrandma_097_punch",
+    "text": "That's just the appetizer; the feast is still on the stove."
+  },
+  {
+    "id": "wisdom_greatgrandma_098_setup",
+    "text": "What did Great-Grandma say about a beautiful sunrise?"
+  },
+  {
+    "id": "wisdom_greatgrandma_098_punch",
+    "text": "The day is only going to get brighter from here."
+  },
+  {
+    "id": "wisdom_greatgrandma_099_setup",
+    "text": "What did Great-Grandma say about a small win?"
+  },
+  {
+    "id": "wisdom_greatgrandma_099_punch",
+    "text": "A single spark can start a whole celebration."
+  },
+  {
+    "id": "wisdom_greatgrandma_100_setup",
+    "text": "What did Great-Grandma say about a good idea?"
+  },
+  {
+    "id": "wisdom_greatgrandma_100_punch",
+    "text": "Once the wheel starts turning, you can't stop the momentum."
+  },
+  {
+    "id": "wisdom_greatgrandma_101_setup",
+    "text": "What did Great-Grandma say about making a little progress?"
+  },
+  {
+    "id": "wisdom_greatgrandma_101_punch",
+    "text": "Every step forward makes the next one twice as easy."
+  },
+  {
+    "id": "wisdom_greatgrandma_102_setup",
+    "text": "What did Great-Grandma say about a joyful home?"
+  },
+  {
+    "id": "wisdom_greatgrandma_102_punch",
+    "text": "There's always room for more laughter under this roof."
+  },
+  {
+    "id": "wisdom_greatgrandma_103_setup",
+    "text": "What did Great-Grandma say about a sweet moment?"
+  },
+  {
+    "id": "wisdom_greatgrandma_103_punch",
+    "text": "Honey only gets sweeter the longer it sits."
+  },
+  {
+    "id": "wisdom_greatgrandma_104_setup",
+    "text": "What did Great-Grandma say about a budding talent?"
+  },
+  {
+    "id": "wisdom_greatgrandma_104_punch",
+    "text": "You've got the seed, now watch the whole garden bloom."
+  },
+  {
+    "id": "wisdom_greatgrandma_105_setup",
+    "text": "What did Great-Grandma say about catching a big fish?"
+  },
+  {
+    "id": "wisdom_greatgrandma_105_punch",
+    "text": "There's always a bigger one waiting out in the deep water."
+  },
+  {
+    "id": "wisdom_greatgrandma_106_setup",
+    "text": "What did Great-Grandma say about a joyful heart?"
+  },
+  {
+    "id": "wisdom_greatgrandma_106_punch",
+    "text": "Joy is a well that never runs out of water."
+  },
+  {
+    "id": "wisdom_greatgrandma_107_setup",
+    "text": "What did Great-Grandma say about a good harvest?"
+  },
+  {
+    "id": "wisdom_greatgrandma_107_punch",
+    "text": "Next year's barns are going to need to be twice as big."
+  },
+  {
+    "id": "wisdom_greatgrandma_108_setup",
+    "text": "What did Great-Grandma say about a clear blue sky?"
+  },
+  {
+    "id": "wisdom_greatgrandma_108_punch",
+    "text": "It's a wide-open road all the way to the horizon."
+  },
+  {
+    "id": "wisdom_greatgrandma_109_setup",
+    "text": "What did Great-Grandma say about a celebration?"
+  },
+  {
+    "id": "wisdom_greatgrandma_109_punch",
+    "text": "Keep the music playing; the best song hasn't even started yet."
+  }
+]

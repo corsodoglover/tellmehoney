@@ -1,0 +1,1450 @@
+[
+ {
+  "id": "joke_cat_001_setup",
+  "text": "Why did the cat sit on the newspaper?"
+ },
+ {
+  "id": "joke_cat_001_punch",
+  "text": "The news was less important than the cat."
+ },
+ {
+  "id": "joke_cat_002_setup",
+  "text": "Why did the cat ignore his name?"
+ },
+ {
+  "id": "joke_cat_002_punch",
+  "text": "He heard it. He simply disagreed."
+ },
+ {
+  "id": "joke_cat_003_setup",
+  "text": "What does a cat do when you call it?"
+ },
+ {
+  "id": "joke_cat_003_punch",
+  "text": "Considers it. Files it away. Moves on."
+ },
+ {
+  "id": "joke_cat_004_setup",
+  "text": "Why did the cat sleep on the clean laundry?"
+ },
+ {
+  "id": "joke_cat_004_punch",
+  "text": "It was warm and it was yours."
+ },
+ {
+  "id": "joke_cat_005_setup",
+  "text": "Why did the cat sit in the empty box?"
+ },
+ {
+  "id": "joke_cat_005_punch",
+  "text": "The box was there. What else is there to say."
+ },
+ {
+  "id": "joke_cat_006_setup",
+  "text": "Why did the cat stare at the wall?"
+ },
+ {
+  "id": "joke_cat_006_punch",
+  "text": "He knows something. He isn't telling."
+ },
+ {
+  "id": "joke_cat_007_setup",
+  "text": "What is a cat's favorite chair?"
+ },
+ {
+  "id": "joke_cat_007_punch",
+  "text": "Whichever one you just got up from."
+ },
+ {
+  "id": "joke_cat_008_setup",
+  "text": "Why did the cat wake you at four in the morning?"
+ },
+ {
+  "id": "joke_cat_008_punch",
+  "text": "The schedule is his, not yours."
+ },
+ {
+  "id": "joke_cat_009_setup",
+  "text": "Why did the cat bring you a bug?"
+ },
+ {
+  "id": "joke_cat_009_punch",
+  "text": "It was a gift. Be gracious."
+ },
+ {
+  "id": "joke_cat_010_setup",
+  "text": "What does a cat think of a closed door?"
+ },
+ {
+  "id": "joke_cat_010_punch",
+  "text": "A personal insult."
+ },
+ {
+  "id": "joke_cat_011_setup",
+  "text": "Why did the cat sit in the doorway?"
+ },
+ {
+  "id": "joke_cat_011_punch",
+  "text": "In and out are both wrong. He is deciding."
+ },
+ {
+  "id": "joke_cat_012_setup",
+  "text": "What is a cat's exercise routine?"
+ },
+ {
+  "id": "joke_cat_012_punch",
+  "text": "One sprint at midnight, then eleven hours of recovery."
+ },
+ {
+  "id": "joke_cat_013_setup",
+  "text": "Why did the cat sit on the keyboard?"
+ },
+ {
+  "id": "joke_cat_013_punch",
+  "text": "You were paying attention to the wrong rectangle."
+ },
+ {
+  "id": "joke_cat_014_setup",
+  "text": "Why did the cat hide when company came?"
+ },
+ {
+  "id": "joke_cat_014_punch",
+  "text": "He does not perform on request."
+ },
+ {
+  "id": "joke_cat_015_setup",
+  "text": "Why did the cat come out after they left?"
+ },
+ {
+  "id": "joke_cat_015_punch",
+  "text": "He wanted to see what he had missed."
+ },
+ {
+  "id": "joke_cat_016_setup",
+  "text": "Why did the cat lie in the one sunny spot?"
+ },
+ {
+  "id": "joke_cat_016_punch",
+  "text": "The rest of the house is decoration."
+ },
+ {
+  "id": "joke_cat_017_setup",
+  "text": "What does a cat do all day?"
+ },
+ {
+  "id": "joke_cat_017_punch",
+  "text": "Whatever it was doing before you walked in."
+ },
+ {
+  "id": "joke_cat_018_setup",
+  "text": "Why did the cat knead the blanket?"
+ },
+ {
+  "id": "joke_cat_018_punch",
+  "text": "Something ancient said to and he obeyed."
+ },
+ {
+  "id": "joke_cat_019_setup",
+  "text": "Why did the cat purr when you were sad?"
+ },
+ {
+  "id": "joke_cat_019_punch",
+  "text": "He noticed. He would deny noticing."
+ },
+ {
+  "id": "joke_cat_020_setup",
+  "text": "What is the cat's opinion of the dog?"
+ },
+ {
+  "id": "joke_cat_020_punch",
+  "text": "Long. Detailed. Unpublished."
+ },
+ {
+  "id": "joke_cat_021_setup",
+  "text": "Why did the cat watch the bird through the window?"
+ },
+ {
+  "id": "joke_cat_021_punch",
+  "text": "Ambition costs nothing."
+ },
+ {
+  "id": "joke_cat_022_setup",
+  "text": "Why did the cat chatter at the bird?"
+ },
+ {
+  "id": "joke_cat_022_punch",
+  "text": "Everyone has a plan they will never execute."
+ },
+ {
+  "id": "joke_cat_023_setup",
+  "text": "Why did the cat leave the expensive food?"
+ },
+ {
+  "id": "joke_cat_023_punch",
+  "text": "It was purchased with hope."
+ },
+ {
+  "id": "joke_cat_024_setup",
+  "text": "Why did the cat eat the cheap food later?"
+ },
+ {
+  "id": "joke_cat_024_punch",
+  "text": "On his own schedule. That was the point."
+ },
+ {
+  "id": "joke_cat_025_setup",
+  "text": "What does a cat do with a new toy?"
+ },
+ {
+  "id": "joke_cat_025_punch",
+  "text": "Nothing. The wrapper, though."
+ },
+ {
+  "id": "joke_cat_026_setup",
+  "text": "Why did the cat sleep sixteen hours?"
+ },
+ {
+  "id": "joke_cat_026_punch",
+  "text": "The other eight were exhausting."
+ },
+ {
+  "id": "joke_cat_027_setup",
+  "text": "Why did the cat run out of the room for no reason?"
+ },
+ {
+  "id": "joke_cat_027_punch",
+  "text": "There was a reason. It was not shared."
+ },
+ {
+  "id": "joke_cat_028_setup",
+  "text": "Why did the cat sit on the puzzle?"
+ },
+ {
+  "id": "joke_cat_028_punch",
+  "text": "It was almost finished and he could tell."
+ },
+ {
+  "id": "joke_cat_029_setup",
+  "text": "Why did the cat glare at the vacuum?"
+ },
+ {
+  "id": "joke_cat_029_punch",
+  "text": "A grudge that will outlive the vacuum."
+ },
+ {
+  "id": "joke_cat_030_setup",
+  "text": "Why did the cat sit in the suitcase?"
+ },
+ {
+  "id": "joke_cat_030_punch",
+  "text": "Nobody is leaving."
+ },
+ {
+  "id": "joke_cat_031_setup",
+  "text": "Why did the cat sit in the grocery bag?"
+ },
+ {
+  "id": "joke_cat_031_punch",
+  "text": "Everybody is staying."
+ },
+ {
+  "id": "joke_cat_032_setup",
+  "text": "What does a cat do when you cry?"
+ },
+ {
+  "id": "joke_cat_032_punch",
+  "text": "Sits down and waits it out with you."
+ },
+ {
+  "id": "joke_cat_033_setup",
+  "text": "Why did the cat follow you to the bathroom?"
+ },
+ {
+  "id": "joke_cat_033_punch",
+  "text": "Supervision."
+ },
+ {
+  "id": "joke_cat_034_setup",
+  "text": "Why did the cat sit outside the shower?"
+ },
+ {
+  "id": "joke_cat_034_punch",
+  "text": "In case something went wrong. Or right."
+ },
+ {
+  "id": "joke_cat_035_setup",
+  "text": "Why did the cat trip you on the stairs?"
+ },
+ {
+  "id": "joke_cat_035_punch",
+  "text": "He was also going down. Timing is hard."
+ },
+ {
+  "id": "joke_cat_036_setup",
+  "text": "Why did the cat sit in the middle of the hallway?"
+ },
+ {
+  "id": "joke_cat_036_punch",
+  "text": "It is his hallway. You have visiting rights."
+ },
+ {
+  "id": "joke_cat_037_setup",
+  "text": "What is a cat's opinion of the leash?"
+ },
+ {
+  "id": "joke_cat_037_punch",
+  "text": "It was the worst afternoon of his life."
+ },
+ {
+  "id": "joke_cat_038_setup",
+  "text": "Why did the cat come when you opened a can?"
+ },
+ {
+  "id": "joke_cat_038_punch",
+  "text": "The ears work. Everything works. He chooses."
+ },
+ {
+  "id": "joke_cat_039_setup",
+  "text": "Why did the cat sit and stare at you while you ate?"
+ },
+ {
+  "id": "joke_cat_039_punch",
+  "text": "No reason. Just an audience."
+ },
+ {
+  "id": "joke_cat_040_setup",
+  "text": "Why did the cat bite you gently?"
+ },
+ {
+  "id": "joke_cat_040_punch",
+  "text": "That was affection. You are lucky."
+ },
+ {
+  "id": "joke_cat_041_setup",
+  "text": "Why did the cat sleep on your chest?"
+ },
+ {
+  "id": "joke_cat_041_punch",
+  "text": "To make sure the heart kept doing its job."
+ },
+ {
+  "id": "joke_cat_042_setup",
+  "text": "Why did the cat sit on the warm laptop?"
+ },
+ {
+  "id": "joke_cat_042_punch",
+  "text": "Loyalty to whatever hums."
+ },
+ {
+  "id": "joke_cat_043_setup",
+  "text": "Why did the cat roll over and show his belly?"
+ },
+ {
+  "id": "joke_cat_043_punch",
+  "text": "A trap dressed as a compliment."
+ },
+ {
+  "id": "joke_cat_044_setup",
+  "text": "Why did the cat sit on the mail?"
+ },
+ {
+  "id": "joke_cat_044_punch",
+  "text": "Something arrived that was not for him."
+ },
+ {
+  "id": "joke_cat_045_setup",
+  "text": "Why did the cat chase nothing across the room?"
+ },
+ {
+  "id": "joke_cat_045_punch",
+  "text": "Something was there. Trust him."
+ },
+ {
+  "id": "joke_cat_046_setup",
+  "text": "Why did the cat sit in the sink?"
+ },
+ {
+  "id": "joke_cat_046_punch",
+  "text": "Cold, curved, and inexplicable. Like him."
+ },
+ {
+  "id": "joke_cat_047_setup",
+  "text": "What does a cat call a lap?"
+ },
+ {
+  "id": "joke_cat_047_punch",
+  "text": "Furniture with a heartbeat."
+ },
+ {
+  "id": "joke_cat_048_setup",
+  "text": "Why did the cat abandon the lap?"
+ },
+ {
+  "id": "joke_cat_048_punch",
+  "text": "He got what he came for."
+ },
+ {
+  "id": "joke_cat_049_setup",
+  "text": "Why did the cat sit on the windowsill all afternoon?"
+ },
+ {
+  "id": "joke_cat_049_punch",
+  "text": "There was a leaf doing something."
+ },
+ {
+  "id": "joke_cat_050_setup",
+  "text": "Why did the cat ignore the expensive bed?"
+ },
+ {
+  "id": "joke_cat_050_punch",
+  "text": "It did not smell like anybody."
+ },
+ {
+  "id": "joke_cat_051_setup",
+  "text": "Why did the cat sleep in the shoebox instead?"
+ },
+ {
+  "id": "joke_cat_051_punch",
+  "text": "It did."
+ },
+ {
+  "id": "joke_cat_052_setup",
+  "text": "Why did the cat headbutt you?"
+ },
+ {
+  "id": "joke_cat_052_punch",
+  "text": "You have been claimed. Congratulations."
+ },
+ {
+  "id": "joke_cat_053_setup",
+  "text": "What is a cat's plan for the day?"
+ },
+ {
+  "id": "joke_cat_053_punch",
+  "text": "Locate warmth. Defend warmth."
+ },
+ {
+  "id": "joke_cat_054_setup",
+  "text": "Why did the cat meow at an empty bowl?"
+ },
+ {
+  "id": "joke_cat_054_punch",
+  "text": "There was food in it. Not enough of it."
+ },
+ {
+  "id": "joke_cat_055_setup",
+  "text": "Why did the cat sit under the Christmas tree?"
+ },
+ {
+  "id": "joke_cat_055_punch",
+  "text": "A forest arrived and it is indoors."
+ },
+ {
+  "id": "joke_cat_056_setup",
+  "text": "Why did the cat drink from the faucet?"
+ },
+ {
+  "id": "joke_cat_056_punch",
+  "text": "There is a whole bowl. This one is running."
+ },
+ {
+  "id": "joke_cat_057_setup",
+  "text": "Why did the cat sit on the phone?"
+ },
+ {
+  "id": "joke_cat_057_punch",
+  "text": "You were laughing at something that was not him."
+ },
+ {
+  "id": "joke_cat_058_setup",
+  "text": "Why did the cat lie across the doorway at night?"
+ },
+ {
+  "id": "joke_cat_058_punch",
+  "text": "Somebody has to hold the line."
+ },
+ {
+  "id": "joke_cat_059_setup",
+  "text": "What does the cat do when you come home?"
+ },
+ {
+  "id": "joke_cat_059_punch",
+  "text": "Appears. Says nothing. Has been waiting."
+ },
+ {
+  "id": "joke_cat_060_setup",
+  "text": "Why did the cat sit next to you and not on you?"
+ },
+ {
+  "id": "joke_cat_060_punch",
+  "text": "That is as close as love gets to admitting itself."
+ },
+ {
+  "id": "joke_dog_001_setup",
+  "text": "Why was the dog thrilled you came home?"
+ },
+ {
+  "id": "joke_dog_001_punch",
+  "text": "You were gone for eleven minutes."
+ },
+ {
+  "id": "joke_dog_002_setup",
+  "text": "Why did the dog greet you at the door?"
+ },
+ {
+  "id": "joke_dog_002_punch",
+  "text": "In case you had forgotten you were loved."
+ },
+ {
+  "id": "joke_dog_003_setup",
+  "text": "What does a dog think of a car ride?"
+ },
+ {
+  "id": "joke_dog_003_punch",
+  "text": "Best day. Every time. Without exception."
+ },
+ {
+  "id": "joke_dog_004_setup",
+  "text": "Why did the dog stick his head out the window?"
+ },
+ {
+  "id": "joke_dog_004_punch",
+  "text": "The whole world was reporting in."
+ },
+ {
+  "id": "joke_dog_005_setup",
+  "text": "Why did the dog bring you his toy?"
+ },
+ {
+  "id": "joke_dog_005_punch",
+  "text": "He had something and you deserved it."
+ },
+ {
+  "id": "joke_dog_006_setup",
+  "text": "Why did the dog drop the ball at your feet again?"
+ },
+ {
+  "id": "joke_dog_006_punch",
+  "text": "It worked the first four hundred times."
+ },
+ {
+  "id": "joke_dog_007_setup",
+  "text": "Why did the dog wag before you said anything?"
+ },
+ {
+  "id": "joke_dog_007_punch",
+  "text": "He liked your odds."
+ },
+ {
+  "id": "joke_dog_008_setup",
+  "text": "What is a dog's opinion of the mailman?"
+ },
+ {
+  "id": "joke_dog_008_punch",
+  "text": "Complicated. Loud. Renewed daily."
+ },
+ {
+  "id": "joke_dog_009_setup",
+  "text": "Why did the dog bark at the doorbell on television?"
+ },
+ {
+  "id": "joke_dog_009_punch",
+  "text": "Somebody could be here. It costs nothing to check."
+ },
+ {
+  "id": "joke_dog_010_setup",
+  "text": "Why did the dog sit when you picked up the leash?"
+ },
+ {
+  "id": "joke_dog_010_punch",
+  "text": "Composure. Barely."
+ },
+ {
+  "id": "joke_dog_011_setup",
+  "text": "Why did the dog spin in a circle first?"
+ },
+ {
+  "id": "joke_dog_011_punch",
+  "text": "The excitement had to go somewhere."
+ },
+ {
+  "id": "joke_dog_012_setup",
+  "text": "Why did the dog sigh and lie down?"
+ },
+ {
+  "id": "joke_dog_012_punch",
+  "text": "The day had been long and he had done all of it."
+ },
+ {
+  "id": "joke_dog_013_setup",
+  "text": "What does a dog do when you say his name?"
+ },
+ {
+  "id": "joke_dog_013_punch",
+  "text": "Everything stops. You have his entire attention."
+ },
+ {
+  "id": "joke_dog_014_setup",
+  "text": "Why did the dog watch you eat?"
+ },
+ {
+  "id": "joke_dog_014_punch",
+  "text": "In case a miracle occurred."
+ },
+ {
+  "id": "joke_dog_015_setup",
+  "text": "Why did the dog put his head on your knee?"
+ },
+ {
+  "id": "joke_dog_015_punch",
+  "text": "He was checking on you."
+ },
+ {
+  "id": "joke_dog_016_setup",
+  "text": "Why did the dog follow you room to room?"
+ },
+ {
+  "id": "joke_dog_016_punch",
+  "text": "You might need help. He is qualified."
+ },
+ {
+  "id": "joke_dog_017_setup",
+  "text": "Why did the dog stand outside while it snowed?"
+ },
+ {
+  "id": "joke_dog_017_punch",
+  "text": "Weather is a thing that happens and he is willing."
+ },
+ {
+  "id": "joke_dog_018_setup",
+  "text": "Why did the dog roll in the grass?"
+ },
+ {
+  "id": "joke_dog_018_punch",
+  "text": "It smelled magnificent and now so does he."
+ },
+ {
+  "id": "joke_dog_019_setup",
+  "text": "Why did the dog come running when you were sad?"
+ },
+ {
+  "id": "joke_dog_019_punch",
+  "text": "He heard it in your voice before you did."
+ },
+ {
+  "id": "joke_dog_020_setup",
+  "text": "Why did the dog lick your hand?"
+ },
+ {
+  "id": "joke_dog_020_punch",
+  "text": "There was nothing else he could do about it."
+ },
+ {
+  "id": "joke_dog_021_setup",
+  "text": "Why did the dog sleep against the door?"
+ },
+ {
+  "id": "joke_dog_021_punch",
+  "text": "So he would hear you first."
+ },
+ {
+  "id": "joke_dog_022_setup",
+  "text": "Why did the dog learn to sit?"
+ },
+ {
+  "id": "joke_dog_022_punch",
+  "text": "You clapped once, years ago."
+ },
+ {
+  "id": "joke_dog_023_setup",
+  "text": "Why did the dog eat something he found outside?"
+ },
+ {
+  "id": "joke_dog_023_punch",
+  "text": "It was there. He is a professional."
+ },
+ {
+  "id": "joke_dog_024_setup",
+  "text": "Why did the dog look guilty?"
+ },
+ {
+  "id": "joke_dog_024_punch",
+  "text": "He had no idea what he did but he is sorry."
+ },
+ {
+  "id": "joke_dog_025_setup",
+  "text": "Why did the dog bring you a stick?"
+ },
+ {
+  "id": "joke_dog_025_punch",
+  "text": "It was the biggest thing he could carry."
+ },
+ {
+  "id": "joke_dog_026_setup",
+  "text": "Why did the dog carry a stick too big for the gate?"
+ },
+ {
+  "id": "joke_dog_026_punch",
+  "text": "Reassessment takes time and he is not ready."
+ },
+ {
+  "id": "joke_dog_027_setup",
+  "text": "Why did the dog swim after nothing?"
+ },
+ {
+  "id": "joke_dog_027_punch",
+  "text": "There was a duck. There is always a duck."
+ },
+ {
+  "id": "joke_dog_028_setup",
+  "text": "Why did the dog shake off next to you?"
+ },
+ {
+  "id": "joke_dog_028_punch",
+  "text": "Sharing."
+ },
+ {
+  "id": "joke_dog_029_setup",
+  "text": "Why did the dog bark at the vacuum?"
+ },
+ {
+  "id": "joke_dog_029_punch",
+  "text": "It came into his house making claims."
+ },
+ {
+  "id": "joke_dog_030_setup",
+  "text": "Why did the dog hide from the vacuum after?"
+ },
+ {
+  "id": "joke_dog_030_punch",
+  "text": "Nobody is brave twice in one afternoon."
+ },
+ {
+  "id": "joke_dog_031_setup",
+  "text": "Why did the dog sit by the bowl an hour early?"
+ },
+ {
+  "id": "joke_dog_031_punch",
+  "text": "Optimism is a lifestyle."
+ },
+ {
+  "id": "joke_dog_032_setup",
+  "text": "Why did the dog wag at the veterinarian?"
+ },
+ {
+  "id": "joke_dog_032_punch",
+  "text": "He has never once learned."
+ },
+ {
+  "id": "joke_dog_033_setup",
+  "text": "Why was the dog delighted at the vet anyway?"
+ },
+ {
+  "id": "joke_dog_033_punch",
+  "text": "New people. New smells. A whole outing."
+ },
+ {
+  "id": "joke_dog_034_setup",
+  "text": "Why did the dog forget where he buried it?"
+ },
+ {
+  "id": "joke_dog_034_punch",
+  "text": "The joy was in the burying."
+ },
+ {
+  "id": "joke_dog_035_setup",
+  "text": "What do two dogs do at a fence?"
+ },
+ {
+  "id": "joke_dog_035_punch",
+  "text": "Everything important, apparently."
+ },
+ {
+  "id": "joke_dog_036_setup",
+  "text": "Why did the dog nap in the sunny square on the floor?"
+ },
+ {
+  "id": "joke_dog_036_punch",
+  "text": "The sun moved. He moved. This is the day."
+ },
+ {
+  "id": "joke_dog_037_setup",
+  "text": "Why did the dog nap again an hour later?"
+ },
+ {
+  "id": "joke_dog_037_punch",
+  "text": "He had done a great deal of napping and was tired."
+ },
+ {
+  "id": "joke_dog_038_setup",
+  "text": "Why did the dog bark at his own reflection?"
+ },
+ {
+  "id": "joke_dog_038_punch",
+  "text": "He was concerned. Then delighted. Then concerned."
+ },
+ {
+  "id": "joke_dog_039_setup",
+  "text": "Why did the dog tilt his head?"
+ },
+ {
+  "id": "joke_dog_039_punch",
+  "text": "He almost understood you and it was close."
+ },
+ {
+  "id": "joke_dog_040_setup",
+  "text": "Why did the dog bring you a shoe?"
+ },
+ {
+  "id": "joke_dog_040_punch",
+  "text": "It was yours and now it is nearer to you."
+ },
+ {
+  "id": "joke_dog_041_setup",
+  "text": "Why did the dog chew the shoe first?"
+ },
+ {
+  "id": "joke_dog_041_punch",
+  "text": "He was making it his before making it yours."
+ },
+ {
+  "id": "joke_dog_042_setup",
+  "text": "Why did the dog get in the car before you opened the door?"
+ },
+ {
+  "id": "joke_dog_042_punch",
+  "text": "Faith."
+ },
+ {
+  "id": "joke_dog_043_setup",
+  "text": "Why did the dog sit in the driver's seat?"
+ },
+ {
+  "id": "joke_dog_043_punch",
+  "text": "Somebody has to be prepared."
+ },
+ {
+  "id": "joke_dog_044_setup",
+  "text": "Why was the dog happy about the rain?"
+ },
+ {
+  "id": "joke_dog_044_punch",
+  "text": "There is a puddle situation developing."
+ },
+ {
+  "id": "joke_dog_045_setup",
+  "text": "Why did the dog track it inside?"
+ },
+ {
+  "id": "joke_dog_045_punch",
+  "text": "Sharing, again."
+ },
+ {
+  "id": "joke_dog_046_setup",
+  "text": "Why did the dog sleep on his back with his feet up?"
+ },
+ {
+  "id": "joke_dog_046_punch",
+  "text": "Nothing has ever gone wrong in his life."
+ },
+ {
+  "id": "joke_dog_047_setup",
+  "text": "Why did the dog snore louder than you?"
+ },
+ {
+  "id": "joke_dog_047_punch",
+  "text": "He had earned it."
+ },
+ {
+  "id": "joke_dog_048_setup",
+  "text": "Why did the dog wake up instantly at the word walk?"
+ },
+ {
+  "id": "joke_dog_048_punch",
+  "text": "He has been listening for it his entire life."
+ },
+ {
+  "id": "joke_dog_049_setup",
+  "text": "Why did the dog get excited when you put on shoes?"
+ },
+ {
+  "id": "joke_dog_049_punch",
+  "text": "Shoes mean everything. Shoes mean anything."
+ },
+ {
+  "id": "joke_dog_050_setup",
+  "text": "Why was the dog disappointed you took out the trash?"
+ },
+ {
+  "id": "joke_dog_050_punch",
+  "text": "It was a false alarm and he had gotten his hopes up."
+ },
+ {
+  "id": "joke_dog_051_setup",
+  "text": "Why did the dog forgive you immediately?"
+ },
+ {
+  "id": "joke_dog_051_punch",
+  "text": "The next thing might be a walk."
+ },
+ {
+  "id": "joke_dog_052_setup",
+  "text": "Why did the dog lean against your leg?"
+ },
+ {
+  "id": "joke_dog_052_punch",
+  "text": "Standing is easier with company."
+ },
+ {
+  "id": "joke_dog_053_setup",
+  "text": "Why did the dog sit on your foot?"
+ },
+ {
+  "id": "joke_dog_053_punch",
+  "text": "He is keeping track of you."
+ },
+ {
+  "id": "joke_dog_054_setup",
+  "text": "Why did the dog wait by the window all afternoon?"
+ },
+ {
+  "id": "joke_dog_054_punch",
+  "text": "He had a strong feeling about today."
+ },
+ {
+  "id": "joke_dog_055_setup",
+  "text": "Why was the dog right?"
+ },
+ {
+  "id": "joke_dog_055_punch",
+  "text": "You came home. He is always right."
+ },
+ {
+  "id": "joke_dog_056_setup",
+  "text": "Why did the dog bark at the delivery truck?"
+ },
+ {
+  "id": "joke_dog_056_punch",
+  "text": "It was leaving with information."
+ },
+ {
+  "id": "joke_dog_057_setup",
+  "text": "Why did the dog learn to open the door?"
+ },
+ {
+  "id": "joke_dog_057_punch",
+  "text": "He had somewhere to be. It was here."
+ },
+ {
+  "id": "joke_dog_058_setup",
+  "text": "Why did the dog howl at the siren?"
+ },
+ {
+  "id": "joke_dog_058_punch",
+  "text": "Someone was singing and it was rude not to answer."
+ },
+ {
+  "id": "joke_dog_059_setup",
+  "text": "Why did the dog stop chasing the squirrel?"
+ },
+ {
+  "id": "joke_dog_059_punch",
+  "text": "He caught up to the idea and had no next step."
+ },
+ {
+  "id": "joke_dog_060_setup",
+  "text": "Why did the dog put his paw on your hand?"
+ },
+ {
+  "id": "joke_dog_060_punch",
+  "text": "So you would stay a minute longer."
+ },
+ {
+  "id": "joke_fish_001_setup",
+  "text": "What does a goldfish do all day?"
+ },
+ {
+  "id": "joke_fish_001_punch",
+  "text": "This. What you are watching. This is it."
+ },
+ {
+  "id": "joke_fish_002_setup",
+  "text": "Why did the goldfish swim to the glass?"
+ },
+ {
+  "id": "joke_fish_002_punch",
+  "text": "Something enormous appeared. It was your face."
+ },
+ {
+  "id": "joke_fish_003_setup",
+  "text": "Why did the goldfish swim away?"
+ },
+ {
+  "id": "joke_fish_003_punch",
+  "text": "He had seen enough of that."
+ },
+ {
+  "id": "joke_fish_004_setup",
+  "text": "Why did the fish stare at the little castle?"
+ },
+ {
+  "id": "joke_fish_004_punch",
+  "text": "Real estate is a fascination in every species."
+ },
+ {
+  "id": "joke_fish_005_setup",
+  "text": "Why did the fish swim through the castle?"
+ },
+ {
+  "id": "joke_fish_005_punch",
+  "text": "It is the only door in his life."
+ },
+ {
+  "id": "joke_fish_006_setup",
+  "text": "Why did the fish ignore the treasure chest?"
+ },
+ {
+  "id": "joke_fish_006_punch",
+  "text": "It opens. It closes. He has opinions about neither."
+ },
+ {
+  "id": "joke_fish_007_setup",
+  "text": "What is the fish tank's most exciting event?"
+ },
+ {
+  "id": "joke_fish_007_punch",
+  "text": "The lid. Somebody is coming."
+ },
+ {
+  "id": "joke_fish_008_setup",
+  "text": "Why did the fish eat immediately?"
+ },
+ {
+  "id": "joke_fish_008_punch",
+  "text": "There is no such thing as later."
+ },
+ {
+  "id": "joke_fish_009_setup",
+  "text": "Why was the fish unbothered by the news?"
+ },
+ {
+  "id": "joke_fish_009_punch",
+  "text": "It never reaches him."
+ },
+ {
+  "id": "joke_fish_010_setup",
+  "text": "What does a fish think of Monday?"
+ },
+ {
+  "id": "joke_fish_010_punch",
+  "text": "Nothing whatsoever. Consider that."
+ },
+ {
+  "id": "joke_fish_011_setup",
+  "text": "Why does the fish never argue?"
+ },
+ {
+  "id": "joke_fish_011_punch",
+  "text": "He has never once needed the last word."
+ },
+ {
+  "id": "joke_fish_012_setup",
+  "text": "Why did the fish look at the plastic plant?"
+ },
+ {
+  "id": "joke_fish_012_punch",
+  "text": "It has been a good friend and asks nothing."
+ },
+ {
+  "id": "joke_fish_013_setup",
+  "text": "Why did the fish hide behind the filter?"
+ },
+ {
+  "id": "joke_fish_013_punch",
+  "text": "Everyone needs somewhere."
+ },
+ {
+  "id": "joke_fish_014_setup",
+  "text": "What did the fish do when the light came on?"
+ },
+ {
+  "id": "joke_fish_014_punch",
+  "text": "Began again. Cheerfully. As if new."
+ },
+ {
+  "id": "joke_fish_015_setup",
+  "text": "Why is the fish good company?"
+ },
+ {
+  "id": "joke_fish_015_punch",
+  "text": "He never brings anything up."
+ },
+ {
+  "id": "joke_fish_016_setup",
+  "text": "Why did the fish tank get put in the waiting room?"
+ },
+ {
+  "id": "joke_fish_016_punch",
+  "text": "Nobody has ever been made anxious by a fish."
+ },
+ {
+  "id": "joke_fish_017_setup",
+  "text": "What did the fish do when you talked to him?"
+ },
+ {
+  "id": "joke_fish_017_punch",
+  "text": "Listened, arguably."
+ },
+ {
+  "id": "joke_fish_018_setup",
+  "text": "Why did the fish blow a bubble?"
+ },
+ {
+  "id": "joke_fish_018_punch",
+  "text": "A statement, and then it was gone."
+ },
+ {
+  "id": "joke_fish_019_setup",
+  "text": "Why did the fish follow your finger on the glass?"
+ },
+ {
+  "id": "joke_fish_019_punch",
+  "text": "Company is company."
+ },
+ {
+  "id": "joke_fish_020_setup",
+  "text": "Why was the fish the easiest pet?"
+ },
+ {
+  "id": "joke_fish_020_punch",
+  "text": "He has never once needed anything from you at three in the morning."
+ },
+ {
+  "id": "joke_fish_021_setup",
+  "text": "Why did the fish outlive the hamster?"
+ },
+ {
+  "id": "joke_fish_021_punch",
+  "text": "Ambition is expensive."
+ },
+ {
+  "id": "joke_fish_022_setup",
+  "text": "Why did the fish swim in circles?"
+ },
+ {
+  "id": "joke_fish_022_punch",
+  "text": "The lane was open and he was already there."
+ },
+ {
+  "id": "joke_fish_023_setup",
+  "text": "Why did the fish go the other way?"
+ },
+ {
+  "id": "joke_fish_023_punch",
+  "text": "Variety."
+ },
+ {
+  "id": "joke_fish_024_setup",
+  "text": "What is a fish's opinion of the ocean?"
+ },
+ {
+  "id": "joke_fish_024_punch",
+  "text": "He has heard rumors."
+ },
+ {
+  "id": "joke_fish_025_setup",
+  "text": "Why did the betta flare at his reflection?"
+ },
+ {
+  "id": "joke_fish_025_punch",
+  "text": "He met the only rival he will ever have."
+ },
+ {
+  "id": "joke_fish_026_setup",
+  "text": "Why did the betta calm down?"
+ },
+ {
+  "id": "joke_fish_026_punch",
+  "text": "They came to an understanding, roughly."
+ },
+ {
+  "id": "joke_fish_027_setup",
+  "text": "What did the fisherman catch all day?"
+ },
+ {
+  "id": "joke_fish_027_punch",
+  "text": "A sunrise, a sunburn, and a nap."
+ },
+ {
+  "id": "joke_fish_028_setup",
+  "text": "Why did the fisherman call it a good day?"
+ },
+ {
+  "id": "joke_fish_028_punch",
+  "text": "Nobody asked him a single question for six hours."
+ },
+ {
+  "id": "joke_fish_029_setup",
+  "text": "Why did the fish get away?"
+ },
+ {
+  "id": "joke_fish_029_punch",
+  "text": "He was enormous. Ask anybody who wasn't there."
+ },
+ {
+  "id": "joke_fish_030_setup",
+  "text": "How big was the fish that got away?"
+ },
+ {
+  "id": "joke_fish_030_punch",
+  "text": "Bigger every year, and he is not done growing."
+ },
+ {
+  "id": "joke_fish_031_setup",
+  "text": "Why did the fisherman go back the next day?"
+ },
+ {
+  "id": "joke_fish_031_punch",
+  "text": "Yesterday proved nothing."
+ },
+ {
+  "id": "joke_fish_032_setup",
+  "text": "What is a fisherman's favorite lie?"
+ },
+ {
+  "id": "joke_fish_032_punch",
+  "text": "The one with a witness who has also been fishing."
+ },
+ {
+  "id": "joke_fish_033_setup",
+  "text": "Why did the fisherman fish where nothing bit?"
+ },
+ {
+  "id": "joke_fish_033_punch",
+  "text": "He had made a promise to that spot."
+ },
+ {
+  "id": "joke_fish_034_setup",
+  "text": "Why did the fisherman not move to the good spot?"
+ },
+ {
+  "id": "joke_fish_034_punch",
+  "text": "Then he would be the man who moved."
+ },
+ {
+  "id": "joke_fish_035_setup",
+  "text": "What is the best part of fishing?"
+ },
+ {
+  "id": "joke_fish_035_punch",
+  "text": "The part where nothing is required of you."
+ },
+ {
+  "id": "joke_fish_036_setup",
+  "text": "Why did the fisherman bring a book?"
+ },
+ {
+  "id": "joke_fish_036_punch",
+  "text": "Optimism has a backup plan."
+ },
+ {
+  "id": "joke_fish_037_setup",
+  "text": "Why did the fisherman never open the book?"
+ },
+ {
+  "id": "joke_fish_037_punch",
+  "text": "The water kept almost doing something."
+ },
+ {
+  "id": "joke_fish_038_setup",
+  "text": "Why did the fisherman talk to the fish?"
+ },
+ {
+  "id": "joke_fish_038_punch",
+  "text": "Somebody down there is listening."
+ },
+ {
+  "id": "joke_fish_039_setup",
+  "text": "What did the fish say back?"
+ },
+ {
+  "id": "joke_fish_039_punch",
+  "text": "Exactly what you would expect. And it was correct."
+ },
+ {
+  "id": "joke_fish_040_setup",
+  "text": "Why did the fisherman throw it back?"
+ },
+ {
+  "id": "joke_fish_040_punch",
+  "text": "He liked the fish by then."
+ },
+ {
+  "id": "joke_fish_041_setup",
+  "text": "Why did the fisherman take a picture first?"
+ },
+ {
+  "id": "joke_fish_041_punch",
+  "text": "The fish will be bigger in the story and the picture is evidence."
+ },
+ {
+  "id": "joke_fish_042_setup",
+  "text": "Why did the fisherman fish alone?"
+ },
+ {
+  "id": "joke_fish_042_punch",
+  "text": "So the story stays reliable."
+ },
+ {
+  "id": "joke_fish_043_setup",
+  "text": "Why did the boy catch more than his grandfather?"
+ },
+ {
+  "id": "joke_fish_043_punch",
+  "text": "The grandfather was not fishing. He was watching the boy."
+ },
+ {
+  "id": "joke_fish_044_setup",
+  "text": "Why did the grandfather bring the boy fishing?"
+ },
+ {
+  "id": "joke_fish_044_punch",
+  "text": "So the boy would learn how to sit still and be happy."
+ },
+ {
+  "id": "joke_fish_045_setup",
+  "text": "What did the boy catch?"
+ },
+ {
+  "id": "joke_fish_045_punch",
+  "text": "Nothing. He remembers every minute of it."
+ },
+ {
+  "id": "joke_fish_046_setup",
+  "text": "Why did the fisherman keep the worst rod?"
+ },
+ {
+  "id": "joke_fish_046_punch",
+  "text": "It has caught everything that ever mattered to him."
+ },
+ {
+  "id": "joke_fish_047_setup",
+  "text": "Why did the fisherman clean the tackle box in winter?"
+ },
+ {
+  "id": "joke_fish_047_punch",
+  "text": "Hope needs somewhere to go in January."
+ },
+ {
+  "id": "joke_fish_048_setup",
+  "text": "Why did the fisherman organize the lures by color?"
+ },
+ {
+  "id": "joke_fish_048_punch",
+  "text": "One of them will work. Probably the ugly one."
+ },
+ {
+  "id": "joke_fish_049_setup",
+  "text": "Why did the ugly lure work?"
+ },
+ {
+  "id": "joke_fish_049_punch",
+  "text": "The fish have never been consulted on taste."
+ },
+ {
+  "id": "joke_fish_050_setup",
+  "text": "Why did the fisherman not tell anyone the spot?"
+ },
+ {
+  "id": "joke_fish_050_punch",
+  "text": "There are three secrets a man keeps and this is two of them."
+ },
+ {
+  "id": "joke_fish_051_setup",
+  "text": "Why did the pond seem smaller than he remembered?"
+ },
+ {
+  "id": "joke_fish_051_punch",
+  "text": "He was smaller then, and so was everything."
+ },
+ {
+  "id": "joke_fish_052_setup",
+  "text": "Why did the fisherman go back to the same pond for forty years?"
+ },
+ {
+  "id": "joke_fish_052_punch",
+  "text": "It has never once disappointed him and it has never once cooperated."
+ },
+ {
+  "id": "joke_fish_053_setup",
+  "text": "Why did the fish jump out of the water?"
+ },
+ {
+  "id": "joke_fish_053_punch",
+  "text": "Exuberance. There is no other explanation."
+ },
+ {
+  "id": "joke_fish_054_setup",
+  "text": "Why did the fish jump right beside the boat?"
+ },
+ {
+  "id": "joke_fish_054_punch",
+  "text": "To be seen. Not caught. Seen."
+ },
+ {
+  "id": "joke_fish_055_setup",
+  "text": "Why did nobody believe the fisherman?"
+ },
+ {
+  "id": "joke_fish_055_punch",
+  "text": "He is a fisherman."
+ },
+ {
+  "id": "joke_fish_056_setup",
+  "text": "Why did everybody listen anyway?"
+ },
+ {
+  "id": "joke_fish_056_punch",
+  "text": "He is a fisherman."
+ },
+ {
+  "id": "joke_fish_057_setup",
+  "text": "What does a fisherman call a bad day?"
+ },
+ {
+  "id": "joke_fish_057_punch",
+  "text": "A day. He does not have another word for it."
+ },
+ {
+  "id": "joke_fish_058_setup",
+  "text": "Why did the fisherman stay out past dark?"
+ },
+ {
+  "id": "joke_fish_058_punch",
+  "text": "One more cast has never once been one more cast."
+ },
+ {
+  "id": "joke_fish_059_setup",
+  "text": "Why did the fisherman finally reel in?"
+ },
+ {
+  "id": "joke_fish_059_punch",
+  "text": "His wife flashed the porch light twice."
+ },
+ {
+  "id": "joke_fish_060_setup",
+  "text": "Why did the fisherman smile all the way home?"
+ },
+ {
+  "id": "joke_fish_060_punch",
+  "text": "The cooler was empty and the evening was not."
+ },
+ {
+  "id": "joke_fish_061_setup",
+  "text": "Why did the fisherman say fishing is not about fish?"
+ },
+ {
+  "id": "joke_fish_061_punch",
+  "text": "Because he has caught almost none and loved every year of it."
+ }
+]
