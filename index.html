@@ -9740,7 +9740,10 @@ function _spSpeakDevice(text, done){
 function _spPollCloud(myToken, done){
   var iv=setInterval(function(){
     if(myToken!==_spToken){ clearInterval(iv); return; }
-    if(!cloudPlaying && !cloudQueue.length){ clearInterval(iv); done(); }
+    // Wait until nothing is fetching AND nothing is playing AND queue is empty.
+    // cloudInFlight guards the network gap so the NEXT line can't start fetching
+    // (and racing ahead) before this one has fully finished.
+    if(cloudInFlight===0 && !cloudPlaying && !cloudQueue.length){ clearInterval(iv); done(); }
   }, 150);
 }
 
@@ -9749,7 +9752,7 @@ function clampNum(n,lo,hi){ return Math.max(lo,Math.min(hi,n)); }
 
 /* ════ CLOUD TTS (optional, user's own OpenAI key) ════ */
 var cloudAudio=null;
-var cloudQueue=[], cloudPlaying=false;
+var cloudQueue=[], cloudPlaying=false, cloudInFlight=0;
 function playCloudQueue(){
   if(cloudPlaying) return;
   if(!cloudQueue.length){ return; }
@@ -9779,7 +9782,7 @@ function playCloudQueue(){
   var p=a.play();
   if(p && p.catch){ p.catch(function(){ if(window.__OBDEBUG) toast("cloud BLOCKED"); finish(false); }); }
 }
-function stopCloudAudio(){ cloudQueue=[]; cloudPlaying=false; if(cloudAudio){try{cloudAudio.pause()}catch(e){} cloudAudio=null;} }
+function stopCloudAudio(){ cloudQueue=[]; cloudPlaying=false; cloudInFlight=0; if(cloudAudio){try{cloudAudio.pause()}catch(e){} cloudAudio=null;} }
 /* Per-vibe speaking direction for premium voices — same voice, different performance.
    Structured like a director's note (personality / tone / emotion / pacing). Rides free on the API call. */
 var VIBE_VOICE_DIRECTION={
@@ -9794,7 +9797,7 @@ var VIBE_VOICE_DIRECTION={
 function vibeVoiceDirection(){ return VIBE_VOICE_DIRECTION[(typeof S!=='undefined'&&S.vibe)||'Warm'] || VIBE_VOICE_DIRECTION.Warm; }
 function cloudSpeak(t){
   t=cleanForSpeech(t); if(!t)return;
-  speakQueue++; setTalking(true); if(listening) pauseListening();
+  speakQueue++; cloudInFlight++; setTalking(true); if(listening) pauseListening();
   var req;
   if(CLOUD.provider==='elevenlabs'){
     // Honey's cloned voice now goes through the SECURE PROXY.
@@ -9817,10 +9820,12 @@ function cloudSpeak(t){
     var detail=""; try{ var j=JSON.parse(txt); detail = (j.detail && (j.detail.message||j.detail.status||j.detail)) || j.message || ""; if(typeof detail==='object') detail=JSON.stringify(detail); }catch(e){ detail = (txt||"").slice(0,120); }
     throw new Error("status "+r.status+(r.status===401?" (key not valid)":r.status===429?" (no credit / rate limit)":r.status===403?" (access/region)":"")+(detail?(" — "+detail):"")); }); } return r.blob(); })
   .then(blob=>{
+    cloudInFlight=Math.max(0,cloudInFlight-1);
     var url=URL.createObjectURL(blob);
     cloudQueue.push(url);
     playCloudQueue();
   }).catch(err=>{
+    cloudInFlight=Math.max(0,cloudInFlight-1);
     speakQueue=Math.max(0,speakQueue-1); setTalking(false);
     toast("Premium voice error: "+err.message, 7000);
     // NOTE: do NOT flip CLOUD.enabled off here — a single hiccup shouldn't force you to
