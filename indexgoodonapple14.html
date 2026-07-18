@@ -5644,41 +5644,19 @@ function potPath(W,H,neckY,baseY){
 
 /* ════ PERSISTENCE (IndexedDB; survives refresh/reopen in a real browser) ════ */
 var DB=null, DB_OK=false;
-/* If the DB opens AFTER the boot safety-timeout already let the app start with
-   blank in-memory data, re-pull everything that was stored so the honey pot,
-   words, history and settings reappear — and future saves land correctly.
-   Guarded so it only re-loads once the DB is genuinely open. */
-function reloadFromDB(){
-  if(!DB_OK) return;
-  try{ loadInsights(function(){ try{ if(typeof renderInsights==='function' && document.querySelector('#insights.on')) renderInsights(); }catch(e){} }); }catch(e){}
-  try{ loadHistory(); }catch(e){}
-  try{ loadSettings(); }catch(e){}
-  try{ if(typeof loadCloud==='function') loadCloud(); }catch(e){}
-}
 var saveT;
 /* ════ PERSISTENCE (IndexedDB) — multi-agent roster ════ */
 var ROSTER={ agents:[], currentId:null };   // agents: [{id,trashed,trashedAt, ...profile}]
 function dbOpen(cb){
   var done=false;
   function go(){ if(done)return; done=true; cb&&cb(); }
-  // hard safety: if IndexedDB is slow to open (iOS WKWebView can stall on first
-  // launch), don't hang the UI — proceed after a moment. BUT keep trying: if the
-  // DB finishes opening later, flip DB_OK true and save from then on. Without
-  // this, a slow open on Apple left DB_OK false for the whole session and every
-  // tally (honey pot, words, history) was silently thrown away.
-  setTimeout(()=>{ if(!done){ go(); } }, 2500);
+  // hard safety: if IndexedDB never responds (iOS file:// can stall), proceed without it
+  setTimeout(()=>{ if(!done){ DB_OK=false; go(); } }, 1200);
   try{
     var req=indexedDB.open("tellMeHoney",2);
     req.onupgradeneeded=e=>{ var d=e.target.result;
       if(!d.objectStoreNames.contains("honey")) d.createObjectStore("honey"); };
-    req.onsuccess=e=>{
-      DB=e.target.result; DB_OK=true;
-      // If the safety timeout already let the app proceed, the in-memory data
-      // (loaded fresh/blank) hasn't been saved yet. Now that the DB is truly
-      // open, reload what was stored so we don't overwrite it, then continue.
-      if(done){ try{ reloadFromDB && reloadFromDB(); }catch(e){} }
-      go();
-    };
+    req.onsuccess=e=>{ DB=e.target.result; DB_OK=true; go(); };
     req.onerror=()=>{ DB_OK=false; go(); };
     req.onblocked=()=>{ DB_OK=false; go(); };
   }catch(e){ DB_OK=false; go(); }
