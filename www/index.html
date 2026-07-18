@@ -6693,7 +6693,12 @@ function tellJoke(surprise,forceCat,noPre,fixedJoke){
         // If she said an intro line, give it time to actually PLAY before the
         // joke shows — otherwise the joke pops on screen while the intro audio
         // is still queued, and she says the intro after the joke appears.
-        setTimeout(()=>pushJoke(j, false, !!fixedJoke), usedPre ? 3600 : 0);
+        // When an intro WAS spoken (usedPre) we must NOT interrupt: pushJoke's
+        // clearSpeech() would tear down the intro's still-in-flight premium
+        // (cloud) fetch and bump the speak token, stranding the setup line so
+        // it only speaks later when the punchline reveal re-kicks the queue.
+        // Passing dontInterrupt keeps the intro -> setup sequence intact.
+        setTimeout(()=>pushJoke(j, false, (!!fixedJoke || usedPre)), usedPre ? 3600 : 0);
       },650);
     },550);
   },500);
@@ -9796,6 +9801,12 @@ function clearSpeech(){
   try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
   try{ if(_honeyAudioEl){ _honeyAudioEl.onended=null; _honeyAudioEl.onerror=null; _honeyAudioEl.pause(); _honeyAudioEl.currentTime=0; _honeyAudioEl=null; } }catch(e){}
   try{ if(typeof cloudAudio!=="undefined" && cloudAudio){ cloudAudio.pause(); cloudAudio=null; } }catch(e){}
+  // Also reset the cloud (premium/clone) counters. clearSpeech bumps the speak
+  // token, which kills any in-flight _spPollCloud — but if we leave cloudInFlight
+  // or cloudQueue dangling, the NEXT premium line's poll waits forever on a stale
+  // counter and only speaks when something else re-kicks the queue. That was the
+  // premium "setup goes silent, then speaks late/out of order after you answer" bug.
+  try{ cloudQueue = []; cloudPlaying = false; cloudInFlight = 0; }catch(e){}
   try{ if(typeof _cvAudio!=="undefined" && _cvAudio){ _cvAudio.pause(); _cvAudio=null; } }catch(e){}
   if(typeof speakQueue!=="undefined") speakQueue=0;
   setTalking(false);
