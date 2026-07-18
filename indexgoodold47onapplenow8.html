@@ -2384,7 +2384,7 @@ textarea{resize:none;line-height:1.4;}
          fully open when the user has credits. Never blocks the free stuff above. -->
     <div class="cloud-box" id="aiPremiumBox">
       <div class="cloud-head"><span>✨ Bring it to life</span></div>
-      <p class="rec-hint" style="margin:6px 0 12px">Bring it to life with AI.</p>
+      <p class="rec-hint" style="margin:6px 0 12px">Turn your photo into a little moving video. Uses your plan's video credits.</p>
       <div id="aiLockNote"></div>
       <div id="aiPremiumTools">
         <div class="rec-field"><input id="vidPrompt" placeholder="e.g. a gentle smile and a little wave"></div>
@@ -2393,12 +2393,21 @@ textarea{resize:none;line-height:1.4;}
       </div>
     </div>
 
-    <!-- OWNER-ONLY testing box: your keys. Hidden from users; five-tap the title to reveal. -->
+    <!-- OWNER-ONLY testing box: your keys + raw tools. Hidden from users; five-tap the title to reveal. -->
     <div class="cloud-box" id="aiStudioBox" style="display:none">
       <div class="cloud-head"><span>🔧 Developer — your key only</span></div>
-      <p class="rec-hint" style="margin:6px 0 10px">Private testing. Not shown to users.</p>
+      <p class="rec-hint" style="margin:6px 0 10px">Private testing. Uses your own Fal.ai key. Not shown to users.</p>
       <label class="rec-label">Fal.ai API key</label>
       <div class="rec-field"><input type="password" id="vidKey" placeholder="your Fal.ai key" oninput="VIDCFG.key=this.value"></div>
+
+      <label class="rec-label" style="margin-top:8px">✂️ Remove background (paid, high-quality)</label>
+      <button class="rec-save" style="background:var(--panel);color:var(--gold);border:1.5px solid var(--gold)" onclick="removeBgAI()">✂️ Remove background (Fal.ai)</button>
+      <div class="vid-status" id="bgStatusDev"></div>
+
+      <label class="rec-label" style="margin-top:14px">Recreate the image</label>
+      <div class="rec-field"><input id="editPrompt" placeholder="e.g. on a sunny beach, soft cinematic light"></div>
+      <button class="rec-save" style="background:var(--panel);color:var(--gold);border:1.5px solid var(--gold)" onclick="editImageAI()">🍌 Recreate image (Nano Banana)</button>
+      <div class="vid-status" id="editStatus"></div>
     </div>
   </div>
 </div>
@@ -10778,14 +10787,15 @@ function fallbackShare(blob,text){
 }
 function setVidStatus(id,html){ var e=document.getElementById(id); if(e)e.innerHTML=html; }
 
-/* Recreate the photo from a prompt (routed through the secure proxy). */
+/* Beta (your key only): recreate the photo from a prompt via Nano Banana on Fal */
 var aiEditedImage=null;
 function editImageAI(){
-  var _vk=document.getElementById('vidKey'); if(_vk) VIDCFG.key=_vk.value.trim();
+  VIDCFG.key=document.getElementById('vidKey').value.trim();
+  if(!VIDCFG.key){ setVidStatus('editStatus','Paste your Fal.ai key first.'); return; }
   if(!S.photo){ setVidStatus('editStatus','Add a photo to your friend first.'); return; }
   var prompt=(document.getElementById('editPrompt').value||'').trim();
   if(!prompt){ setVidStatus('editStatus','Describe how to recreate the image first.'); return; }
-  setVidStatus('editStatus','Recreating your image…');
+  setVidStatus('editStatus','Recreating your image… (Nano Banana)');
   fetch(AI_MEDIA_URL,{
     method:'POST',
     headers:{ 'apikey':PREMIUM_VOICE_KEY, 'Content-Type':'application/json' },
@@ -10806,7 +10816,7 @@ function pollEditImage(reqId){
         fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
           body:JSON.stringify({mode:'result',kind:'image',request_id:reqId})}).then(r=>r.json()).then(res=>{
           var out = (res.images && res.images[0] && (res.images[0].url||res.images[0])) || (res.image && (res.image.url||res.image)) || res.url;
-          if(out){ aiEditedImage=out; setVidStatus('editStatus','Done! Your recreated image is ready. <a href="'+out+'" target="_blank">View</a>'); }
+          if(out){ aiEditedImage=out; setVidStatus('editStatus','Done! Recreated image ready — it\'ll be used for the video below. <a href="'+out+'" target="_blank">View</a>'); }
           else setVidStatus('editStatus','Finished, but no image came back. Try again.');
         });
       } else if(j.status==='FAILED'){ setVidStatus('editStatus','Edit failed. '+(j.error||'Please try again.'));
