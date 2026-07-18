@@ -11078,6 +11078,45 @@ function pollRemoveBg(statusUrl, resultUrl){
   }
   check();
 }
+/* Pull a video URL out of whatever shape the fal.ai model returns.
+   Different models nest it differently (res.video.url, res.video_url,
+   res.output.video.url, arrays of videos, res.data.*, etc.). Rather than
+   guess one shape, look through the common places and, as a last resort,
+   deep-scan for any string that looks like a video file URL. */
+function findVideoUrl(res){
+  if(!res) return "";
+  try{
+    // direct string
+    if(typeof res==='string' && /^https?:\/\//.test(res)) return res;
+    var cands=[
+      res.video && res.video.url, res.video,
+      res.video_url, res.videoUrl,
+      res.output && res.output.video && res.output.video.url,
+      res.output && res.output.video, res.output && res.output.video_url,
+      res.output && res.output.url, res.output,
+      res.data && res.data.video && res.data.video.url,
+      res.data && res.data.video_url, res.data && res.data.url,
+      res.result && res.result.video && res.result.video.url,
+      res.result && res.result.url,
+      res.url
+    ];
+    // arrays of videos: res.videos[0].url / res.output.videos[0]
+    var arrs=[res.videos, res.output&&res.output.videos, res.data&&res.data.videos];
+    arrs.forEach(function(a){ if(a&&a.length){ cands.push(a[0]&&a[0].url); cands.push(a[0]); } });
+    for(var i=0;i<cands.length;i++){
+      var c=cands[i];
+      if(typeof c==='string' && /^https?:\/\//.test(c)) return c;
+    }
+    // last resort: deep-scan the whole object for a video-looking URL
+    var found="";
+    (function scan(o,d){
+      if(found||!o||d>4) return;
+      if(typeof o==='string'){ if(/^https?:\/\/\S+\.(mp4|webm|mov)(\?|$)/i.test(o)) found=o; return; }
+      if(typeof o==='object'){ for(var k in o){ if(found)break; try{ scan(o[k],d+1); }catch(e){} } }
+    })(res,0);
+    return found;
+  }catch(e){ return ""; }
+}
 /* premium: real AI image-to-video via user's Fal.ai key (cheaper for video) */
 function generateAIVideo(){
   // everyday users: enforce the gentle 1-per-day cap (owner/BYOK bypasses)
@@ -11109,12 +11148,20 @@ function pollAIVideo(reqId){
       if(j.status==='COMPLETED'){
         fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
           body:JSON.stringify({mode:'result',kind:'video',request_id:reqId})}).then(r=>r.json()).then(res=>{
-          var out = (res.video && (res.video.url||res.video)) || (res.output && res.output.video) || res.url;
+          // Different fal.ai video models wrap the finished video URL differently.
+          // Check every common shape rather than just a couple, so a completed
+          // render never shows "no URL" just because of where the URL sits.
+          var out = findVideoUrl(res);
           if(out){
             setVidStatus('aiVidStatus','Done! 🍯 Tap to watch.');
             showAIVideoOverlay(out);
           }
-          else setVidStatus('aiVidStatus','Finished, but no video URL came back. Please try again.');
+          else {
+            // Completed but URL not found in any known shape — show a short peek
+            // at the raw response so we can see exactly where the URL lives.
+            var peek=''; try{ peek=JSON.stringify(res).slice(0,180); }catch(e){}
+            setVidStatus('aiVidStatus','Finished, but no video URL came back. '+(peek?('['+peek+']'):'Please try again.'));
+          }
         });
       } else if(j.status==='FAILED'){
         setVidStatus('aiVidStatus','Generation failed. '+(j.error||'Please try again.'));
