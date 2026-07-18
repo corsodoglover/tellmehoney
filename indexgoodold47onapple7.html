@@ -2336,13 +2336,6 @@ textarea{resize:none;line-height:1.4;}
       <div class="vid-noimg" id="vidNoImg" onclick="document.getElementById('vidImgInput').click()" style="cursor:pointer">📸 Tap here to add a favorite photo — of you, a grandbaby, your dog, anyone you love. I'll make it special and ready to share. 🍯</div>
     </div>
 
-    <div id="vidZoomRow" style="display:flex;align-items:center;gap:10px;padding:10px 4px 4px">
-      <span style="font-size:12.5px;color:var(--muted);flex:0 0 auto">🔍 Zoom</span>
-      <input id="vidZoomSlider" type="range" min="1" max="2.5" step="0.05" value="1"
-        style="flex:1;accent-color:var(--gold)"
-        oninput="VIDCFG.zoom=parseFloat(this.value)||1; buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview();">
-    </div>
-
     <label class="rec-label">Scenes</label>
     <div class="vid-styles" id="vidStyles"></div>
     <label class="rec-label">Looks</label>
@@ -2360,10 +2353,6 @@ textarea{resize:none;line-height:1.4;}
     <label class="rec-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:6px">
       <input type="checkbox" id="scratchSniff" onchange="SCRATCH_SNIFF=this.checked; if(typeof vidDrawStill==='function')vidDrawStill();" style="width:18px;height:18px">
       ❤️ Add a "Scratch &amp; Sniff" sticker (just for fun!)
-    </label>
-    <label id="noWatermarkRow" class="rec-label" style="display:none;align-items:center;gap:8px;cursor:pointer;margin-top:4px;font-size:12px;opacity:.85">
-      <input type="checkbox" id="noWatermark" onchange="VIDCFG.noMark=this.checked; if(typeof vidDrawStill==='function')vidDrawStill();" style="width:16px;height:16px">
-      Remove 🍯 watermark
     </label>
 
     <div class="vid-actions">
@@ -2475,17 +2464,6 @@ textarea{resize:none;line-height:1.4;}
 </div>
 <div class="card-menu" id="cardMenu"></div>
 <div class="toast" id="toast"></div>
-
-<!-- AI video result — full-screen overlay so it costs zero layout space and shows big -->
-<div id="aiVidOverlay" class="apppop-back" style="display:none">
-  <div style="width:100%;max-width:420px;text-align:center">
-    <video id="aiVidPlayer" controls autoplay loop playsinline style="width:100%;border-radius:18px;background:#000;display:block;max-height:70vh"></video>
-    <div style="display:flex;gap:10px;margin-top:12px">
-      <a id="aiVidDownload" href="#" download="ai-video.mp4" target="_blank" class="rec-save" style="flex:1;background:linear-gradient(180deg,var(--gold),var(--gold2));color:#1a1405;text-align:center">⬇️ Save video</a>
-      <button class="rec-save" onclick="closeAIVideoOverlay()" style="flex:0 0 auto;background:var(--panel2);color:var(--muted)">Close</button>
-    </div>
-  </div>
-</div>
 
 <!-- Reusable in-app popup (window.prompt/alert are unreliable in the iOS app webview).
      Handles a text-input prompt AND a button-choice menu. -->
@@ -10165,7 +10143,7 @@ function setTalking(on){
 }
 
 /* ════ VIDEO STUDIO ════ */
-var VIDCFG={ key:"", shadow:true, enhance:false, look:"none", smile:false, zoom:1, noMark:false };
+var VIDCFG={ key:"", shadow:true, enhance:false, look:"none" };
 /* one-tap Enhance: warmer, brighter, a touch more contrast & pop — like good phone auto-fix.
    Combined with an optional "look" filter (B&W, warm, cool, vintage, soft). */
 function enhanceFilter(){
@@ -10193,28 +10171,15 @@ function _clamp(v){ return v<0?0:(v>255?255:v); }
 
 /* apply enhance + the selected look to raw RGBA pixel data, in place */
 function _applyLookPixels(d, look, enhance){
-  var smile=!!(VIDCFG && VIDCFG.smile);
   for(var i=0;i<d.length;i+=4){
     var r=d[i], g=d[i+1], b=d[i+2];
-    // ENHANCE: brighten, add contrast, saturation + warmth — punchier "auto-fix" pop
+    // ENHANCE: brighten, add contrast, a little saturation + warmth
     if(enhance){
-      r*=1.12; g*=1.12; b*=1.12;                         // brightness (was 1.08)
-      r=(r-128)*1.16+128; g=(g-128)*1.16+128; b=(b-128)*1.16+128; // contrast (was 1.10)
-      var av=(r+g+b)/3;                                   // saturation (was 1.14)
-      r=av+(r-av)*1.22; g=av+(g-av)*1.22; b=av+(b-av)*1.22;
-      r+=7; g+=4;                                         // gentle warm
-    }
-    // BRIGHTEN SMILE: lift + de-yellow bright, slightly-warm tones (mostly teeth, eyes,
-    // bright highlights). Not face-detection, but genuinely fixes "teeth look dark/yellow".
-    if(smile){
-      var mx=Math.max(r,g,b), mn=Math.min(r,g,b);
-      // target pixels that are fairly bright and low-saturation (whites/near-whites) that lean yellow
-      if(mx>150 && (mx-mn)<80 && b<=g){
-        var lift=(mx-150)/105; if(lift>1)lift=1;          // 0..1, stronger on brighter pixels
-        r=r+(255-r)*0.18*lift;
-        g=g+(255-g)*0.22*lift;
-        b=b+(255-b)*0.34*lift;                            // push blue up more → removes yellow
-      }
+      r*=1.08; g*=1.08; b*=1.08;                         // brightness
+      r=(r-128)*1.10+128; g=(g-128)*1.10+128; b=(b-128)*1.10+128; // contrast
+      var av=(r+g+b)/3;                                   // saturation 1.14
+      r=av+(r-av)*1.14; g=av+(g-av)*1.14; b=av+(b-av)*1.14;
+      r+=6; g+=3;                                         // gentle warm (sepia-ish)
     }
     switch(look){
       case 'bw': {
@@ -10262,28 +10227,21 @@ function _applyLookPixels(d, look, enhance){
 function buildFilteredImage(){
   vidImgFiltered=null;
   if(!vidImg || !vidImg.width){ _vidFilterSig=""; return; }
-  var look=VIDCFG.look||'none', enhance=!!VIDCFG.enhance, smile=!!VIDCFG.smile;
-  var zoom=(VIDCFG.zoom&&VIDCFG.zoom>1)?VIDCFG.zoom:1;
+  var look=VIDCFG.look||'none', enhance=!!VIDCFG.enhance;
   // nothing to do → use original directly
-  if(look==='none' && !enhance && !smile && zoom<=1){ _vidFilterSig="none"; return; }
+  if(look==='none' && !enhance){ _vidFilterSig="none"; return; }
   try{
     var w=vidImg.width, h=vidImg.height;
     var c=document.createElement('canvas'); c.width=w; c.height=h;
     var cx=c.getContext('2d', {willReadFrequently:true});
-    // ZOOM: draw a centered, cropped portion of the source scaled up to fill — manual framing
-    if(zoom>1){
-      var zsw=w/zoom, zsh=h/zoom, zsx=(w-zsw)/2, zsy=(h-zsh)/2;
-      cx.drawImage(vidImg, zsx,zsy,zsw,zsh, 0,0,w,h);
-    } else {
-      cx.drawImage(vidImg,0,0,w,h);
-    }
+    cx.drawImage(vidImg,0,0,w,h);
     var id=cx.getImageData(0,0,w,h);
     _applyLookPixels(id.data, look, enhance);
     cx.putImageData(id,0,0);
     var out=new Image();
     out.onload=function(){ vidImgFiltered=out; if(typeof startVidPreview==='function') startVidPreview(); };
     out.src=c.toDataURL('image/png');   // keeps transparency for cutouts
-    _vidFilterSig=look+'|'+enhance+'|'+smile+'|'+zoom+'|'+w+'x'+h;
+    _vidFilterSig=look+'|'+enhance+'|'+w+'x'+h;
   }catch(e){ vidImgFiltered=null; _vidFilterSig=""; }
 }
 
@@ -10291,7 +10249,7 @@ function buildFilteredImage(){
 function currentVidImage(){ return vidImgFiltered || vidImg; }
 
 function setLook(l){ VIDCFG.look=(VIDCFG.look===l?'none':l); renderLooks(); buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview(); }
-function resetLook(){ VIDCFG.look='none'; VIDCFG.enhance=false; VIDCFG.smile=false; VIDCFG.zoom=1; var _zs=document.getElementById('vidZoomSlider'); if(_zs)_zs.value='1'; renderLooks(); buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview(); }
+function resetLook(){ VIDCFG.look='none'; VIDCFG.enhance=false; renderLooks(); buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview(); }
 var LOOKS=[{id:'bw',nm:'B&W'},{id:'noir',nm:'Noir'},{id:'warm',nm:'Warm'},{id:'cool',nm:'Cool'},{id:'vintage',nm:'Vintage'},{id:'soft',nm:'Soft'}];
 function renderLooks(){
   var w=document.getElementById('lookRow'); if(!w) return; w.innerHTML='';
@@ -10319,11 +10277,6 @@ function renderLooks(){
   en.style.minHeight='auto'; en.style.padding='11px 4px'; en.textContent='✨ Touch-up';
   en.onclick=function(){ VIDCFG.enhance=!VIDCFG.enhance; renderLooks(); buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview(); };
   w.appendChild(en);
-  // Brighten smile (teeth) toggle — lifts + de-yellows bright tones so teeth don't look dark
-  var sm=document.createElement('button'); sm.className='vstyle'+(VIDCFG.smile?' sel':'');
-  sm.style.minHeight='auto'; sm.style.padding='11px 4px'; sm.textContent='😁 Smile';
-  sm.onclick=function(){ VIDCFG.smile=!VIDCFG.smile; renderLooks(); buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview(); };
-  w.appendChild(sm);
 }
 var VID_STYLES=[
   {id:"clouds",  em:"☁️", nm:"Clouds"},
@@ -10360,11 +10313,6 @@ function loadVidImg(src){
 function openVideoStudio(customImg){
   if(!loadedOrFirst()){ newAgentFlow(true); return; }
   document.getElementById('vidKey').value=VIDCFG.key||'';
-  // premium-only "remove watermark" option (quiet; most people never touch it)
-  var nwRow=document.getElementById('noWatermarkRow'), nwBox=document.getElementById('noWatermark');
-  if(nwRow) nwRow.style.display = isPaid() ? 'flex' : 'none';
-  if(!isPaid()){ VIDCFG.noMark=false; if(nwBox) nwBox.checked=false; }
-  else if(nwBox) nwBox.checked=!!VIDCFG.noMark;
   // honest heads-up for iPhone/iPad users about browser video limits
   var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
   var pn=document.getElementById('vidPhoneNote'); if(pn) pn.style.display = isiOS ? 'block' : 'none';
@@ -10605,11 +10553,9 @@ function vidDrawFrame(t){
   if(cap){ ctx.font='bold 30px -apple-system,Arial'; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
     ctx.lineWidth=6; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.fillStyle='#fff';
     wrapText(ctx,cap,W/2,H-44,W-60,34); }
-  // honey watermark (premium users may turn it off; on by default for everyone)
-  if(!VIDCFG.noMark){
-    ctx.font='20px serif'; ctx.textAlign='right'; ctx.globalAlpha=.8; ctx.fillStyle=isScene?'#5a4a1e':'#fff';
-    ctx.fillText('🍯 Tell me Honey', W-14, H-14); ctx.globalAlpha=1;
-  }
+  // honey watermark
+  ctx.font='20px serif'; ctx.textAlign='right'; ctx.globalAlpha=.8; ctx.fillStyle=isScene?'#5a4a1e':'#fff';
+  ctx.fillText('🍯 Tell me Honey', W-14, H-14); ctx.globalAlpha=1;
   if(SCRATCH_SNIFF){
     var bx=72, by=78, br=50;
     ctx.save(); ctx.translate(bx,by); ctx.rotate(-0.16);
@@ -10755,12 +10701,6 @@ function onOwnVideoPick(e){
   e.target.value='';
 }
 function doShareVideo(blob){
-  // Safety: if nothing was actually captured, don't hand over a broken file
-  // (that's the classic "little box that won't open"). Tell them plainly instead.
-  if(!blob || blob.size<1000){
-    setVidStatus('vidStatus','Hmm — the video didn\\u2019t record right that time. Please try again, and keep the app open while it films. 🍯');
-    return;
-  }
   var joke=(document.getElementById('vidCaption').value||'').trim();
   var text=(joke?joke+'\n\n':'')+'Made with 🍯 the Tell me Honey app';
   var _ext=(blob&&blob.type&&blob.type.indexOf('mp4')>=0)?'mp4':'webm';
@@ -10773,12 +10713,9 @@ function doShareVideo(blob){
   } else { fallbackShare(blob,text); }
 }
 function fallbackShare(blob,text){
-  // share text if possible, and always offer the video download so they can attach it.
-  // IMPORTANT: use the extension that matches the ACTUAL file type — a webm-named mp4
-  // (or vice-versa) is the classic "little box that won't open" on iPhone.
-  var _ext=(blob&&blob.type&&blob.type.indexOf('mp4')>=0)?'mp4':'webm';
+  // share text if possible, and always offer the video download so they can attach it
   var url=URL.createObjectURL(blob);
-  var a=document.createElement('a'); a.href=url; a.download='tell-me-honey-joke.'+_ext;
+  var a=document.createElement('a'); a.href=url; a.download='tell-me-honey-joke.webm';
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),4000);
   if(navigator.share){ navigator.share({text:text,title:'A joke for you 🍯'}).catch(()=>{}); }
@@ -10977,10 +10914,7 @@ function pollAIVideo(reqId){
         fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
           body:JSON.stringify({mode:'result',kind:'video',request_id:reqId})}).then(r=>r.json()).then(res=>{
           var out = (res.video && (res.video.url||res.video)) || (res.output && res.output.video) || res.url;
-          if(out){
-            setVidStatus('aiVidStatus','Done! 🍯 Tap to watch.');
-            showAIVideoOverlay(out);
-          }
+          if(out) setVidStatus('aiVidStatus','Done! <a href="'+out+'" download="ai-video.mp4" target="_blank">Download your AI video</a>');
           else setVidStatus('aiVidStatus','Finished, but no video URL came back. Please try again.');
         });
       } else if(j.status==='FAILED'){
@@ -10994,18 +10928,6 @@ function pollAIVideo(reqId){
     }).catch(e=>setVidStatus('aiVidStatus','Polling failed: '+e.message));
   }
   check();
-}
-/* Full-screen finished-video overlay (keeps the studio uncluttered). */
-function showAIVideoOverlay(url){
-  var ov=document.getElementById('aiVidOverlay'), pl=document.getElementById('aiVidPlayer'), dl=document.getElementById('aiVidDownload');
-  if(dl) dl.href=url;
-  if(pl){ try{ pl.src=url; pl.load(); pl.play(); }catch(e){} }
-  if(ov) ov.style.display='flex';
-}
-function closeAIVideoOverlay(){
-  var ov=document.getElementById('aiVidOverlay'), pl=document.getElementById('aiVidPlayer');
-  if(pl){ try{ pl.pause(); }catch(e){} }
-  if(ov) ov.style.display='none';
 }
 
 /* ════ LOVED JOKES (♥) + SHARE ════ */
@@ -11158,11 +11080,9 @@ function drawLoveCard(jt, cb){
         wrapText(ctx, jt, W/2, H*0.7, W-70, 40);
       }
     }
-    // watermark (premium may turn it off; on by default)
-    if(!VIDCFG.noMark){
-      ctx.font='20px serif'; ctx.textAlign='right'; ctx.globalAlpha=.85; ctx.fillStyle='#fff';
-      ctx.fillText('🍯 Tell me Honey', W-14, H-16); ctx.globalAlpha=1;
-    }
+    // watermark
+    ctx.font='20px serif'; ctx.textAlign='right'; ctx.globalAlpha=.85; ctx.fillStyle='#fff';
+    ctx.fillText('🍯 Tell me Honey', W-14, H-16); ctx.globalAlpha=1;
     // 🌸 scratch & sniff: black arrow on the LEFT pointing to "Scratch & Sniff" text on the RIGHT
     if(SCRATCH_SNIFF_LOVE){
       var sy = H*0.16;                // vertical position near top
