@@ -4485,13 +4485,6 @@ function requestUpgrade(targetTier){
     window.StoreKitPurchase(targetTier); // Apple handles payment, then calls grantTier on success
     return;
   }
-  // ⚠️⚠️⚠️ LAUNCH BLOCKER — DO NOT SHIP TO APP STORE AS-IS ⚠️⚠️⚠️
-  // This is a TESTING-ONLY shortcut that grants a paid tier WITHOUT real payment.
-  // Anyone could tap through and get Quart/Gallon for free. Before App Store launch:
-  //   1. Replace this confirm() block with Apple's real In-App Purchase flow.
-  //   2. Call grantTier(targetTier) ONLY from Apple's "purchase succeeded" callback.
-  //   3. grantTier() below is already isolated for exactly this — wire Apple into it.
-  // Until then, keep for testing only. (See launch checklist / spec sheet.)
   // WEB/TESTING fallback: simulate a successful purchase
   if(confirm("(Testing) Upgrade to "+ (TIERS[targetTier]?TIERS[targetTier].nm:targetTier) +"?\n\nIn the real app this opens Apple's payment.")){
     grantTier(targetTier);
@@ -6806,11 +6799,9 @@ function userSays(t){
   //    shouldn't get items added. Only bail the add — everything else still flows. ──
   var _isCmd = /^(add|put|throw|jot)\b/.test(l);   // explicit command start always allowed
   var _looksStory =
-        /\b(we|i|she|he|they)\s+(made|told|said|was|were|had|started|been|talked|wrote|created|built|think|thought|feel|felt|hope|wish|want|love|like|remember|realized|decided)\b/.test(l)
-     || /\b(gonna|going to|about to|planning to|thinking about|hoping to|trying to|want to|would like to)\s+\w*\s*(be\s+)?\w*ing\b/.test(l)
-     || /\bi(\'| a)?m\s+(really\s+)?(gonna|going to|about to)\b/.test(l)
-     || /\bi need to\s+(figure|focus|finish|get\s+(this|it|these|those|everything|things)\b|do|work|stop|start|remember|understand|know|think|decide|be|keep|make)\b/.test(l)
-     || /\b(checklist|check list|hobby|hobbies)\b/.test(l)
+        /\b(we|i|she|he|they)\s+(made|told|said|was|were|had|started|been|talked|wrote|created|built)\b/.test(l)
+     || /\bi need to\s+(figure|focus|finish|get\s+(this|it|these|those|everything|things)\b|do|work|stop|start|remember|understand|know|think|decide|be)\b/.test(l)
+     || /\b(checklist|check list)\b/.test(l)
      || l.split(/\s+/).length > 14;                // long sentences are conversation, not "add milk"
   var _blockAdd = _looksStory && !_isCmd;
   // ── SHOPPING / GROCERY LIST (check before reminders so "I need to get milk" isn't a reminder) ──
@@ -6833,7 +6824,7 @@ function userSays(t){
   // view what's saved (check BEFORE create so "what's on my calendar" isn't caught as a create)
   if(/(what('s| is| do i have)?.*(calendar|schedule|reminder|coming up|planned|going on)|my (calendar|schedule|reminders|agenda)|on my (calendar|schedule|plate)|anything (coming up|planned|scheduled)|do i have (any )?(plans|reminders|anything))/.test(l)){ showReminders(); return; }
   // create a reminder — broad set of phrasings
-  if(!_blockAdd && /(remind me|reminder|remember to|don'?t let me forget|make sure i|i need to|i have to|i gotta|i should|note to self|set (a |an )?(reminder|alarm|appointment|event|alert)|schedule|book|plan to|add (a |an )?(reminder|event|appointment)?( to)?( my)? calendar|put .* (on|in) (my )?calendar|jot down|wake me|ping me|nudge me|alert me|tell me (later|to)|got to|need a reminder|add to calendar|new (event|appointment|reminder))/.test(l)){ doCalendar(t); return; }
+  if(/(remind me|reminder|remember to|don'?t let me forget|make sure i|i need to|i have to|i gotta|i should|note to self|set (a |an )?(reminder|alarm|appointment|event|alert)|schedule|book|plan to|add (a |an )?(reminder|event|appointment)?( to)?( my)? calendar|put .* (on|in) (my )?calendar|jot down|wake me|ping me|nudge me|alert me|tell me (later|to)|got to|need a reminder|add to calendar|new (event|appointment|reminder))/.test(l)){ doCalendar(t); return; }
   // AI BRAIN — real questions always answered (budget-gated); filler stays scripted
   if(aiShouldAnswer(t)){
     themTyping(function(){
@@ -8978,7 +8969,7 @@ function recDictate(fieldId,btn){
       recDictRecog.onresult=e=>{ var t=e.results[0][0].transcript;
         var el=document.getElementById(fieldId); if(el) el.value=(el.value?el.value+' ':'')+t;
         if(fieldId==='vidCaption' && typeof vidDrawStill==='function') vidDrawStill(); };
-      recDictRecog.onerror=ev=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed') toast("To dictate, allow the microphone in your iPhone Settings › Tell Me Honey."); else if(ev.error==='no-speech') toast("Didn't catch that — tap 🎤 and try again."); stopRecDictation(); };
+      recDictRecog.onerror=ev=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed') toast("Allow mic access in your browser to dictate."); else if(ev.error==='no-speech') toast("Didn't catch that — tap 🎤 and try again."); stopRecDictation(); };
       recDictRecog.onend=()=>stopRecDictation();
       recDictRecog.start(); toast("Listening… tap 🎤 again to stop.");
     }catch(err){ stopRecDictation(); toast("Couldn't start the mic — tap again, or type it."); }
@@ -9932,7 +9923,6 @@ function _speakWithChosenVoice(text, myToken, next){
     // Premium (cloud) if that voice is a cloud voice and keys are set;
     // otherwise the free device voice. Never silence — they picked it.
     if(isCloudVoice(v) && cloudReady()){
-      CLOUD.provider='openai'; CLOUD.voice=v;   // premium character = OpenAI voice (never Honey's clone)
       if(window.__OBDEBUG) toast("voice: cloud ("+v+")");
       cloudSpeak(text); _spPollCloud(myToken, next); return;
     }
@@ -9943,13 +9933,7 @@ function _speakWithChosenVoice(text, myToken, next){
   // Honey selected, but this line was never recorded (e.g. a live AI answer).
   // Her clone can cover it if it's configured. Otherwise stay quiet rather
   // than break the spell with a robot voice pretending to be her.
-  // IMPORTANT: force ElevenLabs here. CLOUD.provider may have been left on
-  // 'openai' from a previous premium-voice pick — if we don't force it, a
-  // premium OpenAI voice would wrongly fill in for Honey. Honey is ALWAYS Honey.
-  CLOUD.provider='elevenlabs';
-  // Her clone is available on Quart+ (or owner) — this is HER voice, not a premium
-  // "pick", so it doesn't depend on the premium on/off flag.
-  if(isOwner() || tierAtLeast('quart')){
+  if(cloudReady()){
     if(window.__OBDEBUG) toast("voice: honey clone");
     cloudSpeak(text); _spPollCloud(myToken, next); return;
   }
@@ -13464,7 +13448,7 @@ function startListening(){
     recog.onresult=e=>{ var t=e.results[0][0].transcript; stopListening(); if(t&&t.trim())userSays(t.trim()); };
     recog.onerror=ev=>{ listening=false; syncMicUI();
       if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){
-        toast("To talk to Honey, allow the microphone in your iPhone Settings › Tell Me Honey."); S.ttsOn=false; S.handsFree=false;
+        toast("Mic blocked. Allow microphone access in your browser settings."); S.ttsOn=false; S.handsFree=false;
         document.getElementById('hfBtn').classList.remove('on'); updateStatus(); }
       else if(ev.error==='no-speech'){ toast("Didn't hear anything — tap 🎤 to try again."); }
       else if(ev.error==='aborted'){ /* normal stop */ }

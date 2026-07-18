@@ -8978,7 +8978,7 @@ function recDictate(fieldId,btn){
       recDictRecog.onresult=e=>{ var t=e.results[0][0].transcript;
         var el=document.getElementById(fieldId); if(el) el.value=(el.value?el.value+' ':'')+t;
         if(fieldId==='vidCaption' && typeof vidDrawStill==='function') vidDrawStill(); };
-      recDictRecog.onerror=ev=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed') toast("To dictate, allow the microphone in your iPhone Settings › Tell Me Honey."); else if(ev.error==='no-speech') toast("Didn't catch that — tap 🎤 and try again."); stopRecDictation(); };
+      recDictRecog.onerror=ev=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed') toast("Allow mic access in your browser to dictate."); else if(ev.error==='no-speech') toast("Didn't catch that — tap 🎤 and try again."); stopRecDictation(); };
       recDictRecog.onend=()=>stopRecDictation();
       recDictRecog.start(); toast("Listening… tap 🎤 again to stop.");
     }catch(err){ stopRecDictation(); toast("Couldn't start the mic — tap again, or type it."); }
@@ -13464,7 +13464,7 @@ function startListening(){
     recog.onresult=e=>{ var t=e.results[0][0].transcript; stopListening(); if(t&&t.trim())userSays(t.trim()); };
     recog.onerror=ev=>{ listening=false; syncMicUI();
       if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){
-        toast("To talk to Honey, allow the microphone in your iPhone Settings › Tell Me Honey."); S.ttsOn=false; S.handsFree=false;
+        toast("Mic blocked. Allow microphone access in your browser settings."); S.ttsOn=false; S.handsFree=false;
         document.getElementById('hfBtn').classList.remove('on'); updateStatus(); }
       else if(ev.error==='no-speech'){ toast("Didn't hear anything — tap 🎤 to try again."); }
       else if(ev.error==='aborted'){ /* normal stop */ }
