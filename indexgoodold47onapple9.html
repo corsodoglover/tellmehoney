@@ -5194,14 +5194,8 @@ function favShare(i){
   // reuse the app's share path: images share as image, video as video
   try{
     fetch(f.data).then(r=>r.blob()).then(function(blob){
-      // Pick the extension from the ACTUAL file type — hardcoding .webm made iPhone
-      // show "a little box that won't open" because the videos record as MP4.
-      var ext, mime;
-      if(f.kind==='video'){
-        mime = blob.type || (typeof f.data==='string' && f.data.indexOf('mp4')>=0 ? 'video/mp4':'video/mp4');
-        ext = (mime.indexOf('mp4')>=0) ? 'mp4' : (mime.indexOf('webm')>=0 ? 'webm' : 'mp4');
-      } else { mime = blob.type||'image/png'; ext='png'; }
-      var file=new File([blob], 'tell-me-honey.'+ext, {type:mime});
+      var ext = f.kind==='video' ? 'webm' : 'png';
+      var file=new File([blob], 'tell-me-honey.'+ext, {type:blob.type||(f.kind==='video'?'video/webm':'image/png')});
       var text='🍯 Made with the Tell me Honey app';
       if(navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
         navigator.share({files:[file], text:text}).catch(function(){});
@@ -6794,23 +6788,13 @@ function userSays(t){
   var fm=l.match(/(?:forget|delete|remove)\s+([a-z][a-z '.-]{0,30}?)(?:'s)?\s*(?:number|contact)\b/i);
   if(fm){ var fgn=fm[1].trim().replace(/\b\w/g,m=>m.toUpperCase()); themTyping(()=>pushThem(vibeColor(forgetContact(fgn)?("Okay, I forgot "+fgn+"'s number."):("I didn't have a number saved for "+fgn+".")))); return; }
   if(/(call|phone|dial|ring)\b/.test(l) && !/calling|recall|so[- ]?called/.test(l)){ doCall(t); return; }
-  // ── Guard: don't treat CONVERSATION as a list command. Someone telling Honey
-  //    about their day ("we made a checklist", "I told the app I need to focus")
-  //    shouldn't get items added. Only bail the add — everything else still flows. ──
-  var _isCmd = /^(add|put|throw|jot)\b/.test(l);   // explicit command start always allowed
-  var _looksStory =
-        /\b(we|i|she|he|they)\s+(made|told|said|was|were|had|started|been|talked|wrote|created|built)\b/.test(l)
-     || /\bi need to\s+(figure|focus|finish|get\s+(this|it|these|those|everything|things)\b|do|work|stop|start|remember|understand|know|think|decide|be)\b/.test(l)
-     || /\b(checklist|check list)\b/.test(l)
-     || l.split(/\s+/).length > 14;                // long sentences are conversation, not "add milk"
-  var _blockAdd = _looksStory && !_isCmd;
   // ── SHOPPING / GROCERY LIST (check before reminders so "I need to get milk" isn't a reminder) ──
   if(!/^(add|put|throw|jot)\b/.test(l) && /(what('s| is)?.*(shopping|grocery|groceries|store|household) list|my (shopping|grocery|groceries) list|what.*on my list|show.*(shopping|grocery|groceries) list|what do i need (to (get|buy)|from the store))/.test(l)){ showShopping(); return; }
   // view TO-DO list (and other named lists) — "what's on my to-do list", "show my to do list"
   if(!/^(add|put|throw|jot)\b/.test(l) && /(what('s| is| do i have)?.*to-?do|my to-?do|show.*to-?do|to-?do list)/.test(l)){ ensureLists(); openList("todo"); return; }
   // view NOTES list — "show me my notes list", "what's on my notes", "open my notes"
   if(!/^(add|put|throw|jot)\b/.test(l) && /(what('s| is| do i have)?.*notes?|my notes?|show.*notes?|open.*notes?|notes? list)/.test(l)){ ensureLists(); openList("notes"); return; }
-  if(!_blockAdd && /((add|put|throw)\b.*(shopping|grocery|groceries|store|household)? ?list|to (my )?(shopping|grocery|groceries|store|household) list|need to (get|buy|pick up|grab)|need (some |more )?|pick up|out of|running low on|grab some|get some|buy some|add .* to the list)\b/.test(l)
+  if(/((add|put|throw)\b.*(shopping|grocery|groceries|store|household)? ?list|to (my )?(shopping|grocery|groceries|store|household) list|need to (get|buy|pick up|grab)|need (some |more )?|pick up|out of|running low on|grab some|get some|buy some|add .* to the list)\b/.test(l)
      && /(list|store|grocer|buy|get|pick up|grab|need|out of|running low)/.test(l)
      && !/(remind|calendar|schedule|appointment|meeting)/.test(l)){ doShopping(t); return; }
   // broad catch: "add X to notes", "add X to my to-do", "add X to my Christmas list",
@@ -6825,12 +6809,12 @@ function userSays(t){
   if(/(what('s| is| do i have)?.*(calendar|schedule|reminder|coming up|planned|going on)|my (calendar|schedule|reminders|agenda)|on my (calendar|schedule|plate)|anything (coming up|planned|scheduled)|do i have (any )?(plans|reminders|anything))/.test(l)){ showReminders(); return; }
   // create a reminder — broad set of phrasings
   if(/(remind me|reminder|remember to|don'?t let me forget|make sure i|i need to|i have to|i gotta|i should|note to self|set (a |an )?(reminder|alarm|appointment|event|alert)|schedule|book|plan to|add (a |an )?(reminder|event|appointment)?( to)?( my)? calendar|put .* (on|in) (my )?calendar|jot down|wake me|ping me|nudge me|alert me|tell me (later|to)|got to|need a reminder|add to calendar|new (event|appointment|reminder))/.test(l)){ doCalendar(t); return; }
-  // AI BRAIN — real questions always answered (budget-gated); filler stays scripted
-  if(aiShouldAnswer(t)){
+  // AI BRAIN (owner testing) — if on and the slider says so, let Honey think; else scripted reply
+  if(aiShouldAnswer()){
     themTyping(function(){
       askHoney(t).then(function(reply){
-        if(reply){ useAIChat(); pushThem(reply); }   // count only when AI truly answered
-        else { pushThem(replyTo(l)); }   // network/error -> fall back to scripted (no charge)
+        if(reply){ pushThem(reply); }
+        else { pushThem(replyTo(l)); }   // network/error -> fall back to scripted
       });
     });
     return;
@@ -7151,64 +7135,11 @@ function aiAvailable(){
   if(!(a.on && a.key && a.key.indexOf("sk-")===0)) return false;
   return isOwner() || tierAtLeast('quart');
 }
-/* ═══ AI CHAT BUDGET ═══
-   Real questions always get a real answer (no random dice). Filler ("ok", "haha",
-   "thanks", one-word replies) never spends the budget. A weekly ceiling per tier
-   prevents runaway cost; a soft daily slice keeps it from all burning on day one.
-   Numbers (from the spec sheet): Quart 200/wk (~40/day), Gallon 400/wk (~70/day). */
-var AI_CHAT_WEEKLY = { pint:0, quart:200, gallon:400 };
-var AI_CHAT_DAILY  = { pint:0, quart:40,  gallon:70  };
-
-function aiChatWeeklyCap(){
-  if(isOwner()) return 999999;                         // owner/testing: unlimited
-  var t=(SETTINGS.tier||'pint');
-  return (AI_CHAT_WEEKLY[t]!=null ? AI_CHAT_WEEKLY[t] : 0);
-}
-function aiChatDailyCap(){
-  if(isOwner()) return 999999;
-  var t=(SETTINGS.tier||'pint');
-  return (AI_CHAT_DAILY[t]!=null ? AI_CHAT_DAILY[t] : 0);
-}
-/* roll weekly + daily counters over when the period changes */
-function _aiChatRoll(){
-  var wk=weekKey(), dy=todayKey();
-  if(SETTINGS.aiChatWeek!==wk){ SETTINGS.aiChatWeek=wk; SETTINGS.aiChatWeekUsed=0; }
-  if(SETTINGS.aiChatDay!==dy){ SETTINGS.aiChatDay=dy; SETTINGS.aiChatDayUsed=0; }
-}
-function aiChatLeftWeek(){ _aiChatRoll(); return Math.max(0, aiChatWeeklyCap()-(SETTINGS.aiChatWeekUsed||0)); }
-function aiChatLeftDay(){  _aiChatRoll(); return Math.max(0, aiChatDailyCap() -(SETTINGS.aiChatDayUsed||0)); }
-function aiChatHasBudget(){ return isOwner() || (aiChatLeftWeek()>0 && aiChatLeftDay()>0); }
-function useAIChat(){
-  if(isOwner()) return;
-  _aiChatRoll();
-  SETTINGS.aiChatWeekUsed=(SETTINGS.aiChatWeekUsed||0)+1;
-  SETTINGS.aiChatDayUsed =(SETTINGS.aiChatDayUsed||0)+1;
-  saveSettings();
-}
-/* Is this message just filler that doesn't need a real AI answer?
-   (greetings, acknowledgements, one-word reactions, laughter) */
-function aiIsFiller(text){
-  var s=String(text||'').trim().toLowerCase().replace(/[.!?,…]+$/,'').trim();
-  if(!s) return true;
-  // pure laughter / reactions
-  if(/^(ha)+h?$/.test(s.replace(/\s/g,''))) return true;
-  if(/^(lol|lmao|haha|hehe|hehehe|teehee|rofl)$/.test(s)) return true;
-  // short acknowledgements & greetings (only when the WHOLE message is just that)
-  var fillers=['ok','okay','k','kk','yes','yep','yeah','yup','no','nope','nah','sure','fine',
-    'thanks','thank you','ty','thx','cool','nice','great','good','awesome','wow','oh','ah','aw',
-    'hi','hey','hello','yo','hiya','morning','good morning','good night','goodnight','night',
-    'bye','goodbye','see ya','later','love it','love you','same','right','true','indeed',
-    'got it','gotcha','okey dokey','alright','all right','mmhmm','mhm','uh huh','word','amen'];
-  if(fillers.indexOf(s)>=0) return true;
-  // a single short word with no question mark isn't worth an AI call
-  if(!/\?/.test(text) && s.split(/\s+/).length===1 && s.length<=4) return true;
-  return false;
-}
-/* decide if THIS message should get a real AI answer */
-function aiShouldAnswer(text){
+/* decide if THIS message should get an AI answer (based on slider level) */
+function aiShouldAnswer(){
   if(!aiAvailable()) return false;
-  if(aiIsFiller(text)) return false;      // filler → scripted warm reply, no cost
-  return aiChatHasBudget();               // real message → AI if budget remains
+  var lvl = aiCfg().level; if(lvl>=100) return true; if(lvl<=0) return false;
+  return (Math.random()*100) < lvl;
 }
 /* build a short recent-history so Honey has context (last ~8 turns) */
 function aiHistory(){
