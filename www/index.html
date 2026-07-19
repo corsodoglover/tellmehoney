@@ -2022,7 +2022,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v10 · nicer add-photo</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v16 · no honeypot risk</div>
   </div>
 </section>
 
@@ -2035,7 +2035,7 @@ textarea{resize:none;line-height:1.4;}
 
     <!-- ANIMATED STAGE (FREE) — the working vidCanvas engine, now in the clean screen -->
     <div class="vid-stage" style="max-width:320px;margin:0 auto 12px"><canvas id="vidCanvas" width="540" height="540"></canvas>
-      <div class="vid-noimg" id="vidNoImg" onclick="document.getElementById('tpFile').click()" style="cursor:pointer;color:var(--gold)"><div><div style="font-size:44px;line-height:1;margin-bottom:10px">📸</div><div style="font-size:17px;font-weight:700;color:var(--gold);margin-bottom:4px">Add your photo</div><div style="font-size:12.5px;font-weight:400;opacity:.7">Tap to choose a picture — you, a grandbaby,<br>your dog, anyone you love 🍯</div></div></div>
+      <div class="vid-noimg" id="vidNoImg" onclick="document.getElementById('tpFile').click()" style="cursor:pointer;color:var(--gold);background:#0c0d14"><div><div style="font-size:15px;font-weight:700;color:var(--gold);margin-bottom:6px">Tap to add your photo</div><div style="font-size:12.5px;font-weight:500;color:var(--gold);line-height:1.5;opacity:.8">you, a friend, your pet,<br>anyone you love</div></div></div>
     </div>
     <input type="file" id="tpFile" accept="image/*" class="file-hidden" onchange="tpOnPick(event)">
 
@@ -2074,6 +2074,7 @@ textarea{resize:none;line-height:1.4;}
       <button class="rec-save" onclick="sharePhotoStill()" style="flex:1;background:var(--gold);color:var(--on-accent);border:none">📤 Share photo</button>
       <button class="rec-save" onclick="shareJokeVideo()" style="flex:1;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">🎬 Share as video</button>
     </div>
+    <button class="rec-save" onclick="tpKeepPhoto()" style="width:100%;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold);margin-bottom:6px">❤️ Keep in Memories</button>
     <div class="vid-status" id="bgStatus"></div>
 
     <!-- SHARE YOUR OWN VIDEO (FREE) — no preview, straight to the share sheet -->
@@ -2081,8 +2082,9 @@ textarea{resize:none;line-height:1.4;}
       <div class="cloud-head"><span>🎥 Send a video from your phone</span></div>
       <p class="rec-hint" style="margin:6px 0 10px">Pick any video off your phone, add a line, and send it — a joke, a birthday, an announcement. Free, nothing stored.</p>
       <div class="rec-field"><input id="tpOwnVidLine" placeholder="Add a line to send with it — e.g. Happy Birthday!"></div>
-      <button class="rec-save" onclick="document.getElementById('tpOwnVid').click()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">🎥 Pick a video &amp; send</button>
-      <input type="file" id="tpOwnVid" accept="video/*" class="file-hidden" onchange="tpSendOwnVideo(event)">
+      <button class="rec-save" onclick="document.getElementById('tpOwnVid').click()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">🎥 Pick a video</button>
+      <input type="file" id="tpOwnVid" accept="video/*" class="file-hidden" onchange="tpPickOwnVideo(event)">
+      <button class="rec-save" id="tpOwnVidSendBtn" onclick="tpSendOwnVideo()" style="display:none;width:100%;margin-top:8px;background:var(--gold);color:var(--on-accent);border:none">📤 Send this video</button>
       <div class="vid-status" id="tpOwnVidStatus"></div>
     </div>
 
@@ -11129,29 +11131,54 @@ function tpShowImage(src){
 /* Share the current still photo through the iPhone share sheet (FREE) */
 function tpSharePhoto(){ try{ sharePhotoStill(); }catch(e){} }
 
+/* Keep the current photo/cutout creation in Memories (FREE) */
+function tpKeepPhoto(){
+  try{
+    var canvas=document.getElementById('vidCanvas');
+    if(!canvas){ return; }
+    var data=canvas.toDataURL('image/png');
+    if(typeof favAdd==='function'){
+      var ok=favAdd(vidImgTransparent?'cutout':'background', data, '');
+      if(ok!==false) setVidStatus('bgStatus','Kept in Memories ❤️');
+    }
+  }catch(e){ setVidStatus('bgStatus','Could not keep that just now. Try again.'); }
+}
+
 /* Send a video the person picked off their phone (FREE) — NO preview box.
    Straight to the iPhone share sheet with their line attached. Long videos
    never render in the app; we just hand the file to the share sheet. */
-function tpSendOwnVideo(e){
-  var f=e.target.files && e.target.files[0]; if(!f){ return; }
+var tpOwnVideoFile=null;
+function tpPickOwnVideo(e){
+  var f=e.target.files && e.target.files[0];
+  var status=document.getElementById('tpOwnVidStatus');
+  var sendBtn=document.getElementById('tpOwnVidSendBtn');
+  if(!f){ if(sendBtn)sendBtn.style.display='none'; tpOwnVideoFile=null; return; }
+  tpOwnVideoFile=f;
+  if(sendBtn) sendBtn.style.display='block';
+  if(status) status.textContent='Video ready. Tap "Send this video" to choose who to send it to.';
+  e.target.value='';
+}
+/* Triggered by a DIRECT tap on the Send button — this is what lets iOS open
+   the share sheet (it blocks share sheets that aren't from a direct tap). */
+function tpSendOwnVideo(){
+  if(!tpOwnVideoFile){ return; }
   var line=(document.getElementById('tpOwnVidLine')&&document.getElementById('tpOwnVidLine').value||'').trim();
   var text=line || '🍯 Shared from the Tell me Honey app';
   var status=document.getElementById('tpOwnVidStatus');
   try{
+    var f=tpOwnVideoFile;
     var file=new File([f], f.name||'video.mp4', {type:f.type||'video/mp4'});
     if(navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
       navigator.share({files:[file], text:text}).then(function(){
         if(status) status.textContent='Sent with your message. 🍯';
       }).catch(function(){ if(status) status.textContent=''; });
     } else {
-      // fallback: hand the raw file to the browser/OS
       var url=URL.createObjectURL(f); var a=document.createElement('a');
       a.href=url; a.download=f.name||'video.mp4'; document.body.appendChild(a); a.click(); a.remove();
       setTimeout(()=>URL.revokeObjectURL(url),4000);
       if(status) status.textContent='Ready to send. 🍯';
     }
   }catch(err){ if(status) status.textContent='Could not open that video. Try another.'; }
-  e.target.value='';
 }
 
 function tpOnPick(e){
