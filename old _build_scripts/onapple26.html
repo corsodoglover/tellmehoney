@@ -2022,7 +2022,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v18 · insights words</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v16 · no honeypot risk</div>
   </div>
 </section>
 
@@ -4759,7 +4759,7 @@ function tagInsights(t){
   ensureWeek();
   INSIGHTS.msgs++;
   var tl=t.toLowerCase();
-  var words=(tl.match(/[a-z']{2,}/g))||[];
+  var words=(tl.match(/[a-z']{2}/g))||[];
   // multi-word limiting phrases
   ["give up","giving up","too late","why bother","no use"].forEach(ph=>{ if(tl.indexOf(ph)>=0) INSIGHTS.lang.limiting=(INSIGHTS.lang.limiting||0)+1; });
   // multi-word movement phrases
@@ -6954,14 +6954,6 @@ function userSays(t){
     doShopping(t); return;
   }
   if(/(call|phone|dial|ring)\b/.test(l) && !/calling|recall|so[- ]?called/.test(l)){ doCall(t); return; }
-  // Save-a-contact: catch "save Andy's number 843-...", "Andy's number is 843-...
-  // remember it", "add this number for Mom" — anything with a name-ish word and a
-  // real phone number. The app saves it itself (tap-to-call) so the AI never has
-  // to, and never gives the "can't store personal information" refusal.
-  if(/\d[\d\s().-]{6}\d/.test(l)
-     && /(save|remember|keep|store|add|my|number|contact|reach|his|her|their)\b/.test(l)){
-    doCall(t); return;
-  }
   // ── Guard: don't treat CONVERSATION as a list command. Someone telling Honey
   //    about their day ("we made a checklist", "I told the app I need to focus")
   //    shouldn't get items added. Only bail the add — everything else still flows. ──
@@ -7182,13 +7174,9 @@ function forgetContact(name){
 }
 function doCall(orig){
   SETTINGS.contacts = SETTINGS.contacts || [];
-  var num=(orig.match(/[+]?\d[\d\s().-]{5,}\d/)||[])[0];
+  var num=(orig.match(/[+]?[\d][\d\s().-]{6}\d/)||[])[0];
   var nameM=orig.match(/call\s+([A-Za-z][A-Za-z\s'.-]{1,30})/i);
-  // Also catch "the name is Andy", "Andy's number", "save Andy", "number for Andy"
-  if(!nameM) nameM=orig.match(/(?:the\s+)?name(?:'s| is|s)\s+([A-Za-z][A-Za-z'.-]{1,20})/i);
-  if(!nameM) nameM=orig.match(/([A-Za-z][A-Za-z'.-]{1,20})'s\s+(?:number|cell|phone|mobile|line|digits)/i);
-  if(!nameM) nameM=orig.match(/(?:save|remember|keep|store|add|for)\s+([A-Za-z][A-Za-z\s'.-]{1,30}?)(?:'s|\s+(?:number|cell|phone|is|at)\b)/i);
-  var who = nameM ? nameM[1].trim().replace(/[.,;:!?]+$/,'').replace(/\s+(please|now|for me|on (the )?phone|at\b.*)/i,'').trim() : "";
+  var who = nameM ? nameM[1].trim().replace(/\s+(please|now|for me|on (the )?phone|at\b.*)/i,'').trim() : "";
   who = who.replace(/\s*[+]?\d[\d\s().-]*$/,'').trim(); // drop any trailing number captured into the name
   themTyping(()=>{
     if(num){
