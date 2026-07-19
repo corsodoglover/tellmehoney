@@ -11038,48 +11038,24 @@ function updateBgBackBtn(){
   }
 }
 
-/* AI background removal — now through the SECURE PROXY (no pasted key needed).
-   Uses the ai-media function's "removebg" kind (fal-ai/birefnet server-side). */
+/* BETA: AI background removal via user's Fal.ai key → transparent cutout that floats in the scene */
 function removeBgAI(){
+  VIDCFG.key=document.getElementById('vidKey').value.trim();
+  if(!VIDCFG.key){ setVidStatus('bgStatus','Paste your Fal.ai key first.'); return; }
   var srcImage = vidCustomImg || S.photo;
   if(!srcImage){ setVidStatus('bgStatus','Add or pick a photo first.'); return; }
   setVidStatus('bgStatus','Removing the background… this can take a few seconds.');
-  fetch(AI_MEDIA_URL,{
+  fetch('https://queue.fal.run/fal-ai/birefnet',{
     method:'POST',
-    headers:{ 'apikey':PREMIUM_VOICE_KEY, 'Content-Type':'application/json' },
-    body:JSON.stringify({ mode:'submit', kind:'removebg', image_url:srcImage })
+    headers:{ 'Authorization':'Key '+VIDCFG.key, 'Content-Type':'application/json' },
+    body:JSON.stringify({ image_url:srcImage })
   }).then(r=>r.json()).then(j=>{
-    if(j.error){ var ep=''; try{ ep=(typeof j.error==='string')?j.error:JSON.stringify(j.error).slice(0,160); }catch(e){} setVidStatus('bgStatus','Error: '+(ep||'check the service')); return; }
-    if(j.detail){ var dp=''; try{ dp=JSON.stringify(j.detail).slice(0,160); }catch(e){} setVidStatus('bgStatus','Rejected: ['+dp+']'); return; }
-    if(j.request_id){ pollRemoveBgProxy(j.request_id); }
-    else { var up=''; try{ up=JSON.stringify(j).slice(0,160); }catch(e){} setVidStatus('bgStatus','Unexpected response. ['+up+']'); }
-  }).catch(e=>setVidStatus('bgStatus','Request failed: '+e.message));
-}
-function pollRemoveBgProxy(reqId){
-  var tries=0;
-  function check(){
-    tries++;
-    fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({mode:'status',kind:'removebg',request_id:reqId})}).then(r=>r.json()).then(j=>{
-      if(j.status==='COMPLETED'){
-        fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
-          body:JSON.stringify({mode:'result',kind:'removebg',request_id:reqId})}).then(r=>r.json()).then(res=>{
-          var out = (res.image && (res.image.url||res.image)) || (res.images && res.images[0] && (res.images[0].url||res.images[0])) || res.url || findVideoUrl(res);
-          if(out){
-            if(vidBeforeCutout===null) vidBeforeCutout={ src: vidCustomImg || (S.photo||null), wasTransparent: vidImgTransparent };
-            vidCustomImg=out;
-            vidImg=new Image();
-            vidImg.onload=()=>{ vidImgTransparent=true; buildFilteredImage(); if(SCENE_STYLES.indexOf(vidStyle)<0){ vidStyle='clouds'; renderVidStyles(); } startVidPreview(); updateBgBackBtn(); };
-            vidImg.src=out;
-            setVidStatus('bgStatus','Done! Background removed — your cutout is now floating in the scene. Pick Clouds, Hearts, Snow, Bubbles or Balloons to see it.');
-          } else { var rp=''; try{ rp=JSON.stringify(res).slice(0,180); }catch(e){} setVidStatus('bgStatus','Finished, but no image came back. '+(rp?('['+rp+']'):'Try again.')); }
-        });
-      } else if(j.status==='FAILED'){ setVidStatus('bgStatus','Removal failed. '+(j.error||'Please try again.'));
-      } else if(tries>40){ setVidStatus('bgStatus','Still working — please try again in a moment.');
-      } else { setVidStatus('bgStatus','Removing background… ('+(j.status||'in queue')+') '+tries*3+'s'); setTimeout(check,3000); }
-    }).catch(e=>setVidStatus('bgStatus','Polling failed: '+e.message));
-  }
-  check();
+    if(j.detail){ setVidStatus('bgStatus','Error: '+(typeof j.detail==='string'?j.detail:'check your key & access')); return; }
+    var statusUrl=j.status_url || (j.request_id ? 'https://queue.fal.run/fal-ai/birefnet/requests/'+j.request_id+'/status' : null);
+    var resultUrl=j.response_url || (j.request_id ? 'https://queue.fal.run/fal-ai/birefnet/requests/'+j.request_id : null);
+    if(statusUrl && resultUrl){ pollRemoveBg(statusUrl, resultUrl); }
+    else setVidStatus('bgStatus','Unexpected response. Check your Fal.ai key and model access.');
+  }).catch(e=>setVidStatus('bgStatus','Request failed: '+e.message+' (use the live link in Chrome).'));
 }
 function pollRemoveBg(statusUrl, resultUrl){
   var tries=0;
@@ -11153,12 +11129,7 @@ function generateAIVideo(){
     return;
   }
   VIDCFG.key=document.getElementById('vidKey').value.trim();
-  // Prefer the image the user actually created in the studio: the nano-banana
-  // recreate (aiEditedImage) OR the background-removed / composited image
-  // (vidCustomImg). Only fall back to the original friend photo if neither
-  // exists. Without this, a beautiful edited beach image was ignored and the
-  // video animated the ORIGINAL photo instead.
-  var srcImage = aiEditedImage || vidCustomImg || S.photo;
+  var srcImage = aiEditedImage || S.photo;
   if(!srcImage){ setVidStatus('aiVidStatus','Add a photo to your friend first.'); return; }
   if(!isOwner()) useAIVideo();   // count it against today's allowance
   setVidStatus('aiVidStatus','Sending your image… this can take a minute.');
