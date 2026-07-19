@@ -2015,7 +2015,6 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="openLearn()">📚 Learn with Honey</button>
     <button class="prof-row" onclick="cycleLearnLang()" id="learnLangRow">🌍 Learning language: Spanish</button>
     <button class="prof-row" onclick="openVideoStudio()">📷 Photo Suite</button>
-    <button class="prof-row" onclick="openTestPhoto()">🧪 Test Photo Suite</button>
     <button class="prof-row" onclick="openFavorites()">❤️ Your favorites — what Honey kept for you</button>
     <button class="prof-row" onclick="openLovedScreen()">♥ Saved jokes, verses &amp; phrases</button>
     <button class="prof-row" onclick="toggleStreakSetting()" id="streakSettingRow">🔥 Daily streak: On</button>
@@ -2023,57 +2022,11 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v4 · test photo suite</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v3 · photo suite</div>
   </div>
 </section>
 
 <!-- APP COLOR THEME PICKER -->
-<!-- 🧪 TEST PHOTO SUITE — clean standalone image→scene→video pipeline -->
-<section class="screen" id="testPhoto">
-  <div class="bar"><button class="back" onclick="openProfile()">‹</button><span>🧪 Test Photo Suite</span></div>
-  <div style="padding:16px;overflow-y:auto">
-    <p class="rec-hint" style="margin:0 0 14px">A clean, separate space to test making a scene and a video from one photo. Nothing here touches your other photos.</p>
-
-    <!-- IMAGE DISPLAY -->
-    <div style="position:relative;width:100%;max-width:320px;aspect-ratio:1;margin:0 auto 14px;border-radius:16px;overflow:hidden;background:var(--panel2);display:flex;align-items:center;justify-content:center;border:1.5px dashed var(--gold)">
-      <img id="tpImg" style="width:100%;height:100%;object-fit:contain;display:none" alt="">
-      <button id="tpAddBtn" onclick="document.getElementById('tpFile').click()" style="background:none;border:none;color:var(--gold);font-size:15px;font-weight:600;cursor:pointer;padding:24px;text-align:center">📸 Add a photo<br><span style="font-size:12px;opacity:.7;font-weight:400">Tap here to choose a picture</span></button>
-      <input type="file" id="tpFile" accept="image/*" class="file-hidden" onchange="tpOnPick(event)">
-    </div>
-
-    <!-- PHOTO BUTTONS -->
-    <div style="display:flex;gap:8px;margin-bottom:16px">
-      <button class="rec-save" id="tpChangeBtn" onclick="document.getElementById('tpFile').click()" style="flex:1;display:none;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">📷 Change photo</button>
-      <button class="rec-save" id="tpBgBtn" onclick="tpRemoveBg()" style="flex:1;display:none;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">✂️ Remove background</button>
-    </div>
-    <div class="vid-status" id="tpBgStatus"></div>
-
-    <!-- STEP 1: SCENE -->
-    <div class="cloud-box" style="margin-bottom:14px">
-      <div class="cloud-head"><span>1️⃣ Change the scene</span></div>
-      <p class="rec-hint" style="margin:6px 0 10px">Describe a new look — e.g. "put me on a beach with sailboats."</p>
-      <div class="rec-field"><input id="tpScenePrompt" placeholder="e.g. put me on a beach with sailboats"></div>
-      <button class="rec-save" onclick="tpMakeScene()">🎨 Make the scene</button>
-      <div class="vid-status" id="tpSceneStatus"></div>
-    </div>
-
-    <!-- STEP 2: VIDEO -->
-    <div class="cloud-box">
-      <div class="cloud-head"><span>2️⃣ Bring it to life</span></div>
-      <p class="rec-hint" style="margin:6px 0 10px">Turn the photo above into a gently moving video.</p>
-      <div class="rec-field"><input id="tpVidPrompt" placeholder="e.g. waves rolling, hair blowing gently"></div>
-      <button class="rec-save" onclick="tpMakeVideo()">🎬 Make a video</button>
-      <div class="vid-status" id="tpVidStatus"></div>
-    </div>
-
-    <!-- VIDEO RESULT -->
-    <div id="tpVideoWrap" style="display:none;margin-top:14px;text-align:center">
-      <video id="tpVideo" controls playsinline style="width:100%;max-width:320px;border-radius:16px"></video>
-      <div><a id="tpVideoDl" href="#" download="my-video.mp4" class="rec-save" style="display:inline-block;margin-top:10px;background:var(--gold);color:var(--on-accent);text-decoration:none">⬇️ Save video</a></div>
-    </div>
-  </div>
-</section>
-
 <section class="screen" id="themePicker">
   <div class="bar"><button class="back" onclick="openProfile()">‹</button>
     <h2>App color theme</h2>
@@ -11040,119 +10993,6 @@ function fallbackShare(blob,text){
 }
 function setVidStatus(id,html){ var e=document.getElementById(id); if(e)e.innerHTML=html; }
 
-/* ═══════════ 🧪 TEST PHOTO SUITE — clean, self-contained pipeline ═══════════
-   Its own image (tpImageData), its own display, its own remove-bg, scene, video.
-   Talks to the same proxy but shares NO state with the main Photo Suite. Every
-   failure surfaces the raw server response in [brackets] so nothing hides. */
-var tpImageData=null;   // the current working image (data URL or https URL)
-
-function openTestPhoto(){ go('testPhoto'); }
-
-function tpShowImage(src){
-  tpImageData=src;
-  var img=document.getElementById('tpImg');
-  var add=document.getElementById('tpAddBtn');
-  var chg=document.getElementById('tpChangeBtn');
-  var bg=document.getElementById('tpBgBtn');
-  if(img){ img.src=src; img.style.display='block'; }
-  if(add) add.style.display='none';
-  if(chg) chg.style.display='block';
-  if(bg) bg.style.display='block';
-}
-
-function tpOnPick(e){
-  var f=e.target.files && e.target.files[0]; if(!f) return;
-  var r=new FileReader();
-  r.onload=function(){ tpShowImage(r.result); setVidStatus('tpBgStatus',''); };
-  r.readAsDataURL(f);
-  e.target.value='';
-}
-
-/* Remove background — submit → poll → show the transparent cutout */
-function tpRemoveBg(){
-  if(!tpImageData){ setVidStatus('tpBgStatus','Add a photo first.'); return; }
-  setVidStatus('tpBgStatus','Removing background…');
-  fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
-    body:JSON.stringify({mode:'submit',kind:'removebg',image_url:tpImageData})})
-    .then(r=>r.json()).then(j=>{
-      if(j.error){ setVidStatus('tpBgStatus','Error: ['+JSON.stringify(j.error).slice(0,180)+']'); return; }
-      if(!j.request_id){ setVidStatus('tpBgStatus','No job id back: ['+JSON.stringify(j).slice(0,180)+']'); return; }
-      tpPoll('removebg', j.request_id, 'tpBgStatus', function(res){
-        var out=(res.image&&(res.image.url||res.image))||res.url||(res.images&&res.images[0]&&(res.images[0].url||res.images[0]));
-        if(out){ tpShowImage(out); setVidStatus('tpBgStatus','Done — background removed. ✂️'); }
-        else setVidStatus('tpBgStatus','Finished, no image: ['+JSON.stringify(res).slice(0,180)+']');
-      });
-    }).catch(e=>setVidStatus('tpBgStatus','Request failed: '+e.message));
-}
-
-/* Step 1 — scene change (nano-banana). Shows the new still image in the box. */
-function tpMakeScene(){
-  if(!tpImageData){ setVidStatus('tpSceneStatus','Add a photo first.'); return; }
-  var prompt=(document.getElementById('tpScenePrompt').value||'').trim();
-  if(!prompt){ setVidStatus('tpSceneStatus','Describe the new scene first.'); return; }
-  setVidStatus('tpSceneStatus','Making the scene…');
-  fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
-    body:JSON.stringify({mode:'submit',kind:'image',prompt:prompt,image_url:tpImageData})})
-    .then(r=>r.json()).then(j=>{
-      if(j.error){ setVidStatus('tpSceneStatus','Error: ['+JSON.stringify(j.error).slice(0,180)+']'); return; }
-      if(!j.request_id){ setVidStatus('tpSceneStatus','No job id back: ['+JSON.stringify(j).slice(0,180)+']'); return; }
-      tpPoll('image', j.request_id, 'tpSceneStatus', function(res){
-        var out=(res.images&&res.images[0]&&(res.images[0].url||res.images[0]))||(res.image&&(res.image.url||res.image))||res.url;
-        if(out){ tpShowImage(out); setVidStatus('tpSceneStatus','Done! New scene is above. Now try step 2. 🎨'); }
-        else setVidStatus('tpSceneStatus','Finished, no image: ['+JSON.stringify(res).slice(0,180)+']');
-      });
-    }).catch(e=>setVidStatus('tpSceneStatus','Request failed: '+e.message));
-}
-
-/* Step 2 — video (Kling). Plays the finished video below. */
-function tpMakeVideo(){
-  if(!tpImageData){ setVidStatus('tpVidStatus','Add a photo first.'); return; }
-  var prompt=(document.getElementById('tpVidPrompt').value||'').trim();
-  setVidStatus('tpVidStatus','Making your video… this can take a minute.');
-  fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
-    body:JSON.stringify({mode:'submit',kind:'video',image_url:tpImageData,prompt:prompt})})
-    .then(r=>r.json()).then(j=>{
-      if(j.error){ setVidStatus('tpVidStatus','Error: ['+JSON.stringify(j.error).slice(0,180)+']'); return; }
-      if(!j.request_id){ setVidStatus('tpVidStatus','No job id back: ['+JSON.stringify(j).slice(0,180)+']'); return; }
-      tpPoll('video', j.request_id, 'tpVidStatus', function(res){
-        var out=(res.video&&(res.video.url||res.video))||res.url||(res.videos&&res.videos[0]&&(res.videos[0].url||res.videos[0]));
-        if(out){
-          var wrap=document.getElementById('tpVideoWrap'), vid=document.getElementById('tpVideo'), dl=document.getElementById('tpVideoDl');
-          if(vid){ vid.src=out; } if(dl){ dl.href=out; } if(wrap){ wrap.style.display='block'; }
-          setVidStatus('tpVidStatus','Done! Your video is below. 🎬');
-        } else setVidStatus('tpVidStatus','Finished, no video: ['+JSON.stringify(res).slice(0,180)+']');
-      });
-    }).catch(e=>setVidStatus('tpVidStatus','Request failed: '+e.message));
-}
-
-/* Shared poller — shows the live status word, and on timeout shows the raw
-   last response so we can always see what the server actually said. */
-function tpPoll(kind, reqId, statusId, onDone){
-  var tries=0;
-  function check(){
-    tries++;
-    fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({mode:'status',kind:kind,request_id:reqId})})
-      .then(r=>r.json()).then(j=>{
-        var st=(j.status||'').toString().toUpperCase();
-        if(st==='COMPLETED'||st==='OK'){
-          fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
-            body:JSON.stringify({mode:'result',kind:kind,request_id:reqId})})
-            .then(r=>r.json()).then(onDone)
-            .catch(e=>setVidStatus(statusId,'Result fetch failed: '+e.message));
-        } else if(st==='FAILED'||st==='ERROR'){
-          setVidStatus(statusId,'Job failed: ['+JSON.stringify(j).slice(0,200)+']');
-        } else if(tries>60){   // ~3 min
-          setVidStatus(statusId,'Timed out. Last status: ['+JSON.stringify(j).slice(0,200)+']');
-        } else {
-          setVidStatus(statusId,'Working… ('+(st||'in queue')+') '+tries*3+'s');
-          setTimeout(check,3000);
-        }
-      }).catch(e=>setVidStatus(statusId,'Status check failed: '+e.message));
-  }
-  check();
-}
-
 /* Recreate the photo from a prompt (routed through the secure proxy). */
 var aiEditedImage=null;
 function editImageAI(){
@@ -11208,8 +11048,8 @@ function pollEditImage(reqId){
           }
         });
       } else if(j.status==='FAILED'){ setVidStatus('editStatus','Edit failed. '+(j.error||'Please try again.'));
-      } else if(tries>40){ var speek=''; try{ speek=JSON.stringify(j).slice(0,220); }catch(e){} setVidStatus('editStatus','Timed out. Last status the server sent: ['+speek+']'); }
-      else { setVidStatus('editStatus','Recreating… ('+(j.status||'in queue')+') '+tries*3+'s'); setTimeout(check,3000); }
+      } else if(tries>40){ setVidStatus('editStatus','Still working — please check back in a moment.');
+      } else { setVidStatus('editStatus','Recreating… ('+(j.status||'in queue')+') '+tries*3+'s'); setTimeout(check,3000); }
     }).catch(e=>setVidStatus('editStatus','Polling failed: '+e.message));
   }
   check();
