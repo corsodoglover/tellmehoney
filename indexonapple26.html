@@ -2022,7 +2022,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v20 · verse to photo suite</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v18 · insights words</div>
   </div>
 </section>
 
@@ -11958,22 +11958,11 @@ function sharePhotoStill(){
   }catch(e){ setVidStatus('vidStatus','Add a photo first, then share. 🍯'); }
 }
 function shareLovedVideo(){
-  // Build the caption that will be burned onto the video. For a verse, loveCurrent
-  // is "verse text\nReference" — turn the newline into a spaced dash so wrapText
-  // (which splits on spaces) lays it out cleanly instead of dropping the reference.
-  var capText = loveCurrent || '';
-  if(loveKind==='verse') capText = capText.replace(/\n+/g,'  —  ');
-  else capText = capText.replace(/\n+/g,' ');
-  var chosen = loveCustomImg || S.photo || null;
+  // hand off to the video studio prefilled with this joke AND the chosen picture
+  var chosen = loveCustomImg || S.photo;
   closeLoveShare();
-  // Open the NEW Photo Suite screen (colors, scenes, looks, animation) — NOT the
-  // old video studio. Feed it the chosen photo + the verse/joke as the caption.
-  if(chosen){ vidCustomImg = chosen; tpImageData = chosen; }
-  openTestPhoto();
-  setTimeout(()=>{
-    var c=document.getElementById('vidCaption');
-    if(c){ c.value=capText; if(typeof vidDrawStill==='function')vidDrawStill(); }
-  }, 300);
+  openVideoStudio(chosen);
+  setTimeout(()=>{ var c=document.getElementById('vidCaption'); if(c){ c.value=loveCurrent||''; if(typeof vidDrawStill==='function')vidDrawStill(); } shareJokeVideo(); afterShare(); }, 300);
 }
 function afterShare(msg){
   if(loveKind==='joke' && loveCurrent) lovedBumpShare(loveCurrent);
