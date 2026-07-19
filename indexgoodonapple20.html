@@ -11202,57 +11202,44 @@ function generateAIVideo(){
     else setVidStatus('aiVidStatus','Unexpected response. Please try again.');
   }).catch(e=>setVidStatus('aiVidStatus','Request failed: '+e.message));
 }
-var _lastVideoReqId=null;
 function pollAIVideo(reqId){
-  _lastVideoReqId=reqId;   // remember it so a slow video can be fetched later
   var tries=0;
   function check(){
     tries++;
     fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
       body:JSON.stringify({mode:'status',kind:'video',request_id:reqId})}).then(r=>r.json()).then(j=>{
       if(j.status==='COMPLETED'){
-        fetchFinishedVideo(reqId);
+        fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
+          body:JSON.stringify({mode:'result',kind:'video',request_id:reqId})}).then(r=>r.json()).then(res=>{
+          // Different fal.ai video models wrap the finished video URL differently.
+          // Check every common shape rather than just a couple, so a completed
+          // render never shows "no URL" just because of where the URL sits.
+          var out = findVideoUrl(res);
+          if(out){
+            setVidStatus('aiVidStatus','Done! 🍯 Tap to watch.');
+            showAIVideoOverlay(out);
+          }
+          else {
+            // Completed but URL not found in any known shape — show a short peek
+            // at the raw response so we can see exactly where the URL lives.
+            var peek=''; try{ peek=JSON.stringify(res).slice(0,180); }catch(e){}
+            setVidStatus('aiVidStatus','Finished, but no video URL came back. '+(peek?('['+peek+']'):'Please try again.'));
+          }
+        });
       } else if(j.status==='FAILED'){
         setVidStatus('aiVidStatus','Generation failed. '+(j.error||'Please try again.'));
       } else if(tries>100){
-        // ~5 minutes of auto-watching. Veo can take longer, so instead of a
-        // dead-end message, give a tappable button to fetch the video whenever
-        // it's ready — the render (which cost real money) is never lost.
-        setVidStatus('aiVidStatus','Still working ('+(j.status||'in progress')+'). Veo can take a few minutes. <a href="#" onclick="checkForMyVideo();return false;" style="color:var(--gold);font-weight:800">▶︎ Check for my video</a>');
+        // ~5 minutes of patience. stable-video can be slow, especially when
+        // fal.ai is busy — don't give up at 2 minutes and leave a finished
+        // video unshown. Keep the honest "still working" only as a last resort.
+        setVidStatus('aiVidStatus','Still working after a few minutes — fal.ai may be busy. Please try again in a bit.');
       } else {
         setVidStatus('aiVidStatus','Making your video… ('+(j.status||'in queue')+') '+tries*3+'s — this can take a couple minutes.');
         setTimeout(check,3000);
       }
-    }).catch(e=>setVidStatus('aiVidStatus','Polling failed: '+e.message+' <a href="#" onclick="checkForMyVideo();return false;" style="color:var(--gold);font-weight:800">▶︎ Check for my video</a>'));
+    }).catch(e=>setVidStatus('aiVidStatus','Polling failed: '+e.message));
   }
   check();
-}
-/* Manually re-check the last video job — for when Veo runs longer than the
-   auto-watch window. Fetches status once; if done, plays it; if still going,
-   says so; either way the video is never lost. */
-function checkForMyVideo(){
-  if(!_lastVideoReqId){ setVidStatus('aiVidStatus','No video in progress to check.'); return; }
-  setVidStatus('aiVidStatus','Checking on your video…');
-  fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
-    body:JSON.stringify({mode:'status',kind:'video',request_id:_lastVideoReqId})}).then(r=>r.json()).then(j=>{
-    if(j.status==='COMPLETED'){ fetchFinishedVideo(_lastVideoReqId); }
-    else if(j.status==='FAILED'){ setVidStatus('aiVidStatus','Generation failed. '+(j.error||'Please try again.')); }
-    else { setVidStatus('aiVidStatus','Still working ('+(j.status||'in progress')+'). Give it another minute, then tap again. <a href="#" onclick="checkForMyVideo();return false;" style="color:var(--gold);font-weight:800">▶︎ Check again</a>'); }
-  }).catch(e=>setVidStatus('aiVidStatus','Check failed: '+e.message+' <a href="#" onclick="checkForMyVideo();return false;" style="color:var(--gold);font-weight:800">▶︎ Try again</a>'));
-}
-/* Pull the finished video URL and play it (shared by auto-poll and manual check). */
-function fetchFinishedVideo(reqId){
-  fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
-    body:JSON.stringify({mode:'result',kind:'video',request_id:reqId})}).then(r=>r.json()).then(res=>{
-    var out = findVideoUrl(res);
-    if(out){
-      setVidStatus('aiVidStatus','Done! 🍯 Tap to watch.');
-      showAIVideoOverlay(out);
-    } else {
-      var peek=''; try{ peek=JSON.stringify(res).slice(0,180); }catch(e){}
-      setVidStatus('aiVidStatus','Finished, but no video URL came back. '+(peek?('['+peek+']'):'Please try again.'));
-    }
-  }).catch(e=>setVidStatus('aiVidStatus','Fetch failed: '+e.message));
 }
 /* Full-screen finished-video overlay (keeps the studio uncluttered). */
 function showAIVideoOverlay(url){
