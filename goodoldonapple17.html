@@ -10934,10 +10934,9 @@ function editImageAI(){
     headers:{ 'apikey':PREMIUM_VOICE_KEY, 'Content-Type':'application/json' },
     body:JSON.stringify({ mode:'submit', kind:'image', prompt:prompt, image_url:S.photo })
   }).then(r=>r.json()).then(j=>{
-    if(j.error){ var ep=''; try{ ep=(typeof j.error==='string')?j.error:JSON.stringify(j.error).slice(0,160); }catch(e){} setVidStatus('editStatus','Error: '+(ep||'check the service')); return; }
-    if(j.detail){ var dp=''; try{ dp=JSON.stringify(j.detail).slice(0,160); }catch(e){} setVidStatus('editStatus','Rejected: ['+dp+']'); return; }
+    if(j.error){ setVidStatus('editStatus','Error: '+(typeof j.error==='string'?j.error:'check the service')); return; }
     if(j.request_id){ pollEditImage(j.request_id); }
-    else { var up=''; try{ up=JSON.stringify(j).slice(0,160); }catch(e){} setVidStatus('editStatus','Unexpected response. ['+up+']'); }
+    else setVidStatus('editStatus','Unexpected response. Please try again.');
   }).catch(e=>setVidStatus('editStatus','Request failed: '+e.message));
 }
 function pollEditImage(reqId){
@@ -10949,12 +10948,9 @@ function pollEditImage(reqId){
       if(j.status==='COMPLETED'){
         fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
           body:JSON.stringify({mode:'result',kind:'image',request_id:reqId})}).then(r=>r.json()).then(res=>{
-          var out = (res.images && res.images[0] && (res.images[0].url||res.images[0])) || (res.image && (res.image.url||res.image)) || res.url || findVideoUrl(res);
+          var out = (res.images && res.images[0] && (res.images[0].url||res.images[0])) || (res.image && (res.image.url||res.image)) || res.url;
           if(out){ aiEditedImage=out; setVidStatus('editStatus','Done! Your recreated image is ready. <a href="'+out+'" target="_blank">View</a>'); }
-          else {
-            var ipeek=''; try{ ipeek=JSON.stringify(res).slice(0,180); }catch(e){}
-            setVidStatus('editStatus','Finished, but no image came back. '+(ipeek?('['+ipeek+']'):'Try again.'));
-          }
+          else setVidStatus('editStatus','Finished, but no image came back. Try again.');
         });
       } else if(j.status==='FAILED'){ setVidStatus('editStatus','Edit failed. '+(j.error||'Please try again.'));
       } else if(tries>40){ setVidStatus('editStatus','Still working — please check back in a moment.');
