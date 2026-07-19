@@ -6846,7 +6846,7 @@ function userSays(t){
   // get hijacked by the call/reminder logic. This only fires on an explicit
   // add-command that mentions a list, so normal "call Mom" still dials.
   if(/^(add|put|throw|jot)\b/.test(l)
-     && /\b(to-?do|notes?|shopping|grocery|groceries|store|household)\b.*\blist\b|\bto\s+(my\s+|the\s+)?(to-?do|notes?|shopping|grocery|groceries)\b|\bto\s+notes?\b/.test(l)){
+     && /\b(to[-\s]?do|notes?|shopping|grocery|groceries|store|household)\b.*\blist\b|\bto\s+(my\s+|the\s+)?(to[-\s]?do|notes?|shopping|grocery|groceries)\b|\bto\s+notes?\b/.test(l)){
     doShopping(t); return;
   }
   if(/(call|phone|dial|ring)\b/.test(l) && !/calling|recall|so[- ]?called/.test(l)){ doCall(t); return; }
@@ -6876,7 +6876,7 @@ function userSays(t){
        || /\bstore\b/.test(l)
        || /what do i need (to (get|buy)|from)/.test(l)){ showShopping(); return; }
     // TO-DO next
-    if(/to-?\s?do\b/.test(l)){ ensureLists(); openList("todo"); return; }
+    if(/to[-\s]?do\b/.test(l)){ ensureLists(); openList("todo"); return; }
     // NOTES next
     if(/\bnotes?\b/.test(l)){ ensureLists(); openList("notes"); return; }
     // bare "what's on my list" / "show my list" → shopping (the app's default list)
@@ -7128,7 +7128,7 @@ function doShopping(t){
     // strip the trailing list target as ONE phrase: "... to my to-do list",
     // "... to notes", "... on my shopping list". Anchored at the END ($) so a
     // preposition inside the item ("water on the plants") is never touched.
-    .replace(/\s+(to|on|in)\s+(my\s+|the\s+)?(shopping|grocery|groceries|store|household|to-?do|notes?)(\s+list)?\s*$/i,'')
+    .replace(/\s+(to|on|in)\s+(my\s+|the\s+)?(shopping|grocery|groceries|store|household|to[-\s]?do|notes?)(\s+list)?\s*$/i,'')
     // also strip a bare trailing "list" word if one is left ("... to the list")
     .replace(/\s+(to|on|in)\s+(my\s+|the\s+)?list\s*$/i,'')
     .replace(/^\s*(some|more|a|an|the)\s+/i,'')
@@ -7137,7 +7137,7 @@ function doShopping(t){
   // pick target list: named mention wins → custom list names → "my/the list" means shopping → bare adds use last opened
   var lo=orig.toLowerCase();
   var targetId=null;
-  if(/to-?do/.test(lo)) targetId="todo";
+  if(/to[-\s]?do/.test(lo)) targetId="todo";
   else if(/\bnotes?\b/.test(lo)) targetId="notes";
   else if(/shop|grocer|store|household/.test(lo)) targetId="shopping";
   else {
@@ -11001,7 +11001,26 @@ function pollEditImage(reqId){
         fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
           body:JSON.stringify({mode:'result',kind:'image',request_id:reqId})}).then(r=>r.json()).then(res=>{
           var out = (res.images && res.images[0] && (res.images[0].url||res.images[0])) || (res.image && (res.image.url||res.image)) || res.url || findVideoUrl(res);
-          if(out){ aiEditedImage=out; setVidStatus('editStatus','Done! Your recreated image is ready. <a href="'+out+'" target="_blank">View</a>'); }
+          if(out){
+            aiEditedImage=out;
+            // Show the recreated image RIGHT IN THE BOX up top, the way
+            // background-removal does — not just a "View" link. This is the
+            // scene the user just described, so it should replace what's on
+            // the canvas immediately.
+            if(vidBeforeCutout===null) vidBeforeCutout={ src: vidCustomImg || (S.photo||null), wasTransparent: vidImgTransparent };
+            vidCustomImg=out;
+            vidImg=new Image();
+            if(/^https?:/i.test(out)) vidImg.crossOrigin='anonymous';
+            vidImg.onload=function(){
+              vidImgTransparent=false;               // the recreated scene is a full photo, not a cutout
+              var ni=document.getElementById('vidNoImg'); if(ni)ni.style.display='none';
+              if(typeof startVidPreview==='function') startVidPreview(); else vidDrawStill();
+              updateBgBackBtn && updateBgBackBtn();
+            };
+            vidImg.onerror=function(){ vidDrawStill && vidDrawStill(); };
+            vidImg.src=out;
+            setVidStatus('editStatus','Done! Your new scene is up top. Add motion with "Bring it to life," or share it as a photo. &nbsp; <a href="'+out+'" target="_blank">View full size</a>');
+          }
           else {
             var ipeek=''; try{ ipeek=JSON.stringify(res).slice(0,180); }catch(e){}
             setVidStatus('editStatus','Finished, but no image came back. '+(ipeek?('['+ipeek+']'):'Try again.'));
