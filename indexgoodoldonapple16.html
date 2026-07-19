@@ -11165,13 +11165,10 @@ function pollAIVideo(reqId){
         });
       } else if(j.status==='FAILED'){
         setVidStatus('aiVidStatus','Generation failed. '+(j.error||'Please try again.'));
-      } else if(tries>100){
-        // ~5 minutes of patience. stable-video can be slow, especially when
-        // fal.ai is busy — don't give up at 2 minutes and leave a finished
-        // video unshown. Keep the honest "still working" only as a last resort.
-        setVidStatus('aiVidStatus','Still working after a few minutes — fal.ai may be busy. Please try again in a bit.');
+      } else if(tries>40){
+        setVidStatus('aiVidStatus','Still working — please check back in a moment.');
       } else {
-        setVidStatus('aiVidStatus','Making your video… ('+(j.status||'in queue')+') '+tries*3+'s — this can take a couple minutes.');
+        setVidStatus('aiVidStatus','Generating… ('+(j.status||'in queue')+') '+tries*3+'s');
         setTimeout(check,3000);
       }
     }).catch(e=>setVidStatus('aiVidStatus','Polling failed: '+e.message));
