@@ -2383,11 +2383,21 @@ textarea{resize:none;line-height:1.4;}
     <!-- PREMIUM AI ZONE (user-facing). Dimmed with a gentle top-up when credits are out;
          fully open when the user has credits. Never blocks the free stuff above. -->
     <div class="cloud-box" id="aiPremiumBox">
+      <div class="cloud-head"><span>🎨 Change the scene</span></div>
+      <p class="rec-hint" style="margin:6px 0 12px">Describe a new look and AI recreates the photo — e.g. "put me on a beach with sailboats," "add a garden background," "make it look like fall."</p>
+      <div id="aiEditTools">
+        <div class="rec-field"><input id="editPrompt" placeholder="e.g. put me on a beach with sailboats behind me"></div>
+        <button class="rec-save" onclick="editImageAI()">🎨 Recreate my photo</button>
+        <div class="vid-status" id="editStatus"></div>
+      </div>
+    </div>
+
+    <div class="cloud-box" id="aiVideoBox">
       <div class="cloud-head"><span>✨ Bring it to life</span></div>
-      <p class="rec-hint" style="margin:6px 0 12px">Bring it to life with AI.</p>
+      <p class="rec-hint" style="margin:6px 0 12px">Turn the current photo into a gently moving video. (Adds soft motion — recreate the scene above first if you want a new background.)</p>
       <div id="aiLockNote"></div>
       <div id="aiPremiumTools">
-        <div class="rec-field"><input id="vidPrompt" placeholder="e.g. a gentle smile and a little wave"></div>
+        <div class="rec-field"><input id="vidPrompt" placeholder="e.g. ocean waves rolling, sailboats rocking, hair blowing gently"></div>
         <button class="rec-save" onclick="generateAIVideo()">🎬 Make a moving video</button>
         <div class="vid-status" id="aiVidStatus"></div>
       </div>
@@ -11024,7 +11034,9 @@ function restoreOriginal(){
 /* one button that flips: Remove background  ↔  Put the background back */
 function toggleBg(){
   if(vidBeforeCutout!==null) restoreOriginal();
-  else removeBgFree();
+  else removeBgAI();   // use the SECURE PROXY remover (works now). The old
+                       // removeBgFree() needed Apple VisionKit that isn't wired
+                       // up, so the button did nothing — this fixes that.
 }
 /* update the toggle tile's label/look based on whether a removal is active */
 function updateBgBackBtn(){
@@ -11160,14 +11172,18 @@ function generateAIVideo(){
   // video animated the ORIGINAL photo instead.
   var srcImage = aiEditedImage || vidCustomImg || S.photo;
   if(!srcImage){ setVidStatus('aiVidStatus','Add a photo to your friend first.'); return; }
+  // Grab what they typed so Veo actually follows it (e.g. "ocean waves moving,
+  // sailboats rocking"). Empty is fine — the proxy fills a gentle default.
+  var vprompt = (document.getElementById('vidPrompt') && document.getElementById('vidPrompt').value || '').trim();
   if(!isOwner()) useAIVideo();   // count it against today's allowance
   setVidStatus('aiVidStatus','Sending your image… this can take a minute.');
   fetch(AI_MEDIA_URL,{
     method:'POST',
     headers:{ 'apikey':PREMIUM_VOICE_KEY, 'Content-Type':'application/json' },
-    body:JSON.stringify({ mode:'submit', kind:'video', image_url:srcImage })
+    body:JSON.stringify({ mode:'submit', kind:'video', image_url:srcImage, prompt:vprompt })
   }).then(r=>r.json()).then(j=>{
-    if(j.error){ setVidStatus('aiVidStatus','Error: '+(typeof j.error==='string'?j.error:'please try again')); return; }
+    if(j.error){ var vep=''; try{ vep=(typeof j.error==='string')?j.error:JSON.stringify(j.error).slice(0,160); }catch(e){} setVidStatus('aiVidStatus','Error: '+(vep||'please try again')); return; }
+    if(j.detail){ var vdp=''; try{ vdp=JSON.stringify(j.detail).slice(0,160); }catch(e){} setVidStatus('aiVidStatus','Rejected: ['+vdp+']'); return; }
     if(j.request_id){ pollAIVideo(j.request_id); }
     else setVidStatus('aiVidStatus','Unexpected response. Please try again.');
   }).catch(e=>setVidStatus('aiVidStatus','Request failed: '+e.message));
