@@ -2022,7 +2022,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v21 · my saved jokes</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v20 · verse to photo suite</div>
   </div>
 </section>
 
@@ -2199,28 +2199,6 @@ textarea{resize:none;line-height:1.4;}
       <span class="bc-ic">🎬</span>
       <span class="bc-tx"><b>Make a joke video</b><small>Turn a joke into a fun clip</small></span>
     </button>
-    <button class="big-choice" onclick="openMyJokes()">
-      <span class="bc-ic">📓</span>
-      <span class="bc-tx"><b>My saved jokes</b><small>Jokes you've kept — hear or delete them</small></span>
-    </button>
-    <div class="cs-row" style="margin:14px 8px 4px;background:var(--panel2);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px">
-      <div class="cs-lb">😄 Play my own jokes in chat</div>
-      <button class="cs-toggle" id="ownJokesToggle" onclick="toggleOwnJokes(this)"></button>
-    </div>
-    <p class="rec-hint" style="text-align:center;font-size:12px;margin:6px 12px 0;color:var(--muted)">When this is on, the jokes you've saved get mixed in with Honey's. Turn it off and you'll only hear Honey's.</p>
-  </div>
-</section>
-
-<!-- MY SAVED JOKES -->
-<section class="screen" id="myJokes">
-  <div class="bar"><button class="back" onclick="openJokes()">‹</button>
-    <h2>My saved jokes</h2><span style="width:40px"></span></div>
-  <div class="insights-body scroll">
-    <p class="rec-hint" style="text-align:center;margin:2px 8px 14px">These are the jokes you've saved. Tap one to hear it, or add a new one anytime. 🍯</p>
-    <button class="rec-save" onclick="openRecordJoke()" style="margin:0 8px 14px">➕ Save a new joke</button>
-    <div id="myJokesEmpty" class="cal-empty" style="display:none">No saved jokes yet. Heard a good one out somewhere? Tap “Save a new joke” and keep it — Honey will tell it back to you.</div>
-    <div class="rec-head" id="mjListHead" style="display:none;padding:0 8px"><span>Saved <span id="mjCount"></span></span></div>
-    <div id="mjList" style="padding:0 8px"></div>
   </div>
 </section>
 
@@ -6812,10 +6790,8 @@ function getMyJoke(){
   var j=rand(avail); S.served[j.s]=1; return {s:j.s,p:j.p,mine:true};
 }
 function getJoke(surprise,forceCat){
-  // mix in the user's own jokes when they have some (not when a specific style is forced),
-  // unless they've turned their own jokes off in the Jokes screen.
-  var ownOn = (typeof SETTINGS==='undefined' || !SETTINGS.hasOwnProperty('ownJokes')) ? true : (SETTINGS.ownJokes!==false);
-  if(ownOn && forceCat==null && (S.myJokes||[]).length && Math.random()<.45){
+  // mix in the user's own jokes when they have some (not when a specific style is forced)
+  if(forceCat==null && (S.myJokes||[]).length && Math.random()<.45){
     var mj=getMyJoke(); if(mj) return mj;
   }
   var ci=pickCategory(surprise,forceCat);
@@ -9150,7 +9126,6 @@ function saveMyJoke(){
   document.getElementById('recSetup').value='';
   document.getElementById('recPunch').value='';
   renderMyJokes();
-  if(typeof renderMyJokesScreen==='function') renderMyJokesScreen();
   toast("Saved. She'll work it into the rotation.");
 }
 function renderMyJokes(){
@@ -12993,41 +12968,7 @@ function tellLearnFact(catId){
   // say it in the friendly device voice
   if(S.speakerOn && 'speechSynthesis'in window){ try{ stopAllAudio(); var u=new SpeechSynthesisUtterance(cleanForSpeech(fact)); u.rate=S.rate||1; speechSynthesis.speak(u); }catch(e){} }
 }
-function openJokes(){ if(!loadedOrFirst()){ newAgentFlow(true); return; } go('jokes'); syncOwnJokesToggle(); }
-function syncOwnJokesToggle(){
-  var t=document.getElementById('ownJokesToggle'); if(!t) return;
-  var on = (typeof SETTINGS==='undefined' || !SETTINGS.hasOwnProperty('ownJokes')) ? true : (SETTINGS.ownJokes!==false);
-  t.classList.toggle('on', on);
-}
-function toggleOwnJokes(btn){
-  var on = (typeof SETTINGS==='undefined' || !SETTINGS.hasOwnProperty('ownJokes')) ? true : (SETTINGS.ownJokes!==false);
-  SETTINGS.ownJokes = !on;
-  btn.classList.toggle('on', !on);
-  if(typeof saveSettings==='function') saveSettings();
-  toast(!on ? "Your own jokes are on. 🍯" : "Your own jokes are off — you'll hear Honey's only.");
-}
-function openMyJokes(){ if(!loadedOrFirst()){ newAgentFlow(true); return; } go('myJokes'); renderMyJokesScreen(); }
-function renderMyJokesScreen(){
-  var list=document.getElementById('mjList'); if(!list) return;
-  list.innerHTML='';
-  var mine=S.myJokes||[];
-  var head=document.getElementById('mjListHead');
-  var empty=document.getElementById('myJokesEmpty');
-  if(!mine.length){ if(head)head.style.display='none'; if(empty)empty.style.display='block'; return; }
-  if(head)head.style.display='block';
-  if(empty)empty.style.display='none';
-  document.getElementById('mjCount').textContent='('+mine.length+')';
-  mine.slice().reverse().forEach((j)=>{
-    var d=document.createElement('div'); d.className='rec-jcard';
-    d.innerHTML='<div class="s">'+esc(j.s)+'</div><div class="p">'+esc(j.p)+'</div>'+
-      '<div class="row"><button class="tell">📣 Tell it now</button><button class="del">🗑️ Delete</button></div>';
-    d.querySelector('.tell').onclick=()=>{ var jj={s:j.s,p:j.p,mine:true};
-      if(loadedOrFirst()){ enterChat(); }
-      themTyping(()=>{ pushThem(vibeColor("Your own one —")); setTimeout(()=>pushJoke(jj),500); }); };
-    d.querySelector('.del').onclick=()=>{ S.myJokes=S.myJokes.filter(x=>x!==j); persist(); renderMyJokesScreen(); toast("Deleted."); };
-    list.appendChild(d);
-  });
-}
+function openJokes(){ if(!loadedOrFirst()){ newAgentFlow(true); return; } go('jokes'); }
 function openLovedQuick(){
   var top=topLoved(5);
   if(!top.length){ toast("No loved jokes yet — tap ♥ on a joke you like in chat."); return; }
