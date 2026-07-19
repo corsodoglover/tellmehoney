@@ -2022,6 +2022,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v2 · lists fix</div>
   </div>
 </section>
 
@@ -6837,6 +6838,17 @@ function userSays(t){
   // forget a saved contact's number
   var fm=l.match(/(?:forget|delete|remove)\s+([a-z][a-z '.-]{0,30}?)(?:'s)?\s*(?:number|contact)\b/i);
   if(fm){ var fgn=fm[1].trim().replace(/\b\w/g,m=>m.toUpperCase()); themTyping(()=>pushThem(vibeColor(forgetContact(fgn)?("Okay, I forgot "+fgn+"'s number."):("I didn't have a number saved for "+fgn+".")))); return; }
+  // ── HIGH-PRIORITY LIST INTENT ──
+  // If the sentence explicitly starts with add/put/throw/jot AND names a list
+  // (to-do, notes, shopping, or a custom list), send it straight to the list
+  // handler BEFORE the call/reminder checks. Otherwise words INSIDE the item —
+  // "add CALL the dentist to my to-do", "add REMEMBER Jim's birthday to notes" —
+  // get hijacked by the call/reminder logic. This only fires on an explicit
+  // add-command that mentions a list, so normal "call Mom" still dials.
+  if(/^(add|put|throw|jot)\b/.test(l)
+     && /\b(to-?do|notes?|shopping|grocery|groceries|store|household)\b.*\blist\b|\bto\s+(my\s+|the\s+)?(to-?do|notes?|shopping|grocery|groceries)\b|\bto\s+notes?\b/.test(l)){
+    doShopping(t); return;
+  }
   if(/(call|phone|dial|ring)\b/.test(l) && !/calling|recall|so[- ]?called/.test(l)){ doCall(t); return; }
   // ── Guard: don't treat CONVERSATION as a list command. Someone telling Honey
   //    about their day ("we made a checklist", "I told the app I need to focus")
@@ -6850,12 +6862,26 @@ function userSays(t){
      || /\b(checklist|check list|hobby|hobbies)\b/.test(l)
      || l.split(/\s+/).length > 14;                // long sentences are conversation, not "add milk"
   var _blockAdd = _looksStory && !_isCmd;
-  // ── SHOPPING / GROCERY LIST (check before reminders so "I need to get milk" isn't a reminder) ──
-  if(!/^(add|put|throw|jot)\b/.test(l) && /(what('s| is)?.*(shopping|grocery|groceries|store|household) list|my (shopping|grocery|groceries) list|what.*on my list|show.*(shopping|grocery|groceries) list|what do i need (to (get|buy)|from the store))/.test(l)){ showShopping(); return; }
-  // view TO-DO list (and other named lists) — "what's on my to-do list", "show my to do list"
-  if(!/^(add|put|throw|jot)\b/.test(l) && /(what('s| is| do i have)?.*to-?do|my to-?do|show.*to-?do|to-?do list)/.test(l)){ ensureLists(); openList("todo"); return; }
-  // view NOTES list — "show me my notes list", "what's on my notes", "open my notes"
-  if(!/^(add|put|throw|jot)\b/.test(l) && /(what('s| is| do i have)?.*notes?|my notes?|show.*notes?|open.*notes?|notes? list)/.test(l)){ ensureLists(); openList("notes"); return; }
+  // ── VIEW A LIST ──
+  // One clear "view intent" gate — "what's on / show me / open / pull up / read me /
+  // see my / go to" — then route by WHICH list is named. Shopping/store/grocery is
+  // checked FIRST so "what do I need from the store" and "my shopping list" never
+  // fall through to the to-do list. Not an add-command (those are handled below).
+  var _viewIntent = /(what('s| is| do i have)?\b|show|see|open|pull up|read me|go to|view)/.test(l)
+                    || /(what do i need|what.*on my)/.test(l);
+  if(!/^(add|put|throw|jot)\b/.test(l) && _viewIntent){
+    // SHOPPING first (most easily confused): shopping/grocery/store/household, or
+    // "what do I need to get/buy", or "what do I need from the store".
+    if(/(shopping|grocery|groceries|household)\b/.test(l)
+       || /\bstore\b/.test(l)
+       || /what do i need (to (get|buy)|from)/.test(l)){ showShopping(); return; }
+    // TO-DO next
+    if(/to-?\s?do\b/.test(l)){ ensureLists(); openList("todo"); return; }
+    // NOTES next
+    if(/\bnotes?\b/.test(l)){ ensureLists(); openList("notes"); return; }
+    // bare "what's on my list" / "show my list" → shopping (the app's default list)
+    if(/\bmy list\b|\bthe list\b/.test(l)){ showShopping(); return; }
+  }
   if(!_blockAdd && /((add|put|throw)\b.*(shopping|grocery|groceries|store|household)? ?list|to (my )?(shopping|grocery|groceries|store|household) list|need to (get|buy|pick up|grab)|need (some |more )?|pick up|out of|running low on|grab some|get some|buy some|add .* to the list)\b/.test(l)
      && /(list|store|grocer|buy|get|pick up|grab|need|out of|running low)/.test(l)
      && !/(remind|calendar|schedule|appointment|meeting)/.test(l)){ doShopping(t); return; }
@@ -7099,7 +7125,12 @@ var curListId="shopping";
 function doShopping(t){
   var orig=String(t).trim();
   var item=orig.replace(/.*?(add|put|throw|i need to (get|buy|pick up|grab)|i need|need to (get|buy|pick up|grab)|need (some|more)?|pick up|grab( some)?|get( some)?|buy( some)?|out of|running low on)\b/i,'')
-    .replace(/\b(to|on|in)?\s*(my )?(the )?(shopping|grocery|groceries|store|household|to-?do|notes?)?\s*list\b/ig,'')
+    // strip the trailing list target as ONE phrase: "... to my to-do list",
+    // "... to notes", "... on my shopping list". Anchored at the END ($) so a
+    // preposition inside the item ("water on the plants") is never touched.
+    .replace(/\s+(to|on|in)\s+(my\s+|the\s+)?(shopping|grocery|groceries|store|household|to-?do|notes?)(\s+list)?\s*$/i,'')
+    // also strip a bare trailing "list" word if one is left ("... to the list")
+    .replace(/\s+(to|on|in)\s+(my\s+|the\s+)?list\s*$/i,'')
     .replace(/^\s*(some|more|a|an|the)\s+/i,'')
     .replace(/[.!?]+$/,'').trim();
   if(!item){ pushThem(vibeColor("Now what can I add for you, and to which list?")); return; }
@@ -7151,9 +7182,9 @@ function doShopping(t){
     list.items.push(it); added.push(p);
   } });
   persist();
-  if(!added.length){ pushThem(vibeColor("Aw, that's already on your list.")); return; }
+  if(!added.length){ pushThem(vibeColor("Aw, that's already on your "+list.name+" list.")); return; }
   var nice = added.length===1 ? "\""+added[0]+"\"" : added.slice(0,-1).map(a=>"\""+a+"\"").join(", ")+" and \""+added[added.length-1]+"\"";
-  pushThem(vibeColor("Done — added it for you. "+list.icon));
+  pushThem(vibeColor("Done — added "+nice+" to your "+list.name+" list. "+list.icon));
   pushAction(list.icon+' Open '+list.name, null, false, null, 'openList:'+list.id);
 }
 function showShopping(){
