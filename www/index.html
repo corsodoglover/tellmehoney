@@ -2022,7 +2022,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v2 · lists fix</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v3 · photo suite</div>
   </div>
 </section>
 
@@ -2405,12 +2405,6 @@ textarea{resize:none;line-height:1.4;}
     </div>
 
     <!-- OWNER-ONLY testing box: your keys. Hidden from users; five-tap the title to reveal. -->
-    <div class="cloud-box" id="aiStudioBox" style="display:none">
-      <div class="cloud-head"><span>🔧 Developer — your key only</span></div>
-      <p class="rec-hint" style="margin:6px 0 10px">Private testing. Not shown to users.</p>
-      <label class="rec-label">Fal.ai API key</label>
-      <div class="rec-field"><input type="password" id="vidKey" placeholder="your Fal.ai key" oninput="VIDCFG.key=this.value"></div>
-    </div>
   </div>
 </div>
 <div class="rec-overlay" id="voiceOverlay">
@@ -4451,11 +4445,26 @@ function applyTierLocks(){
   }
   // premium video zone: gently dim + invite a top-up when today's video credits are used up.
   // Never blocks the free scenes/share above — only this one box dims.
-  applyVideoCreditLock();
+  // ── PAID PHOTO FEATURES ──
+  // "Change the scene" (aiPremiumBox) and "Bring it to life" (aiVideoBox) are
+  // Quart+ features. Free (pint) users see them dimmed with a "See plans" button.
+  // The animation block, background removal, looks, and sharing above stay FREE.
+  if(tierAtLeast('quart') || isOwner()){
+    // paid user: unlock the scene box; video box still respects the credit cap
+    var sb=document.getElementById('aiPremiumBox');
+    if(sb){ sb.classList.remove('tier-locked'); var so=sb.querySelector('.tier-lock-note'); if(so)so.remove(); }
+    var vb=document.getElementById('aiVideoBox');
+    if(vb){ vb.classList.remove('tier-locked'); var vo=vb.querySelector('.tier-lock-note'); if(vo)vo.remove(); }
+    applyVideoCreditLock();
+  } else {
+    // free user: lock both paid boxes by tier
+    lockBox('aiPremiumBox','Change the scene','quart');
+    lockBox('aiVideoBox','Bring it to life','quart');
+  }
 }
 /* dim the "Bring it to life" video box when out of credits; owner & users with credits see it open */
 function applyVideoCreditLock(){
-  var box=document.getElementById('aiPremiumBox'); if(!box) return;
+  var box=document.getElementById('aiVideoBox'); if(!box) return;
   var noteHost=document.getElementById('aiLockNote'); if(noteHost) noteHost.innerHTML='';
   var open = isOwner() || aiVideoLeft() > 0;
   if(open){ box.classList.remove('tier-locked'); return; }
@@ -10428,6 +10437,19 @@ function _applyLookPixels(d, look, enhance){
         var as=(r+g+b)/3; r=as+(r-as)*1.05; g=as+(g-as)*1.05; b=as+(b-as)*1.05;
         break;
       }
+      case 'golden': {
+        // warm golden-hour glow: lift highlights, push warm, gentle contrast
+        r*=1.10; g*=1.06; b*=0.98;                         // warm brightness (less blue)
+        var ag=(r+g+b)/3; r=ag+(r-ag)*1.18; g=ag+(g-ag)*1.12; b=ag+(b-ag)*1.05; // saturate
+        r=(r-128)*1.06+130; g=(g-128)*1.06+126; b=(b-128)*1.06+120; // soft contrast, warm bias
+        r+=14; g+=6; b-=4; break;                          // golden cast
+      }
+      case 'pop': {
+        // vivid, punchy color — the modern "vibrant" look
+        var ap=(r+g+b)/3; r=ap+(r-ap)*1.45; g=ap+(g-ap)*1.45; b=ap+(b-ap)*1.45; // strong saturation
+        r=(r-128)*1.18+128; g=(g-128)*1.18+128; b=(b-128)*1.18+128; // punchy contrast
+        r*=1.05; g*=1.05; b*=1.05; break;                  // slight brightness lift
+      }
     }
     d[i]=_clamp(r); d[i+1]=_clamp(g); d[i+2]=_clamp(b); // alpha (d[i+3]) untouched
   }
@@ -10467,7 +10489,7 @@ function currentVidImage(){ return vidImgFiltered || vidImg; }
 
 function setLook(l){ VIDCFG.look=(VIDCFG.look===l?'none':l); renderLooks(); buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview(); }
 function resetLook(){ VIDCFG.look='none'; VIDCFG.enhance=false; VIDCFG.smile=false; VIDCFG.zoom=1; var _zs=document.getElementById('vidZoomSlider'); if(_zs)_zs.value='1'; renderLooks(); buildFilteredImage(); if(typeof startVidPreview==='function')startVidPreview(); }
-var LOOKS=[{id:'bw',nm:'B&W'},{id:'noir',nm:'Noir'},{id:'warm',nm:'Warm'},{id:'cool',nm:'Cool'},{id:'vintage',nm:'Vintage'},{id:'soft',nm:'Soft'}];
+var LOOKS=[{id:'bw',nm:'B&W'},{id:'noir',nm:'Noir'},{id:'warm',nm:'Warm'},{id:'cool',nm:'Cool'},{id:'vintage',nm:'Vintage'},{id:'soft',nm:'Soft'},{id:'golden',nm:'Golden'},{id:'pop',nm:'Pop'}];
 function renderLooks(){
   var w=document.getElementById('lookRow'); if(!w) return; w.innerHTML='';
   // "Original" always sits first — one clear tap back to the untouched photo.
@@ -10538,7 +10560,6 @@ function loadVidImg(src){
 }
 function openVideoStudio(customImg){
   if(!loadedOrFirst()){ newAgentFlow(true); return; }
-  document.getElementById('vidKey').value=VIDCFG.key||'';
   // premium-only "remove watermark" option (quiet; most people never touch it)
   var nwRow=document.getElementById('noWatermarkRow'), nwBox=document.getElementById('noWatermark');
   if(nwRow) nwRow.style.display = isPaid() ? 'flex' : 'none';
@@ -10975,7 +10996,7 @@ function setVidStatus(id,html){ var e=document.getElementById(id); if(e)e.innerH
 /* Recreate the photo from a prompt (routed through the secure proxy). */
 var aiEditedImage=null;
 function editImageAI(){
-  var _vk=document.getElementById('vidKey'); if(_vk) VIDCFG.key=_vk.value.trim();
+  // (key handled server-side by the secure proxy — no pasted key needed)
   if(!S.photo){ setVidStatus('editStatus','Add a photo to your friend first.'); return; }
   var prompt=(document.getElementById('editPrompt').value||'').trim();
   if(!prompt){ setVidStatus('editStatus','Describe how to recreate the image first.'); return; }
@@ -11151,7 +11172,7 @@ function pollRemoveBgProxy(reqId){
         });
       } else if(j.status==='FAILED'){ setVidStatus('bgStatus','Removal failed. '+(j.error||'Please try again.'));
       } else if(tries>40){ setVidStatus('bgStatus','Still working — please try again in a moment.');
-      } else { setVidStatus('bgStatus','Removing background… ('+(j.status||'in queue')+') '+tries*3+'s'); setTimeout(check,3000); }
+      } else { setTimeout(check,3000); }
     }).catch(e=>setVidStatus('bgStatus','Polling failed: '+e.message));
   }
   check();
@@ -11228,7 +11249,6 @@ function generateAIVideo(){
     setVidStatus('aiVidStatus', aiVideoCapMessage());
     return;
   }
-  VIDCFG.key=document.getElementById('vidKey').value.trim();
   // Prefer the image the user actually created in the studio: the nano-banana
   // recreate (aiEditedImage) OR the background-removed / composited image
   // (vidCustomImg). Only fall back to the original friend photo if neither
