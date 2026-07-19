@@ -10497,10 +10497,6 @@ function detectTransparency(img){
 }
 function loadVidImg(src){
   vidImg=new Image();
-  // Allow exporting the canvas after drawing web-hosted images (fal.ai cutouts,
-  // scene changes). Without this, sharing a decorated video/photo throws the
-  // "canvas tainted" security error. Only affects http(s) URLs; data URLs are fine.
-  try{ if(/^https?:/i.test(src)) vidImg.crossOrigin="anonymous"; }catch(e){}
   vidImg.onload=()=>{ vidImgTransparent=detectTransparency(vidImg); buildFilteredImage(); startVidPreview(); };
   vidImg.onerror=()=>{ vidImgTransparent=false; startVidPreview(); };
   vidImg.src=src;
@@ -10697,11 +10693,6 @@ function vidDrawFrame(t){
       // CUTOUT PNG: float the person directly over the living scene (the magic look)
       var pw=W*0.92, ph2=H*0.92;
       var iw0=vidImg.width, ih0=vidImg.height, ar0=iw0/ih0;
-      // Guard: if the image hasn't finished loading yet its width/height are 0,
-      // making ar0 NaN and every position/size below non-finite — which crashes
-      // ctx.drawImage ("non-finite" TypeError). Skip this frame cleanly; the
-      // outer loop keeps running and the next frame draws once dimensions exist.
-      if(!(iw0>0 && ih0>0) || !isFinite(ar0)){ ctx.restore(); return; }
       var dw, dh;
       if(ar0> pw/ph2){ dw=pw; dh=pw/ar0; } else { dh=ph2; dw=ph2*ar0; }
       var pxx=(W-dw)/2+dx, pyy=(H-dh)/2+dy+6;
@@ -10730,7 +10721,6 @@ function vidDrawFrame(t){
       ctx.restore();
       ctx.save(); roundRectPath(ctx,fx,fy,fw,fh,Math.min(fw,fh)*0.10); ctx.clip();
       var iw=vidImg.width, ih=vidImg.height, ar=iw/ih, car=fw/fh, sw,sh,sx,sy;
-      if(!(iw>0 && ih>0)){ ctx.restore(); ctx.restore(); return; }
       if(ar>car){ sh=ih; sw=ih*car; sx=(iw-sw)/2; sy=0; } else { sw=iw; sh=iw/car; sx=0; sy=(ih-sh)/2; }
       ctx.translate(fx+fw/2,fy+fh/2); ctx.scale(scale,scale); ctx.translate(-(fx+fw/2),-(fy+fh/2));
       ctx.drawImage(currentVidImage(), sx,sy,sw,sh, fx,fy,fw,fh);
@@ -11016,7 +11006,6 @@ function applyFreeCutout(cutout){
   if(vidBeforeCutout===null) vidBeforeCutout = { src: vidCustomImg || (S.photo||null), wasTransparent: vidImgTransparent };
   vidCustomImg = cutout;
   vidImg = new Image();
-  try{ if(/^https?:/i.test(cutout)) vidImg.crossOrigin="anonymous"; }catch(e){}
   vidImg.onload = function(){
     vidImgTransparent = true;
     buildFilteredImage();
@@ -11038,7 +11027,6 @@ function restoreOriginal(){
   if(!src){ vidImg=null; vidImgTransparent=false; startVidPreview(); updateBgBackBtn(); return; }
   vidCustomImg = src;
   vidImg = new Image();
-  try{ if(/^https?:/i.test(src)) vidImg.crossOrigin="anonymous"; }catch(e){}
   vidImg.onload = function(){ vidImgTransparent=false; buildFilteredImage(); startVidPreview(); updateBgBackBtn(); setVidStatus('bgStatus','Background put back. 👍'); };
   vidImg.onerror = function(){ setVidStatus('bgStatus',''); };
   vidImg.src = src;
@@ -11093,7 +11081,6 @@ function pollRemoveBgProxy(reqId){
             if(vidBeforeCutout===null) vidBeforeCutout={ src: vidCustomImg || (S.photo||null), wasTransparent: vidImgTransparent };
             vidCustomImg=out;
             vidImg=new Image();
-            try{ if(/^https?:/i.test(out)) vidImg.crossOrigin="anonymous"; }catch(e){}
             vidImg.onload=()=>{ vidImgTransparent=true; buildFilteredImage(); if(SCENE_STYLES.indexOf(vidStyle)<0){ vidStyle='clouds'; renderVidStyles(); } startVidPreview(); updateBgBackBtn(); };
             vidImg.src=out;
             setVidStatus('bgStatus','Done! Background removed — your cutout is now floating in the scene. Pick Clouds, Hearts, Snow, Bubbles or Balloons to see it.');
@@ -11119,7 +11106,6 @@ function pollRemoveBg(statusUrl, resultUrl){
             if(vidBeforeCutout===null) vidBeforeCutout={ src: vidCustomImg || (S.photo||null), wasTransparent: vidImgTransparent };
             vidCustomImg=out;
             vidImg=new Image();
-            try{ if(/^https?:/i.test(out)) vidImg.crossOrigin="anonymous"; }catch(e){}
             vidImg.onload=()=>{ vidImgTransparent=true; buildFilteredImage(); if(SCENE_STYLES.indexOf(vidStyle)<0){ vidStyle='clouds'; renderVidStyles(); } startVidPreview(); updateBgBackBtn(); };
             vidImg.src=out;
             setVidStatus('bgStatus','Done! Background removed — your cutout is now floating in the scene. Pick Clouds, Hearts, Snow, Bubbles or Balloons to see it.');
