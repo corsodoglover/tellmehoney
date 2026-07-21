@@ -2022,7 +2022,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v25 · clone diagnostic</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v26 · gallon plus + clone fix</div>
   </div>
 </section>
 
@@ -2268,7 +2268,7 @@ textarea{resize:none;line-height:1.4;}
     <div class="cloud-box">
       <div class="cloud-head"><span>🎬 Demo: switch tier</span></div>
       <p class="rec-hint" style="margin:6px 0 10px">For showing the app — flip between tiers to see what each unlocks. (Real plans come with accounts.)</p>
-      <div class="freq-row" id="tierDemoRow" style="grid-template-columns:repeat(3,1fr)"></div>
+      <div class="freq-row" id="tierDemoRow" style="grid-template-columns:repeat(4,1fr)"></div>
     </div>
   </div>
 </section>
@@ -4473,14 +4473,15 @@ var TIERS={
      -1 = the whole library. freeDrops: new packs arrive free.  */
   pint:  { nm:"Pint",   ic:"🍯",    friends:1,  downloads:-1, voices:"device", video:false, aivideo:false, uploadVoice:false, langPhrases:20, freeDrops:false },
   quart: { nm:"Quart",  ic:"🍯🍯",  friends:2,  downloads:-1, voices:"openai", video:true,  aivideo:true,  uploadVoice:false, langPhrases:-1, freeDrops:false },
-  gallon:{ nm:"Gallon", ic:"🍯🍯🍯",friends:3,  downloads:-1, voices:"cloned", video:true,  aivideo:true,  uploadVoice:true,  langPhrases:-1, freeDrops:true }
+  gallon:{ nm:"Gallon", ic:"🍯🍯🍯",friends:3,  downloads:-1, voices:"cloned", video:true,  aivideo:true,  uploadVoice:true,  langPhrases:-1, freeDrops:true },
+  gallonplus:{ nm:"Gallon Plus", ic:"🍯🍯🍯🍯",friends:-1, downloads:-1, voices:"cloned", video:true,  aivideo:true,  uploadVoice:true,  langPhrases:-1, freeDrops:true }
 };
 /* How many phrases of a language this person can reach right now. */
 function langLimit(){ var n=tier().langPhrases; return (n==null? 20 : n); }
 function langLocked(idx){ var lim=langLimit(); return lim>=0 && idx>=lim; }
 function tier(){ return TIERS[SETTINGS.tier||"pint"]||TIERS.pint; }
 function tierName(){ return tier().nm; }
-function tierAtLeast(t){ var order=["pint","quart","gallon"]; return order.indexOf(SETTINGS.tier||"pint") >= order.indexOf(t); }
+function tierAtLeast(t){ var order=["pint","quart","gallon","gallonplus"]; return order.indexOf(SETTINGS.tier||"pint") >= order.indexOf(t); }
 /* OWNER mode: shows the beta AI Studio (your Fal.ai tools). Off in the public/share build.
    Flip on for your private build by setting SETTINGS.owner=true (or tap the title 5x, see ownerTap). */
 function isOwner(){ return !!SETTINGS.owner; }
@@ -14203,11 +14204,13 @@ function devDRemove(i){ var arr=SETTINGS.journalDoodles[_devKey()]; if(arr){ arr
 
 var TIER_INFO=[
   { id:"pint",   mo:"Free", yr:"", life:"", tag:"You're here",
-    feats:["Honey's own voice, always","Talk & swap jokes anytime","Share verses, pics & videos — unlimited","Learn phrases in 5 languages","Word puzzles & fun memory games","Interactive journal & emoji mood check-ins","Steps, sleep & wellness check-ins — Apple Health","Create calendars & events, name & call on lists","1 friend"] },
+    feats:["Honey's own voice","Talk & swap jokes","Share verses, pics & videos — unlimited","Learn phrases in 5 languages","Word puzzles & fun memory games","Interactive journal & emoji mood check-ins","Steps, sleep & wellness check-ins — Apple Health","Create calendars & events, name & call on lists","1 friend"] },
   { id:"quart",  mo:"$8.99/mo", yr:"$59/yr — save 45%", life:"$59/yr — locked & guaranteed", tag:"Most popular",
-    feats:["Everything in Pint","Honey AI remembers you","Her richer, gentle voices","Premium AI voices spoken like a friend","Every phrase, every language","Chat with Honey's lifelike AI voice","Bring photos & videos to life with AI","Two friends"] },
+    feats:["Everything in Pint","Honey AI remembers","Her richer, gentle voice in journals and list recall","Premium AI voices spoken like a friend","Every phrase, every language","Chat with Honey's lifelike AI voice","Bring photos & videos to life with AI","Two friends"] },
   { id:"gallon", mo:"$16.99/mo", yr:"$119/yr — save 42%", life:"$119/yr — locked & guaranteed", tag:"Everybody wants a Gallon",
-    feats:["Everything in Quart","Honey AI at her most lifelike","Clone and enjoy your own AI voice","Enjoy Premium AI voices for chat, story time & interactive games","New story, journal & language packs, free — always","Record & save your own keepsakes","More AI photo & videos to share!","Three friends"] }
+    feats:["Everything in Quart","Honey AI lifelike","Clone & enjoy your own voice","New story, journal & language packs free","Enjoy premium AI voices for chat, storytime & games","Record & save your own keepsakes","More AI studio to share","Three friends"] },
+  { id:"gallonplus", mo:"$29.99/mo", yr:"$209/yr — save 42%", life:"$209/yr — locked & guaranteed", tag:"The whole jar",
+    feats:["Everything in Gallon","Your own voice all day","Chat back & forth in a voice you love","Keep a loved one's voice always close","AI voice with steps, sleep & wellness — Apple Health","Story time & games in your voice","Unlimited friends — the whole family","The most honey to share weekly"] }
 ];
 function openTiers(){
   document.getElementById('welcome').classList.remove('sleeping','waking');
@@ -14243,7 +14246,7 @@ function upgradePrompt(t){
 }
 function renderTierDemo(){
   var w=document.getElementById('tierDemoRow'); if(!w)return; w.innerHTML='';
-  ["pint","quart","gallon"].forEach(t=>{
+  ["pint","quart","gallon","gallonplus"].forEach(t=>{
     var b=document.createElement('button'); b.className='freq-btn'+((SETTINGS.tier||'pint')===t?' sel':'');
     b.innerHTML='<span class="fe">'+TIERS[t].ic+'</span>'+TIERS[t].nm;
     b.onclick=()=>{ setTier(t); renderTierCards(); renderTierDemo(); };
