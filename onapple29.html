@@ -2022,7 +2022,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v25 · clone diagnostic</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v24 · journal recall</div>
   </div>
 </section>
 
@@ -2548,9 +2548,9 @@ textarea{resize:none;line-height:1.4;}
     <div class="cloud-box" id="yourVoiceBox">
       <div class="cloud-head"><span>🎙️ Your Voice</span></div>
       <p class="rec-hint" style="margin:6px 0 10px">Record a little of your own voice and Honey can speak in it. Once it’s made, “Your Voice” appears right next to Honey up top — just tap to switch. <b>Comes with Gallon.</b></p>
-      <label style="display:flex;align-items:flex-start;gap:10px;font-size:14px;margin:4px 0 14px;cursor:pointer;background:var(--panel2);border:1.5px solid var(--gold);border-radius:12px;padding:12px 14px">
-        <input type="checkbox" id="cloneConsent" onchange="cloneConsentToggle(this)" style="margin-top:2px;transform:scale(1.5);accent-color:var(--gold)">
-        <span><b>Check here first:</b> This is my own voice, or I have someone's permission to use theirs. <span style="color:var(--muted)">(Checking this turns on the Record button below.)</span></span>
+      <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;margin:4px 0 12px;cursor:pointer">
+        <input type="checkbox" id="cloneConsent" onchange="cloneConsentToggle(this)" style="margin-top:3px;transform:scale(1.2)">
+        <span>This is my own voice, or I have permission to use it.</span>
       </label>
       <button class="rec-save" id="cloneRecBtn" disabled onclick="cloneToggleRecord()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">● Record my voice</button>
       <button class="rec-save" id="cloneMakeBtn" style="margin-top:10px;display:none" onclick="cloneMakeVoice()">🍯 Use this recording</button>
@@ -10561,9 +10561,8 @@ function cloneMakeVoice(){
   form.append('audio', _cloneBlob, 'sample.mp3');
   form.append('name', (S.name||'My')+' Voice');
   fetch(HONEY_VOICE_URL,{ method:'POST', headers:{ 'apikey':PREMIUM_VOICE_KEY }, body:form })
-    .then(function(r){ return r.text().then(function(raw){ return {ok:r.ok, status:r.status, raw:raw}; }); })
-    .then(function(resp){
-      var data={}; try{ data=JSON.parse(resp.raw); }catch(e){}
+    .then(function(r){ return r.json(); })
+    .then(function(data){
       if(data && data.voiceId){
         S.cloneVoiceId=data.voiceId; persist();
         if(st) st.textContent='Your voice is ready! It’s now sitting right next to Honey. 🍯';
@@ -10573,13 +10572,10 @@ function cloneMakeVoice(){
         // auto-select it so they hear the switch happen
         cloneSelect();
       } else {
-        // TEMP DIAGNOSTIC: show what the proxy actually returned so we can fix it
-        var msg = 'Voice didn’t take. Proxy said ['+resp.status+']: '+(resp.raw||'(empty)').slice(0,240);
-        if(st) st.textContent=msg;
-        try{ console.log('CLONE MAKE RESPONSE:', resp); }catch(e){}
+        if(st) st.textContent='That didn’t take — try a slightly longer, clearer recording.';
       }
     })
-    .catch(function(err){ if(st) st.textContent='Network error making your voice: '+(err&&err.message?err.message:'unknown'); });
+    .catch(function(){ if(st) st.textContent='Something went wrong making your voice. Try again in a moment.'; });
 }
 
 /* pick the clone as the speaking voice */
