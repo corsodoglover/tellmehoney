@@ -2022,7 +2022,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v24 · journal recall</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v21 · my saved jokes</div>
   </div>
 </section>
 
@@ -2545,17 +2545,13 @@ textarea{resize:none;line-height:1.4;}
     <label class="rec-label" style="margin-top:18px">How often she tells jokes</label>
     <div class="freq-row" id="freqRow"></div>
 
-    <div class="cloud-box" id="yourVoiceBox">
-      <div class="cloud-head"><span>🎙️ Your Voice</span></div>
-      <p class="rec-hint" style="margin:6px 0 10px">Record a little of your own voice and Honey can speak in it. Once it’s made, “Your Voice” appears right next to Honey up top — just tap to switch. <b>Comes with Gallon.</b></p>
-      <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;margin:4px 0 12px;cursor:pointer">
-        <input type="checkbox" id="cloneConsent" onchange="cloneConsentToggle(this)" style="margin-top:3px;transform:scale(1.2)">
-        <span>This is my own voice, or I have permission to use it.</span>
-      </label>
-      <button class="rec-save" id="cloneRecBtn" disabled onclick="cloneToggleRecord()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">● Record my voice</button>
-      <button class="rec-save" id="cloneMakeBtn" style="margin-top:10px;display:none" onclick="cloneMakeVoice()">🍯 Use this recording</button>
-      <button class="rec-save" id="cloneDelBtn" style="margin-top:10px;display:none;background:var(--panel2);color:var(--muted);border:1.5px solid var(--line)" onclick="cloneDelete()">🗑️ Remove my voice</button>
-      <div class="vid-status" id="cloneStatus"></div>
+    <div class="cloud-box">
+      <div class="cloud-head"><span>🎙️ Upload a voice (beta)</span></div>
+      <p class="rec-hint" style="margin:6px 0 10px">Record or upload a voice clip to save for this friend. (Plays your clip as a greeting; full voice-cloning needs the premium AI voice.)</p>
+      <input type="file" id="voiceFile" accept="audio/*" class="file-hidden" onchange="onVoiceUpload(event)">
+      <button class="rec-save" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)" onclick="document.getElementById(&#39;voiceFile&#39;).click()">📁 Upload a voice clip</button>
+      <button class="rec-save" id="voicePlayBtn" style="margin-top:10px;display:none" onclick="playCustomVoice()">▶ Play saved voice</button>
+      <div class="vid-status" id="voiceUpStatus"></div>
     </div>
 
     <div class="cloud-box" id="premiumVoiceBox">
@@ -4143,7 +4139,7 @@ var S = {
   selfView:"emoji",
   handsFree:false, ttsOn:false, speakerOn:true,
   blacklist:{}, memory:{}, goals:[], struggles:[],
-  served:{}, lastCat:null, lastJoke:null, idleStage:0, jokeFreq:"balanced", customVoice:null, cloneVoiceId:null,
+  served:{}, lastCat:null, lastJoke:null, idleStage:0, jokeFreq:"balanced", customVoice:null,
   alive:false, returning:false,
   lastWasQuestion:false, lastWasJoke:false, pendingPunch:null,
   transcript:[], agentId:null, isSelf:false, reminders:[], shopping:[], myJokes:[], avatar:"", noFace:false, editing:false, voice:"honey",
@@ -4228,7 +4224,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -5830,7 +5826,7 @@ function snapshotAgent(){   // current live S → a stored agent object
     photo:S.photo, gender:S.gender, style:S.style, name:S.name, age:S.age,
     vibe:S.vibe, traits:S.traits, about:S.about, callMe:S.callMe, selfView:S.selfView,
     blacklist:S.blacklist, memory:S.memory, goals:S.goals, struggles:S.struggles,
-    served:S.served, alive:S.alive, transcript:(S.transcript||[]).slice(-300), myJokes:S.myJokes||[], avatar:S.avatar||"", noFace:!!S.noFace, voice:S.voice||"auto", rate:S.rate||1.0, pitch:S.pitch||1.0, jokeFreq:S.jokeFreq||"balanced", customVoice:S.customVoice||null, cloneVoiceId:S.cloneVoiceId||null };
+    served:S.served, alive:S.alive, transcript:(S.transcript||[]).slice(-300), myJokes:S.myJokes||[], avatar:S.avatar||"", noFace:!!S.noFace, voice:S.voice||"auto", rate:S.rate||1.0, pitch:S.pitch||1.0, jokeFreq:S.jokeFreq||"balanced", customVoice:S.customVoice||null };
 }
 var saveT;
 function persist(){
@@ -6843,101 +6839,6 @@ function getJoke(surprise,forceCat){
    path and not a missing clip. Both clips are recorded and verified. */
 var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no expiration date.", ci:catIdx("eighties_cool")};
 
-/* ── TOPIC-AWARE JOKES ──────────────────────────────────────────────────────
-   "tell me a cat joke" / "a joke about a tractor" → pull from the RIGHT recorded
-   category when we have one. No recorded match: paid users get a real AI joke on
-   that exact topic; free users get the closest recorded category. Still free,
-   still Honey's voice, just smarter about WHICH recorded joke it picks. */
-var JOKE_TOPICS=[
-  {cat:"cat",             words:["cat","kitten","kitty","feline"]},
-  {cat:"dog",             words:["dog","puppy","pup","canine","doggo"]},
-  {cat:"fish",            words:["fish","fishing","fisherman","goldfish","bass","trout"]},
-  {cat:"redneck_genius",  words:["tractor","redneck","country","farm boy","truck","pickup","hillbilly","backwoods"]},
-  {cat:"animalfarm",      words:["cow","pig","horse","chicken","duck","goat","sheep","donkey","rooster","hen","barn","pony","farm animal"]},
-  {cat:"gameday",         words:["golf","sport","sports","football","baseball","basketball","hockey","tennis","bowling","game day","soccer"]},
-  {cat:"nothing_but_net", words:["athlete","coach","team","referee","player"]},
-  {cat:"dad_jokes",       words:["dad","corny","pun","groaner"]},
-  {cat:"front_porch",     words:["porch","southern","sweet tea","biscuit","grandma","grandpa"]},
-  {cat:"zen_master",      words:["zen","monk","meditation","calm","buddhist"]},
-  {cat:"roast_master",    words:["roast","insult","burn","savage"]},
-  {cat:"northerner",      words:["snow","winter","cold","northern","blizzard"]},
-  {cat:"snob_bird",       words:["goose","canada","canadian","snob"]},
-  {cat:"eighties_cool",   words:["eighties","80s","retro","cassette","walkman"]},
-  {cat:"nowwhere",        words:["forget","memory","forgot","keys","glasses"]},
-  {cat:"dry_toast_office",words:["office","work","meeting","boss","cubicle","email"]},
-  {cat:"smart_aleck",     words:["smart","clever","know it all","sarcastic"]}
-];
-/* returns the category KEY whose topic words appear in the text, or null */
-function jokeTopicMatch(l){
-  for(var i=0;i<JOKE_TOPICS.length;i++){
-    var t=JOKE_TOPICS[i];
-    for(var j=0;j<t.words.length;j++){
-      // word-boundary-ish match so "cat" doesn't fire on "category"
-      var w=t.words[j];
-      var re=new RegExp("\\b"+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"s?\\b");
-      if(re.test(l)) return t.cat;
-    }
-  }
-  return null;
-}
-/* the smart entry point the chat calls when it hears a joke request */
-function handleJokeRequest(t, l){
-  if(/roast/.test(l)){ tellJoke(false, catIdx("roast_master")); return; }
-  var topicCat = jokeTopicMatch(l);
-  // Did they actually name a topic? (a word after "about", or any topic-ish noun)
-  var namedTopic = /\babout\b|\bcat\b|\bdog\b|\btractor\b|\bgolf\b|\bfish\b|\bdad\b/.test(l) || topicCat;
-  if(topicCat){ tellJoke(false, catIdx(topicCat)); return; }        // we have that category → use it
-  // No recorded category for this topic.
-  if(namedTopic && aiShouldAnswer(t)){
-    // Paid AI available → let her actually invent a joke on THAT topic.
-    themTyping(function(){
-      askHoney("Tell me a short, clean, family-friendly joke about this topic. Setup then punchline, two short lines. Topic: "+t)
-        .then(function(reply){
-          if(reply){ useAIChat(); pushThem(reply); }
-          else { tellJoke(/surprise|random/.test(l)); }   // AI hiccup → random recorded
-        });
-    });
-    return;
-  }
-  // Free tier (or no topic named) → closest recorded category, else random.
-  if(topicCat){ tellJoke(false, catIdx(topicCat)); return; }
-  tellJoke(/surprise|random/.test(l));
-}
-
-/* ── JOURNAL RECALL ─────────────────────────────────────────────────────────
-   "what day did I eat calabash seafood with aunt sue?" → search journal TITLES
-   for the meaningful words, and tell them the date of the best match. Titles
-   only (not full entries), matching how the person names their memories. */
-var JR_STOP={the:1,a:1,an:1,i:1,my:1,me:1,we:1,you:1,to:1,at:1,in:1,on:1,of:1,for:1,with:1,and:1,or:1,was:1,were:1,did:1,do:1,day:1,date:1,when:1,what:1,that:1,it:1,is:1,go:1,went:1,had:1,have:1,get:1,got:1,ate:1,eat:1,eating:1,time:1,about:1,tell:1,remember:1,which:1,your:1,journal:1,entry:1};
-function journalRecall(t, l){
-  var entries=(SETTINGS.journal||[]).filter(function(e){return e && e.title;});
-  if(!entries.length){
-    themTyping(function(){ pushThem(vibeColor("I don't see any journal entries yet, sugar. Once you've written a few, I can look back and tell you when things happened. 🍯")); });
-    return true;
-  }
-  // pull the meaningful words from their question (drop the little filler words)
-  var words=l.replace(/[^a-z0-9\s']/g,' ').split(/\s+/).filter(function(w){ return w.length>2 && !JR_STOP[w]; });
-  if(!words.length){ return false; } // nothing to search on — let normal chat handle it
-  // score every entry by how many of those words appear in its TITLE
-  var best=null, bestScore=0;
-  entries.forEach(function(e){
-    var title=(e.title||'').toLowerCase();
-    var score=0;
-    words.forEach(function(w){ if(title.indexOf(w)>=0) score++; });
-    if(score>bestScore){ bestScore=score; best=e; }
-  });
-  if(!best || bestScore===0){
-    themTyping(function(){ pushThem(vibeColor("I looked back through your journal titles but couldn't find that one. Want to try different words — or check the Journal to see how you titled it? 🍯")); });
-    return true;
-  }
-  var d=new Date(best.when);
-  var dateStr=d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-  themTyping(function(){
-    pushThem(vibeColor("That was "+dateStr+" — your entry titled \u201c"+best.title+".\u201d 🍯"));
-  });
-  return true;
-}
-
 function tellJoke(surprise,forceCat,noPre,fixedJoke){
   themTyping(()=>{
     var _pool = SETUP_LINES[S.vibe] || SETUP_LINES.Warm;
@@ -7024,11 +6925,7 @@ function userSays(t){
     var vcat = VERSE_CATS[Math.floor(Math.random()*VERSE_CATS.length)];
     tellVerse(vcat); return;
   }
-  // ── JOURNAL RECALL: "what day did I…", "when did I…", "what date was…" ──
-  if(/(what day|what date|which day|when did (i|we)|when was (it|that)|remind me when|do you remember when)/.test(l)){
-    if(journalRecall(t, l)) return;
-  }
-  if(/(joke|funny|laugh|make me|comedy)/.test(l)){ handleJokeRequest(t, l); return; }
+  if(/(joke|funny|laugh|make me|comedy)/.test(l)){ if(/roast/.test(l))tellJoke(false,catIdx("roast_master")); else tellJoke(/surprise|random/.test(l)); return; }
   if(/(another|again|more|next)/.test(l)){ tellJoke(); return; }
   if(/(roast)/.test(l)){ tellJoke(false,catIdx("roast_master")); return; }
   // ── PRAYER (offered gently, never pushed) ──
@@ -10400,25 +10297,12 @@ function cloudSpeak(t){
   speakQueue++; cloudInFlight++; setTalking(true); if(listening) pauseListening();
   var req;
   if(CLOUD.provider==='elevenlabs'){
-    // Honey's cloned voice — and the USER'S own cloned voice — go through the SECURE PROXY.
-    // The ElevenLabs key AND Honey's voice ID live safely on the server, never in the app.
-    // When the user has picked "Your Voice", pass their saved clone voiceId so the proxy
-    // speaks in THEIR voice instead of Honey's. Guarded by the daily fair-use cap.
-    var body={ text:t, speed:clampNum(S.rate||0.85,0.7,1.2) };
-    if((S.voice==='myclone') && hasClone()){
-      if(cloneCapReached()){
-        // gently fall back to Honey's free recorded voice for the rest of the day
-        cloudInFlight=Math.max(0,cloudInFlight-1); speakQueue=Math.max(0,speakQueue-1); setTalking(false);
-        if('speechSynthesis'in window) speak(t);
-        return;
-      }
-      body.voiceId=S.cloneVoiceId;
-      cloneBumpUsed();
-    }
+    // Honey's cloned voice now goes through the SECURE PROXY.
+    // The ElevenLabs key AND voice ID live safely on the server — never in the app.
     req=fetch(HONEY_VOICE_URL,{
       method:"POST",
       headers:{ "apikey":PREMIUM_VOICE_KEY, "Content-Type":"application/json" },
-      body:JSON.stringify(body)
+      body:JSON.stringify({ text:t, speed:clampNum(S.rate||0.85,0.7,1.2) })
     });
   } else {
     // Premium OpenAI voices now go through our SECURE PROXY (Supabase Edge Function).
@@ -10474,13 +10358,9 @@ function openVoicePicker(){
   CLOUD.enabled=true;   // premium always available now (keys live safely in the proxy)
   renderCloudVoices();
   renderFreqRow();
+  document.getElementById('voicePlayBtn').style.display = S.customVoice ? 'block':'none';
+  document.getElementById('voiceUpStatus').textContent = S.customVoice ? 'A saved voice clip is stored for this friend.' : '';
   document.getElementById('voiceOverlay').classList.add('on');
-  // Your Voice box state: show delete if a clone exists, reset consent/record each open
-  var del=document.getElementById('cloneDelBtn'); if(del) del.style.display = hasClone() ? 'block':'none';
-  var mk=document.getElementById('cloneMakeBtn'); if(mk) mk.style.display='none';
-  var cc=document.getElementById('cloneConsent'); if(cc) cc.checked=false;
-  var rb=document.getElementById('cloneRecBtn'); if(rb){ rb.disabled=true; rb.textContent='● Record my voice'; }
-  var cs=document.getElementById('cloneStatus'); if(cs) cs.textContent = hasClone() ? 'Your voice is ready — it’s the tile next to Honey. 🍯' : '';
   applyTierLocks();
 }
 var JOKE_FREQS=[
@@ -10497,115 +10377,6 @@ function renderFreqRow(){
       toast(f.id==='ask'?'She\'ll only joke when you ask.':f.id==='chill'?'Fewer jokes — easygoing.':f.id==='chatty'?'Lots of jokes!':'Balanced jokes.'); };
     w.appendChild(b); });
 }
-/* ══════════════════════════════════════════════════════════════════════════
-   YOUR VOICE — real ElevenLabs cloning through the secure honey-voice proxy.
-   Record in-app → consent → create a voice → it becomes a tile beside Honey.
-   Gallon and up only. Fair-use cap ~70 live clone lines/day (spec).
-   ══════════════════════════════════════════════════════════════════════════ */
-var CLONE_DAILY_CAP=70;               // fair-use ceiling for live clone speech
-var _cloneRec=null, _cloneChunks=[], _cloneBlob=null, _cloneStream=null;
-
-/* has this friend made a clone? (voice id saved) */
-function hasClone(){ return !!(S.cloneVoiceId); }
-/* is the clone allowed to be MADE here? (Gallon and up, or owner) */
-function cloneAllowed(){ return isOwner() || tierAtLeast('gallon'); }
-
-/* daily cap bookkeeping — resets each calendar day */
-function cloneDayKey(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
-function cloneUsedToday(){ if(SETTINGS.cloneDay!==cloneDayKey()){ SETTINGS.cloneDay=cloneDayKey(); SETTINGS.cloneUsed=0; } return SETTINGS.cloneUsed||0; }
-function cloneBumpUsed(){ cloneUsedToday(); SETTINGS.cloneUsed=(SETTINGS.cloneUsed||0)+1; saveSettings(); }
-function cloneCapReached(){ return cloneUsedToday()>=CLONE_DAILY_CAP; }
-
-/* toggle the consent checkbox → enables the Record button */
-function cloneConsentToggle(cb){
-  var btn=document.getElementById('cloneRecBtn');
-  if(btn) btn.disabled = !cb.checked;
-}
-
-/* start / stop recording the voice sample with the mic */
-function cloneToggleRecord(){
-  if(!cloneAllowed()){ toast("Voice cloning comes with Gallon."); return; }
-  if(_cloneRec && _cloneRec.state==='recording'){ cloneStopRecord(); return; }
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-    document.getElementById('cloneStatus').textContent='This device can’t record here — try the app.'; return;
-  }
-  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
-    _cloneStream=stream; _cloneChunks=[];
-    _cloneRec=new MediaRecorder(stream);
-    _cloneRec.ondataavailable=function(e){ if(e.data && e.data.size) _cloneChunks.push(e.data); };
-    _cloneRec.onstop=function(){
-      _cloneBlob=new Blob(_cloneChunks,{type:'audio/mpeg'});
-      try{ _cloneStream.getTracks().forEach(function(t){t.stop();}); }catch(e){}
-      var st=document.getElementById('cloneStatus');
-      if(st) st.textContent='Got it! Tap “Use this recording” to make your voice.';
-      var mk=document.getElementById('cloneMakeBtn'); if(mk) mk.style.display='block';
-    };
-    _cloneRec.start();
-    var b=document.getElementById('cloneRecBtn'); if(b) b.textContent='⏹ Stop recording';
-    var st=document.getElementById('cloneStatus'); if(st) st.textContent='Recording… say a few warm sentences, then tap Stop.';
-  }).catch(function(){
-    document.getElementById('cloneStatus').textContent='I couldn’t reach the microphone. Check the app’s mic permission.';
-  });
-}
-function cloneStopRecord(){
-  try{ if(_cloneRec && _cloneRec.state==='recording') _cloneRec.stop(); }catch(e){}
-  var b=document.getElementById('cloneRecBtn'); if(b) b.textContent='● Record my voice';
-}
-
-/* send the recording to the proxy's clone door → save the returned voice id */
-function cloneMakeVoice(){
-  if(!cloneAllowed()){ toast("Voice cloning comes with Gallon."); return; }
-  if(!_cloneBlob){ document.getElementById('cloneStatus').textContent='Record a little first, then tap this.'; return; }
-  var st=document.getElementById('cloneStatus'); if(st) st.textContent='Making your voice… this takes a few seconds. 🍯';
-  var form=new FormData();
-  form.append('audio', _cloneBlob, 'sample.mp3');
-  form.append('name', (S.name||'My')+' Voice');
-  fetch(HONEY_VOICE_URL,{ method:'POST', headers:{ 'apikey':PREMIUM_VOICE_KEY }, body:form })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      if(data && data.voiceId){
-        S.cloneVoiceId=data.voiceId; persist();
-        if(st) st.textContent='Your voice is ready! It’s now sitting right next to Honey. 🍯';
-        var mk=document.getElementById('cloneMakeBtn'); if(mk) mk.style.display='none';
-        var del=document.getElementById('cloneDelBtn'); if(del) del.style.display='block';
-        renderVoiceGrid();      // the tile beside Honey becomes "Your Voice"
-        // auto-select it so they hear the switch happen
-        cloneSelect();
-      } else {
-        if(st) st.textContent='That didn’t take — try a slightly longer, clearer recording.';
-      }
-    })
-    .catch(function(){ if(st) st.textContent='Something went wrong making your voice. Try again in a moment.'; });
-}
-
-/* pick the clone as the speaking voice */
-function cloneSelect(){
-  if(!hasClone()) return;
-  CLOUD.provider='elevenlabs';   // clone speaks through the ElevenLabs proxy
-  CLOUD.enabled=true; saveCloud();
-  S.voice='myclone'; persist();
-  renderVoiceGrid();
-  previewVoice('myclone');
-}
-
-/* delete the clone (frees an ElevenLabs slot) → tile reverts to the free voice */
-function cloneDelete(){
-  if(!hasClone()) return;
-  var id=S.cloneVoiceId;
-  var st=document.getElementById('cloneStatus'); if(st) st.textContent='Removing your voice…';
-  fetch(HONEY_VOICE_URL,{ method:'POST', headers:{ 'apikey':PREMIUM_VOICE_KEY, 'Content-Type':'application/json' },
-    body:JSON.stringify({ action:'delete', voiceId:id }) })
-    .then(function(r){ return r.json(); }).catch(function(){ return {}; })
-    .then(function(){
-      S.cloneVoiceId=null;
-      if(S.voice==='myclone'){ S.voice='honey'; }
-      persist();
-      var del=document.getElementById('cloneDelBtn'); if(del) del.style.display='none';
-      if(st) st.textContent='Your voice was removed. The tile beside Honey is back to normal.';
-      renderVoiceGrid();
-    });
-}
-
 /* upload a voice clip, store it (base64) for this friend */
 function onVoiceUpload(ev){
   // Voice cloning is a Gallon feature — it costs money per use.
@@ -10687,17 +10458,9 @@ function renderVoiceGrid(){
   VOICE_PRESETS.forEach(p=>{
     var c=document.createElement('button');
     var isHoney = !!p.honey;
-    // The tile right after Honey ("auto") becomes "Your Voice" once a clone exists.
-    var isCloneSlot = (p.id==='auto' && hasClone());
-    var selected = isCloneSlot ? (S.voice==='myclone') : (S.voice===p.id);
+    var selected = (S.voice===p.id);
     // NEVER dim/lock any voice — every option (phone voices, Honey, premium) stays fully tappable.
     c.className='vcard'+(selected?' sel':'');
-    if(isCloneSlot){
-      c.innerHTML='<div class="vem">🎙️</div><div class="vnm">Your Voice</div><div class="vplay">▶ tap to hear</div>';
-      c.onclick=()=>{ cloneSelect(); };
-      g.appendChild(c);
-      return;
-    }
     c.innerHTML='<div class="vem">'+p.em+'</div><div class="vnm">'+p.nm+'</div><div class="vplay">▶ tap to hear</div>';
     c.onclick=()=>{
       if(isHoney){
