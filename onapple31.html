@@ -2022,7 +2022,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v27 · marlee + lina voices</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v26 · gallon plus + clone fix</div>
   </div>
 </section>
 
@@ -10415,9 +10415,6 @@ function cloudSpeak(t){
       }
       body.voiceId=S.cloneVoiceId;
       cloneBumpUsed();
-    } else if(isElVoice(S.voice)){
-      // an ElevenLabs premium woman (e.g. Marlee) — speak her fixed library voice
-      body.voiceId=EL_VOICES[S.voice].voiceId;
     }
     req=fetch(HONEY_VOICE_URL,{
       method:"POST",
@@ -10640,7 +10637,7 @@ function closeVoicePicker(){ speechSynthesis.cancel(); stopCloudAudio(); documen
 function onRate(v){ S.rate=parseFloat(v); document.getElementById('rateVal').textContent=S.rate.toFixed(2)+'×'; persist(); }
 function onPitch(v){ S.pitch=parseFloat(v); document.getElementById('pitchVal').textContent=S.pitch.toFixed(2); persist(); }
 function onCloudToggle(on){ CLOUD.enabled=on; saveCloud(); renderVoiceGrid(); }
-var CLOUD_VOICES=["coral","sage","marin","cedar","nova","shimmer","marlee","lina","ballad","ash","verse","alloy","echo","fable","onyx"];
+var CLOUD_VOICES=["coral","sage","marin","cedar","nova","shimmer","ballad","ash","verse","alloy","echo","fable","onyx"];
 /* ══ VOICE CHARACTERS ══ Friendly name + personality direction for each premium voice.
    Users see the friendly name (never the OpenAI base name). The "dir" is a director's
    note sent to the voice so it PERFORMS as that character. */
@@ -10659,15 +10656,6 @@ var VOICE_CHARACTERS={
   fable:  { nm:"Felix",  em:"☘️", dir:"You are Felix, a cheerful, charming Irishman with the gift of the gab. Speak with a warm, lively Irish lilt, full of good humor and twinkle — friendly, playful, and full of that easy Irish charm, like a beloved friend spinning a tale at the pub." },
   onyx:   { nm:"Drew",   em:"🌊", dir:"You are Drew, a deep, calm, reassuring presence. Speak low, steady, and soothing, grounded and warm, like the steady friend whose voice makes everything feel okay." }
 };
-/* ══ ELEVENLABS PREMIUM VOICES ══ These are real ElevenLabs library voices (not OpenAI).
-   Each has a fixed voiceId and routes through the honey-voice proxy (Turbo model),
-   the same proven path Honey and the clones use. No director's note — the voice
-   already IS the character. Added to fill the women's side alongside the OpenAI voices. */
-var EL_VOICES={
-  marlee: { nm:"Marlee", em:"🌷", voiceId:"aTxZrSrp47xsP6Ot4Kgd" },
-  lina:   { nm:"Sofia",  em:"🌹", voiceId:"oWjuL7HSoaEJRMDMP3HD" }
-};
-function isElVoice(v){ return !!(EL_VOICES && EL_VOICES[v]); }
 function voiceCharacter(v){ return VOICE_CHARACTERS[v] || null; }
 function voiceFriendlyName(v){ var c=VOICE_CHARACTERS[v]; return c ? c.nm : v; }
 function voiceDirection(v){ var c=VOICE_CHARACTERS[v]; return c ? c.dir : ""; }
@@ -10676,11 +10664,10 @@ function renderCloudVoices(){
   // sensible default by the friend's gender (female friend → warm female voice)
   if(!CLOUD.voice){ CLOUD.voice = S.gender==='M' ? 'onyx' : 'shimmer'; }
   CLOUD_VOICES.forEach(v=>{ var b=document.createElement('button'); b.className='cv'+((S.voice===v)?' sel':'');
-    var el=EL_VOICES[v]; var c=VOICE_CHARACTERS[v];
-    b.textContent = el ? (el.em+' '+el.nm) : (c?(c.em+' '+c.nm):v);
+    var c=VOICE_CHARACTERS[v]; b.textContent=(c?(c.em+' '+c.nm):v);
     b.onclick=()=>{
       CLOUD.voice=v;
-      CLOUD.provider = el ? 'elevenlabs' : 'openai';   // ElevenLabs women vs OpenAI characters
+      CLOUD.provider='openai';   // character voices are OpenAI, not Honey's ElevenLabs clone
       CLOUD.enabled=true;
       S.voice=v;                 // ← the chat checks S.voice; set it so this character speaks EVERYTHING
       persist && persist(); saveCloud && saveCloud();
