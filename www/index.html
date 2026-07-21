@@ -2548,9 +2548,9 @@ textarea{resize:none;line-height:1.4;}
     <div class="cloud-box" id="yourVoiceBox">
       <div class="cloud-head"><span>🎙️ Your Voice</span></div>
       <p class="rec-hint" style="margin:6px 0 10px">Record a little of your own voice and Honey can speak in it. Once it’s made, “Your Voice” appears right next to Honey up top — just tap to switch. <b>Comes with Gallon.</b></p>
-      <label style="display:flex;align-items:flex-start;gap:10px;font-size:14px;margin:4px 0 14px;cursor:pointer;background:var(--panel2);border:1.5px solid var(--gold);border-radius:12px;padding:12px 14px">
-        <input type="checkbox" id="cloneConsent" onchange="cloneConsentToggle(this)" style="margin-top:2px;transform:scale(1.5);accent-color:var(--gold)">
-        <span><b>Check here first:</b> This is my own voice, or I have someone's permission to use theirs. <span style="color:var(--muted)">(Checking this turns on the Record button below.)</span></span>
+      <label style="display:flex;align-items:flex-start;gap:7px;font-size:12px;margin:2px 0 8px;cursor:pointer">
+        <input type="checkbox" id="cloneConsent" onchange="cloneConsentToggle(this)" style="margin-top:2px;transform:scale(1.05);accent-color:var(--gold)">
+        <span>This is my own voice, or I have permission to use theirs. <span style="color:var(--muted)">(Turns on the Record button.)</span></span>
       </label>
       <button class="rec-save" id="cloneRecBtn" disabled onclick="cloneToggleRecord()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">● Record my voice</button>
       <button class="rec-save" id="cloneMakeBtn" style="margin-top:10px;display:none" onclick="cloneMakeVoice()">🍯 Use this recording</button>
