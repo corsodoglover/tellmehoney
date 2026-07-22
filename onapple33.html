@@ -2022,7 +2022,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v28 · women voices chat fix</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v27 · marlee + lina voices</div>
   </div>
 </section>
 
@@ -2548,10 +2548,10 @@ textarea{resize:none;line-height:1.4;}
     <div class="cloud-box" id="yourVoiceBox">
       <div class="cloud-head"><span>🎙️ Your Voice</span></div>
       <p class="rec-hint" style="margin:6px 0 10px">Record a little of your own voice and Honey can speak in it. Once it’s made, “Your Voice” appears right next to Honey up top — just tap to switch. <b>Comes with Gallon.</b></p>
-      <p class="rec-hint" style="margin:2px 0 10px;cursor:pointer" onclick="var cb=document.getElementById('cloneConsent'); cb.checked=!cb.checked; cloneConsentToggle(cb);">
-        <input type="checkbox" id="cloneConsent" onclick="event.stopPropagation()" onchange="cloneConsentToggle(this)" style="transform:scale(1.05);accent-color:var(--gold);vertical-align:middle;margin-right:6px">
-        This is my own voice, or I have permission to use theirs. <span style="color:var(--muted)">(Turns on the Record button.)</span>
-      </p>
+      <label style="display:flex;align-items:flex-start;gap:7px;font-size:12px;margin:2px 0 8px;cursor:pointer">
+        <input type="checkbox" id="cloneConsent" onchange="cloneConsentToggle(this)" style="margin-top:2px;transform:scale(1.05);accent-color:var(--gold)">
+        <span>This is my own voice, or I have permission to use theirs. <span style="color:var(--muted)">(Turns on the Record button.)</span></span>
+      </label>
       <button class="rec-save" id="cloneRecBtn" disabled onclick="cloneToggleRecord()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">● Record my voice</button>
       <button class="rec-save" id="cloneMakeBtn" style="margin-top:10px;display:none" onclick="cloneMakeVoice()">🍯 Use this recording</button>
       <button class="rec-save" id="cloneDelBtn" style="margin-top:10px;display:none;background:var(--panel2);color:var(--muted);border:1.5px solid var(--line)" onclick="cloneDelete()">🗑️ Remove my voice</button>
@@ -10276,8 +10276,7 @@ function _speakWithChosenVoice(text, myToken, next){
     // Premium (cloud) if that voice is a cloud voice and keys are set;
     // otherwise the free device voice. Never silence — they picked it.
     if(isCloudVoice(v) && cloudReady()){
-      CLOUD.provider = isElVoice(v) ? 'elevenlabs' : 'openai';   // ElevenLabs women vs OpenAI characters
-      CLOUD.voice=v;
+      CLOUD.provider='openai'; CLOUD.voice=v;   // premium character = OpenAI voice (never Honey's clone)
       if(window.__OBDEBUG) toast("voice: cloud ("+v+")");
       cloudSpeak(text); _spPollCloud(myToken, next); return;
     }
