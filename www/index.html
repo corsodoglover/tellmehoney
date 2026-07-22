@@ -1684,7 +1684,8 @@ textarea{resize:none;line-height:1.4;}
     <div class="pz-sub" id="pzSub">Tap the first letter, then the last.</div>
     <div class="pz-board"><table id="pzGrid"></table></div>
     <div class="pz-words" id="pzWords"></div>
-    <div class="pz-honey" id="pzHoney">Take your time, sugar. They're all in there.</div>
+    <div class="pz-honey" id="pzHoney">Take your time. They're all in there.</div>
+    <button id="pzVoiceBtn" onclick="pzToggleVoice()" style="background:none;border:1px solid var(--line);border-radius:20px;color:var(--muted);font-size:12px;padding:5px 12px;margin:2px auto 8px;display:block;cursor:pointer">🔊 Honey's voice: on</button>
     <button class="pz-hint" id="pzHint" onclick="pzNudge()">Give me a nudge</button>
     <div class="pz-win" id="pzWin">
       <div class="pz-win-big" id="pzWinBig">Well, look at you! 🍯</div>
@@ -2022,7 +2023,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v30 · honey speaks again</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v33 · puzzle voice + toggle</div>
   </div>
 </section>
 
@@ -4228,7 +4229,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -5999,7 +6000,7 @@ var GREET={
   Mysterious:["You came back. Interesting.","I had a feeling you'd call. I usually do.","Ah. Right on time, somehow."]
 };
 var WELCOME_BACK={
-  Warm:["Hey, you're back. I was just resting my eyes. Missed you.","There you are, darlin'. Pull up a chair — I'm all yours.","Welcome back. Glad you woke me up, thank you."],
+  Warm:["Hey, you're back. I was just resting my eyes. Missed you.","There you are. Pull up a chair — I'm all yours.","Welcome back. Glad you woke me up, thank you."],
   Flirty:["Mmm, look who couldn't stay away. Welcome back.","You came back for me. I knew you would.","Back already? I'm flattered. Sit close."],
   Sarcastic:["Oh, you're back. Try to contain your excitement.","Welcome back. I barely slept, thinking of new material.","Look who returned. Missed my charm, huh."],
   Chill:["Heyyy, welcome back. Right where we left off.","Oh nice, you're back. I was just vibing in standby.","Back again? Cool. Let's pick it up."],
@@ -6913,7 +6914,7 @@ var JR_STOP={the:1,a:1,an:1,i:1,my:1,me:1,we:1,you:1,to:1,at:1,in:1,on:1,of:1,fo
 function journalRecall(t, l){
   var entries=(SETTINGS.journal||[]).filter(function(e){return e && e.title;});
   if(!entries.length){
-    themTyping(function(){ pushThem(vibeColor("I don't see any journal entries yet, sugar. Once you've written a few, I can look back and tell you when things happened. 🍯")); });
+    themTyping(function(){ pushThem(vibeColor("I don't see any journal entries yet. Once you've written a few, I can look back and tell you when things happened. 🍯")); });
     return true;
   }
   // pull the meaningful words from their question (drop the little filler words)
@@ -7190,11 +7191,13 @@ function fetchWeather(lat,lon){
       pushThemText(line);                 // weather DATA: always shown on screen
       // Honey uses recorded clips (can't say arbitrary numbers), so for HER the
       // numbers stay on screen and she just gives her warm spoken reaction.
-      // Every OTHER voice (free device voices, premium) can say numbers fine —
-      // so let them read the whole weather line aloud, like they used to.
+      // Honey has a LIVE ElevenLabs voice (her own voiceId on the proxy), so she
+      // can speak arbitrary numbers just like the user's clone and the premium
+      // voices do. The old rule that skipped her here was left over from when she
+      // only had pre-recorded clips — removed, so she reads the weather herself.
       // Route through enqueueSpeak (the normal queue) so the data line and the
       // reaction share ONE queue and play in order — never colliding/dropping.
-      if((S.voice||"honey")!=="honey" && S.speakerOn){
+      if(S.speakerOn){
         enqueueSpeak(spokenLine);
       }
       if(react) setTimeout(()=>themTyping(()=>{
@@ -7238,7 +7241,7 @@ function speakWeather(t, feels, hi, lo, condText){
 var WEATHER_REACTIONS={
   beautiful:[
     "Oh, it's just beautiful out there today.",
-    "Gorgeous out. Don't let me keep you, darlin' — unless you want one more joke.",
+    "Gorgeous out. Don't let me keep you — unless you want one more joke.",
     "It's fabulous outside. Go soak up a little of it for me.",
     "What a lovely day. The kind that's good for the soul."
   ],
@@ -7248,7 +7251,7 @@ var WEATHER_REACTIONS={
   ],
   cold:[
     "Brr, bundle up out there today.",
-    "It's cold, darlin'. Coat and a hot drink, doctor's orders."
+    "It's cold today. Coat and a hot drink, doctor's orders."
   ],
   rain:[
     "Grab an umbrella — or just stay in and let me entertain you.",
@@ -7264,7 +7267,7 @@ var WEATHER_REACTIONS={
   ],
   gray:[
     "Bit gray out today. Good thing I'm sunny enough for both of us.",
-    "Foggy one. Take it slow out there, darlin'."
+    "Foggy one. Take it slow out there."
   ]
 };
 function weatherReaction(code,t){
@@ -8520,7 +8523,15 @@ var BEDTIME_STORIES=[
   {t:"The Little Boat That Drifted Home",
    x:"Far out on a calm dark sea, under a sky full of soft stars, there is a little wooden boat. It isn't going anywhere in a hurry. It doesn't need to… The sea knows the way. Let your hands go loose, let your shoulders go soft, let the rocking carry you. Drift now. You are held. You are carried. You are almost home."},
   {t:"The House Settling In for the Night",
-   x:"The house is getting quiet now. The faucet drips once, slow, and then is still. The refrigerator hums its low steady hum, faithful and easy… The house hums and ticks and settles, taking care of the night so you don't have to. Breathe in soft. Breathe out slow. You are home. You are safe. You are warm. Rest now."}
+   x:"The house is getting quiet now. The faucet drips once, slow, and then is still. The refrigerator hums its low steady hum, faithful and easy… The house hums and ticks and settles, taking care of the night so you don't have to. Breathe in soft. Breathe out slow. You are home. You are safe. You are warm. Rest now."},
+  {t:"The Quilt on the Back of the Chair",
+   x:"There's a quilt folded over the back of the chair, the one that's been there so long nobody remembers folding it. Every square came from somewhere — a dress, a shirt, a curtain from a kitchen long gone… Somebody stitched it slow, on evenings just like this one, thinking about the people who'd be warm under it someday. That someday is tonight. Pull it up to your chin. You are covered. You are cared for. You are loved by hands you never met. Sleep now."},
+  {t:"The Rain on the Tin Roof",
+   x:"It started soft, the way it does — one drop, then another, then the whole roof singing at once. There's no better sound in this world than rain on tin when you're dry underneath it… Nothing out there needs you tonight. The garden's getting watered without your help. The rain will do the work till morning. Let it. Close your eyes. You are dry. You are warm. You are exactly where you belong. Rest easy."},
+  {t:"The Long Road Home",
+   x:"The headlights find the road one piece at a time, and that's all they ever need to do. Fields on both sides, dark and sleeping. A porch light way off, somebody waiting up… You don't have to see the whole way to get there. Just the next little stretch. The road knows where it's going. Ease off. Let it carry you. You are almost there. You are nearly home. Rest now."},
+  {t:"The Garden After Sundown",
+   x:"Everything out there is done working for the day. The tomatoes have quit growing till morning. The bees went home hours ago… Even the good things stop and rest — that's how they keep growing. Nothing in that garden is worried about tomorrow. Nothing needs to be. You've done your growing today too. Set it down. You are finished. You are enough. Sleep well."}
 ];
 function bedtimeStory(){
   var idx=Math.floor(Math.random()*BEDTIME_STORIES.length);
@@ -12985,7 +12996,8 @@ function pzRender(replay){
   document.getElementById('pzSub').textContent = replay
     ? "You\u2019ve done today\u2019s \u2014 tap again for fun. Faster this time?"
     : "Tap the first letter, then the last.";
-  document.getElementById('pzHoney').textContent = "Take your time, sugar. They\u2019re all in there.";
+  document.getElementById('pzHoney').textContent = "Take your time. They\u2019re all in there.";
+  pzUpdateVoiceBtn();
 
   // build grid
   var g=document.getElementById('pzGrid'); g.innerHTML="";
@@ -13007,11 +13019,26 @@ function pzRender(replay){
 }
 
 function pzCell(r,c){ return document.getElementById('pzGrid').rows[r].cells[c]; }
-function pzSay(t){
-  // The puzzle shows its guidance on screen but stays QUIET — narrating every
-  // tap gets repetitive on replay. People can tap in peace. (Honey's voice is
-  // saved for jokes, weather, and greetings — the moments that matter.)
-  document.getElementById('pzHoney').textContent=t;
+/* Puzzle voice: Honey celebrates finds, cheers the finish, and reads a hint when
+   asked — but never nags on a wrong tap. A little toggle lets people mute her.
+   pzSay(text, speak) — pass speak=true only for the good moments. */
+function pzVoiceOn(){ return SETTINGS.pzVoice!==false; }   // default ON
+function pzToggleVoice(){
+  SETTINGS.pzVoice = !pzVoiceOn();
+  saveSettings();
+  pzUpdateVoiceBtn();
+  if(!pzVoiceOn()){ try{ clearSpeech(); }catch(e){} }
+}
+function pzUpdateVoiceBtn(){
+  var b=document.getElementById('pzVoiceBtn'); if(!b) return;
+  b.textContent = pzVoiceOn() ? "🔊 Honey's voice: on" : "🔇 Honey's voice: off";
+}
+function pzSay(t, speak){
+  var el=document.getElementById('pzHoney'); if(el) el.textContent=t;
+  // Only the good moments talk: a found word, the finish, an asked-for hint.
+  if(speak && pzVoiceOn() && S.speakerOn){
+    try{ enqueueSpeak(t); }catch(e){}
+  }
 }
 
 function pzStartTimer(){
@@ -13052,7 +13079,7 @@ function pzTap(r,c,td){
     _pzFound[w]=true;
     cells.forEach(function(cc){ pzCell(cc[0],cc[1]).classList.add('found'); });
     var chip=document.getElementById('pzchip-'+w); if(chip) chip.classList.add('done');
-    pzSay(_pzCur.lines[w]||"That\u2019s one!");
+    pzSay(_pzCur.lines[w]||"That\u2019s one!", true);
     if(Object.keys(_pzFound).length===Object.keys(_pzCur.words).length) pzWin();
   } else {
     pzSay("Not quite \u2014 but keep looking, you\u2019re close.");
@@ -13107,7 +13134,7 @@ function pzWin(){
   pzRain(isFastest ? 26 : 16);
 
   // Honey cheers OUT LOUD in her voice
-  pzSay(cheer);
+  pzSay(cheer, true);
 }
 
 /* honey drops rain down from the top */
@@ -13134,7 +13161,7 @@ function pzNudge(){
   if(!left.length){ pzSay("All done \u2014 nothing left to nudge!"); return; }
   var w=left[0], s=_pzCur.words[w][0];
   pzCell(s[0],s[1]).classList.add('hint');
-  pzSay('Look for "'+w+'" \u2014 I lit its first letter.');
+  pzSay('Look for "'+w+'" \u2014 I lit its first letter.', true);
 }
 
 
