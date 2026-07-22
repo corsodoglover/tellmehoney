@@ -2023,7 +2023,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v36 · yearly pricing set</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v33 · puzzle voice + toggle</div>
   </div>
 </section>
 
@@ -4472,7 +4472,7 @@ function getList(id){ ensureLists(); return SETTINGS.lists.find(l=>l.id===id); }
 var TIERS={
   /* langPhrases: how many phrases per language you get for free.
      -1 = the whole library. freeDrops: new packs arrive free.  */
-  pint:  { nm:"Pint",   ic:"🍯",    friends:1,  downloads:-1, voices:"device", video:true,  aivideo:false, uploadVoice:false, langPhrases:20, freeDrops:false },
+  pint:  { nm:"Pint",   ic:"🍯",    friends:1,  downloads:-1, voices:"device", video:false, aivideo:false, uploadVoice:false, langPhrases:20, freeDrops:false },
   quart: { nm:"Quart",  ic:"🍯🍯",  friends:2,  downloads:-1, voices:"openai", video:true,  aivideo:true,  uploadVoice:false, langPhrases:-1, freeDrops:false },
   gallon:{ nm:"Gallon", ic:"🍯🍯🍯",friends:3,  downloads:-1, voices:"cloned", video:true,  aivideo:true,  uploadVoice:true,  langPhrases:-1, freeDrops:true },
   gallonplus:{ nm:"Gallon Plus", ic:"🍯🍯🍯🍯",friends:-1, downloads:-1, voices:"cloned", video:true,  aivideo:true,  uploadVoice:true,  langPhrases:-1, freeDrops:true }
@@ -4580,17 +4580,9 @@ function applyTierLocks(){
     if(vb){ vb.classList.remove('tier-locked'); var vo=vb.querySelector('.tier-lock-note'); if(vo)vo.remove(); }
     applyVideoCreditLock();
   } else {
-    // free user: lock the scene box by tier.
+    // free user: lock both paid boxes by tier
     lockBox('aiPremiumBox','Change the scene','quart');
-    // BUT if they've BOUGHT a video pack, the videos are theirs — let them use
-    // them. Someone who never subscribes can still buy packs through Apple.
-    if(aiVideoLeft() > 0){
-      var vb2=document.getElementById('aiVideoBox');
-      if(vb2){ vb2.classList.remove('tier-locked'); var vo2=vb2.querySelector('.tier-lock-note'); if(vo2)vo2.remove(); }
-      applyVideoCreditLock();
-    } else {
-      lockBox('aiVideoBox','Bring it to life','quart');
-    }
+    lockBox('aiVideoBox','Bring it to life','quart');
   }
 }
 /* dim the "Bring it to life" video box when out of credits; owner & users with credits see it open */
@@ -4696,10 +4688,7 @@ function aiVideoWeeklyAllowance(){
 }
 function aiVideoAllowanceToday(){ return aiVideoWeeklyAllowance() + (SETTINGS.aiVidTopups||0); }
 function aiVideoLeft(){
-  // Weekly allowance resets each week — but PURCHASED top-ups do not. Someone
-  // who bought a 20-pack keeps those videos until they use them, even across
-  // weeks. (Only the weekly used-count and allowance roll over.)
-  var t=weekKey(); if(SETTINGS.aiVidWeek!==t){ SETTINGS.aiVidWeek=t; SETTINGS.aiVidUsed=0; }
+  var t=weekKey(); if(SETTINGS.aiVidWeek!==t){ SETTINGS.aiVidWeek=t; SETTINGS.aiVidUsed=0; SETTINGS.aiVidTopups=0; }
   return Math.max(0, aiVideoAllowanceToday() - (SETTINGS.aiVidUsed||0));
 }
 function useAIVideo(){
@@ -5101,14 +5090,10 @@ function renderStore(){
   });
 
   var vid = document.getElementById('storeVideo'); vid.innerHTML='';
-  if(true){
-    // Anyone can buy a video pack — including free Pint. Some folks will never
-    // subscribe but will happily buy packs now and then, and Apple handles
-    // one-off purchases with no subscription required. Don't turn that away.
-    if(!t.aivideo){
-      vid.innerHTML = '<div class="store-sub">Buy a pack any time — no subscription needed. 🍯</div>';
-    }
-    [{n:5,coins:150,usd:"1.99"},{n:20,coins:600,usd:"6.99"}].forEach(function(o){
+  if(!t.aivideo){
+    vid.innerHTML = '<div class="store-sub">AI videos come with Quart and Gallon.</div>';
+  } else {
+    [{n:1,coins:150,usd:"1.99"},{n:5,coins:600,usd:"6.99"}].forEach(function(o){
       var c=document.createElement('div'); c.className='store-card';
       c.innerHTML = '<div class="sc-em">🎬</div>'
         + '<div class="sc-mid"><div class="sc-nm">'+o.n+' extra video'+(o.n>1?'s':'')+'</div>'
@@ -14275,7 +14260,7 @@ var TIER_INFO=[
     feats:["Everything in Pint","Honey AI remembers","Her richer, gentle voice in journals and list recall","Premium AI voices spoken like a friend","Every phrase, every language","Chat with Honey's lifelike AI voice","Bring photos & videos to life with AI","Two friends"] },
   { id:"gallon", mo:"$16.99/mo", yr:"$119/yr — save 42%", life:"$119/yr — locked & guaranteed", tag:"Everybody wants a Gallon",
     feats:["Everything in Quart","Honey AI lifelike","Clone & enjoy your own voice","New story, journal & language packs free","Enjoy premium AI voices for chat, storytime & games","Record & save your own keepsakes","More AI studio to share","Three friends"] },
-  { id:"gallonplus", mo:"$29.99/mo", yr:"$269/yr — save 25%", life:"$269/yr — locked & guaranteed", tag:"The whole jar",
+  { id:"gallonplus", mo:"$29.99/mo", yr:"$209/yr — save 42%", life:"$209/yr — locked & guaranteed", tag:"The whole jar",
     feats:["Everything in Gallon","Your own voice all day","Chat back & forth in a voice you love","Keep a loved one's voice always close","AI voice with steps, sleep & wellness — Apple Health","Story time & games in your voice","Unlimited friends — the whole family","The most honey to share weekly"] }
 ];
 function openTiers(){
