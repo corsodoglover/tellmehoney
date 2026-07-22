@@ -2022,7 +2022,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v28 · women voices chat fix</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v29 · clone speaks in chat</div>
   </div>
 </section>
 
@@ -10275,6 +10275,13 @@ function _speakWithChosenVoice(text, myToken, next){
     // A voice was chosen on purpose. It speaks everything.
     // Premium (cloud) if that voice is a cloud voice and keys are set;
     // otherwise the free device voice. Never silence — they picked it.
+    // "myclone" is the user's OWN cloned voice — it isn't in CLOUD_VOICES, so
+    // check it explicitly or the chat would fall through to a device voice.
+    if(v==='myclone' && hasClone() && cloudReady()){
+      CLOUD.provider='elevenlabs'; CLOUD.voice='myclone';
+      if(window.__OBDEBUG) toast("voice: my clone");
+      cloudSpeak(text); _spPollCloud(myToken, next); return;
+    }
     if(isCloudVoice(v) && cloudReady()){
       CLOUD.provider = isElVoice(v) ? 'elevenlabs' : 'openai';   // ElevenLabs women vs OpenAI characters
       CLOUD.voice=v;
