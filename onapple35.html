@@ -2022,7 +2022,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v30 · honey speaks again</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v29 · clone speaks in chat</div>
   </div>
 </section>
 
@@ -10728,9 +10728,6 @@ function renderVoiceGrid(){
     c.onclick=()=>{
       if(isHoney){
         // Choosing Honey keeps premium ON (it's her live-voice fill-in).
-        // Must actually re-enable it: tapping a device voice earlier set enabled=false,
-        // which would leave Honey silent on lines that need her ElevenLabs voice.
-        CLOUD.enabled=true; CLOUD.provider='elevenlabs'; saveCloud();
         S.voice=p.id; persist(); previewVoice(p.id); renderVoiceGrid(); return;
       }
       // Tapping any phone/device voice: switch to it and turn premium OFF so it actually plays the device voice.
