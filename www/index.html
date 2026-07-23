@@ -1962,8 +1962,8 @@ textarea{resize:none;line-height:1.4;}
     <div class="store-bal" id="storeBal"></div>
     <div class="store-note" id="storeTierNote"></div>
 
-    <h3 class="store-h">📖 Devotional Journals</h3>
-    <div class="store-sub">Read a page a day, and write your heart. Yours to keep in your Journal.</div>
+    <h3 class="store-h">📖 Journals</h3>
+    <div class="store-sub">Thirty days of writing, a page at a time. Yours to keep in your Journal.</div>
     <div class="store-list" id="storeBooks"></div>
 
     <h3 class="store-h">🗣️ Language Packs</h3>
@@ -1971,8 +1971,17 @@ textarea{resize:none;line-height:1.4;}
     <div class="store-list" id="storePacks"></div>
 
     <h3 class="store-h">🎬 Video Top-Ups</h3>
-    <div class="store-sub">Extra AI videos, on top of your weekly ones.</div>
+    <div class="store-sub">Extra AI videos — yours to keep, and they never expire.</div>
     <div class="store-list" id="storeVideo"></div>
+
+    <button class="store-restore" onclick="restorePurchases()"
+      style="display:block;margin:22px auto 8px;background:none;border:1px solid var(--line);
+             border-radius:20px;color:var(--muted);font-size:13px;padding:9px 18px;cursor:pointer">
+      Restore my purchases
+    </button>
+    <div class="store-sub" style="text-align:center;font-size:11.5px;margin-bottom:10px">
+      New phone? Tap here and everything you've bought comes right back.
+    </div>
   </div>
 </section>
 
@@ -2023,7 +2032,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v36 · yearly pricing set</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v38 · store ready + restore</div>
   </div>
 </section>
 
@@ -4606,7 +4615,9 @@ function applyVideoCreditLock(){
   }
 }
 /* top-up entry point — for now routes to plans; wire to Apple/Google IAP at wrap time */
-function topUpVideo(){ try{ closeVideoStudio(); }catch(e){} openTiers(); }
+/* "Top up" → the store, where the video packs live. Anyone can buy them,
+   including free Pint, so don't send people to the plan screen instead. */
+function topUpVideo(){ try{ closeVideoStudio(); }catch(e){} openStore(); }
 /* ═══════════ UPGRADE / PURCHASE (Apple/Google plug-in point) ═══════════ */
 /* isPaid(): is the user on a paid tier? (free = pint) */
 function isPaid(){ return (SETTINGS.tier||"pint")!=="pint"; }
@@ -5066,8 +5077,9 @@ function buyPackWithHoney(id){
 }
 
 function buyPackWithMoney(id){
-  // Apple IAP lands here once the products exist in App Store Connect.
-  toast("Card purchases open when the app launches in the App Store.");
+  var map={lang_travel:'langtravel', lang_grandkids:'langgrandkids',
+           lang_church:'langchurch', lang_kitchen:'langkitchen'};
+  startPurchase('com.tellmehoney.pack.'+(map[id]||id));
 }
 
 function openStore(){ go('store'); setTab('store'); renderStore(); }
@@ -5114,22 +5126,27 @@ function renderStore(){
         + '<div class="sc-mid"><div class="sc-nm">'+o.n+' extra video'+(o.n>1?'s':'')+'</div>'
         + '<div class="sc-ds">Added to this week&#39;s allowance</div></div>'
         + '<div class="sc-buy"><button class="sc-btn coin" onclick="buyVideoTopup('+o.n+','+o.coins+')">🍯 '+o.coins+'</button>'
-        + '<button class="sc-btn" onclick="buyPackWithMoney(\'vid\')">$'+o.usd+'</button></div>';
+        + '<button class="sc-btn" onclick="startPurchase(\'com.tellmehoney.topup.video'+o.n+'\')">$'+o.usd+'</button></div>';
       vid.appendChild(c);
     });
   }
 
   var books = document.getElementById('storeBooks');
   books.innerHTML='';
-  // Devotional journals FOR SALE. Once purchased, a journal leaves this shelf and
-  // lives in the Journal area ("its shelf"). Test build: "Try free" stands in for Apple purchase.
+  // Journals FOR SALE. Once bought, a journal leaves this shelf and lives in the
+  // Journal area. Priced like the packs — honey coins or real money.
   var forSale=Object.keys(JOURNALS).filter(function(jid){ return !ownsJournal(jid); });
   forSale.forEach(function(jid){
     var j=JOURNALS[jid];
+    var free = tier().freeDrops;      // Gallon & Gallon Plus get every journal free
+    var buy = free
+      ? '<button class="sc-btn" onclick="devTestUnlock(\'' + jid + '\')">Yours free</button>'
+      : '<button class="sc-btn coin" onclick="buyJournalWithHoney(\'' + jid + '\')">🍯 300</button>'
+        + '<button class="sc-btn" onclick="buyJournalWithMoney(\'' + jid + '\')">$2.99</button>';
     books.innerHTML += '<div class="store-card"><div class="sc-em">'+j.em+'</div>'
       + '<div class="sc-mid"><div class="sc-nm">'+esc(j.title)+'</div>'
       + '<div class="sc-ds">'+esc(j.sub)+' \u00b7 '+j.days.length+' days</div></div>'
-      + '<div class="sc-buy"><button class="sc-btn" onclick="devTestUnlock(\''+jid+'\')">Try free</button></div></div>';
+      + '<div class="sc-buy">'+buy+'</div></div>';
   });
   // little note pointing owners to their shelf
   var ownedCount=Object.keys(JOURNALS).filter(function(jid){ return ownsJournal(jid); }).length;
@@ -5139,12 +5156,81 @@ function renderStore(){
       + ' anytime in your <b>Journal</b>. Tap here \u203a</div>';
   }
 }
+/* ══ RESTORE PURCHASES ══ Apple REQUIRES this for any app with non-consumable
+   purchases. Someone on a new phone taps it and everything they bought comes
+   back. Wire window.NativeIAP.restore() alongside .buy() at wrap time.       */
+function restorePurchases(){
+  try{
+    if(window.NativeIAP && typeof window.NativeIAP.restore==='function'){
+      toast("Looking for your purchases\u2026");
+      return window.NativeIAP.restore().then(function(ids){
+        (ids||[]).forEach(function(id){ grantPurchase(id); });
+        toast((ids&&ids.length) ? "Everything's back \ud83c\udf6f" : "Nothing to restore \u2014 you're all set.");
+      }).catch(function(){ toast("Couldn't reach the App Store just now. Try again in a bit."); });
+    }
+  }catch(e){}
+  toast("Restore opens the day we launch on the App Store. \ud83c\udf6f");
+}
+
+/* ══ ONE DOOR FOR EVERY REAL-MONEY PURCHASE ══
+   Every "$" button in the app calls startPurchase(productId). When the native
+   Apple in-app purchase plugin is added, wire it HERE and every button in the
+   store works at once — journals, language packs, video top-ups, and tiers.
+   Product IDs match what's set up in App Store Connect.                      */
+function startPurchase(productId){
+  // NATIVE BRIDGE (set at wrap time): window.NativeIAP.buy(productId) → Promise
+  try{
+    if(window.NativeIAP && typeof window.NativeIAP.buy==='function'){
+      return window.NativeIAP.buy(productId).then(function(ok){
+        if(ok) { grantPurchase(productId); }
+      }).catch(function(){ toast("That didn't go through. Nothing was charged."); });
+    }
+  }catch(e){}
+  // Until the native plugin exists, say so plainly rather than pretending.
+  toast("Purchases open the day we launch on the App Store. \ud83c\udf6f");
+}
+
+/* Hand the right thing over once Apple confirms a purchase. */
+function grantPurchase(productId){
+  var id=String(productId||"");
+  if(id.indexOf('com.tellmehoney.journal.')===0){
+    grantJournal(id.split('.').pop()); toast("It's on your shelf \ud83c\udf3f");
+  } else if(id.indexOf('com.tellmehoney.pack.')===0){
+    var pk=id.split('.').pop();
+    var map={langtravel:'lang_travel',langgrandkids:'lang_grandkids',
+             langchurch:'lang_church',langkitchen:'lang_kitchen'};
+    if(map[pk]) grantPack(map[pk],'bought');
+    toast("Unlocked \ud83c\udf6f");
+  } else if(id==='com.tellmehoney.topup.video5'){
+    SETTINGS.aiVidTopups=(SETTINGS.aiVidTopups||0)+5; saveSettings(); toast("5 videos added \ud83c\udfac");
+  } else if(id==='com.tellmehoney.topup.video20'){
+    SETTINGS.aiVidTopups=(SETTINGS.aiVidTopups||0)+20; saveSettings(); toast("20 videos added \ud83c\udfac");
+  }
+  renderStore && renderStore();
+}
+
 function devTestUnlock(jid){
   grantJournal(jid);
   var j=JOURNALS[jid];
   toast((j?j.title:'Journal')+" is on your shelf \ud83c\udf3f");
   renderStore();
   setTimeout(function(){ devOpen(jid); }, 500);
+}
+
+/* Buy a journal with honey coins — same price as a language pack. */
+function buyJournalWithHoney(jid){
+  if(ownsJournal(jid)) return;
+  if(!spendHoney(300)) return;
+  grantJournal(jid);
+  var j=JOURNALS[jid];
+  toast((j?j.title:'Journal')+" is on your shelf \ud83c\udf3f");
+  renderStore();
+  setTimeout(function(){ devOpen(jid); }, 500);
+}
+
+/* Buy a journal with money — Apple IAP lands here once wired. */
+function buyJournalWithMoney(jid){
+  startPurchase('com.tellmehoney.journal.'+jid);
 }
 
 function buyVideoTopup(n, coins){
@@ -6908,7 +6994,9 @@ function handleJokeRequest(t, l){
   if(namedTopic && aiShouldAnswer(t)){
     // Paid AI available → let her actually invent a joke on THAT topic.
     themTyping(function(){
-      askHoney("Tell me a short, clean, family-friendly joke about this topic. Setup then punchline, two short lines. Topic: "+t)
+      askHoney("Tell me a short, clean, family-friendly joke about this topic. Setup then punchline, two short lines. "
+        +"Never mention alcohol, bars, taverns, drinking, or being drunk — no 'walks into a bar' jokes. "
+        +"No crude humor, no politics, nothing at anyone's expense. Topic: "+t)
         .then(function(reply){
           if(reply){ useAIChat(); pushThem(reply); }
           else { tellJoke(/surprise|random/.test(l)); }   // AI hiccup → random recorded
@@ -14306,9 +14394,21 @@ function renderTierCards(){
   note.innerHTML='✓ 7-day money-back guarantee — try it risk-free.<br><b>Choose yearly and your price is locked & guaranteed</b> — it never goes up, even when prices rise for everyone else.';
   w.appendChild(note);
 }
+/* Tapping "Upgrade now" on a tier card. Owner/testing switches instantly so you
+   can check every screen; everyone else gets the real monthly-or-yearly choice,
+   which routes to Apple through the same door as the store. */
 function upgradePrompt(t){
-  toast("Real plans unlock with an account — switching for the demo.");
-  setTier(t); renderTierCards();
+  if(isOwner()){ setTier(t); renderTierCards(); return; }
+  var info=TIER_INFO.filter(function(x){return x.id===t;})[0];
+  if(!info){ return; }
+  var nm=TIERS[t]?TIERS[t].nm:t;
+  var yr=(info.yr||'').split('—')[0].trim();     // e.g. "$119/yr"
+  var pick = confirm(
+    "Pour a "+nm+"?\n\n"+
+    "OK  →  yearly  "+yr+"   (the better deal)\n"+
+    "Cancel  →  monthly  "+info.mo
+  );
+  startPurchase('com.tellmehoney.'+(t==='gallonplus'?'gallonplus':t)+(pick?'.yearly':'.monthly'));
 }
 function renderTierDemo(){
   var w=document.getElementById('tierDemoRow'); if(!w)return; w.innerHTML='';
