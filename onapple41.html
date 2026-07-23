@@ -681,7 +681,8 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   border-radius:18px;overflow:hidden;background:#0c0d14;border:1px solid var(--line);}
 .vid-stage canvas,.love-stage canvas{width:100%;height:100%;display:block;}
 .vid-noimg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  text-align:center;padding:24px;color:var(--muted);font-size:13px;line-height:1.5;}
+  text-align:center;padding:24px;color:var(--muted);font-size:13px;line-height:1.5;
+  z-index:5;pointer-events:auto;}
 .vid-styles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px;}
 .vstyle{background:var(--panel2);border:1.5px solid var(--line);border-radius:11px;
   padding:10px 4px;font-size:12.5px;font-weight:600;color:var(--ink);text-align:center;
@@ -2032,7 +2033,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v48 · top share button</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v45 · photo suite clean</div>
   </div>
 </section>
 
@@ -2041,11 +2042,7 @@ textarea{resize:none;line-height:1.4;}
 <section class="screen" id="testPhoto">
   <div class="bar"><button class="back" onclick="openProfile()">‹</button><span>📷 Photo Suite</span></div>
   <div style="padding:16px 16px 160px;overflow-y:auto;height:calc(100vh - 60px);-webkit-overflow-scrolling:touch">
-    <p class="rec-hint" style="margin:0 0 10px">Add a photo, give it a new look, and share it as a picture or a little video. 🍯</p>
-    <button class="rec-save" id="tpTopShare" onclick="tpSharePhoto()"
-      style="width:100%;margin:0 0 14px;background:var(--gold);color:#fff;border:none;font-weight:800;display:none">
-      📤 Share this photo
-    </button>
+    <p class="rec-hint" style="margin:0 0 14px">Add a photo, give it a new look, and share it as a picture or a little video. 🍯</p>
 
     <!-- ANIMATED STAGE (FREE) — the working vidCanvas engine, now in the clean screen -->
     <div class="vid-stage" style="max-width:320px;margin:0 auto 12px"><canvas id="vidCanvas" width="540" height="540"></canvas>
@@ -2380,7 +2377,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="vm-item" onclick="fromViewMenuEdit()"><span class="ic">✏️</span><span id="vmEditLabel">Change Honey</span></button>
     <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openVoicePicker()"><span class="ic">🎚️</span>Pick a voice</button>
     <button class="vm-item" id="vmVoiceToggle" onclick="toggleSpeaker();document.getElementById(&#39;vmVoiceToggle&#39;).firstChild.nextSibling.textContent=(S.speakerOn?&#39; Voice: on&#39;:&#39; Voice: off&#39;)"><span class="ic">🔊</span> Voice: on</button>
-    <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openTestPhoto()"><span class="ic">🎬</span>Photo &amp; Video Studio</button>
+    <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openVideoStudio()"><span class="ic">🎬</span>Video Studio</button>
     <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);pickChatSkin()"><span class="ic">🖼️</span>Background</button>
     <button class="vm-item" onclick="document.getElementById(&#39;viewMenu&#39;).classList.remove(&#39;on&#39;);openInsights()"><span class="ic">🍯</span>Your Honey Pot</button>
     <button class="vm-item" onclick="fromViewMenuRoster()"><span class="ic">👥</span>My Friends</button>
@@ -11129,14 +11126,7 @@ function loadVidImg(src){
   // scene changes). Without this, sharing a decorated video/photo throws the
   // "canvas tainted" security error. Only affects http(s) URLs; data URLs are fine.
   try{ if(/^https?:/i.test(src)) vidImg.crossOrigin="anonymous"; }catch(e){}
-  vidImg.onload=()=>{
-    // The "tap to add" panel sits on top of the canvas — make certain it's gone
-    // once there's a real photo, or the picture draws underneath it and you
-    // never see it (it still shares fine, which is a confusing way to fail).
-    var _ni=document.getElementById('vidNoImg');
-    if(_ni){ _ni.style.display='none'; _ni.style.visibility='hidden'; }
-    vidImgTransparent=detectTransparency(vidImg); buildFilteredImage(); startVidPreview();
-  };
+  vidImg.onload=()=>{ vidImgTransparent=detectTransparency(vidImg); buildFilteredImage(); startVidPreview(); };
   vidImg.onerror=()=>{ vidImgTransparent=false; startVidPreview(); };
   vidImg.src=src;
 }
@@ -11161,7 +11151,7 @@ function openVideoStudio(customImg){
     ni.style.display='none';
     loadVidImg(src);
   } else {
-    vidImg=null; vidImgTransparent=false; ni.style.display='flex'; ni.style.visibility='visible'; vidDrawStill();
+    vidImg=null; vidImgTransparent=false; ni.style.display='flex'; vidDrawStill();
   }
   document.getElementById('videoOverlay').classList.add('on');
   applyTierLocks();
@@ -11585,14 +11575,13 @@ var tpVideoUrl=null;    // the finished video URL (for share/keep)
 function openTestPhoto(){
   go('testPhoto');
   // start the animation engine on this screen's canvas
-  try{ renderVidStyles(); }catch(e){ console.log('renderVidStyles failed:', e && e.message); if(isOwner()) toast('Looks failed: '+(e&&e.message)); }
-  try{ renderLooks(); }catch(e){ console.log('renderLooks failed:', e && e.message); if(isOwner()) toast('Scenes failed: '+(e&&e.message)); }
+  try{ renderVidStyles(); }catch(e){}
+  try{ renderLooks(); }catch(e){}
   // if there's already a working image, show it animated; else show the prompt
   var src = vidCustomImg || tpImageData || (typeof S!=='undefined'&&S.photo) || null;
   var ni=document.getElementById('vidNoImg');
   if(src){ if(ni)ni.style.display='none'; try{ loadVidImg(src); }catch(e){} }
-  else { vidImg=null; vidImgTransparent=false; if(ni)ni.style.display='flex'; ni.style.visibility='visible'; try{ vidDrawStill(); }catch(e){} }
-  tpSyncShareBtn();
+  else { vidImg=null; vidImgTransparent=false; if(ni)ni.style.display='flex'; try{ vidDrawStill(); }catch(e){} }
   // lock the paid boxes for free (pint) users; open for Quart+/owner
   var paid = (typeof tierAtLeast==='function' && tierAtLeast('quart')) || (typeof isOwner==='function' && isOwner());
   var nwRow=document.getElementById('noWatermarkRow');
@@ -11617,13 +11606,6 @@ function tpShowImage(src){
 }
 
 /* Share the current still photo through the iPhone share sheet (FREE) */
-/* Only show the top Share button once there's actually a photo to share —
-   a button that does nothing is worse than no button. */
-function tpSyncShareBtn(){
-  var b=document.getElementById('tpTopShare'); if(!b) return;
-  var has = !!(vidCustomImg || tpImageData || (typeof S!=='undefined' && S.photo));
-  b.style.display = has ? 'block' : 'none';
-}
 function tpSharePhoto(){ try{ sharePhotoStill(); }catch(e){} }
 
 /* Keep the current photo/cutout creation in Memories (FREE) */
@@ -11689,7 +11671,6 @@ function tpOnPick(e){
       var ni=document.getElementById('vidNoImg'); if(ni)ni.style.display='none';
       loadVidImg(r.result);
       setVidStatus('tpBgStatus','');
-      tpSyncShareBtn();
     }catch(err){
       setVidStatus('tpBgStatus','Could not open that photo. Try another one.');
     }
