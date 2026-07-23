@@ -681,7 +681,8 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   border-radius:18px;overflow:hidden;background:#0c0d14;border:1px solid var(--line);}
 .vid-stage canvas,.love-stage canvas{width:100%;height:100%;display:block;}
 .vid-noimg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  text-align:center;padding:24px;color:var(--muted);font-size:13px;line-height:1.5;}
+  text-align:center;padding:24px;color:var(--muted);font-size:13px;line-height:1.5;
+  z-index:5;pointer-events:auto;}
 .vid-styles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px;}
 .vstyle{background:var(--panel2);border:1.5px solid var(--line);border-radius:11px;
   padding:10px 4px;font-size:12.5px;font-weight:600;color:var(--ink);text-align:center;
@@ -2032,7 +2033,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v42 · memory cards</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v45 · photo suite clean</div>
   </div>
 </section>
 
@@ -2045,7 +2046,7 @@ textarea{resize:none;line-height:1.4;}
 
     <!-- ANIMATED STAGE (FREE) — the working vidCanvas engine, now in the clean screen -->
     <div class="vid-stage" style="max-width:320px;margin:0 auto 12px"><canvas id="vidCanvas" width="540" height="540"></canvas>
-      <div class="vid-noimg" id="vidNoImg" onclick="document.getElementById('tpFile').click()" style="cursor:pointer;color:var(--gold);background:#0c0d14"><div><div style="font-size:15px;font-weight:700;color:var(--gold);margin-bottom:6px">Tap to add your photo</div><div style="font-size:12.5px;font-weight:500;color:var(--gold);line-height:1.5;opacity:.8">you, a friend, your pet,<br>anyone you love</div></div></div>
+      <div class="vid-noimg" id="vidNoImg" onclick="document.getElementById('tpFile').click()" style="cursor:pointer;color:var(--gold);background:#0c0d14"><div><img src="honeypot.png" alt="" style="width:88px;height:88px;object-fit:contain;display:block;margin:0 auto 10px"><div style="font-size:15px;font-weight:700;color:var(--gold);margin-bottom:6px">Tap to add your photo</div><div style="font-size:12.5px;font-weight:500;color:var(--gold);line-height:1.5;opacity:.8">you, a friend, your pet,<br>anyone you love</div></div></div>
     </div>
     <input type="file" id="tpFile" accept="image/*" class="file-hidden" onchange="tpOnPick(event)">
 
@@ -11658,15 +11659,21 @@ function tpSendOwnVideo(){
 }
 
 function tpOnPick(e){
-  var f=e.target.files && e.target.files[0]; if(!f) return;
+  var f=e.target.files && e.target.files[0];
+  if(!f) return;
   var r=new FileReader();
+  r.onerror=function(){ setVidStatus('tpBgStatus','Could not open that photo. Try another one.'); };
   r.onload=function(){
-    tpImageData=r.result;
-    vidCustomImg=r.result;         // feed the animation engine
-    vidBeforeCutout=null;
-    var ni=document.getElementById('vidNoImg'); if(ni)ni.style.display='none';
-    try{ loadVidImg(r.result); }catch(e){}
-    setVidStatus('tpBgStatus','');
+    try{
+      tpImageData=r.result;
+      vidCustomImg=r.result;         // feed the animation engine
+      vidBeforeCutout=null;
+      var ni=document.getElementById('vidNoImg'); if(ni)ni.style.display='none';
+      loadVidImg(r.result);
+      setVidStatus('tpBgStatus','');
+    }catch(err){
+      setVidStatus('tpBgStatus','Could not open that photo. Try another one.');
+    }
   };
   r.readAsDataURL(f);
   e.target.value='';
