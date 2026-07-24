@@ -1974,10 +1974,6 @@ textarea{resize:none;line-height:1.4;}
     <div class="store-sub">Extra AI videos — yours to keep, and they never expire.</div>
     <div class="store-list" id="storeVideo"></div>
 
-    <h3 class="store-h">🎨 Themes</h3>
-    <div class="store-sub">Change how Honey looks. Free with Gallon.</div>
-    <div class="store-list" id="storeThemes"></div>
-
     <button class="store-restore" onclick="restorePurchases()"
       style="display:block;margin:22px auto 8px;background:none;border:1px solid var(--line);
              border-radius:20px;color:var(--muted);font-size:13px;padding:9px 18px;cursor:pointer">
@@ -2036,7 +2032,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v56 · themes in store</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v53 · honey caps aligned</div>
   </div>
 </section>
 
@@ -4252,17 +4248,17 @@ var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, 
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
    (IndexedDB) like every other preference. "honey" is the default look. */
 var COLOR_THEMES=[
-  {id:"honeylight", nm:"Honey Light",     ic:"🍯", cost:0, sw:"#c79a21", bg:"#fbf7ef", kind:"Light",
+  {id:"honeylight", nm:"Honey Light",     ic:"🍯", sw:"#c79a21", bg:"#fbf7ef", kind:"Light",
    mood:"Warm & uplifting", why:"Golden, sunlit tones are widely associated with joy, optimism, and warmth — a cheerful place to start your day."},
-  {id:"business",   nm:"Business Blue",   ic:"💼", cost:600, sw:"#1e88e5", bg:"#f4f8fc", kind:"Light",
+  {id:"business",   nm:"Business Blue",   ic:"💼", sw:"#1e88e5", bg:"#f4f8fc", kind:"Light",
    mood:"Calm & focused", why:"Blue is the most studied calming color — research links it to lower heart rate, less anxiety, and sharper focus. Good for clear-headed days."},
-  {id:"slate",      nm:"Calm Blue-Gray",  ic:"🌫️", cost:600, sw:"#5b7c99", bg:"#f5f7f9", kind:"Light",
+  {id:"slate",      nm:"Calm Blue-Gray",  ic:"🌫️", sw:"#5b7c99", bg:"#f5f7f9", kind:"Light",
    mood:"Quiet & steady", why:"Soft, cool grays-blue tones feel settled and unhurried — an easy, low-stimulation backdrop when you want things gentle."},
-  {id:"natural",    nm:"Deep Forest",     ic:"🌲", cost:600, sw:"#5e9a4e", bg:"#f6f8f3", kind:"Light",
+  {id:"natural",    nm:"Natural Green",   ic:"🌿", sw:"#5e9a4e", bg:"#f6f8f3", kind:"Light",
    mood:"Balanced & restful", why:"Green is tied to balance and well-being, eases eye strain, and echoes the calm of nature and green spaces."},
-  {id:"honeydark",  nm:"Honey Dark",      ic:"🌙", cost:600, sw:"#e7c873", bg:"#0b0c12", kind:"Dark",
+  {id:"honeydark",  nm:"Honey Dark",      ic:"🌙", sw:"#e7c873", bg:"#0b0c12", kind:"Dark",
    mood:"Cozy & easy on the eyes", why:"A warm, dim palette for evenings and low light — gentle on tired eyes when the day winds down."},
-  {id:"honey",      nm:"Honey Classic",   ic:"🐝", cost:0, sw:"#e7c873", bg:"#07080d", kind:"Dark",
+  {id:"honey",      nm:"Honey Classic",   ic:"🐝", sw:"#e7c873", bg:"#07080d", kind:"Dark",
    mood:"The original", why:"The first Tell Me Honey look — deep and warm, with golden honey accents."}
 ];
 function themeName(){ var t=(COLOR_THEMES.find(function(x){return x.id===(SETTINGS.theme||"honey");})); return t?t.nm:"Honey"; }
@@ -4305,68 +4301,13 @@ function pickChatSkin(){
     inp.click();
   }
 }
-/* A theme is yours if it's free, you bought it with honey, or you're on Gallon
-   (Gallon and Gallon Plus get every look, and every new one we drop). */
-function themeUnlocked(id){
-  var t=COLOR_THEMES.find(function(x){return x.id===id;});
-  if(!t) return false;
-  if(!t.cost) return true;                                   // free looks
-  if(typeof tierAtLeast==='function' && tierAtLeast('gallon')) return true;
-  if(typeof isOwner==='function' && isOwner()) return true;
-  return !!(SETTINGS.perks && SETTINGS.perks.themes && SETTINGS.perks.themes.indexOf(id)>=0);
-}
-/* ══ THEMES ══ Two are free for everyone. The rest cost honey — or come free
-   with Gallon and Gallon Plus, same as every other drop. Locked ones still
-   show in the list, just darkened with their price, so people can see what's
-   there and have something to spend honey on. */
-function themeIsFree(id){
-  var t=COLOR_THEMES.find(function(x){return x.id===id;});
-  return !t || !t.cost;                       // cost 0 or missing = free
-}
-function themeUnlocked(id){
-  if(themeIsFree(id)) return true;
-  if(typeof tierAtLeast==='function' && tierAtLeast('gallon')) return true;  // Gallon & Gallon Plus
-  if(typeof isOwner==='function' && isOwner()) return true;
-  return !!(SETTINGS.perks && SETTINGS.perks.themes && SETTINGS.perks.themes.indexOf(id)>=0);
-}
-function buyThemeWithHoney(id){
-  var t=COLOR_THEMES.find(function(x){return x.id===id;});
-  if(!t) return;
-  if(themeUnlocked(id)){ setColorTheme(id); return; }
-  if((SETTINGS.honey||0) < t.cost){
-    toast("That one's "+t.cost+" 🍯 — share a joke or two and it's yours.");
-    return;
-  }
-  if(!spendHoney(t.cost)) return;
-  SETTINGS.perks=SETTINGS.perks||{}; SETTINGS.perks.themes=SETTINGS.perks.themes||[];
-  if(SETTINGS.perks.themes.indexOf(id)<0) SETTINGS.perks.themes.push(id);
-  saveSettings();
-  toast(t.ic+" "+t.nm+" is yours. 🍯");
-  setColorTheme(id);
-}
 function setColorTheme(id){
   if(!COLOR_THEMES.some(function(x){return x.id===id;})) return;
-  if(!themeUnlocked(id)){ buyThemeWithHoney(id); return; }
   SETTINGS.theme=id; saveSettings(); applyTheme();
   if(typeof renderThemePicker==='function') renderThemePicker();
   if(typeof renderProfile==='function') renderProfile();
   var t=COLOR_THEMES.find(function(x){return x.id===id;});
   toast((t?t.ic+" ":"")+"Theme: "+themeName());
-}
-/* Tapping a locked look offers it for honey. */
-function buyThemeWithHoney(id){
-  var t=COLOR_THEMES.find(function(x){return x.id===id;}); if(!t) return;
-  if(honeyBal() < t.cost){
-    toast("That look costs "+t.cost+" 🍯 — you have "+honeyBal()+". Share a joke with somebody to earn more.");
-    return;
-  }
-  if(!confirm(t.ic+" "+t.nm+"\n\nUnlock this look for "+t.cost+" 🍯 honey?")) return;
-  if(!spendHoney(t.cost)) return;
-  SETTINGS.perks=SETTINGS.perks||{}; SETTINGS.perks.themes=SETTINGS.perks.themes||[];
-  if(SETTINGS.perks.themes.indexOf(id)<0) SETTINGS.perks.themes.push(id);
-  saveSettings();
-  setColorTheme(id);
-  toast("Unlocked "+t.ic+" "+t.nm+" 🍯");
 }
 function openThemePicker(){ go('themePicker'); renderThemePicker(); }
 function renderThemePicker(){
@@ -4374,15 +4315,10 @@ function renderThemePicker(){
   var cur=SETTINGS.theme||"honey"; var html="";
   function row(t){
     var on = t.id===cur;
-    var have = themeUnlocked(t.id);
-    var lockStyle = have ? '' : 'opacity:.5;filter:grayscale(.5)';
-    var tap = have ? "setColorTheme('"+t.id+"')" : "buyThemeWithHoney('"+t.id+"')";
-    var tag = have ? (on?' <span class="theme-chk">✓</span>':'')
-                   : ' <span style="color:var(--gold);font-weight:800;font-size:12px">🔒 '+t.cost+' 🍯</span>';
-    return '<button class="theme-opt'+(on&&have?' on':'')+'" style="'+lockStyle+'" onclick="'+tap+'">'
+    return '<button class="theme-opt'+(on?' on':'')+'" onclick="setColorTheme(\''+t.id+'\')">'
       +'<span class="theme-prev" style="background:'+t.bg+'"><span class="theme-sw" style="background:'+t.sw+'"></span></span>'
       +'<span class="theme-txt">'
-        +'<span class="theme-nm">'+t.ic+' '+t.nm+tag+'</span>'
+        +'<span class="theme-nm">'+t.ic+' '+t.nm+(on?' <span class="theme-chk">✓</span>':'')+'</span>'
         +'<span class="theme-mood">'+t.mood+'</span>'
         +'<span class="theme-why">'+t.why+'</span>'
       +'</span>'
@@ -5196,27 +5132,6 @@ function renderStore(){
         + '<button class="sc-btn" onclick="startPurchase(\'com.tellmehoney.topup.video'+o.n+'\')">$'+o.usd+'</button></div>';
       vid.appendChild(c);
     });
-  }
-
-  // Themes live in My Sweet Life where people actually pick them — but the
-  // Store is where folks come to spend honey, so point them over from here.
-  var th = document.getElementById('storeThemes');
-  if(th){
-    th.innerHTML='';
-    var locked = COLOR_THEMES.filter(function(t){ return !themeUnlocked(t.id); });
-    var c=document.createElement('div'); c.className='store-card';
-    if(locked.length===0){
-      c.innerHTML = '<div class="sc-em">🎨</div>'
-        + '<div class="sc-mid"><div class="sc-nm">Every look is yours</div>'
-        + '<div class="sc-ds">Pick the one that suits your day</div></div>'
-        + '<div class="sc-buy"><button class="sc-btn" onclick="openThemePicker()">Change look</button></div>';
-    } else {
-      c.innerHTML = '<div class="sc-em">🎨</div>'
-        + '<div class="sc-mid"><div class="sc-nm">'+locked.length+' more looks to unlock</div>'
-        + '<div class="sc-ds">600 🍯 each &middot; free with Gallon</div></div>'
-        + '<div class="sc-buy"><button class="sc-btn" onclick="openThemePicker()">See them</button></div>';
-    }
-    th.appendChild(c);
   }
 
   var books = document.getElementById('storeBooks');
@@ -14592,13 +14507,13 @@ function renderTierDemo(){
    Rule: honey unlocks things that DON'T cost us money (themes, a friend slot,
    downloads). Paid features that cost us real money (premium voices, cloned
    voice, AI video) stay subscription-only — honey can't buy those. */
-/* Themes moved to My Sweet Life → Themes, where people actually pick them.
-   Locked ones show darkened with their honey price right in that list, so
-   there's no reason to sell them here too. (The old "Deep Forest" entry was
-   pointing at a theme that doesn't exist.) */
 var REWARDS=[
   { id:"perk_friend", kind:"perk", cost:1500, need:"pint",
-    nm:"+1 friend slot (keep it)", desc:"Add one more friend to chat with, permanently" }
+    nm:"+1 friend slot (keep it)", desc:"Add one more friend to chat with, permanently" },
+  { id:"theme_forest", kind:"theme", themeId:"forest", cost:600, need:"pint",
+    nm:"Deep Forest theme", desc:"Unlock the rich forest-green look" },
+  { id:"theme_slate", kind:"theme", themeId:"slate", cost:600, need:"pint",
+    nm:"Calm Blue-Gray theme", desc:"Unlock the soft, quiet blue-gray look" }
 ];
 function honeyBal(){ return SETTINGS.honey||0; }
 function trialActive(id){ var t=SETTINGS.trials&&SETTINGS.trials[id]; return t && t>Date.now(); }
