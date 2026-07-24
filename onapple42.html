@@ -2032,7 +2032,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v50 · photo box reverted</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v48 · top share button</div>
   </div>
 </section>
 
@@ -2049,7 +2049,7 @@ textarea{resize:none;line-height:1.4;}
 
     <!-- ANIMATED STAGE (FREE) — the working vidCanvas engine, now in the clean screen -->
     <div class="vid-stage" style="max-width:320px;margin:0 auto 12px"><canvas id="vidCanvas" width="540" height="540"></canvas>
-      <div class="vid-noimg" id="vidNoImg" onclick="document.getElementById('tpFile').click()" style="cursor:pointer;color:var(--gold);background:#0c0d14"><div><div style="font-size:15px;font-weight:700;color:var(--gold);margin-bottom:6px">Tap to add your photo</div><div style="font-size:12.5px;font-weight:500;color:var(--gold);line-height:1.5;opacity:.8">you, a friend, your pet,<br>anyone you love</div></div></div>
+      <div class="vid-noimg" id="vidNoImg" onclick="document.getElementById('tpFile').click()" style="cursor:pointer;color:var(--gold);background:#0c0d14"><div><img src="honeypot.png" alt="" style="width:88px;height:88px;object-fit:contain;display:block;margin:0 auto 10px"><div style="font-size:15px;font-weight:700;color:var(--gold);margin-bottom:6px">Tap to add your photo</div><div style="font-size:12.5px;font-weight:500;color:var(--gold);line-height:1.5;opacity:.8">you, a friend, your pet,<br>anyone you love</div></div></div>
     </div>
     <input type="file" id="tpFile" accept="image/*" class="file-hidden" onchange="tpOnPick(event)">
 
@@ -11133,7 +11133,10 @@ function loadVidImg(src){
     // The "tap to add" panel sits on top of the canvas — make certain it's gone
     // once there's a real photo, or the picture draws underneath it and you
     // never see it (it still shares fine, which is a confusing way to fail).
-    vidImgTransparent=detectTransparency(vidImg); buildFilteredImage(); startVidPreview(); };
+    var _ni=document.getElementById('vidNoImg');
+    if(_ni){ _ni.style.display='none'; _ni.style.visibility='hidden'; }
+    vidImgTransparent=detectTransparency(vidImg); buildFilteredImage(); startVidPreview();
+  };
   vidImg.onerror=()=>{ vidImgTransparent=false; startVidPreview(); };
   vidImg.src=src;
 }
@@ -11158,7 +11161,7 @@ function openVideoStudio(customImg){
     ni.style.display='none';
     loadVidImg(src);
   } else {
-    vidImg=null; vidImgTransparent=false; ni.style.display='flex'; vidDrawStill();
+    vidImg=null; vidImgTransparent=false; ni.style.display='flex'; ni.style.visibility='visible'; vidDrawStill();
   }
   document.getElementById('videoOverlay').classList.add('on');
   applyTierLocks();
@@ -11588,7 +11591,7 @@ function openTestPhoto(){
   var src = vidCustomImg || tpImageData || (typeof S!=='undefined'&&S.photo) || null;
   var ni=document.getElementById('vidNoImg');
   if(src){ if(ni)ni.style.display='none'; try{ loadVidImg(src); }catch(e){} }
-  else { vidImg=null; vidImgTransparent=false; if(ni)ni.style.display='flex'; try{ vidDrawStill(); }catch(e){} }
+  else { vidImg=null; vidImgTransparent=false; if(ni)ni.style.display='flex'; ni.style.visibility='visible'; try{ vidDrawStill(); }catch(e){} }
   tpSyncShareBtn();
   // lock the paid boxes for free (pint) users; open for Quart+/owner
   var paid = (typeof tierAtLeast==='function' && tierAtLeast('quart')) || (typeof isOwner==='function' && isOwner());
