@@ -1653,10 +1653,67 @@ textarea{resize:none;line-height:1.4;}
       <button class="sl-tile" onclick="slGo('memory')"><span class="sl-ic">🎵</span><span class="sl-tx"><b>Memory Game</b><small>Watch, listen, repeat</small></span></button>
       <button class="sl-tile" onclick="slGo('weather')"><span class="sl-ic">☀️</span><span class="sl-tx"><b>Weather</b><small>What's it like out</small></span></button>
       <button class="sl-tile" onclick="slGo('insights')"><span class="sl-ic">🍯</span><span class="sl-tx"><b>Honey Pot</b><small>Your streak &amp; insights</small></span></button>
+      <button class="sl-tile" onclick="slGo('plants')"><span class="sl-ic">🌿</span><span class="sl-tx"><b>Real Food Ranger</b><small>Identify, forage &amp; cook</small></span></button>
     </div>
     <button class="prof-row" style="margin-top:16px" onclick="openContentSwitches()">⚙️ What Honey shares — turn things on or off</button>
   </div>
 </section>
+
+<!-- ════════ REAL FOOD RANGER ════════ -->
+<section class="screen" id="plantHub">
+  <div class="bar"><button class="back" onclick="goBack()">‹</button>
+    <h2>🌿 Real Food Ranger</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll" style="padding:16px">
+    <button class="home-big home-buzz" style="width:100%;margin-bottom:14px" onclick="openPlantCamera()">
+      <span class="hb-ic">📷</span><span class="hb-tx"><b>Identify a plant</b><small>Snap it — sent to PlantNet, named by Ranger</small></span></button>
+    <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px">While you're here</div>
+    <div class="home-half-row">
+      <button class="home-half" onclick="openInSeason()"><span class="hh-ic">📅</span><span class="hh-tx">In season now</span></button>
+      <button class="home-half" onclick="openCookingList()"><span class="hh-ic">🧺</span><span class="hh-tx">Cooking list</span></button>
+    </div>
+    <button class="home-half" style="width:100%;margin-top:10px" onclick="openMyYard()"><span class="hh-ic">🌱</span><span class="hh-tx">Plants From My Yard</span></button>
+    <div id="plantHubResult" style="margin-top:16px"></div>
+    <button class="prof-row" style="margin-top:16px" onclick="openRangerSettings()">⚙️ Where Real Food Ranger shows up</button>
+    <p style="font-size:11px;color:var(--muted);margin:14px 2px 0;line-height:1.5">🌿 Never eat a wild plant based on this app alone — always confirm with a trusted local expert first.</p>
+  </div>
+</section>
+
+<section class="screen" id="inSeason">
+  <div class="bar"><button class="back" onclick="openPlantHub()">‹</button>
+    <h2>📅 In season now</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll" style="padding:16px">
+    <p style="font-size:13px;color:var(--muted);margin:0 0 14px">Ready to forage around <b id="seasonMonth" style="color:var(--gold)"></b>, based on the Carolina Lowcountry.</p>
+    <div id="seasonList"></div>
+  </div>
+</section>
+
+<section class="screen" id="cookingList">
+  <div class="bar"><button class="back" onclick="openPlantHub()">‹</button>
+    <h2>🧺 My cooking list</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll" style="padding:16px">
+    <p style="font-size:13px;color:var(--muted);margin:0 0 14px">Forage now, cook soon — use these while they're fresh.</p>
+    <div id="cookList"></div>
+  </div>
+</section>
+
+<section class="screen" id="myYard">
+  <div class="bar"><button class="back" onclick="openPlantHub()">‹</button>
+    <h2>🌱 Plants From My Yard</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll" style="padding:16px">
+    <p style="font-size:12px;color:var(--muted);margin:0 0 14px;line-height:1.5">Your own finds — your knowledge, your kitchen. These are yours alone, kept separate from my vetted book.</p>
+    <div id="myYardList"></div>
+  </div>
+</section>
+
+<section class="screen" id="rangerSettings">
+  <div class="bar"><button class="back" onclick="openPlantHub()">‹</button>
+    <h2>🌿 Ranger settings</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll" style="padding:16px">
+    <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.5">Real Food Ranger always lives here in My Sweet Life. You can also add a quick way in — pick what works for you.</p>
+    <div id="rangerSettingsList"></div>
+  </div>
+</section>
+<!-- ════════ END REAL FOOD RANGER SCREENS ════════ -->
 
 <!-- MEMORY GAME (Simon: watch, listen, repeat) -->
 <section class="screen" id="memory">
@@ -2036,7 +2093,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v56 · themes in store</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v57 · Ranger</div>
   </div>
 </section>
 
@@ -2565,7 +2622,7 @@ textarea{resize:none;line-height:1.4;}
 
     <div class="cloud-box" id="yourVoiceBox">
       <div class="cloud-head"><span>🎙️ Your Voice</span></div>
-      <p class="rec-hint" style="margin:6px 0 10px">Record a little of your own voice and Honey can speak in it. Once it’s made, “Your Voice” appears right next to Honey up top — just tap to switch. <b>Comes with Gallon.</b></p>
+      <p class="rec-hint" style="margin:6px 0 10px">Record a little of your own voice and Honey can speak in it. <b>Speak at least three full sentences, slow and clear, like you’re talking on the telephone</b> — the more she hears, the more it sounds like you. Once it’s made, “Your Voice” appears right next to Honey up top — just tap to switch. <b>Comes with Gallon.</b></p>
       <p class="rec-hint" style="margin:2px 0 10px;cursor:pointer" onclick="var cb=document.getElementById('cloneConsent'); cb.checked=!cb.checked; cloneConsentToggle(cb);">
         <input type="checkbox" id="cloneConsent" onclick="event.stopPropagation()" onchange="cloneConsentToggle(this)" style="transform:scale(1.05);accent-color:var(--gold);vertical-align:middle;margin-right:6px">
         This is my own voice, or I have permission to use theirs. <span style="color:var(--muted)">(Turns on the Record button.)</span>
@@ -4246,7 +4303,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -4924,12 +4981,13 @@ function slGo(where){
     case 'money':    openHoneyMoney(); break;
     case 'calendar': openCalendar(); break;
     case 'jokes':    openJokes(); break;
-    case 'photo':    openVideoStudio(); break;
+    case 'photo':    openTestPhoto(); break;
     case 'favorites': openFavorites(); break;
     case 'prayers':  openPrayers(); break;
     case 'learn':    openLearn(); break;
     case 'puzzle':   openPuzzle(); break;
     case 'memory':   openMemory(); break;
+    case 'plants':   openPlantHub(); break;
     case 'weather':  homeWeather(); break;
     case 'insights': openInsights(); break;
   }
@@ -6214,7 +6272,7 @@ var SETUP_LINES={
 
 /* ════ NAV ════ */
 var _navPrev=null, _navCur='welcome', _navOrigin=null;
-var _UTIL_SCREENS=['listsHub','shopping','calendar','jokes','learn','roster','prayers','honeyMoney','checkin','sweetLife','contentSwitches','vault','verses','loved','goalBuilder','goalsManage','journalChoice','journalBooks','dailyJournal','djEditor'];
+var _UTIL_SCREENS=['listsHub','shopping','calendar','jokes','learn','roster','prayers','honeyMoney','checkin','sweetLife','contentSwitches','vault','verses','loved','goalBuilder','goalsManage','journalChoice','journalBooks','dailyJournal','djEditor','plantHub','inSeason','cookingList','myYard','rangerSettings'];
 function go(id){
   var el=document.getElementById(id);
   if(!el){ // safety: unknown screen — don't go black, fall back to a working screen
@@ -6609,7 +6667,8 @@ var HOME_BTN_MAP={
   money:    ["\ud83d\udcb0","Money",   ()=>openHoneyMoney()],
   language: ["\ud83c\udf0d","Language",()=>openLangCue()],
   video:    ["\ud83c\udfac","Video",   ()=>openVideoStudio()],
-  voice:    ["\ud83c\udf9a\ufe0f","Voice", ()=>openVoicePicker()]
+  voice:    ["\ud83c\udf9a\ufe0f","Voice", ()=>openVoicePicker()],
+  plants:   ["\ud83c\udf3f","Ranger", ()=>openPlantHub()]
 };
 var HOME_BTN_DEFAULT=["weather","calendar","lists","learn"];
 function homeBtnSel(){
@@ -6670,12 +6729,14 @@ var CHIP_DEFS=[
   ["language","🌍 Language",        ()=>openLangCue()],
   ["record",  "✍️ Record a joke",   ()=>openRecordJoke()],
   ["voice",   "🎚️ Voice",          ()=>openVoicePicker()],
-  ["video",   "🎬 Video",           ()=>openVideoStudio()]
+  ["video",   "🎬 Video",           ()=>openVideoStudio()],
+  ["plants",  "🌿 Real Food Ranger",()=>openPlantHub()]
 ];
+var CHIP_DEFAULT_OFF={plants:1};
 /* is a chip shown? default ON unless the user turned it off */
 function chipOn(key){
-  if(!SETTINGS.chips) return true;
-  return SETTINGS.chips[key]!==false;
+  if(SETTINGS.chips && (key in SETTINGS.chips)) return SETTINGS.chips[key]!==false;
+  return !(typeof CHIP_DEFAULT_OFF!=='undefined' && CHIP_DEFAULT_OFF[key]);
 }
 function buildQuickChips(){
   var c=document.getElementById('quickChips'); c.innerHTML='';
@@ -15223,10 +15284,569 @@ function bootFallback(){
     try{ document.getElementById('welcome').classList.add('on','home-on'); }catch(_){}
   }
 }
+
+<!--RANGER-->
+/* ═══ RANGER_PLANTS — built from Sally's "Deep South & Divine" backyard field guide ═══
+   months: 1–12 the plant is at its foraging best in the Carolina Lowcountry.
+   edible:true shows the green "✓ edible" flow. edible:false routes to a "known, not eaten" card.
+   Every safety line is quoted/condensed from the book's own NOTE for that plant. */
+var RANGER_ALL_NUTRIENTS=["Vit A","Vit C","B Vits","Vit E","Vit K","Fiber","Calcium","Iron","Omega-3","Antioxidants"];
+var RANGER_PLANTS={
+  e4:{name:"Dandelion & Cat's Ear",sci:"Taraxacum · Hypochaeris · Asteraceae",leaf:"🌼",img:"images/plants/dandelion.jpg",match:96,edible:true,months:[1,2,3,4,10,11,12],season:"Fall–spring (leaves)",fresh:"Use young leaves within a few days — they wilt fast.",
+    nutrients:["Vit A","Vit C","Vit E","Vit K","Calcium","Iron","Antioxidants"],
+    uses:[["🥗","Salad"],["🍳","Sautéed"],["🥞","In batter"],["🍯","Flower honey"],["☕","Root coffee"]],
+    safety:"Two look-alikes eaten the same way — both edible, but always confirm before eating. Dandelion stems are unbranched; cat's-ear branch once flowering.",
+    intro:"Well now — you found some dandelion! Free greens, and richer than the bagged spinach at the store.",
+    teach:["That weed you keep cussing at? It's a free salad. You're welcome.","Pound for pound the leaves beat spinach — about twice the calcium and three times the vitamin A.","Every part's usable: young leaves sautéed like spinach, yellow petals in pancake batter, roots roasted dark and brewed like coffee.","Taraxacum, aster family — same clan as your grocery lettuce. Blanch older leaves 2–3 minutes to tame the bitter; pickle cat's-ear buds like capers. One of the most widely eaten wild greens on earth."]},
+  e1:{name:"Japanese Honeysuckle",sci:"Lonicera japonica · Caprifoliaceae",leaf:"🌸",img:"images/plants/honeysuckle.jpg",match:91,edible:true,months:[4,5,6,7],season:"Spring–summer bloom",fresh:"Pick flowers the morning you'll use them — they fade fast.",
+    nutrients:["Antioxidants"],
+    uses:[["🍵","Tea"],["🍯","Syrup"],["🌸","Fresh nectar"],["🍨","Cream"]],
+    safety:"Eat the FLOWERS only — berries can be toxic. Highly invasive in the Southeast, so forage the blossoms freely, but keep it controlled.",
+    intro:"Oh, honeysuckle! Pinch the green base, pull the stamen through the back — that's the sweet nectar from childhood.",
+    teach:["That's the sweet one from childhood. Flowers only, sugar.","Steep a big handful in just-off-the-boil water 5–10 minutes for a fragrant tea.","Pack 2 cups of blossoms in hot simple syrup overnight, strain, and pour it over pancakes or into lemonade.","Lonicera japonica — wildly invasive, so pick all you like. Flowers infuse into honey or cream beautifully; the berries you always leave alone."]},
+  e18:{name:"Magnolia",sci:"Magnolia sp. · Magnoliaceae",leaf:"🌺",img:"images/plants/magnolia.jpg",match:89,edible:true,months:[4,5,6],season:"Spring–early summer",fresh:"Best the day you pick — the perfume fades quickly.",
+    nutrients:["Antioxidants"],
+    uses:[["🥒","Pickled"],["🍬","Candied"],["🌶️","Spice"]],
+    safety:"Use petals in moderation — the flavor is strong. Confirm it's a true Magnolia first.",
+    intro:"Magnolia! Those big petals pickle up like ginger — a little goes a long way.",
+    teach:["Those petals? Southern ginger. Pickle a few and see.","The flavor is strong and gingery — a little goes a long way.","Slice young petals thin and pickle them, or candy them for a sweet spice.","Magnolia is one of the oldest flowering plant lines on earth — beetles pollinated it before bees existed. Petals in moderation; confirm a true magnolia first."]},
+  e2:{name:"Confederate Rose Mallow",sci:"Hibiscus mutabilis · Malvaceae",leaf:"🌺",img:"images/plants/confederate-rose.jpg",match:88,edible:true,months:[9,10,11],season:"Late-season bloom",fresh:"Use flowers the day you pick them.",
+    nutrients:["Vit C","Antioxidants"],
+    uses:[["🍵","Tea"],["🌸","Fresh"],["🥗","Garnish"]],
+    safety:"A mallow-family flower — a cousin of common mallow and molokhia, but a different plant. Confirm the species before eating.",
+    intro:"Confederate rose — the bloom that opens white and blushes to pink by evening. A gentle mallow you can steep.",
+    teach:["The flower that changes color through the day — white to deep pink by dusk.","A hibiscus cousin, so the petals make a mild, pretty tea.","Steep the fresh blooms for a soft floral tea or use them as a garnish.","Hibiscus mutabilis — 'mutabilis' means changeable, for those color-shifting petals. Same mallow family as molokhia and common mallow, but its own plant."]},
+  e3:{name:"Molokhia (Jute Mallow)",sci:"Corchorus olitorius · Malvaceae",leaf:"🌿",img:"images/plants/molokhia.jpg",match:90,edible:true,months:[6,7,8,9],season:"Warm season",fresh:"Use leaves fresh, or freeze minced like the groceries sell it.",
+    nutrients:["Vit A","Vit C","Vit K","Calcium","Iron","Fiber","Antioxidants"],
+    uses:[["🍲","Stew"],["🥣","Soup"],["🍚","Over rice"]],
+    safety:"This is molokhia's true crown — don't confuse it with the ornamental Confederate Rose Mallow; they're family cousins but different plants.",
+    intro:"Molokhia — the 'food of kings.' Cooked down into a silky green stew over rice, it's a treasure.",
+    teach:["They call it the food of kings — an ancient green cooked into a silky stew.","Loaded with vitamin A, C, K, calcium and iron — a real powerhouse leaf.","Simmer the minced leaves into the classic Egyptian soup and ladle over rice.","Corchorus olitorius — jute mallow, eaten across the Middle East and Africa for millennia. The cooked leaves turn luxuriously silky, which is the whole point."]},
+  e27:{name:"Pink Sorrel",sci:"Oxalis sp. · Oxalidaceae",leaf:"🌷",img:"images/plants/pink-sorrel.jpg",match:92,edible:true,months:[3,4,5,6,7,8],season:"Spring–summer",fresh:"Best eaten fresh — bright and lemony.",
+    nutrients:["Vit C","Antioxidants"],
+    uses:[["🥗","Salad"],["🍋","Sour garnish"],["🍵","Tea"]],
+    safety:"The sour taste is oxalic acid — delicious in small amounts, but eat in moderation. Large quantities of oxalates aren't good for the kidneys.",
+    intro:"Pink sorrel — that little clover-looking plant with the tart lemon zing. A bright pop in a salad.",
+    teach:["That clover-shaped weed with the sour lemon zing? Edible, and delightful.","The tartness is vitamin C and oxalic acid — a natural lemon flavor.","Toss a few leaves and flowers into a salad for a bright, sour pop.","Oxalis — the sourness is oxalic acid, so keep it to small amounts. Lovely as a garnish, not a whole bowlful."]},
+  e19:{name:"Sawtooth Blackberry",sci:"Rubus argutus · Rosaceae",leaf:"🫐",img:"images/plants/sawtooth-blackberry.jpg",match:95,edible:true,months:[5,6,7],season:"Berries in summer",fresh:"Eat ripe berries within a day or two.",
+    nutrients:["Vit C","Vit K","Fiber","Antioxidants"],
+    uses:[["🫐","Fresh"],["🥧","Pie & jam"],["🍵","Leaf tea"]],
+    safety:"Berries are a sure thing. Leaf preparations carry tannins that can upset sensitive stomachs — take them with food.",
+    intro:"Blackberries! The one wild food nobody argues about. Sun-warm off the cane is the whole reward.",
+    teach:["The one wild berry everybody already trusts. Sun-warm off the cane is the best.","Loaded with vitamin C and antioxidants — and free by the fencerow.","Fresh by the handful, or cooked into pie and jam; the leaves make a traditional tea.","Rubus argutus — the leaf tea is an old folk remedy, but tannins can turn a sensitive stomach, so take it with food."]},
+  e20:{name:"Muscadine Grape",sci:"Vitis rotundifolia · Vitaceae",leaf:"🍇",img:"",match:90,edible:true,months:[8,9,10],season:"Late summer–fall fruit",fresh:"Eat ripe grapes fresh; use leaves spring–summer.",
+    nutrients:["Vit C","Antioxidants","Fiber"],
+    uses:[["🍇","Fresh"],["🥤","Juice"],["🍃","Stuffed leaves"]],
+    safety:"Confirm vines are unsprayed before using leaves or fruit.",
+    intro:"Muscadine — the thick-skinned Southern grape. Pop the sweet pulp, and save the young leaves for stuffing.",
+    teach:["The thick-skinned Southern grape — pop the sweet pulp right out of the skin.","Rich in antioxidants, especially in those famous skins.","Fresh grapes, homemade juice, and young leaves blanched for stuffing (dolmas).","Vitis rotundifolia — a true native grape. Just be sure the vine's unsprayed before you pick leaves or fruit."]},
+  e7:{name:"Fig",sci:"Ficus carica · Moraceae",leaf:"🌿",img:"",match:93,edible:true,months:[7,8,9],season:"Summer into fall",fresh:"Pick only when fully soft and drooping — they don't ripen off the tree.",
+    nutrients:["Fiber","Calcium","Antioxidants"],
+    uses:[["🍯","Honey-roasted"],["🥫","Jam"],["🧀","With cheese"]],
+    safety:"The milky sap from leaves and unripe figs can irritate skin and cause sun-sensitivity — handle with care when harvesting.",
+    intro:"Figs! Pick them soft and drooping, halve them, a drizzle of honey — that's dessert from the yard.",
+    teach:["Pick them soft and drooping — a fig won't ripen once it's off the tree.","Sweet, full of fiber, wonderful with cheese or yogurt.","Eat fresh, roast with honey 15 minutes, or simmer into a glossy jam.","Ficus carica — one of the oldest cultivated fruits on earth, in Egyptian tomb art. Even the leaves flavor cream with a coconut-vanilla note; just mind the sap."]},
+  e13:{name:"Daylily",sci:"Hemerocallis fulva · Asphodelaceae",leaf:"🧡",img:"",match:88,edible:true,months:[3,4,5,6],season:"Shoots spring; buds early summer",fresh:"Use shoots and buds the day you pick.",
+    nutrients:["Vit A","Vit C","Antioxidants"],
+    uses:[["🥢","Stir-fry buds"],["🥗","Petals in salad"],["🌱","Spring shoots"]],
+    safety:"Eat the true orange Hemerocallis fulva only — never true lilies (Lilium), which are toxic. Introduce a small amount first; some people are sensitive.",
+    intro:"The orange ditch lily! Those buds stir-fry like green beans and the petals brighten a salad.",
+    teach:["The roadside orange 'ditch lily' — the buds cook up like green beans.","Tender shoots, crunchy buds, and colorful petals are all edible.","Stir-fry the flower buds, scatter petals over salad, sauté the spring shoots.","Hemerocallis fulva — a true daylily, NOT a real lily. Real lilies are toxic, so ID carefully and try a small amount first."]},
+  e14:{name:"Damask Rose",sci:"Rosa × damascena · Rosaceae",leaf:"🌹",img:"images/plants/damask-rose.jpg",match:90,edible:true,months:[5,6,7],season:"Late spring–summer",fresh:"Use petals fresh, or dry for tea.",
+    nutrients:["Vit C","Antioxidants"],
+    uses:[["🍵","Tea"],["🍬","Rose sugar"],["🍯","Rose honey"]],
+    safety:"Eat petals only from roses you know are unsprayed. Remove the bitter white petal bases before use.",
+    intro:"Damask rose — the one they make rosewater from. Petals into sugar, honey, or a fragrant tea.",
+    teach:["The perfume rose — petals for tea, sugar, and rosewater.","Full of antioxidants and that unmistakable rose fragrance.","Snip off the bitter white heel, then steep petals for tea or stir into sugar and honey.","Rosa × damascena — the classic attar-of-roses bloom. Only ever eat petals from unsprayed plants."]},
+  e15:{name:"Spiderwort",sci:"Tradescantia sp. · Commelinaceae",leaf:"💜",img:"images/plants/spiderwort.jpg",match:87,edible:true,months:[3,4,5,6,7],season:"Spring–summer",fresh:"Use fresh — leaves and flowers wilt quickly.",
+    nutrients:["Vit C","Antioxidants"],
+    uses:[["🥗","Salad"],["🌸","Candied flowers"],["🍲","Cooked greens"]],
+    safety:"Confirm the Tradescantia ID. The sap is mildly irritating to some skin — handle with normal care.",
+    intro:"Spiderwort — those three-petaled blue-purple flowers. The whole plant's a mild, edible green.",
+    teach:["Those three-petaled purple flowers? The whole plant is edible and mild.","A gentle green with a little vitamin C — nothing bitter about it.","Young leaves and stems in salad or lightly cooked; candy the pretty flowers.","Tradescantia — the flowers famously last just one day. Mild and juicy; just confirm the ID and mind the slightly sticky sap."]},
+  e10:{name:"Florida Betony",sci:"Stachys floridana · Lamiaceae",leaf:"🌿",img:"images/plants/florida-betony.jpg",match:89,edible:true,months:[10,11,12,1,2,3],season:"Cool-season tubers",fresh:"Use the crisp white tubers soon after digging.",
+    nutrients:["Fiber","Antioxidants"],
+    uses:[["🥕","Raw crunch"],["🥢","Stir-fry"],["🥗","Pickled"]],
+    safety:"Eat the crunchy white tubers freely. Do NOT use the plant medicinally during pregnancy — old 'cures everything' claims are folklore, not medical advice.",
+    intro:"Florida betony — dig up those little white 'rattlesnake' tubers. Crunchy as a water chestnut, and free.",
+    teach:["That mint-family weed hides little white tubers — crunchy as water chestnuts.","The gourmet 'crosne' sells for about $150 a pound; this is its free backyard cousin.","Eat the tubers raw for crunch, stir-fried, or quick-pickled.","Stachys floridana — the segmented white roots look like a rattlesnake's tail. Delicious and free; skip any medicinal use if pregnant."]},
+  e11:{name:"Forsythia",sci:"Forsythia sp. · Oleaceae",leaf:"🌼",img:"images/plants/forsythia.jpg",match:85,edible:true,months:[2,3],season:"Late winter–early spring",fresh:"Use the bright flowers fresh.",
+    nutrients:["Antioxidants"],
+    uses:[["🍵","Flower tea"],["🌼","Garnish"]],
+    safety:"Eat only confirmed forsythia, and only in small amounts. Traditional/TCM uses are recorded as history, not medical advice.",
+    intro:"Forsythia — the first burst of yellow before spring. A few blossoms make a delicate tea.",
+    teach:["The first yellow of the year — those blooms make a delicate tea.","Mostly enjoyed for the cheer and a little antioxidant lift.","Steep a small handful of confirmed forsythia flowers, or use as a garnish.","Forsythia — 'Lian Qiao' in Traditional Chinese Medicine, recorded here as history only. Keep culinary use to small amounts of confirmed flowers."]},
+  e12:{name:"Gardenia",sci:"Gardenia jasminoides · Rubiaceae",leaf:"🤍",img:"images/plants/gardenia.jpg",match:86,edible:true,months:[6,7,8],season:"Flowers summer; fruit fall",fresh:"Use the fragrant petals fresh.",
+    nutrients:["Antioxidants"],
+    uses:[["🍮","Scent syrups"],["🎨","Natural dye"],["🍵","Petal tea"]],
+    safety:"There isn't reliable evidence on ingesting gardenia medicinally — treat that as history. Use petals lightly for flavor and scent.",
+    intro:"Gardenia — that heavenly perfume. The petals scent a syrup, and the fruit dyes a golden yellow.",
+    teach:["That heady white perfume flower — the petals can scent sweets.","Lightly floral; the fruit is a famous natural yellow dye.","Infuse a few petals into syrup or a light tea; the fruit ('Zhi Zi') colors food gold.","Gardenia jasminoides — an ancient Chinese plant, coffee family. Its fruit dye colored royal robes; medicinal use is folklore, so keep it culinary."]},
+  e9:{name:"Wax Myrtle",sci:"Myrica cerifera · Myricaceae",leaf:"🌿",img:"images/plants/wax-myrtle.jpg",match:84,edible:true,months:[1,2,3,4,5,6,7,8,9,10,11,12],season:"Leaves year-round",fresh:"Dry leaves keep for months as a seasoning.",
+    nutrients:["Antioxidants"],
+    uses:[["🍲","Bay-leaf seasoning"],["🕯️","Berry wax"]],
+    safety:"Use the leaves as a bay-leaf-style SEASONING — not eaten whole. Berries are waxy, so season sparingly. Medicinal uses are folklore.",
+    intro:"Wax myrtle — the 'bayberry.' Toss a leaf in the pot like a bay leaf; fish it out before serving.",
+    teach:["The Southern 'bayberry' — a leaf flavors a pot just like store bay.","Aromatic, not a green to eat by the handful — it's a seasoning.","Drop a leaf into soups and stews, then remove it before serving.","Myrica cerifera — colonists boiled the waxy berries to make bayberry candles. The leaf seasons like bay; the berries are for wax and scent, used sparingly."]},
+  e21:{name:"Canada & Woodland Lettuce",sci:"Lactuca canadensis · L. floridana · Asteraceae",leaf:"🥬",img:"images/plants/canada-lettuce.jpg",match:88,edible:true,months:[10,11,12,1,2,3],season:"Cool-season leaves",fresh:"Use tender young leaves fresh; they turn bitter with age.",
+    nutrients:["Vit A","Vit C","Vit K","Fiber","Antioxidants"],
+    uses:[["🥗","Salad"],["🍳","Sautéed"]],
+    safety:"Older leaves turn bitter. The 'nerve/sedative' reputation is folklore. Confirm the species before eating.",
+    intro:"Wild lettuce — the tall cousin of your garden lettuce. Young leaves are a free, tender salad green.",
+    teach:["The wild ancestor cousins of garden lettuce — young leaves are a free salad.","Best in the cool months, before they turn bitter and tall.","Toss tender leaves raw, or sauté the older ones like any cooking green.","Lactuca canadensis and floridana — the milky sap gave wild lettuce its old 'sedative' reputation, recorded as folklore. Pick young leaves and confirm the species."]},
+  e22:{name:"White & Red Clover",sci:"Trifolium repens · T. pratense · Fabaceae",leaf:"☘️",img:"images/plants/white-clover.jpg",match:90,edible:true,months:[4,5,6,7,8],season:"Spring–summer",fresh:"Use flowers and young leaves fresh, or dry the blossoms for tea.",
+    nutrients:["Vit C","Antioxidants","Fiber"],
+    uses:[["🍵","Blossom tea"],["🥗","Salad"],["🍞","Dried in flour"]],
+    safety:"Eat in moderation — raw clover in quantity can cause bloating; cooking or drying helps.",
+    intro:"Clover! Those blossoms make a sweet, honey-ish tea, and the young leaves go right in a salad.",
+    teach:["Those little pom-pom flowers make a sweet, honeyish tea.","A gentle, nutritious bloom that pollinators and people both love.","Steep dried blossoms for tea, scatter fresh in salad, or dry and grind into flour.","Trifolium — a nitrogen-fixing legume that feeds the soil too. Lovely in moderation; a big raw bowlful can bloat you, so cook or dry it for quantity."]},
+  e23:{name:"Goldenrod",sci:"Solidago spp. · Asteraceae",leaf:"🌼",img:"",match:86,edible:true,months:[8,9,10],season:"Blooms late summer–fall",fresh:"Use flowers fresh, or dry for 'Liberty Tea.'",
+    nutrients:["Antioxidants","Vit C"],
+    uses:[["🍵","Liberty Tea"],["🌼","Garnish"]],
+    safety:"Goldenrod does NOT cause hay fever (that's ragweed nearby). Traditional uses are history; confirm the plant and use flowers in moderation.",
+    intro:"Goldenrod — the patriots' 'Liberty Tea.' Those golden plumes brew a warm, anise-y cup.",
+    teach:["Those golden fall plumes brew the Revolution's famous 'Liberty Tea.'","Falsely blamed for allergies — that's ragweed. Goldenrod's just pretty and useful.","Steep fresh or dried flowers (Solidago odora is the anise-scented best) for tea.","Solidago — after the Boston Tea Party, colonists brewed this free instead of taxed British tea. Fragrant, antioxidant-rich, and no relation to your sniffles."]},
+  e25:{name:"Kudzu",sci:"Pueraria montana · Fabaceae",leaf:"🌿",img:"images/plants/kudzu.jpg",match:88,edible:true,months:[4,5,6,7,8,9],season:"Shoots & leaves spring–summer",fresh:"Use tender shoots, leaves, and flowers fresh.",
+    nutrients:["Vit A","Vit C","Fiber","Antioxidants"],
+    uses:[["🥗","Leaf greens"],["🍇","Flower jelly"],["🍮","Root starch"]],
+    safety:"Eat the leaves, shoots, flowers, and roots — NOT the woody vines, and not the seeds or pods. Confirm the three-leaflet leaf and grape-scented purple flower.",
+    intro:"Kudzu — 'the vine that ate the South.' Turns out the whole thing's edible, right down to a grape-jelly flower.",
+    teach:["The vine that ate the South — and you can eat it right back.","Young leaves cook like spinach; the purple flowers smell of grape.","Sauté the shoots, make jelly from the flowers, use the root starch to thicken.","Pueraria montana — a nitrogen-fixing legume brought over for erosion control. Eat leaves, shoots, flowers, roots; leave the woody vine, seeds, and pods."]},
+  e26:{name:"Dollarweed",sci:"Hydrocotyle umbellata · Apiaceae",leaf:"🟢",img:"images/plants/dollarweed.jpg",match:87,edible:true,months:[4,5,6,7,8,9,10],season:"Warm season leaves",fresh:"Use the round leaves fresh — they're crisp and mild.",
+    nutrients:["Vit C","Antioxidants"],
+    uses:[["🥗","Salad"],["🥪","Sandwich green"],["🍵","Tea"]],
+    safety:"Confirm the carrot-family pennywort ID (round scalloped leaf, central stem, white flower). Harvest only from untreated, unsprayed ground — it grows in wet spots.",
+    intro:"Dollarweed — that round-leaf lawn 'weed' by the wet spots. Crisp, mild, and a perfectly good salad green.",
+    teach:["That round silver-dollar lawn weed? Crisp and mild, like a little salad coin.","A hydrating green with a light, fresh, parsley-ish snap.","Toss the round leaves into salad, tuck into a sandwich, or steep for tea.","Hydrocotyle umbellata — a carrot-family pennywort, cousin to gotu kola. The leaf stem joins in the middle like an umbrella. Only pick from clean, unsprayed ground."]},
+  e16:{name:"Creeping Cucumber",sci:"Melothria pendula · Cucurbitaceae",leaf:"🥒",img:"images/plants/creeping-cucumber.jpg",match:85,edible:true,months:[6,7,8,9],season:"Fruits summer–fall",fresh:"Eat only the GREEN fruits, fresh.",
+    nutrients:["Vit C","Antioxidants"],
+    uses:[["🥒","Fresh green"],["🥗","Salad"],["🥫","Pickled"]],
+    safety:"Eat ONLY the tiny GREEN fruits — they taste like cucumber. The ripe BLACK fruits are a strong laxative; never eat those. ID carefully.",
+    intro:"Creeping cucumber — those grape-sized 'baby watermelons.' Green ones taste just like cucumber.",
+    teach:["Those tiny watermelon-looking fruits taste like a little cucumber — green ones only.","A fun, crisp nibble with some vitamin C, straight off the vine.","Eat green fruits fresh, sliced in salad, or quick-pickled like tiny gherkins.","Melothria pendula — the single most important rule: GREEN good, BLACK bad. The ripe black fruits are a powerful laxative, so only ever eat the small green ones."]},
+  e17:{name:"Mugwort",sci:"Artemisia vulgaris · Asteraceae",leaf:"🌿",img:"",match:83,edible:true,months:[5,6,7,8,9],season:"Leaves & tops summer–fall",fresh:"Use young leaves fresh, or dry the tops.",
+    nutrients:["Antioxidants","Vit A"],
+    uses:[["🍚","Rice & mochi"],["🍲","Bitter herb"],["🍵","Tea"]],
+    safety:"Use sparingly as a bitter seasoning. Do NOT use during pregnancy. Traditional uses are folklore, not medical advice.",
+    intro:"Mugwort — the old bitter herb. A little flavors rice and dumplings; a lot is too much.",
+    teach:["The classic bitter herb — a pinch flavors rice, mochi, and stuffings.","Aromatic and bitter, used in tiny amounts for flavor, not a salad green.","Chop a little young leaf into rice or dumplings; dry the tops for tea.","Artemisia vulgaris — 'St. John's plant,' woven into midsummer folklore for centuries. Bitter and strong, so use sparingly, and skip it entirely if pregnant."]},
+  e24:{name:"Greenbriar & Bamboo Vine",sci:"Smilax sp. · Smilacaceae",leaf:"🌱",img:"images/plants/greenbriar.jpg",match:86,edible:true,months:[3,4,5],season:"Tender new shoots in spring",fresh:"Snap the tender growing tips — like wild asparagus.",
+    nutrients:["Vit C","Antioxidants","Fiber"],
+    uses:[["🌱","Shoot tips"],["🥗","Raw or cooked"],["🍵","Root tea"]],
+    safety:"Eat the TENDER new spring shoot tips (snap like asparagus) — the mature woody vine and thorns are not eaten. Confirm Smilax.",
+    intro:"Greenbriar — that thorny vine that grabs your ankles. The tender spring tips snap off like wild asparagus.",
+    teach:["That thorny ankle-grabbing vine gives you free 'wild asparagus' every spring.","The new growing tips are crisp and green, full of a little vitamin C.","Snap the tender tips like asparagus — eat raw or lightly cooked; the root makes tea.","Smilax — the root was the original flavoring in old-fashioned sarsaparilla root beer. Only the soft new tips are food; the mature vine turns woody and thorned."]},
+  e6:{name:"Peppervine",sci:"Nekemias arborea · Vitaceae",leaf:"🍇",img:"images/plants/peppervine.jpg",match:82,edible:true,months:[8,9],season:"Berries ripe late summer–fall",fresh:"Cook berries with the oxalate prep below before eating.",
+    nutrients:["Vit A","Vit C","Vit K","Fiber","Antioxidants"],
+    uses:[["🥫","Berry jam"],["🍲","Leaf stew"],["🥤","Syrup"]],
+    safety:"Ripe BLACK berries only, and cook them — raw berries hold oxalate crystals that irritate the throat. Do the oxalate prep first; start with just 5–10 berries.",
+    intro:"Peppervine — a grape cousin that sprawls everywhere. Cook the black berries down (there's a prep step) and it's genuinely useful.",
+    teach:["A grape relative that's everywhere yet overlooked — young leaves and black berries both cook up.","Low-calorie leaves rich in vitamin K; berries hold the same compound as elderberry.","Oxalate prep first: boil, smash, strain, chill the juice 24 hrs, pour off the clear top — then jam it or stew the leaves.","Nekemias arborea — the berries carry calcium-oxalate crystals raw, so always cook and prep them. One forager kept to 5–10 berries at a time until she knew how they sat."]},
+  g1:{name:"Gotu Kola",sci:"Centella asiatica · Apiaceae",leaf:"🍃",img:"images/plants/gotu-kola.jpg",match:84,edible:true,months:[4,5,6,7,8,9,10],season:"Warm season leaves",fresh:"Use the round leaves fresh in salads or juice.",
+    nutrients:["Vit C","Antioxidants","B Vits"],
+    uses:[["🥗","Salad"],["🥤","Green juice"],["🍵","Tea"]],
+    safety:"Confirm the carrot-family ID (round scalloped leaf, creeping stem). A close look-alike of dollarweed. Harvest only from clean, unsprayed ground.",
+    intro:"Gotu kola — the little fan-leaf 'herb of longevity.' A gentle green for salads, juice, or tea.",
+    teach:["The round fan-leaf herb long called a plant of longevity and clear thinking.","A mild green with vitamin C and antioxidants, grown across Asia for centuries.","Eat leaves fresh in salad, blend into a green juice, or steep for a grassy tea.","Centella asiatica — a carrot-family creeper and dollarweed's cousin. Prized in Ayurveda and Asian cooking; just confirm the ID and pick from unsprayed ground."]},
+  /* ── KNOWN, NOT EATEN — routed away from the edible flow ── */
+  e5:{name:"Virginia Buttonweed",sci:"Diodella teres · Rubiaceae",leaf:"🌿",img:"images/plants/virginia-buttonweed.jpg",match:80,edible:false,months:[6,7,8,9],season:"Warm season",fresh:"",
+    nutrients:[],
+    uses:[],
+    safety:"NOT a food for people. Recorded for identification and wildlife value only — do not eat. It's forage for deer, turkey, and cattle.",
+    intro:"Virginia buttonweed — worth knowing so you can tell it from the edibles. This one's for the wildlife, not the table.",
+    teach:["A common lawn weed worth knowing — but this one's not for eating.","Its value is as wildlife forage: deer, turkey, and cattle browse it.","Not documented as a human food anywhere in the guide — leave it be.","Diodella teres, madder family — recorded here for ID and wildlife value only. Knowing the not-edibles is half of foraging safely."]}
+};
+/* ════════════════ REAL FOOD RANGER — logic ════════════════ */
+var RANGER_EATWITHIN={e4:"3 days",e1:"Same day",e18:"Same day",e2:"Same day",e3:"3 days",e27:"1–2 days",e19:"1–2 days",e20:"3 days",e7:"1–2 days",e13:"Same day",e14:"Same day",e15:"Same day",e10:"1 week",e11:"Same day",e12:"Same day",e9:"Months dried",e21:"2 days",e22:"2 days",e23:"Dried keeps",e25:"2 days",e26:"2 days",e16:"3 days",e17:"Dried keeps",e24:"1–2 days",e6:"Cook first",g1:"2 days"};
+function rangerCookArr(){ if(!Array.isArray(SETTINGS.rangerCook))SETTINGS.rangerCook=[]; return SETTINGS.rangerCook; }
+function rangerDinnerArr(){ if(!Array.isArray(SETTINGS.rangerDinner))SETTINGS.rangerDinner=[]; return SETTINGS.rangerDinner; }
+function rangerDraftsArr(){ if(!Array.isArray(SETTINGS.rangerDrafts))SETTINGS.rangerDrafts=[]; return SETTINGS.rangerDrafts; }
+function rangerMyYardArr(){ if(!Array.isArray(SETTINGS.rangerMyYard))SETTINGS.rangerMyYard=[]; return SETTINGS.rangerMyYard; }
+function rangerInSeasonNow(p){var m=(new Date()).getMonth()+1;return p.months&&p.months.indexOf(m)>=0;}
+function rangerAddDinner(id,btn){var a=rangerDinnerArr();if(a.indexOf(id)<0){a.push(id);saveSettings();}if(btn){btn.innerHTML='✓ On tonight\u2019s menu';btn.disabled=true;btn.style.opacity=.85;}}
+function rangerAddCook(id,btn){var a=rangerCookArr();if(a.indexOf(id)<0){a.push(id);saveSettings();}if(btn){btn.textContent='✓ On your list';btn.disabled=true;}}
+
+function openPlantHub(){ var b=document.getElementById('plantHubResult'); if(b)b.innerHTML=''; go('plantHub'); }
+function openPlantCamera(){
+  var inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.capture='environment';
+  inp.onchange=function(){ rangerIdentify(inp.files&&inp.files[0]); }; inp.click();
+}
+/* PlantNet identify — routes through the SECURE PROXY (same pattern as premium-voice / ai-media).
+   The publishable key rides in the apikey header; the real PlantNet key lives server-side. */
+var PLANT_ID_URL="https://gphzfuhruwlwvitktqjg.supabase.co/functions/v1/plant-id";
+var _rangerLastPhoto="";
+function rangerIdentify(file){
+  go('plantHub');
+  var box=document.getElementById('plantHubResult');
+  box.innerHTML='<div style="text-align:center;color:var(--muted);padding:24px">🔍 Looking at your photo…</div>';
+  if(!file){ rangerUnknownPlant(); return; }
+  var reader=new FileReader();
+  reader.onload=function(){
+    var dataUrl=reader.result; _rangerLastPhoto=dataUrl;
+    fetch(PLANT_ID_URL,{
+      method:'POST',
+      headers:{ 'apikey':PREMIUM_VOICE_KEY, 'Content-Type':'application/json' },
+      body:JSON.stringify({ image:dataUrl })
+    }).then(function(r){ return r.json(); }).then(function(j){
+      if(j.error){ rangerUnknownPlant(); return; }
+      var top=(j.results&&j.results[0])||null;
+      if(!top){ rangerUnknownPlant(); return; }
+      var match=rangerMatchBookPlant(top);
+      if(match){ rangerShowResult(match); }
+      else { rangerUnknownPlant(top); }
+    }).catch(function(){ rangerUnknownPlant(); });
+  };
+  reader.onerror=function(){ rangerUnknownPlant(); };
+  reader.readAsDataURL(file);
+}
+/* Does PlantNet's answer line up with one of Sally's VETTED book plants?
+   Match on scientific name (loose) or on any common name against our plant names. */
+function rangerMatchBookPlant(top){
+  var sci=(top.scientificName||'').toLowerCase();
+  var genus=(top.genus||'').toLowerCase();
+  var commons=(top.commonNames||[]).map(function(c){return (c||'').toLowerCase();});
+  for(var id in RANGER_PLANTS){
+    var p=RANGER_PLANTS[id]; if(!p) continue;
+    var psci=(p.sci||'').toLowerCase();
+    var pname=(p.name||'').toLowerCase();
+    if(psci && sci && (sci.indexOf(psci)>=0 || psci.indexOf(sci)>=0)) return id;
+    // genus-level match to the book's scientific name
+    if(genus && psci && psci.indexOf(genus)>=0) return id;
+    // common-name overlap (e.g. "dandelion")
+    for(var i=0;i<commons.length;i++){
+      var cn=commons[i]; if(!cn) continue;
+      if(pname.indexOf(cn)>=0 || cn.indexOf(pname.split(' ')[0])>=0) return id;
+    }
+  }
+  return null;
+}
+function rangerPhotoPath(imgPath){ if(!imgPath) return ''; return imgPath.replace(/(\.[a-z]+)$/i, '-photo$1'); }
+function rangerImageStrip(p, badges){
+  var draw=p.img||''; var photo=rangerPhotoPath(draw); var leaf=p.leaf||'🌿';
+  var drawHalf = draw
+    ? '<div style="flex:1;height:150px;background:#f4f1e8;display:flex;align-items:center;justify-content:center;position:relative;border-right:1px solid rgba(0,0,0,.08)"><img src="'+draw+'" alt="'+p.name+' drawing" style="max-height:138px;max-width:94%;object-fit:contain" onerror="this.parentNode.style.background=\'linear-gradient(135deg,#1d3a2a,#11231a)\';this.outerHTML=\'<div style=&quot;font-size:40px&quot;>'+leaf+'</div>\'"><div style="position:absolute;bottom:6px;left:8px;font-size:9px;color:#9a8f70;font-style:italic">drawing</div></div>'
+    : '<div style="flex:1;height:150px;background:linear-gradient(135deg,#1d3a2a,#11231a);display:flex;align-items:center;justify-content:center"><div style="font-size:40px">'+leaf+'</div></div>';
+  var photoHalf = draw
+    ? '<div style="flex:1;height:150px;background:#eef2ee;display:flex;align-items:center;justify-content:center;position:relative"><img src="'+photo+'" alt="'+p.name+' photo" style="width:100%;height:150px;object-fit:cover" onerror="this.style.display=\'none\';this.parentNode.querySelector(\'.rphoto-soon\').style.display=\'flex\'"><div class="rphoto-soon" style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#243024,#18201a);flex-direction:column;align-items:center;justify-content:center;color:#7d8a80"><div style="font-size:26px">📷</div><div style="font-size:10px;margin-top:4px">photo coming</div></div><div style="position:absolute;bottom:6px;left:8px;font-size:9px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)">photo</div></div>'
+    : '';
+  return '<div style="display:flex;position:relative">'+drawHalf+photoHalf+(badges||'')+'</div>';
+}
+var RANGER_NLAB=["Just the laugh","A fun fact","Teach me","Full nerd"];
+function rangerShowResult(id){
+  var box=document.getElementById('plantHubResult');
+  if(id==='unknown'||!RANGER_PLANTS[id]){ rangerUnknownPlant(); return; }
+  var p=RANGER_PLANTS[id];
+  if(p.edible===false){ rangerShowNotEdible(id,p); return; }
+  var bubbles=RANGER_ALL_NUTRIENTS.map(function(n){var on=p.nutrients.indexOf(n)>=0;return '<span style="font-size:10px;font-weight:600;padding:4px 9px;border-radius:14px;'+(on?'background:rgba(143,227,192,.16);color:#8fe3c0':'background:rgba(255,255,255,.05);color:#646a80')+'">'+n+'</span>';}).join(' ');
+  var uses=p.uses.map(function(u){return '<div style="flex:0 0 auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:8px 10px;text-align:center;min-width:56px"><div style="font-size:17px">'+u[0]+'</div><div style="font-size:10px;margin-top:3px">'+u[1]+'</div></div>';}).join('');
+  var inNow=rangerInSeasonNow(p);
+  var eat=RANGER_EATWITHIN[id]||"A few days";
+  var freshRow='<div style="display:flex;gap:7px;margin:12px 0">'+
+    (inNow?'<div style="flex:1;background:rgba(143,227,192,.10);border:1px solid rgba(143,227,192,.30);border-radius:12px;padding:9px 6px;text-align:center"><div style="color:#8fe3c0;font-size:15px">🌿</div><div style="font-size:9px;color:#7d8a86;margin-top:2px">In season</div><div style="font-size:12px;color:var(--ink);font-weight:600">Now</div></div>':'<div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:9px 6px;text-align:center"><div style="color:#9aa0b4;font-size:15px">🌙</div><div style="font-size:9px;color:#7d8a86;margin-top:2px">In season</div><div style="font-size:12px;color:var(--muted);font-weight:600">'+(p.season||'Off')+'</div></div>')+
+    '<div style="flex:1;background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.28);border-radius:12px;padding:9px 6px;text-align:center"><div style="color:var(--gold);font-size:15px">⏳</div><div style="font-size:9px;color:#bfae7a;margin-top:2px">Eat within</div><div style="font-size:12px;color:var(--ink);font-weight:600">'+eat+'</div></div></div>';
+  var onMenu=rangerDinnerArr().indexOf(id)>=0;
+  var dinnerBtn='<button onclick="rangerAddDinner(\''+id+'\',this)"'+(onMenu?' disabled':'')+' style="width:100%;background:linear-gradient(180deg,#e7c873,#caa44a);color:#1a1405;border:none;border-radius:13px;padding:14px;font-size:15px;font-weight:700;margin-top:12px;cursor:pointer">'+(onMenu?'✓ On tonight\u2019s menu':'🍽️ Add to tonight\u2019s dinner')+'</button>';
+  var badges='<div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,.45);color:#8fe3c0;font-size:10px;font-weight:600;padding:4px 9px;border-radius:14px;z-index:2">🌿 '+p.match+'% match</div><div style="position:absolute;top:8px;right:8px;background:#1d3a2a;color:#9ad9a0;font-size:10px;font-weight:600;padding:4px 9px;border-radius:14px;z-index:2">✓ edible</div>';
+  box.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden">'+
+    rangerImageStrip(p, badges)+
+    '<div style="padding:14px">'+
+      '<p style="font-size:18px;font-weight:600;margin:0">'+p.name+'</p><p style="font-size:11px;color:var(--muted);font-style:italic;margin:2px 0 0">'+p.sci+'</p>'+
+      freshRow+
+      '<div style="display:flex;flex-wrap:wrap;gap:5px;margin:11px 0">'+bubbles+'</div>'+
+      '<div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.4px;margin:10px 0 6px;text-transform:uppercase">Ways to use it</div>'+
+      '<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:2px">'+uses+'</div>'+
+      '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:9px 11px;display:flex;gap:8px;margin:11px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11px;color:#ffcf6b;line-height:1.45">'+p.safety+'</p></div>'+
+      dinnerBtn+
+      '<div style="background:rgba(255,255,255,.05);border-radius:11px;padding:11px 12px;margin-top:11px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:var(--muted)">🌿 Nerdy meter</span><b class="rnlab" style="font-size:11px;color:var(--gold)">Just the laugh</b></div>'+
+        '<input type="range" min="0" max="3" step="1" value="0" style="width:100%;accent-color:var(--gold)" oninput="rangerTeach(this,\''+id+'\')">'+
+        '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted)"><span>breezy</span><span>fact</span><span>teach</span><span>nerd</span></div>'+
+        '<div class="rte" style="background:rgba(0,0,0,.25);border-radius:9px;padding:9px 11px;margin-top:9px;font-size:12.5px;line-height:1.5">'+p.teach[0]+'</div></div>'+
+      '<div style="display:flex;gap:6px;margin-top:11px"><button class="home-half" style="flex:1" onclick="rangerAddCook(\''+id+'\',this)">🧺 Cooking list</button><button class="home-half" style="flex:1" onclick="rangerShareBook(\''+id+'\')">↗ Share</button></div>'+
+    '</div></div>'+
+    '<p style="font-size:11px;color:var(--muted);margin:10px 2px 0;line-height:1.5">'+p.intro+'</p>';
+}
+function rangerShowNotEdible(id,p){
+  var box=document.getElementById('plantHubResult');
+  box.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden">'+
+    (p.img?'<div style="height:150px;background:#f4f1e8;display:flex;align-items:center;justify-content:center;position:relative"><img src="'+p.img+'" alt="'+p.name+'" style="max-height:138px;max-width:90%;object-fit:contain" onerror="this.parentNode.style.background=\'linear-gradient(135deg,#3a2f1d,#241c11)\';this.outerHTML=\'<div style=&quot;font-size:44px&quot;>'+p.leaf+'</div>\'"><div style="position:absolute;top:8px;right:8px;background:#5a3210;color:#ffcf6b;font-size:10px;font-weight:600;padding:4px 9px;border-radius:14px">⚠️ not eaten</div></div>':'<div style="height:96px;background:linear-gradient(135deg,#3a2f1d,#241c11);display:flex;align-items:center;justify-content:center"><div style="font-size:44px">'+p.leaf+'</div></div>')+
+    '<div style="padding:14px">'+
+      '<p style="font-size:18px;font-weight:600;margin:0">'+p.name+'</p><p style="font-size:11px;color:var(--muted);font-style:italic;margin:2px 0 0">'+p.sci+'</p>'+
+      '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:10px 12px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11.5px;color:#ffcf6b;line-height:1.5">'+p.safety+'</p></div>'+
+      '<div style="background:rgba(255,255,255,.05);border-radius:11px;padding:11px 12px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:var(--muted)">🌿 Nerdy meter</span><b class="rnlab" style="font-size:11px;color:var(--gold)">Just the laugh</b></div>'+
+        '<input type="range" min="0" max="3" step="1" value="0" style="width:100%;accent-color:var(--gold)" oninput="rangerTeach(this,\''+id+'\')">'+
+        '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted)"><span>breezy</span><span>fact</span><span>teach</span><span>nerd</span></div>'+
+        '<div class="rte" style="background:rgba(0,0,0,.25);border-radius:9px;padding:9px 11px;margin-top:9px;font-size:12.5px;line-height:1.5">'+p.teach[0]+'</div></div>'+
+    '</div></div>'+
+    '<p style="font-size:11px;color:var(--muted);margin:10px 2px 0;line-height:1.5">'+p.intro+'</p>';
+}
+function rangerTeach(sl,id){var v=+sl.value;sl.parentNode.querySelector('.rnlab').textContent=RANGER_NLAB[v];sl.parentNode.querySelector('.rte').textContent=RANGER_PLANTS[id].teach[v];}
+
+function rangerUnknownPlant(top){
+  var box=document.getElementById('plantHubResult');
+  var name=(top&&top.commonNames&&top.commonNames[0]) ? top.commonNames[0] : (top&&top.scientificName ? top.scientificName : "A new plant");
+  var sci=(top&&top.scientificName) ? top.scientificName : "";
+  var score=(top&&top.score) ? top.score : null;
+  var photo=_rangerLastPhoto||'';
+  box.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden">'+
+    (photo?'<div style="height:150px;background:#eef2ee;display:flex;align-items:center;justify-content:center;position:relative"><img src="'+photo+'" style="width:100%;height:150px;object-fit:cover"><div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,.5);color:#fff;font-size:10px;font-weight:600;padding:4px 9px;border-radius:14px">your photo</div></div>':'')+
+    '<div style="padding:14px">'+
+      '<p style="font-size:16px;font-weight:600;margin:0 0 2px">New to me — '+name+'</p>'+
+      (sci?'<p style="font-size:11px;color:var(--muted);font-style:italic;margin:0 0 4px">'+sci+(score?' · '+score+'% match':'')+'</p>':'')+
+      '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:10px 12px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11.5px;color:#ffcf6b;line-height:1.5"><b>Not in my book.</b> I can\'t confirm this one, so please don\'t eat it on my word. If YOU know it\'s edible, you can add it to your own yard.</p></div>'+
+      '<button class="home-half" style="width:100%" onclick="rangerAddToMyYard(\''+encodeURIComponent(name)+'\',\''+encodeURIComponent(photo)+'\')">🌱 I know this one — add to My Yard</button>'+
+    '</div></div>';
+}
+
+/* ── MY YARD ── */
+function rangerAddToMyYard(name,photo){
+  if(!SETTINGS.rangerYardNoteSeen){
+    var box=document.getElementById('plantHubResult');
+    box.innerHTML='<div style="background:rgba(143,227,192,.08);border:1px solid rgba(143,227,192,.3);border-radius:16px;padding:18px">'+
+      '<div style="font-size:30px;text-align:center;margin-bottom:8px">🌱</div>'+
+      '<p style="font-size:15px;font-weight:600;text-align:center;margin:0 0 8px">This is your yard, your knowledge</p>'+
+      '<p style="font-size:12.5px;color:var(--muted);line-height:1.6;text-align:center;margin:0 0 16px">Plants you add here are your own — Ranger keeps them just for you. They\'re your call, not mine, so they won\'t carry my kitchen\'s ✓ badge.</p>'+
+      '<button style="width:100%;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:13px;font-size:15px;font-weight:700;cursor:pointer" onclick="SETTINGS.rangerYardNoteSeen=true;saveSettings();rangerYardForm(\''+encodeURIComponent(name||'')+'\',\''+encodeURIComponent(photo||'')+'\')">Got it — add my plant</button>'+
+    '</div>';
+    return;
+  }
+  rangerYardForm(encodeURIComponent(name||''), encodeURIComponent(photo||''));
+}
+function rangerYardForm(encName,encPhoto){
+  var name=decodeURIComponent(encName||''); 
+  var box=document.getElementById('plantHubResult');
+  box.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px">'+
+    '<p style="font-size:15px;font-weight:600;margin:0 0 12px">🌱 Add to My Yard</p>'+
+    '<label style="font-size:11px;color:var(--muted)">Plant name</label>'+
+    '<input id="myYardName" value="'+name.replace(/"/g,'&quot;')+'" placeholder="What is it?" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:var(--ink);font-size:14px;margin:4px 0 12px">'+
+    '<label style="font-size:11px;color:var(--muted)">Your notes</label>'+
+    '<textarea id="myYardNote" rows="3" placeholder="How you use it, where it grows…" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:var(--ink);font-size:14px;margin:4px 0 12px"></textarea>'+
+    '<label style="font-size:11px;color:var(--muted)">In season for you</label>'+
+    '<input id="myYardSeason" placeholder="e.g. Spring–summer" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:var(--ink);font-size:14px;margin:4px 0 14px">'+
+    '<label style="display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink);margin-bottom:14px;cursor:pointer"><input type="checkbox" id="myYardShare" style="width:18px;height:18px;accent-color:var(--gold)"> Share a copy with Sally (helps Ranger grow)</label>'+
+    '<button style="width:100%;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:13px;font-size:15px;font-weight:700;cursor:pointer" onclick="rangerYardSave(\''+encPhoto+'\')">🌱 Save to My Yard</button>'+
+  '</div>';
+}
+function rangerYardFind(id){ return rangerMyYardArr().find(function(x){return x.id===id;}); }
+function rangerYardSave(encPhoto){
+  var name=(document.getElementById('myYardName')||{}).value||'My plant';
+  var note=(document.getElementById('myYardNote')||{}).value||'';
+  var season=(document.getElementById('myYardSeason')||{}).value||'';
+  var share=(document.getElementById('myYardShare')||{}).checked;
+  var entry={id:'y'+Date.now(),name:name.trim(),note:note.trim(),season:season.trim(),photo:decodeURIComponent(encPhoto||''),added:Date.now(),mine:true,nutrients:{},recipes:[]};
+  rangerMyYardArr().push(entry);
+  if(share){ rangerDraftsArr().push({name:entry.name,sci:'(shared by a user)',status:'user-shared',source:'My Yard share',savedAt:Date.now(),edible:null,verified:false,fromUser:true,nutrients:{},note:entry.note}); }
+  saveSettings();
+  openMyYardPlant(entry.id);
+}
+function openMyYardPlant(id){
+  var e=rangerYardFind(id); if(!e){ openMyYard(); return; }
+  if(!e.nutrients) e.nutrients={}; if(!e.recipes) e.recipes=[];
+  var box=document.getElementById('myYardList');
+  var nutBtns=RANGER_ALL_NUTRIENTS.map(function(n){
+    var on=e.nutrients[n]!==undefined;
+    return '<button onclick="rangerYardNutrient(\''+id+'\',\''+n+'\')" style="font-size:10px;font-weight:600;padding:5px 10px;border-radius:14px;border:1px solid '+(on?'rgba(143,227,192,.5)':'rgba(255,255,255,.1)')+';cursor:pointer;'+(on?'background:rgba(143,227,192,.16);color:#8fe3c0':'background:rgba(255,255,255,.04);color:#7d8496')+'">'+n+(on&&e.nutrients[n]?' ✎':'')+'</button>';
+  }).join(' ');
+  box.innerHTML='<button class="home-half" style="margin-bottom:12px" onclick="openMyYard()">‹ My Yard</button>'+
+    '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden">'+
+      (e.photo?'<div style="height:140px;background:#f4f1e8;display:flex;align-items:center;justify-content:center;position:relative"><img src="'+e.photo+'" style="max-height:130px;max-width:92%;object-fit:contain"><div style="position:absolute;top:8px;left:8px;background:rgba(143,227,192,.9);color:#0c2018;font-size:10px;font-weight:700;padding:4px 9px;border-radius:14px">🌱 Your add</div></div>':'<div style="height:64px;background:linear-gradient(135deg,#1d3a2a,#11231a);display:flex;align-items:center;justify-content:center;position:relative"><div style="font-size:28px">🌱</div><div style="position:absolute;top:8px;left:8px;background:rgba(143,227,192,.9);color:#0c2018;font-size:10px;font-weight:700;padding:4px 9px;border-radius:14px">🌱 Your add</div></div>')+
+      '<div style="padding:15px">'+
+        '<p style="font-size:18px;font-weight:600;margin:0">'+e.name+'</p>'+
+        (e.season?'<p style="font-size:11px;color:#8fe3c0;margin:3px 0 0">🗓️ '+e.season+'</p>':'')+
+        '<div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.4px;margin:13px 0 7px;text-transform:uppercase">Nutrients — tap what you know</div>'+
+        '<div style="display:flex;flex-wrap:wrap;gap:5px">'+nutBtns+'</div>'+
+        (e.note?'<p style="font-size:12.5px;color:var(--muted);line-height:1.5;margin:13px 0 0">'+e.note+'</p>':'')+
+        '<div style="display:flex;gap:6px;margin-top:14px"><button class="home-half" style="flex:1" onclick="rangerYardFindRecipes(\''+id+'\')">🍳 Find recipes</button><button class="home-half" style="flex:1" onclick="rangerYardToCook(\''+id+'\')">🧺 Cooking list</button></div>'+
+        '<button class="home-half" style="width:100%;margin-top:8px" onclick="rangerShareMine(\''+id+'\')">↗ Share with a friend</button>'+
+        '<button class="home-half" style="width:100%;margin-top:8px" onclick="rangerYardRemove(\''+id+'\')">🗑️ Remove this plant</button>'+
+        '<p style="font-size:10px;color:var(--muted);font-style:italic;margin:13px 0 0">Added by you — your own knowledge, your own kitchen.</p>'+
+      '</div></div>';
+  go('myYard');
+}
+function rangerYardNutrient(id,n){
+  var e=rangerYardFind(id); if(!e)return; if(!e.nutrients)e.nutrients={};
+  if(e.nutrients[n]!==undefined){ delete e.nutrients[n]; saveSettings(); openMyYardPlant(id); return; }
+  var note=prompt("Add "+n+"? Optional note (leave blank for just on):","");
+  if(note===null){ return; }
+  e.nutrients[n]=note.trim(); saveSettings(); openMyYardPlant(id);
+}
+function rangerYardToCook(id){
+  var e=rangerYardFind(id); if(!e)return;
+  var a=rangerCookArr(); var key='my:'+id;
+  if(a.indexOf(key)<0){ a.push(key); saveSettings(); }
+  toast&&toast("Added to your Cooking List");
+}
+/* Recipe search — routes through your existing 'recipes' proxy (Spoonacular, key server-side). */
+var RECIPES_URL="https://gphzfuhruwlwvitktqjg.supabase.co/functions/v1/recipes";
+function rangerRecipeSearch(name, cb){
+  if(!name){ cb([]); return; }
+  fetch(RECIPES_URL,{
+    method:'POST',
+    headers:{ 'apikey':PREMIUM_VOICE_KEY, 'Content-Type':'application/json' },
+    body:JSON.stringify({ query:name, ingredient:name, number:5 })
+  }).then(function(r){ return r.json(); }).then(function(j){
+    if(!j || j.error){ cb([]); return; }
+    // handle {results:[]}, {recipes:[]}, or a raw array — whatever your proxy returns
+    var list = Array.isArray(j) ? j : (j.results || j.recipes || j.data || []);
+    var out=(list||[]).slice(0,5).map(function(r){
+      return {
+        title: r.title || r.name || 'Recipe',
+        image: r.image || r.thumbnail || '',
+        url: r.sourceUrl || r.url || r.spoonacularSourceUrl || (r.id?('https://spoonacular.com/recipes/-'+r.id):'')
+      };
+    });
+    cb(out);
+  }).catch(function(){ cb([]); });
+}
+function rangerYardFindRecipes(id){
+  var e=rangerYardFind(id); if(!e)return;
+  if(!SETTINGS.rangerYardCookNoteSeen){
+    SETTINGS.rangerYardCookNoteSeen=true; saveSettings();
+    alert("These recipe ideas come from the web for your own plant — they're yours to look over and decide on, same as the plant itself.");
+  }
+  rangerRecipeSearch(e.name, function(list){
+    openMyYardPlant(id);
+    var box=document.getElementById('myYardList');
+    var wrap=document.createElement('div');
+    if(list&&list.length){
+      wrap.style.cssText='margin-top:12px';
+      wrap.innerHTML='<div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.4px;margin:0 0 8px;text-transform:uppercase">🍳 More recipe ideas</div>'+
+        list.map(function(r){
+          return '<a href="'+(r.url||'#')+'" target="_blank" rel="noopener" style="display:flex;gap:10px;align-items:center;text-decoration:none;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px;margin-bottom:8px">'+
+            (r.image?'<img src="'+r.image+'" style="width:52px;height:52px;object-fit:cover;border-radius:9px;flex:0 0 auto">':'<div style="width:52px;height:52px;border-radius:9px;background:rgba(231,200,115,.15);display:flex;align-items:center;justify-content:center;flex:0 0 auto">🍽️</div>')+
+            '<span style="font-size:13px;color:var(--ink);line-height:1.3">'+r.title+'</span></a>';
+        }).join('')+
+        '<p style="font-size:10px;color:var(--muted);font-style:italic;margin:4px 2px 0">Ideas from the web for your own plant — your call, as always.</p>';
+    } else {
+      wrap.style.cssText='background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.28);border-radius:12px;padding:12px;margin-top:11px;font-size:12px;color:var(--gold);line-height:1.5';
+      wrap.textContent='🍳 No recipe ideas came back for that one just now — your plant is saved and ready to try again later.';
+    }
+    box.appendChild(wrap);
+  });
+}
+function rangerYardRemove(id){ var a=rangerMyYardArr(); var i=a.findIndex(function(x){return x.id===id;}); if(i>=0){ a.splice(i,1); saveSettings(); } openMyYard(); }
+function rangerMyYardCard(e){
+  return '<div onclick="openMyYardPlant(\''+e.id+'\')" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;margin-bottom:11px;cursor:pointer">'+
+    (e.photo?'<div style="height:130px;background:#f4f1e8;display:flex;align-items:center;justify-content:center;position:relative"><img src="'+e.photo+'" style="max-height:120px;max-width:92%;object-fit:contain"><div style="position:absolute;top:8px;left:8px;background:rgba(143,227,192,.9);color:#0c2018;font-size:10px;font-weight:700;padding:4px 9px;border-radius:14px">🌱 Your add</div></div>':'<div style="height:60px;background:linear-gradient(135deg,#1d3a2a,#11231a);display:flex;align-items:center;justify-content:center;position:relative"><div style="font-size:26px">🌱</div><div style="position:absolute;top:8px;left:8px;background:rgba(143,227,192,.9);color:#0c2018;font-size:10px;font-weight:700;padding:4px 9px;border-radius:14px">🌱 Your add</div></div>')+
+    '<div style="padding:13px">'+
+      '<p style="font-size:16px;font-weight:600;margin:0">'+(e.name||'My plant')+'</p>'+
+      (e.season?'<p style="font-size:11px;color:#8fe3c0;margin:3px 0 0">🗓️ '+e.season+'</p>':'')+
+      '<p style="font-size:10px;color:var(--muted);font-style:italic;margin:10px 0 0">Added by you — tap to open</p>'+
+    '</div></div>';
+}
+function openMyYard(){
+  var b=document.getElementById('myYardList'); var arr=rangerMyYardArr();
+  b.innerHTML = arr.length ? arr.slice().reverse().map(rangerMyYardCard).join('') : '<div style="text-align:center;color:var(--muted);padding:34px">🌱 Your yard is empty so far. When you identify a plant you know, tap "Add to My Yard" to start your own collection.</div>';
+  go('myYard');
+}
+function openInSeason(){
+  var now=new Date().getMonth()+1;
+  var MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  document.getElementById('seasonMonth').textContent=MN[now-1];
+  var ready=Object.keys(RANGER_PLANTS).filter(function(id){return RANGER_PLANTS[id].edible!==false && RANGER_PLANTS[id].months.indexOf(now)>=0;});
+  var b=document.getElementById('seasonList');
+  b.innerHTML = ready.length? ready.map(function(id){var p=RANGER_PLANTS[id];return '<button class="home-big" style="display:flex;width:100%;text-align:left;margin-bottom:9px" onclick="openPlantHub();setTimeout(function(){rangerShowResult(\''+id+'\')},50)"><span class="hb-ic">'+p.leaf+'</span><span class="hb-tx"><b>'+p.name+'</b><small>🌿 ready now — '+p.season+'</small></span></button>';}).join('') : '<div style="text-align:center;color:var(--muted);padding:30px">🌱 Quiet season right now. Check back as the months turn.</div>';
+  go('inSeason');
+}
+function openCookingList(){
+  var b=document.getElementById('cookList'); var list=rangerCookArr();
+  var book=list.filter(function(x){return x.indexOf('my:')!==0;});
+  var mine=list.filter(function(x){return x.indexOf('my:')===0;});
+  var html='';
+  if(book.length){ html+=book.map(function(id){var p=RANGER_PLANTS[id];if(!p)return '';return '<div class="home-big" style="display:flex;width:100%;text-align:left;margin-bottom:9px"><span class="hb-ic">'+p.leaf+'</span><span class="hb-tx"><b>'+p.name+'</b><small>🕒 '+p.fresh+'</small></span></div>';}).join(''); }
+  if(mine.length){ html+='<div style="font-size:11px;color:#8fe3c0;font-weight:700;letter-spacing:.4px;margin:14px 2px 8px;text-transform:uppercase">🌱 From My Yard</div>'; html+=mine.map(function(key){var e=rangerYardFind(key.slice(3));if(!e)return '';return '<div onclick="openMyYardPlant(\''+e.id+'\')" class="home-big" style="display:flex;width:100%;text-align:left;margin-bottom:9px;cursor:pointer"><span class="hb-ic">🌱</span><span class="hb-tx"><b>'+e.name+'</b><small>Your own plant'+(e.season?' · '+e.season:'')+'</small></span></div>';}).join(''); }
+  b.innerHTML = html || '<div style="text-align:center;color:var(--muted);padding:30px">🧺 Nothing here yet. Identify a plant and tap "Cooking list."</div>';
+  go('cookingList');
+}
+
+/* ── SHARING ── */
+function rangerB64(obj){ try{return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));}catch(e){return '';} }
+function rangerUnB64(s){ try{return JSON.parse(decodeURIComponent(escape(atob(s))));}catch(e){return null;} }
+function rangerAppBase(){ return (location.origin+location.pathname).replace(/[#?].*$/,''); }
+function rangerShareBook(id){
+  var p=RANGER_PLANTS[id]; if(!p||p.edible===false) return;
+  var link=rangerAppBase()+'#plant='+rangerB64({t:'book',id:id});
+  var uses=(p.uses||[]).map(function(u){return u[1];}).join(', ');
+  var text='🌿 '+p.name+' — growing free in the yard!\n'+(p.sci?p.sci+'\n':'')+'\n'+p.intro+'\n'+(uses?'\nWays to use it: '+uses+'\n':'')+'\n✅ Real Food Ranger — verified edible (from Tell Me Honey)\n\nSee it in the app: '+link;
+  rangerDoShare(p.name, text);
+}
+function rangerShareMine(pid){
+  var e=rangerYardFind(pid); if(!e) return;
+  var link=rangerAppBase()+'#plant='+rangerB64({t:'mine',n:e.name,no:e.note,se:e.season,nu:e.nutrients||{}});
+  var nutList=Object.keys(e.nutrients||{});
+  var text='🌱 '+e.name+' — I found this in my yard!\n'+(e.season?'In season: '+e.season+'\n':'')+(e.note?'\n'+e.note+'\n':'')+(nutList.length?'\nGood for: '+nutList.join(', ')+'\n':'')+'\n🌱 A neighbor\u2019s own backyard find — their own knowledge, not verified by the app.\n\nFound with Tell Me Honey: '+link;
+  rangerDoShare(e.name, text);
+}
+function rangerDoShare(title, text){
+  if(navigator.share){ navigator.share({title:title, text:text}).catch(function(){ rangerShareFallback(text); }); }
+  else { rangerShareFallback(text); }
+}
+function rangerShareFallback(text){ try{ navigator.clipboard.writeText(text); toast&&toast("Copied — paste it into a text or email 💚"); }catch(e){ try{ prompt("Copy this to share:", text); }catch(_){} } }
+function rangerCheckIncomingShare(){
+  var m=(location.hash||'').match(/plant=([^&]+)/); if(!m) return false;
+  var data=rangerUnB64(m[1]); try{history.replaceState(null,'',rangerAppBase());}catch(e){}
+  if(!data) return false; rangerShowIncoming(data); return true;
+}
+function rangerShowIncoming(data){
+  openPlantHub();
+  var box=document.getElementById('plantHubResult');
+  if(data.t==='book' && RANGER_PLANTS[data.id]){
+    rangerShowResult(data.id);
+    var box2=document.getElementById('plantHubResult');
+    var banner=document.createElement('div');
+    banner.style.cssText='background:rgba(143,227,192,.08);border:1px solid rgba(143,227,192,.3);border-radius:14px;padding:12px;margin-bottom:12px;font-size:12.5px;color:#8fe3c0';
+    banner.textContent='💚 A neighbor shared this with you!';
+    box2.insertBefore(banner, box2.firstChild);
+    return;
+  }
+  var who='A neighbor';
+  var nut=data.nu&&Object.keys(data.nu).length?Object.keys(data.nu).join(', '):'';
+  box.innerHTML='<div style="background:rgba(143,227,192,.08);border:1px solid rgba(143,227,192,.3);border-radius:14px;padding:12px;margin-bottom:12px;font-size:12.5px;color:#8fe3c0">💚 '+who+' shared a find from their yard!</div>'+
+    '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden">'+
+      '<div style="height:60px;background:linear-gradient(135deg,#1d3a2a,#11231a);display:flex;align-items:center;justify-content:center;position:relative"><div style="font-size:26px">🌱</div><div style="position:absolute;top:8px;left:8px;background:rgba(143,227,192,.9);color:#0c2018;font-size:10px;font-weight:700;padding:4px 9px;border-radius:14px">🌱 Neighbor\u2019s find</div></div>'+
+      '<div style="padding:15px">'+
+        '<p style="font-size:18px;font-weight:600;margin:0">'+(data.n||'A plant')+'</p>'+
+        (data.se?'<p style="font-size:11px;color:#8fe3c0;margin:3px 0 0">🗓️ '+data.se+'</p>':'')+
+        (nut?'<p style="font-size:12px;color:var(--muted);margin:8px 0 0">Good for: '+nut+'</p>':'')+
+        (data.no?'<p style="font-size:12.5px;color:var(--muted);line-height:1.5;margin:8px 0 0">'+data.no+'</p>':'')+
+        '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:9px 11px;margin:12px 0;font-size:11px;color:#ffcf6b;line-height:1.5">🌱 This is a neighbor\u2019s own knowledge — not verified by the app. Always be 100% sure before eating any wild plant.</div>'+
+        '<button style="width:100%;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:13px;font-size:15px;font-weight:700;cursor:pointer" onclick="rangerSaveIncoming(\''+encodeURIComponent(rangerB64(data))+'\')">🌱 Save to my own Yard</button>'+
+      '</div></div>';
+}
+function rangerSaveIncoming(enc){
+  var data=rangerUnB64(decodeURIComponent(enc)); if(!data) return;
+  var entry={id:'y'+Date.now(),name:data.n||'Shared plant',note:(data.no||'')+'\n(shared by a neighbor)',season:data.se||'',photo:'',added:Date.now(),mine:true,nutrients:data.nu||{},recipes:[]};
+  rangerMyYardArr().push(entry); saveSettings();
+  openMyYardPlant(entry.id);
+}
+
+/* ── RANGER SETTINGS: where it shows up (chat / home) ── */
+function openRangerSettings(){
+  go('rangerSettings');
+  var chatOn=chipOn('plants');
+  var homeOn=homeBtnOn('plants');
+  var el=document.getElementById('rangerSettingsList');
+  el.innerHTML=
+    '<div class="cs-row"><div class="cs-lb">💬 Show on chat shortcuts</div><button class="cs-toggle'+(chatOn?' on':'')+'" onclick="rangerToggleChat(this)"></button></div>'+
+    '<div class="cs-row"><div class="cs-lb">🏠 Show on home screen</div><button class="cs-toggle'+(homeOn?' on':'')+'" onclick="rangerToggleHome(this)"></button></div>'+
+    '<p style="font-size:11px;color:var(--muted);margin:14px 2px 0;line-height:1.5">Either way, Real Food Ranger always lives here in My Sweet Life.</p>';
+}
+function rangerToggleChat(btn){
+  if(!SETTINGS.chips) SETTINGS.chips={};
+  var now=chipOn('plants'); SETTINGS.chips['plants']=!now; btn.classList.toggle('on',!now); saveSettings();
+  try{ if(document.getElementById('chat').classList.contains('on')) buildQuickChips(); }catch(e){}
+}
+function rangerToggleHome(btn){
+  toggleHomeBtn('plants');
+  btn.classList.toggle('on', homeBtnOn('plants'));
+}
+/* ════════════════ END REAL FOOD RANGER ════════════════ */
+
+
 // paint a usable screen IMMEDIATELY (before any storage), so iOS never shows black
 try{ buildCards(); }catch(e){}
 try{ if('speechSynthesis'in window) speechSynthesis.getVoices(); }catch(e){}
 try{ showHome(); }catch(e){ bootFallback(); }
+try{ if(/plant=/.test(location.hash)) setTimeout(rangerCheckIncomingShare, 400); }catch(e){}
 try{ refreshMicPermissionUI(); }catch(e){}
 
 try{
