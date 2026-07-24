@@ -2032,7 +2032,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v53 · honey caps aligned</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v50 · photo box reverted</div>
   </div>
 </section>
 
@@ -4767,17 +4767,18 @@ function streakLabel(){
 function earnHoney(text,lang){
   var t=todayKey();
   if(SETTINGS.honeyDay!==t){ SETTINGS.honeyDay=t; SETTINGS.honeyToday=0; }
-  // Chatting is what people came here to DO — we don't pay them for it.
-  // Just a small daily nod when they mention the good things (a walk, a good
-  // sleep, a friend, something learned) so the number ticks up and feels alive.
-  // SHARING is where the real honey is, because sharing brings somebody new.
-  if((SETTINGS.honeyToday||0) >= 40) { return 0; } // shared daily cap on 'being healthy' honey
+  if((SETTINGS.honeyToday||0) >= 250) { return 0; } // daily cap
   var words=(text.toLowerCase().match(/[a-z']{2}/g))||[];
-  var pos=['growth','goal','connection','curiosity','movement','rest']
-            .reduce((a,id)=>a+((lang&&lang[id])||0),0);
-  var drops = (pos>0 && words.length>=4) ? Math.min(4, pos) : 0;
+  var drops=0;
+  // a "real sentence" = at least 4 words → base reward
+  if(words.length>=4) drops+=2;
+  if(words.length>=10) drops+=2; // a fuller thought
+  // positive / growth-oriented language earns more
+  var pos=['growth','goal','connection','curiosity'].reduce((a,id)=>a+((lang&&lang[id])||0),0);
+  drops += Math.min(6, pos);            // up to +6 for positive words
+  // limiting/stress language doesn't penalize, just doesn't add
   if(drops<=0) return 0;
-  var room=40-(SETTINGS.honeyToday||0);
+  var room=250-(SETTINGS.honeyToday||0);
   drops=Math.min(drops,room);
   SETTINGS.honey=(SETTINGS.honey||0)+drops;
   SETTINGS.honeyToday=(SETTINGS.honeyToday||0)+drops;
@@ -7968,8 +7969,8 @@ function toggleGoalDone(g){
     // completing a goal pours a few drops into the honey pot (gentle, capped by existing system)
     var t=todayKey();
     if(SETTINGS.honeyDay!==t){ SETTINGS.honeyDay=t; SETTINGS.honeyToday=0; }
-    if((SETTINGS.honeyToday||0) < 40){
-      var room=40-(SETTINGS.honeyToday||0), drops=Math.min(5,room);
+    if((SETTINGS.honeyToday||0) < 250){
+      var room=250-(SETTINGS.honeyToday||0), drops=Math.min(5,room);
       SETTINGS.honey=(SETTINGS.honey||0)+drops; SETTINGS.honeyToday=(SETTINGS.honeyToday||0)+drops;
     }
     // track total completions + streak for milestone celebration
@@ -8878,8 +8879,8 @@ function toggleNourish(id){
     // earn a few honey drops, respecting the gentle daily honey cap
     var t=todayKey();
     if(SETTINGS.honeyDay!==t){ SETTINGS.honeyDay=t; SETTINGS.honeyToday=0; }
-    if((SETTINGS.honeyToday||0) < 40){
-      var room=40-(SETTINGS.honeyToday||0), drops=Math.min(3,room);
+    if((SETTINGS.honeyToday||0) < 250){
+      var room=250-(SETTINGS.honeyToday||0), drops=Math.min(3,room);
       SETTINGS.honey=(SETTINGS.honey||0)+drops; SETTINGS.honeyToday=(SETTINGS.honeyToday||0)+drops;
     }
     // gentle educational note for the tapped food
@@ -8964,8 +8965,8 @@ function celebrateGoalMaybe(g, st){
   // bonus drops for hitting a milestone (gentle, respects cap)
   var t=todayKey();
   if(SETTINGS.honeyDay!==t){ SETTINGS.honeyDay=t; SETTINGS.honeyToday=0; }
-  if((SETTINGS.honeyToday||0) < 40){
-    var room=40-(SETTINGS.honeyToday||0), bonus=Math.min(10,room);
+  if((SETTINGS.honeyToday||0) < 250){
+    var room=250-(SETTINGS.honeyToday||0), bonus=Math.min(10,room);
     SETTINGS.honey=(SETTINGS.honey||0)+bonus; SETTINGS.honeyToday=(SETTINGS.honeyToday||0)+bonus;
   }
   saveSettings();
@@ -12357,17 +12358,14 @@ function onLoveImgPick(e){
   r.readAsDataURL(f);
 }
 /* honey for sharing, daily cap */
-/* Honey for sharing. 5 honey a share, and people can share up to 60 times a
-   day — sharing is the funnel, so we never want to stop someone from doing it.
-   Every share carries the app link out to somebody new. */
 function earnShareHoney(){
   var t=todayKey();
-  if(SETTINGS.shareDay!==t){ SETTINGS.shareDay=t; SETTINGS.shareCount=0; }
-  if((SETTINGS.shareCount||0)>=60) return 0;   // 60 SHARES a day, not 60 honey
-  SETTINGS.shareCount=(SETTINGS.shareCount||0)+1;
-  SETTINGS.honey=(SETTINGS.honey||0)+5;
+  if(SETTINGS.shareDay!==t){ SETTINGS.shareDay=t; SETTINGS.shareToday=0; }
+  if((SETTINGS.shareToday||0)>=60) return 0; // daily cap on share rewards
+  var amt=Math.min(15, 60-(SETTINGS.shareToday||0));
+  SETTINGS.honey=(SETTINGS.honey||0)+amt; SETTINGS.shareToday=(SETTINGS.shareToday||0)+amt;
   saveSettings();
-  return 5;
+  return amt;
 }
 /* ── BRANDED SHARING (habit / joke / verse — never private journal text) ──
    Native share sheet → Facebook, IG, Messages, etc. Carries Honey branding
@@ -14519,7 +14517,7 @@ function honeyBal(){ return SETTINGS.honey||0; }
 function trialActive(id){ var t=SETTINGS.trials&&SETTINGS.trials[id]; return t && t>Date.now(); }
 function themeOwned(themeId){ return SETTINGS.perks && SETTINGS.perks.themes && SETTINGS.perks.themes.indexOf(themeId)>=0; }
 function renderRewards(){
-  var bal=document.getElementById('honeyBalance'); if(bal) bal.innerHTML='You have <b>'+honeyBal()+' 🍯 honey.</b> <b>Sharing is how you fill the jar</b> — 5 🍯 every time you send a joke, a verse, or a picture to somebody. A little extra drops in when you mention the good things: a walk, a good sleep, a friend.';
+  var bal=document.getElementById('honeyBalance'); if(bal) bal.innerHTML='You have <b>'+honeyBal()+' 🍯 honey.</b> Earn more by chatting and sharing.';
   var w=document.getElementById('rewardList'); if(!w)return; w.innerHTML='';
   REWARDS.forEach(r=>{
     // hide a theme reward the user already unlocked
