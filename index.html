@@ -15572,164 +15572,218 @@ function bootFallback(){
    Every safety line is quoted/condensed from the book's own NOTE for that plant. */
 var RANGER_ALL_NUTRIENTS=["Vit A","Vit C","B Vits","Vit E","Vit K","Fiber","Calcium","Iron","Omega-3","Antioxidants"];
 var RANGER_PLANTS={
-  e4:{name:"Dandelion & Cat's Ear",sci:"Taraxacum · Hypochaeris · Asteraceae",leaf:"🌼",img:"images/plants/dandelion.jpg",match:96,edible:true,months:[1,2,3,4,10,11,12],season:"Fall–spring (leaves)",fresh:"Use young leaves within a few days — they wilt fast.",
+  e4:{name:"Dandelion & Cat's Ear",
+    alt:["Dandelion", "Cat"s Ear", "False Dandelion", "Lion"s Tooth", "Blowball"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Taraxacum · Hypochaeris · Asteraceae",leaf:"🌼",img:"images/plants/dandelion.jpg",match:96,edible:true,months:[1,2,3,4,10,11,12],season:"Fall–spring (leaves)",fresh:"Use young leaves within a few days — they wilt fast.",
     nutrients:["Vit A","Vit C","Vit E","Vit K","Calcium","Iron","Antioxidants"],
     uses:[["🥗","Salad"],["🍳","Sautéed"],["🥞","In batter"],["🍯","Flower honey"],["☕","Root coffee"]],
     safety:"Two look-alikes eaten the same way — both edible, but always confirm before eating. Dandelion stems are unbranched; cat's-ear branch once flowering.",
     intro:"Well now — you found some dandelion! Free greens, and richer than the bagged spinach at the store.",
     teach:["That weed you keep cussing at? It's a free salad. You're welcome.","Pound for pound the leaves beat spinach — about twice the calcium and three times the vitamin A.","Every part's usable: young leaves sautéed like spinach, yellow petals in pancake batter, roots roasted dark and brewed like coffee.","Taraxacum, aster family — same clan as your grocery lettuce. Blanch older leaves 2–3 minutes to tame the bitter; pickle cat's-ear buds like capers. One of the most widely eaten wild greens on earth."]},
-  e1:{name:"Japanese Honeysuckle",sci:"Lonicera japonica · Caprifoliaceae",leaf:"🌸",img:"images/plants/honeysuckle.jpg",match:91,edible:true,months:[4,5,6,7],season:"Spring–summer bloom",fresh:"Pick flowers the morning you'll use them — they fade fast.",
+  e1:{name:"Japanese Honeysuckle",
+    alt:["Japanese Honeysuckle", "Honeysuckle", "Woodbine", "Hall"s Honeysuckle", "Suikazura"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Lonicera japonica · Caprifoliaceae",leaf:"🌸",img:"images/plants/honeysuckle.jpg",match:91,edible:true,months:[4,5,6,7],season:"Spring–summer bloom",fresh:"Pick flowers the morning you'll use them — they fade fast.",
     nutrients:["Antioxidants"],
     uses:[["🍵","Tea"],["🍯","Syrup"],["🌸","Fresh nectar"],["🍨","Cream"]],
     safety:"Eat the FLOWERS only — berries can be toxic. Highly invasive in the Southeast, so forage the blossoms freely, but keep it controlled.",
     intro:"Oh, honeysuckle! Pinch the green base, pull the stamen through the back — that's the sweet nectar from childhood.",
     teach:["That's the sweet one from childhood. Flowers only, sugar.","Steep a big handful in just-off-the-boil water 5–10 minutes for a fragrant tea.","Pack 2 cups of blossoms in hot simple syrup overnight, strain, and pour it over pancakes or into lemonade.","Lonicera japonica — wildly invasive, so pick all you like. Flowers infuse into honey or cream beautifully; the berries you always leave alone."]},
-  e18:{name:"Magnolia",sci:"Magnolia sp. · Magnoliaceae",leaf:"🌺",img:"images/plants/magnolia.jpg",match:89,edible:true,months:[4,5,6],season:"Spring–early summer",fresh:"Best the day you pick — the perfume fades quickly.",
+  e18:{name:"Magnolia",
+    alt:["Magnolia", "Southern Magnolia", "Bull Bay", "Sweetbay", "Laurel Magnolia"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Magnolia sp. · Magnoliaceae",leaf:"🌺",img:"images/plants/magnolia.jpg",match:89,edible:true,months:[4,5,6],season:"Spring–early summer",fresh:"Best the day you pick — the perfume fades quickly.",
     nutrients:["Antioxidants"],
     uses:[["🥒","Pickled"],["🍬","Candied"],["🌶️","Spice"]],
     safety:"Use petals in moderation — the flavor is strong. Confirm it's a true Magnolia first.",
     intro:"Magnolia! Those big petals pickle up like ginger — a little goes a long way.",
     teach:["Those petals? Southern ginger. Pickle a few and see.","The flavor is strong and gingery — a little goes a long way.","Slice young petals thin and pickle them, or candy them for a sweet spice.","Magnolia is one of the oldest flowering plant lines on earth — beetles pollinated it before bees existed. Petals in moderation; confirm a true magnolia first."]},
-  e2:{name:"Confederate Rose Mallow",sci:"Hibiscus mutabilis · Malvaceae",leaf:"🌺",img:"images/plants/confederate-rose.jpg",match:88,edible:true,months:[9,10,11],season:"Late-season bloom",fresh:"Use flowers the day you pick them.",
+  e2:{name:"Confederate Rose Mallow",
+    alt:["Confederate Rose", "Cotton Rose", "Rose Mallow", "Changeable Rose", "Dixie Rosemallow"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Hibiscus mutabilis · Malvaceae",leaf:"🌺",img:"images/plants/confederate-rose.jpg",match:88,edible:true,months:[9,10,11],season:"Late-season bloom",fresh:"Use flowers the day you pick them.",
     nutrients:["Vit C","Antioxidants"],
     uses:[["🍵","Tea"],["🌸","Fresh"],["🥗","Garnish"]],
     safety:"A mallow-family flower — a cousin of common mallow and molokhia, but a different plant. Confirm the species before eating.",
     intro:"Confederate rose — the bloom that opens white and blushes to pink by evening. A gentle mallow you can steep.",
     teach:["The flower that changes color through the day — white to deep pink by dusk.","A hibiscus cousin, so the petals make a mild, pretty tea.","Steep the fresh blooms for a soft floral tea or use them as a garnish.","Hibiscus mutabilis — 'mutabilis' means changeable, for those color-shifting petals. Same mallow family as molokhia and common mallow, but its own plant."]},
-  e3:{name:"Molokhia (Jute Mallow)",sci:"Corchorus olitorius · Malvaceae",leaf:"🌿",img:"images/plants/molokhia.jpg",match:90,edible:true,months:[6,7,8,9],season:"Warm season",fresh:"Use leaves fresh, or freeze minced like the groceries sell it.",
+  e3:{name:"Molokhia (Jute Mallow)",
+    alt:["Molokhia", "Jute Mallow", "Egyptian Spinach", "Jew"s Mallow", "Nalta Jute"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Corchorus olitorius · Malvaceae",leaf:"🌿",img:"images/plants/molokhia.jpg",match:90,edible:true,months:[6,7,8,9],season:"Warm season",fresh:"Use leaves fresh, or freeze minced like the groceries sell it.",
     nutrients:["Vit A","Vit C","Vit K","Calcium","Iron","Fiber","Antioxidants"],
     uses:[["🍲","Stew"],["🥣","Soup"],["🍚","Over rice"]],
     safety:"This is molokhia's true crown — don't confuse it with the ornamental Confederate Rose Mallow; they're family cousins but different plants.",
     intro:"Molokhia — the 'food of kings.' Cooked down into a silky green stew over rice, it's a treasure.",
     teach:["They call it the food of kings — an ancient green cooked into a silky stew.","Loaded with vitamin A, C, K, calcium and iron — a real powerhouse leaf.","Simmer the minced leaves into the classic Egyptian soup and ladle over rice.","Corchorus olitorius — jute mallow, eaten across the Middle East and Africa for millennia. The cooked leaves turn luxuriously silky, which is the whole point."]},
-  e27:{name:"Pink Sorrel",sci:"Oxalis sp. · Oxalidaceae",leaf:"🌷",img:"images/plants/pink-sorrel.jpg",match:92,edible:true,months:[3,4,5,6,7,8],season:"Spring–summer",fresh:"Best eaten fresh — bright and lemony.",
+  e27:{name:"Pink Sorrel",
+    alt:["Pink Sorrel", "Wood Sorrel", "Pink Woodsorrel", "Windowbox Woodsorrel", "Sourgrass"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Oxalis sp. · Oxalidaceae",leaf:"🌷",img:"images/plants/pink-sorrel.jpg",match:92,edible:true,months:[3,4,5,6,7,8],season:"Spring–summer",fresh:"Best eaten fresh — bright and lemony.",
     nutrients:["Vit C","Antioxidants"],
     uses:[["🥗","Salad"],["🍋","Sour garnish"],["🍵","Tea"]],
     safety:"The sour taste is oxalic acid — delicious in small amounts, but eat in moderation. Large quantities of oxalates aren't good for the kidneys.",
     intro:"Pink sorrel — that little clover-looking plant with the tart lemon zing. A bright pop in a salad.",
     teach:["That clover-shaped weed with the sour lemon zing? Edible, and delightful.","The tartness is vitamin C and oxalic acid — a natural lemon flavor.","Toss a few leaves and flowers into a salad for a bright, sour pop.","Oxalis — the sourness is oxalic acid, so keep it to small amounts. Lovely as a garnish, not a whole bowlful."]},
-  e19:{name:"Sawtooth Blackberry",sci:"Rubus argutus · Rosaceae",leaf:"🫐",img:"images/plants/sawtooth-blackberry.jpg",match:95,edible:true,months:[5,6,7],season:"Berries in summer",fresh:"Eat ripe berries within a day or two.",
+  e19:{name:"Sawtooth Blackberry",
+    alt:["Sawtooth Blackberry", "Blackberry", "Bramble", "Southern Blackberry", "Highbush Blackberry"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Rubus argutus · Rosaceae",leaf:"🫐",img:"images/plants/sawtooth-blackberry.jpg",match:95,edible:true,months:[5,6,7],season:"Berries in summer",fresh:"Eat ripe berries within a day or two.",
     nutrients:["Vit C","Vit K","Fiber","Antioxidants"],
     uses:[["🫐","Fresh"],["🥧","Pie & jam"],["🍵","Leaf tea"]],
     safety:"Berries are a sure thing. Leaf preparations carry tannins that can upset sensitive stomachs — take them with food.",
     intro:"Blackberries! The one wild food nobody argues about. Sun-warm off the cane is the whole reward.",
     teach:["The one wild berry everybody already trusts. Sun-warm off the cane is the best.","Loaded with vitamin C and antioxidants — and free by the fencerow.","Fresh by the handful, or cooked into pie and jam; the leaves make a traditional tea.","Rubus argutus — the leaf tea is an old folk remedy, but tannins can turn a sensitive stomach, so take it with food."]},
-  e20:{name:"Muscadine Grape",sci:"Vitis rotundifolia · Vitaceae",leaf:"🍇",img:"",match:90,edible:true,months:[8,9,10],season:"Late summer–fall fruit",fresh:"Eat ripe grapes fresh; use leaves spring–summer.",
+  e20:{name:"Muscadine Grape",
+    alt:["Muscadine", "Scuppernong", "Southern Fox Grape", "Bullace", "Muscadine Grape"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Vitis rotundifolia · Vitaceae",leaf:"🍇",img:"",match:90,edible:true,months:[8,9,10],season:"Late summer–fall fruit",fresh:"Eat ripe grapes fresh; use leaves spring–summer.",
     nutrients:["Vit C","Antioxidants","Fiber"],
     uses:[["🍇","Fresh"],["🥤","Juice"],["🍃","Stuffed leaves"]],
     safety:"Confirm vines are unsprayed before using leaves or fruit.",
     intro:"Muscadine — the thick-skinned Southern grape. Pop the sweet pulp, and save the young leaves for stuffing.",
     teach:["The thick-skinned Southern grape — pop the sweet pulp right out of the skin.","Rich in antioxidants, especially in those famous skins.","Fresh grapes, homemade juice, and young leaves blanched for stuffing (dolmas).","Vitis rotundifolia — a true native grape. Just be sure the vine's unsprayed before you pick leaves or fruit."]},
-  e7:{name:"Fig",sci:"Ficus carica · Moraceae",leaf:"🌿",img:"",match:93,edible:true,months:[7,8,9],season:"Summer into fall",fresh:"Pick only when fully soft and drooping — they don't ripen off the tree.",
+  e7:{name:"Fig",
+    alt:["Fig", "Common Fig", "Brown Turkey Fig", "Celeste Fig", "Edible Fig"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Ficus carica · Moraceae",leaf:"🌿",img:"",match:93,edible:true,months:[7,8,9],season:"Summer into fall",fresh:"Pick only when fully soft and drooping — they don't ripen off the tree.",
     nutrients:["Fiber","Calcium","Antioxidants"],
     uses:[["🍯","Honey-roasted"],["🥫","Jam"],["🧀","With cheese"]],
     safety:"The milky sap from leaves and unripe figs can irritate skin and cause sun-sensitivity — handle with care when harvesting.",
     intro:"Figs! Pick them soft and drooping, halve them, a drizzle of honey — that's dessert from the yard.",
     teach:["Pick them soft and drooping — a fig won't ripen once it's off the tree.","Sweet, full of fiber, wonderful with cheese or yogurt.","Eat fresh, roast with honey 15 minutes, or simmer into a glossy jam.","Ficus carica — one of the oldest cultivated fruits on earth, in Egyptian tomb art. Even the leaves flavor cream with a coconut-vanilla note; just mind the sap."]},
-  e13:{name:"Daylily",sci:"Hemerocallis fulva · Asphodelaceae",leaf:"🧡",img:"",match:88,edible:true,months:[3,4,5,6],season:"Shoots spring; buds early summer",fresh:"Use shoots and buds the day you pick.",
+  e13:{name:"Daylily",
+    alt:["Daylily", "Orange Daylily", "Tawny Daylily", "Ditch Lily", "Tiger Daylily"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Hemerocallis fulva · Asphodelaceae",leaf:"🧡",img:"",match:88,edible:true,months:[3,4,5,6],season:"Shoots spring; buds early summer",fresh:"Use shoots and buds the day you pick.",
     nutrients:["Vit A","Vit C","Antioxidants"],
     uses:[["🥢","Stir-fry buds"],["🥗","Petals in salad"],["🌱","Spring shoots"]],
     safety:"Eat the true orange Hemerocallis fulva only — never true lilies (Lilium), which are toxic. Introduce a small amount first; some people are sensitive.",
     intro:"The orange ditch lily! Those buds stir-fry like green beans and the petals brighten a salad.",
     teach:["The roadside orange 'ditch lily' — the buds cook up like green beans.","Tender shoots, crunchy buds, and colorful petals are all edible.","Stir-fry the flower buds, scatter petals over salad, sauté the spring shoots.","Hemerocallis fulva — a true daylily, NOT a real lily. Real lilies are toxic, so ID carefully and try a small amount first."]},
-  e14:{name:"Damask Rose",sci:"Rosa × damascena · Rosaceae",leaf:"🌹",img:"images/plants/damask-rose.jpg",match:90,edible:true,months:[5,6,7],season:"Late spring–summer",fresh:"Use petals fresh, or dry for tea.",
+  e14:{name:"Damask Rose",
+    alt:["Damask Rose", "Rose", "Castile Rose", "Rose of Castile", "Summer Damask"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Rosa × damascena · Rosaceae",leaf:"🌹",img:"images/plants/damask-rose.jpg",match:90,edible:true,months:[5,6,7],season:"Late spring–summer",fresh:"Use petals fresh, or dry for tea.",
     nutrients:["Vit C","Antioxidants"],
     uses:[["🍵","Tea"],["🍬","Rose sugar"],["🍯","Rose honey"]],
     safety:"Eat petals only from roses you know are unsprayed. Remove the bitter white petal bases before use.",
     intro:"Damask rose — the one they make rosewater from. Petals into sugar, honey, or a fragrant tea.",
     teach:["The perfume rose — petals for tea, sugar, and rosewater.","Full of antioxidants and that unmistakable rose fragrance.","Snip off the bitter white heel, then steep petals for tea or stir into sugar and honey.","Rosa × damascena — the classic attar-of-roses bloom. Only ever eat petals from unsprayed plants."]},
-  e15:{name:"Spiderwort",sci:"Tradescantia sp. · Commelinaceae",leaf:"💜",img:"images/plants/spiderwort.jpg",match:87,edible:true,months:[3,4,5,6,7],season:"Spring–summer",fresh:"Use fresh — leaves and flowers wilt quickly.",
+  e15:{name:"Spiderwort",
+    alt:["Spiderwort", "Widow"s Tears", "Dayflower", "Trad", "Cow Slobber"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Tradescantia sp. · Commelinaceae",leaf:"💜",img:"images/plants/spiderwort.jpg",match:87,edible:true,months:[3,4,5,6,7],season:"Spring–summer",fresh:"Use fresh — leaves and flowers wilt quickly.",
     nutrients:["Vit C","Antioxidants"],
     uses:[["🥗","Salad"],["🌸","Candied flowers"],["🍲","Cooked greens"]],
     safety:"Confirm the Tradescantia ID. The sap is mildly irritating to some skin — handle with normal care.",
     intro:"Spiderwort — those three-petaled blue-purple flowers. The whole plant's a mild, edible green.",
     teach:["Those three-petaled purple flowers? The whole plant is edible and mild.","A gentle green with a little vitamin C — nothing bitter about it.","Young leaves and stems in salad or lightly cooked; candy the pretty flowers.","Tradescantia — the flowers famously last just one day. Mild and juicy; just confirm the ID and mind the slightly sticky sap."]},
-  e10:{name:"Florida Betony",sci:"Stachys floridana · Lamiaceae",leaf:"🌿",img:"images/plants/florida-betony.jpg",match:89,edible:true,months:[10,11,12,1,2,3],season:"Cool-season tubers",fresh:"Use the crisp white tubers soon after digging.",
+  e10:{name:"Florida Betony",
+    alt:["Florida Betony", "Rattlesnake Weed", "Hedge Nettle", "Wild Artichoke", "Florida Hedgenettle"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Stachys floridana · Lamiaceae",leaf:"🌿",img:"images/plants/florida-betony.jpg",match:89,edible:true,months:[10,11,12,1,2,3],season:"Cool-season tubers",fresh:"Use the crisp white tubers soon after digging.",
     nutrients:["Fiber","Antioxidants"],
     uses:[["🥕","Raw crunch"],["🥢","Stir-fry"],["🥗","Pickled"]],
     safety:"Eat the crunchy white tubers freely. Do NOT use the plant medicinally during pregnancy — old 'cures everything' claims are folklore, not medical advice.",
     intro:"Florida betony — dig up those little white 'rattlesnake' tubers. Crunchy as a water chestnut, and free.",
     teach:["That mint-family weed hides little white tubers — crunchy as water chestnuts.","The gourmet 'crosne' sells for about $150 a pound; this is its free backyard cousin.","Eat the tubers raw for crunch, stir-fried, or quick-pickled.","Stachys floridana — the segmented white roots look like a rattlesnake's tail. Delicious and free; skip any medicinal use if pregnant."]},
-  e11:{name:"Forsythia",sci:"Forsythia sp. · Oleaceae",leaf:"🌼",img:"images/plants/forsythia.jpg",match:85,edible:true,months:[2,3],season:"Late winter–early spring",fresh:"Use the bright flowers fresh.",
+  e11:{name:"Forsythia",
+    alt:["Forsythia", "Golden Bells", "Easter Tree", "Yellow Bells", "Golden Bell Bush"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Forsythia sp. · Oleaceae",leaf:"🌼",img:"images/plants/forsythia.jpg",match:85,edible:true,months:[2,3],season:"Late winter–early spring",fresh:"Use the bright flowers fresh.",
     nutrients:["Antioxidants"],
     uses:[["🍵","Flower tea"],["🌼","Garnish"]],
     safety:"Eat only confirmed forsythia, and only in small amounts. Traditional/TCM uses are recorded as history, not medical advice.",
     intro:"Forsythia — the first burst of yellow before spring. A few blossoms make a delicate tea.",
     teach:["The first yellow of the year — those blooms make a delicate tea.","Mostly enjoyed for the cheer and a little antioxidant lift.","Steep a small handful of confirmed forsythia flowers, or use as a garnish.","Forsythia — 'Lian Qiao' in Traditional Chinese Medicine, recorded here as history only. Keep culinary use to small amounts of confirmed flowers."]},
-  e12:{name:"Gardenia",sci:"Gardenia jasminoides · Rubiaceae",leaf:"🤍",img:"images/plants/gardenia.jpg",match:86,edible:true,months:[6,7,8],season:"Flowers summer; fruit fall",fresh:"Use the fragrant petals fresh.",
+  e12:{name:"Gardenia",
+    alt:["Gardenia", "Cape Jasmine", "Cape Jessamine", "Common Gardenia", "Danh-danh"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Gardenia jasminoides · Rubiaceae",leaf:"🤍",img:"images/plants/gardenia.jpg",match:86,edible:true,months:[6,7,8],season:"Flowers summer; fruit fall",fresh:"Use the fragrant petals fresh.",
     nutrients:["Antioxidants"],
     uses:[["🍮","Scent syrups"],["🎨","Natural dye"],["🍵","Petal tea"]],
     safety:"There isn't reliable evidence on ingesting gardenia medicinally — treat that as history. Use petals lightly for flavor and scent.",
     intro:"Gardenia — that heavenly perfume. The petals scent a syrup, and the fruit dyes a golden yellow.",
     teach:["That heady white perfume flower — the petals can scent sweets.","Lightly floral; the fruit is a famous natural yellow dye.","Infuse a few petals into syrup or a light tea; the fruit ('Zhi Zi') colors food gold.","Gardenia jasminoides — an ancient Chinese plant, coffee family. Its fruit dye colored royal robes; medicinal use is folklore, so keep it culinary."]},
-  e9:{name:"Wax Myrtle",sci:"Myrica cerifera · Myricaceae",leaf:"🌿",img:"images/plants/wax-myrtle.jpg",match:84,edible:true,months:[1,2,3,4,5,6,7,8,9,10,11,12],season:"Leaves year-round",fresh:"Dry leaves keep for months as a seasoning.",
+  e9:{name:"Wax Myrtle",
+    alt:["Wax Myrtle", "Southern Bayberry", "Candleberry", "Southern Wax Myrtle", "Tallow Shrub"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Myrica cerifera · Myricaceae",leaf:"🌿",img:"images/plants/wax-myrtle.jpg",match:84,edible:true,months:[1,2,3,4,5,6,7,8,9,10,11,12],season:"Leaves year-round",fresh:"Dry leaves keep for months as a seasoning.",
     nutrients:["Antioxidants"],
     uses:[["🍲","Bay-leaf seasoning"],["🕯️","Berry wax"]],
     safety:"Use the leaves as a bay-leaf-style SEASONING — not eaten whole. Berries are waxy, so season sparingly. Medicinal uses are folklore.",
     intro:"Wax myrtle — the 'bayberry.' Toss a leaf in the pot like a bay leaf; fish it out before serving.",
     teach:["The Southern 'bayberry' — a leaf flavors a pot just like store bay.","Aromatic, not a green to eat by the handful — it's a seasoning.","Drop a leaf into soups and stews, then remove it before serving.","Myrica cerifera — colonists boiled the waxy berries to make bayberry candles. The leaf seasons like bay; the berries are for wax and scent, used sparingly."]},
-  e21:{name:"Canada & Woodland Lettuce",sci:"Lactuca canadensis · L. floridana · Asteraceae",leaf:"🥬",img:"images/plants/canada-lettuce.jpg",match:88,edible:true,months:[10,11,12,1,2,3],season:"Cool-season leaves",fresh:"Use tender young leaves fresh; they turn bitter with age.",
+  e21:{name:"Canada & Woodland Lettuce",
+    alt:["Canada Lettuce", "Woodland Lettuce", "Wild Lettuce", "Tall Lettuce", "Florida Blue Lettuce"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Lactuca canadensis · L. floridana · Asteraceae",leaf:"🥬",img:"images/plants/canada-lettuce.jpg",match:88,edible:true,months:[10,11,12,1,2,3],season:"Cool-season leaves",fresh:"Use tender young leaves fresh; they turn bitter with age.",
     nutrients:["Vit A","Vit C","Vit K","Fiber","Antioxidants"],
     uses:[["🥗","Salad"],["🍳","Sautéed"]],
     safety:"Older leaves turn bitter. The 'nerve/sedative' reputation is folklore. Confirm the species before eating.",
     intro:"Wild lettuce — the tall cousin of your garden lettuce. Young leaves are a free, tender salad green.",
     teach:["The wild ancestor cousins of garden lettuce — young leaves are a free salad.","Best in the cool months, before they turn bitter and tall.","Toss tender leaves raw, or sauté the older ones like any cooking green.","Lactuca canadensis and floridana — the milky sap gave wild lettuce its old 'sedative' reputation, recorded as folklore. Pick young leaves and confirm the species."]},
-  e22:{name:"White & Red Clover",sci:"Trifolium repens · T. pratense · Fabaceae",leaf:"☘️",img:"images/plants/white-clover.jpg",match:90,edible:true,months:[4,5,6,7,8],season:"Spring–summer",fresh:"Use flowers and young leaves fresh, or dry the blossoms for tea.",
+  e22:{name:"White & Red Clover",
+    alt:["White Clover", "Red Clover", "Dutch Clover", "Purple Clover", "Shamrock"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Trifolium repens · T. pratense · Fabaceae",leaf:"☘️",img:"images/plants/white-clover.jpg",match:90,edible:true,months:[4,5,6,7,8],season:"Spring–summer",fresh:"Use flowers and young leaves fresh, or dry the blossoms for tea.",
     nutrients:["Vit C","Antioxidants","Fiber"],
     uses:[["🍵","Blossom tea"],["🥗","Salad"],["🍞","Dried in flour"]],
     safety:"Eat in moderation — raw clover in quantity can cause bloating; cooking or drying helps.",
     intro:"Clover! Those blossoms make a sweet, honey-ish tea, and the young leaves go right in a salad.",
     teach:["Those little pom-pom flowers make a sweet, honeyish tea.","A gentle, nutritious bloom that pollinators and people both love.","Steep dried blossoms for tea, scatter fresh in salad, or dry and grind into flour.","Trifolium — a nitrogen-fixing legume that feeds the soil too. Lovely in moderation; a big raw bowlful can bloat you, so cook or dry it for quantity."]},
-  e23:{name:"Goldenrod",sci:"Solidago spp. · Asteraceae",leaf:"🌼",img:"",match:86,edible:true,months:[8,9,10],season:"Blooms late summer–fall",fresh:"Use flowers fresh, or dry for 'Liberty Tea.'",
+  e23:{name:"Goldenrod",
+    alt:["Goldenrod", "Sweet Goldenrod", "Anise-scented Goldenrod", "Blue Mountain Tea", "Woundwort"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Solidago spp. · Asteraceae",leaf:"🌼",img:"",match:86,edible:true,months:[8,9,10],season:"Blooms late summer–fall",fresh:"Use flowers fresh, or dry for 'Liberty Tea.'",
     nutrients:["Antioxidants","Vit C"],
     uses:[["🍵","Liberty Tea"],["🌼","Garnish"]],
     safety:"Goldenrod does NOT cause hay fever (that's ragweed nearby). Traditional uses are history; confirm the plant and use flowers in moderation.",
     intro:"Goldenrod — the patriots' 'Liberty Tea.' Those golden plumes brew a warm, anise-y cup.",
     teach:["Those golden fall plumes brew the Revolution's famous 'Liberty Tea.'","Falsely blamed for allergies — that's ragweed. Goldenrod's just pretty and useful.","Steep fresh or dried flowers (Solidago odora is the anise-scented best) for tea.","Solidago — after the Boston Tea Party, colonists brewed this free instead of taxed British tea. Fragrant, antioxidant-rich, and no relation to your sniffles."]},
-  e25:{name:"Kudzu",sci:"Pueraria montana · Fabaceae",leaf:"🌿",img:"images/plants/kudzu.jpg",match:88,edible:true,months:[4,5,6,7,8,9],season:"Shoots & leaves spring–summer",fresh:"Use tender shoots, leaves, and flowers fresh.",
+  e25:{name:"Kudzu",
+    alt:["Kudzu", "Japanese Arrowroot", "Kudzu Vine", "Foot-a-night Vine", "Ge Gen"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Pueraria montana · Fabaceae",leaf:"🌿",img:"images/plants/kudzu.jpg",match:88,edible:true,months:[4,5,6,7,8,9],season:"Shoots & leaves spring–summer",fresh:"Use tender shoots, leaves, and flowers fresh.",
     nutrients:["Vit A","Vit C","Fiber","Antioxidants"],
     uses:[["🥗","Leaf greens"],["🍇","Flower jelly"],["🍮","Root starch"]],
     safety:"Eat the leaves, shoots, flowers, and roots — NOT the woody vines, and not the seeds or pods. Confirm the three-leaflet leaf and grape-scented purple flower.",
     intro:"Kudzu — 'the vine that ate the South.' Turns out the whole thing's edible, right down to a grape-jelly flower.",
     teach:["The vine that ate the South — and you can eat it right back.","Young leaves cook like spinach; the purple flowers smell of grape.","Sauté the shoots, make jelly from the flowers, use the root starch to thicken.","Pueraria montana — a nitrogen-fixing legume brought over for erosion control. Eat leaves, shoots, flowers, roots; leave the woody vine, seeds, and pods."]},
-  e26:{name:"Dollarweed",sci:"Hydrocotyle umbellata · Apiaceae",leaf:"🟢",img:"images/plants/dollarweed.jpg",match:87,edible:true,months:[4,5,6,7,8,9,10],season:"Warm season leaves",fresh:"Use the round leaves fresh — they're crisp and mild.",
+  e26:{name:"Dollarweed",
+    alt:["Dollarweed", "Pennywort", "Water Pennywort", "Marsh Pennywort", "Manyflower Marshpennywort"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Hydrocotyle umbellata · Apiaceae",leaf:"🟢",img:"images/plants/dollarweed.jpg",match:87,edible:true,months:[4,5,6,7,8,9,10],season:"Warm season leaves",fresh:"Use the round leaves fresh — they're crisp and mild.",
     nutrients:["Vit C","Antioxidants"],
     uses:[["🥗","Salad"],["🥪","Sandwich green"],["🍵","Tea"]],
     safety:"Confirm the carrot-family pennywort ID (round scalloped leaf, central stem, white flower). Harvest only from untreated, unsprayed ground — it grows in wet spots.",
     intro:"Dollarweed — that round-leaf lawn 'weed' by the wet spots. Crisp, mild, and a perfectly good salad green.",
     teach:["That round silver-dollar lawn weed? Crisp and mild, like a little salad coin.","A hydrating green with a light, fresh, parsley-ish snap.","Toss the round leaves into salad, tuck into a sandwich, or steep for tea.","Hydrocotyle umbellata — a carrot-family pennywort, cousin to gotu kola. The leaf stem joins in the middle like an umbrella. Only pick from clean, unsprayed ground."]},
-  e16:{name:"Creeping Cucumber",sci:"Melothria pendula · Cucurbitaceae",leaf:"🥒",img:"images/plants/creeping-cucumber.jpg",match:85,edible:true,months:[6,7,8,9],season:"Fruits summer–fall",fresh:"Eat only the GREEN fruits, fresh.",
+  e16:{name:"Creeping Cucumber",
+    alt:["Creeping Cucumber", "Guadeloupe Cucumber", "Melonette", "Meloncito", "Speckled Gourd"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Melothria pendula · Cucurbitaceae",leaf:"🥒",img:"images/plants/creeping-cucumber.jpg",match:85,edible:true,months:[6,7,8,9],season:"Fruits summer–fall",fresh:"Eat only the GREEN fruits, fresh.",
     nutrients:["Vit C","Antioxidants"],
     uses:[["🥒","Fresh green"],["🥗","Salad"],["🥫","Pickled"]],
     safety:"Eat ONLY the tiny GREEN fruits — they taste like cucumber. The ripe BLACK fruits are a strong laxative; never eat those. ID carefully.",
     intro:"Creeping cucumber — those grape-sized 'baby watermelons.' Green ones taste just like cucumber.",
     teach:["Those tiny watermelon-looking fruits taste like a little cucumber — green ones only.","A fun, crisp nibble with some vitamin C, straight off the vine.","Eat green fruits fresh, sliced in salad, or quick-pickled like tiny gherkins.","Melothria pendula — the single most important rule: GREEN good, BLACK bad. The ripe black fruits are a powerful laxative, so only ever eat the small green ones."]},
-  e17:{name:"Mugwort",sci:"Artemisia vulgaris · Asteraceae",leaf:"🌿",img:"",match:83,edible:true,months:[5,6,7,8,9],season:"Leaves & tops summer–fall",fresh:"Use young leaves fresh, or dry the tops.",
+  e17:{name:"Mugwort",
+    alt:["Mugwort", "Common Wormwood", "Felon Herb", "Chrysanthemum Weed", "Wild Wormwood"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Artemisia vulgaris · Asteraceae",leaf:"🌿",img:"",match:83,edible:true,months:[5,6,7,8,9],season:"Leaves & tops summer–fall",fresh:"Use young leaves fresh, or dry the tops.",
     nutrients:["Antioxidants","Vit A"],
     uses:[["🍚","Rice & mochi"],["🍲","Bitter herb"],["🍵","Tea"]],
     safety:"Use sparingly as a bitter seasoning. Do NOT use during pregnancy. Traditional uses are folklore, not medical advice.",
     intro:"Mugwort — the old bitter herb. A little flavors rice and dumplings; a lot is too much.",
     teach:["The classic bitter herb — a pinch flavors rice, mochi, and stuffings.","Aromatic and bitter, used in tiny amounts for flavor, not a salad green.","Chop a little young leaf into rice or dumplings; dry the tops for tea.","Artemisia vulgaris — 'St. John's plant,' woven into midsummer folklore for centuries. Bitter and strong, so use sparingly, and skip it entirely if pregnant."]},
-  e24:{name:"Greenbriar & Bamboo Vine",sci:"Smilax sp. · Smilacaceae",leaf:"🌱",img:"images/plants/greenbriar.jpg",match:86,edible:true,months:[3,4,5],season:"Tender new shoots in spring",fresh:"Snap the tender growing tips — like wild asparagus.",
+  e24:{name:"Greenbriar & Bamboo Vine",
+    alt:["Greenbriar", "Bamboo Vine", "Catbrier", "Sarsaparilla Vine", "Smilax"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Smilax sp. · Smilacaceae",leaf:"🌱",img:"images/plants/greenbriar.jpg",match:86,edible:true,months:[3,4,5],season:"Tender new shoots in spring",fresh:"Snap the tender growing tips — like wild asparagus.",
     nutrients:["Vit C","Antioxidants","Fiber"],
     uses:[["🌱","Shoot tips"],["🥗","Raw or cooked"],["🍵","Root tea"]],
     safety:"Eat the TENDER new spring shoot tips (snap like asparagus) — the mature woody vine and thorns are not eaten. Confirm Smilax.",
     intro:"Greenbriar — that thorny vine that grabs your ankles. The tender spring tips snap off like wild asparagus.",
     teach:["That thorny ankle-grabbing vine gives you free 'wild asparagus' every spring.","The new growing tips are crisp and green, full of a little vitamin C.","Snap the tender tips like asparagus — eat raw or lightly cooked; the root makes tea.","Smilax — the root was the original flavoring in old-fashioned sarsaparilla root beer. Only the soft new tips are food; the mature vine turns woody and thorned."]},
-  e6:{name:"Peppervine",sci:"Nekemias arborea · Vitaceae",leaf:"🍇",img:"images/plants/peppervine.jpg",match:82,edible:true,months:[8,9],season:"Berries ripe late summer–fall",fresh:"Cook berries with the oxalate prep below before eating.",
+  e6:{name:"Peppervine",
+    alt:["Peppervine", "Pepper Vine", "Buckvine", "Cow Itch", "Racoon Grape"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Nekemias arborea · Vitaceae",leaf:"🍇",img:"images/plants/peppervine.jpg",match:82,edible:true,months:[8,9],season:"Berries ripe late summer–fall",fresh:"Cook berries with the oxalate prep below before eating.",
     nutrients:["Vit A","Vit C","Vit K","Fiber","Antioxidants"],
     uses:[["🥫","Berry jam"],["🍲","Leaf stew"],["🥤","Syrup"]],
     safety:"Ripe BLACK berries only, and cook them — raw berries hold oxalate crystals that irritate the throat. Do the oxalate prep first; start with just 5–10 berries.",
     intro:"Peppervine — a grape cousin that sprawls everywhere. Cook the black berries down (there's a prep step) and it's genuinely useful.",
     teach:["A grape relative that's everywhere yet overlooked — young leaves and black berries both cook up.","Low-calorie leaves rich in vitamin K; berries hold the same compound as elderberry.","Oxalate prep first: boil, smash, strain, chill the juice 24 hrs, pour off the clear top — then jam it or stew the leaves.","Nekemias arborea — the berries carry calcium-oxalate crystals raw, so always cook and prep them. One forager kept to 5–10 berries at a time until she knew how they sat."]},
-  g1:{name:"Gotu Kola",sci:"Centella asiatica · Apiaceae",leaf:"🍃",img:"images/plants/gotu-kola.jpg",match:84,edible:true,months:[4,5,6,7,8,9,10],season:"Warm season leaves",fresh:"Use the round leaves fresh in salads or juice.",
+  g1:{name:"Gotu Kola",
+    alt:["Gotu Kola", "Asiatic Pennywort", "Indian Pennywort", "Centella", "Brahmi (Centella)"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Centella asiatica · Apiaceae",leaf:"🍃",img:"images/plants/gotu-kola.jpg",match:84,edible:true,months:[4,5,6,7,8,9,10],season:"Warm season leaves",fresh:"Use the round leaves fresh in salads or juice.",
     nutrients:["Vit C","Antioxidants","B Vits"],
     uses:[["🥗","Salad"],["🥤","Green juice"],["🍵","Tea"]],
     safety:"Confirm the carrot-family ID (round scalloped leaf, creeping stem). A close look-alike of dollarweed. Harvest only from clean, unsprayed ground.",
     intro:"Gotu kola — the little fan-leaf 'herb of longevity.' A gentle green for salads, juice, or tea.",
     teach:["The round fan-leaf herb long called a plant of longevity and clear thinking.","A mild green with vitamin C and antioxidants, grown across Asia for centuries.","Eat leaves fresh in salad, blend into a green juice, or steep for a grassy tea.","Centella asiatica — a carrot-family creeper and dollarweed's cousin. Prized in Ayurveda and Asian cooking; just confirm the ID and pick from unsprayed ground."]},
   /* ── KNOWN, NOT EATEN — routed away from the edible flow ── */
-  e5:{name:"Virginia Buttonweed",sci:"Diodella teres · Rubiaceae",leaf:"🌿",img:"images/plants/virginia-buttonweed.jpg",match:80,edible:false,months:[6,7,8,9],season:"Warm season",fresh:"",
+  e5:{name:"Virginia Buttonweed",
+    alt:["Virginia Buttonweed", "Buttonweed", "Poorjoe", "Rough Buttonweed", "Poor Joe"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Diodella teres · Rubiaceae",leaf:"🌿",img:"images/plants/virginia-buttonweed.jpg",match:80,edible:false,months:[6,7,8,9],season:"Warm season",fresh:"",
     nutrients:[],
     uses:[],
     safety:"NOT a food for people. Recorded for identification and wildlife value only — do not eat. It's forage for deer, turkey, and cattle.",
@@ -15839,8 +15893,10 @@ function stageIdentify(){
     if(j.error){ rangerUnknownPlant(); return; }
     var top=(j.results&&j.results[0])||null;
     if(!top){ rangerUnknownPlant(); return; }
-    var match=rangerMatchBookPlant(top);
-    if(match){ rangerShowResult(match); } else { rangerUnknownPlant(top); }
+    var hit=rangerFindPlant(top);
+    if(!hit){ rangerUnknownPlant(top); return; }
+    if(hit.shelf==='book') rangerShowResult(hit.id);
+    else rangerShowShelfPlant(hit.id, hit.shelf, top);
   }).catch(function(){ _stage=[]; rangerUnknownPlant(); });
 }
 /* PlantNet identify — routes through the SECURE PROXY (same pattern as premium-voice / ai-media).
@@ -15873,24 +15929,54 @@ function rangerIdentify(file){
 }
 /* Does PlantNet's answer line up with one of Sally's VETTED book plants?
    Match on scientific name (loose) or on any common name against our plant names. */
-function rangerMatchBookPlant(top){
+/* Which of our shelves knows this plant?
+   Returns {id, shelf} — shelf is 'book' (Sally's vetted wild plants),
+   'backyard' (common-across-America wild), or 'garden' (planted on purpose).
+   Latin name always beats a common name: cousins like Hydrocotyle (dollarweed)
+   and Centella asiatica (gotu kola) BOTH answer to "pennywort". */
+function rangerShelves(){
+  var out=[['book', RANGER_PLANTS]];
+  try{ if(typeof BACKYARD!=='undefined') out.push(['backyard', BACKYARD]); }catch(e){}
+  try{ if(typeof GARDEN!=='undefined') out.push(['garden', GARDEN]); }catch(e){}
+  return out;
+}
+function rangerFindPlant(top){
   var sci=(top.scientificName||'').toLowerCase();
   var genus=(top.genus||'').toLowerCase();
   var commons=(top.commonNames||[]).map(function(c){return (c||'').toLowerCase();});
-  for(var id in RANGER_PLANTS){
-    var p=RANGER_PLANTS[id]; if(!p) continue;
-    var psci=(p.sci||'').toLowerCase();
-    var pname=(p.name||'').toLowerCase();
-    if(psci && sci && (sci.indexOf(psci)>=0 || psci.indexOf(sci)>=0)) return id;
-    // genus-level match to the book's scientific name
-    if(genus && psci && psci.indexOf(genus)>=0) return id;
-    // common-name overlap (e.g. "dandelion")
-    for(var i=0;i<commons.length;i++){
-      var cn=commons[i]; if(!cn) continue;
-      if(pname.indexOf(cn)>=0 || cn.indexOf(pname.split(' ')[0])>=0) return id;
-    }
-  }
+  var shelves=rangerShelves(), s, id, p, psci, list, i;
+
+  // 1. full scientific-name overlap
+  for(s=0;s<shelves.length;s++){ for(id in shelves[s][1]){
+    p=shelves[s][1][id]; if(!p) continue;
+    psci=(p.sci||'').toLowerCase();
+    if(psci && sci && (sci.indexOf(psci)>=0 || psci.indexOf(sci)>=0)) return {id:id, shelf:shelves[s][0]};
+  }}
+  // 2. species name against the part before the family
+  for(s=0;s<shelves.length;s++){ for(id in shelves[s][1]){
+    p=shelves[s][1][id]; if(!p) continue;
+    psci=(p.sci||'').toLowerCase().split('·')[0].trim();
+    if(psci && sci && (psci.indexOf(sci)>=0 || sci.indexOf(psci)>=0)) return {id:id, shelf:shelves[s][0]};
+  }}
+  // 3. exact common-name match against our own alternate-name lists
+  for(s=0;s<shelves.length;s++){ for(id in shelves[s][1]){
+    p=shelves[s][1][id]; if(!p) continue;
+    list=(p.alt||[]).map(function(a){return (a||'').toLowerCase();});
+    list.push((p.name||'').toLowerCase());
+    for(i=0;i<commons.length;i++){ if(list.indexOf(commons[i])>=0) return {id:id, shelf:shelves[s][0]}; }
+  }}
+  // 4. genus as a last resort
+  for(s=0;s<shelves.length;s++){ for(id in shelves[s][1]){
+    p=shelves[s][1][id]; if(!p) continue;
+    psci=(p.sci||'').toLowerCase();
+    if(genus && psci && psci.indexOf(genus)>=0) return {id:id, shelf:shelves[s][0]};
+  }}
   return null;
+}
+/* Kept for anything still calling the old name — book shelf only. */
+function rangerMatchBookPlant(top){
+  var hit=rangerFindPlant(top);
+  return (hit && hit.shelf==='book') ? hit.id : null;
 }
 function rangerPhotoPath(imgPath){ if(!imgPath) return ''; return imgPath.replace(/(\.[a-z]+)$/i, '-photo$1'); }
 function rangerImageStrip(p, badges){
@@ -15928,6 +16014,7 @@ function rangerShowResult(id){
       '<div style="display:flex;flex-wrap:wrap;gap:5px;margin:11px 0">'+bubbles+'</div>'+
       '<div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.4px;margin:10px 0 6px;text-transform:uppercase">Ways to use it</div>'+
       '<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:2px">'+uses+'</div>'+
+      yardSourceHTML(p)+
       '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:9px 11px;display:flex;gap:8px;margin:11px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11px;color:#ffcf6b;line-height:1.45">'+p.safety+'</p></div>'+
       dinnerBtn+
       '<div style="background:rgba(255,255,255,.05);border-radius:11px;padding:11px 12px;margin-top:11px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:var(--muted)">🌿 Nerdy meter</span><b class="rnlab" style="font-size:11px;color:var(--gold)">Just the laugh</b></div>'+
@@ -15961,14 +16048,24 @@ function rangerUnknownPlant(top){
   var sci=(top&&top.scientificName) ? top.scientificName : "";
   var score=(top&&top.score) ? top.score : null;
   var photo=_rangerLastPhoto||'';
+  // Park these for the "add to My Yard" button. A phone photo is a multi-megabyte
+  // data URL — putting it inside an onclick attribute kills the tap.
+  _yardPendName = name || '';
+  _yardPendPhoto = photo || '';
   box.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden">'+
     (photo?'<div style="height:150px;background:#eef2ee;display:flex;align-items:center;justify-content:center;position:relative"><img src="'+photo+'" style="width:100%;height:150px;object-fit:cover"><div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,.5);color:#fff;font-size:10px;font-weight:600;padding:4px 9px;border-radius:14px">your photo</div></div>':'')+
     '<div style="padding:14px">'+
       '<p style="font-size:16px;font-weight:600;margin:0 0 2px">New to me — '+name+'</p>'+
       (sci?'<p style="font-size:11px;color:var(--muted);font-style:italic;margin:0 0 4px">'+sci+(score?' · '+score+'% match':'')+'</p>':'')+
       '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:10px 12px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11.5px;color:#ffcf6b;line-height:1.5"><b>Not in my book.</b> I can\'t confirm this one, so please don\'t eat it on my word. If YOU know it\'s edible, you can add it to your own yard.</p></div>'+
-      '<button class="home-half" style="width:100%" onclick="rangerAddToMyYard(\''+encodeURIComponent(name)+'\',\''+encodeURIComponent(photo)+'\')">🌱 I know this one — add to My Yard</button>'+
+      '<button class="home-half" style="width:100%" onclick="yardStartFromResult()">🌱 I know this one — add to My Yard</button>'+
     '</div></div>';
+}
+
+/* Entry point for "I know this one — add to My Yard". Reads the parked name and
+   photo rather than receiving them through the button. */
+function yardStartFromResult(){
+  rangerAddToMyYard(_yardPendName, _yardPendPhoto);
 }
 
 /* ── Book plants the person says grow at their place ──
@@ -16572,6 +16669,184 @@ function ftIngredientsToList(i){
   toast(added? ("🛒 "+added+" added to your shopping list.") : "Already on your list. 🍯");
 }
 
+/* Result card for a Backyard or Garden plant. Same layout as a book plant, but
+   the badge tells the truth about which shelf answered — a garden herb is not a
+   foraging verification, and shouldn't wear the same checkmark. */
+function rangerShowShelfPlant(id, shelf, top){
+  var src = (shelf==='garden') ? GARDEN : BACKYARD;
+  var p = src[id]; if(!p){ rangerUnknownPlant(top); return; }
+  var box=document.getElementById('plantHubResult'); if(!box) return;
+  var score=(top && top.score) ? top.score : null;
+  var garden = (shelf==='garden');
+
+  var badge = garden
+    ? '<div style="position:absolute;top:8px;right:8px;background:rgba(143,227,192,.92);color:#0c2018;font-size:10px;font-weight:700;padding:4px 10px;border-radius:14px">🌱 garden food</div>'
+    : '<div style="position:absolute;top:8px;right:8px;background:rgba(143,227,192,.92);color:#0c2018;font-size:10px;font-weight:700;padding:4px 10px;border-radius:14px">✓ edible</div>';
+
+  var bubbles=RANGER_ALL_NUTRIENTS.map(function(n){
+    var on=(p.nutrients||[]).indexOf(n)>=0;
+    return '<span style="font-size:10px;font-weight:600;padding:4px 9px;border-radius:14px;'+(on?'background:rgba(143,227,192,.16);color:#8fe3c0':'background:rgba(255,255,255,.05);color:#646a80')+'">'+n+'</span>';
+  }).join(' ');
+  var uses=(p.uses||[]).map(function(u){
+    return '<div style="flex:0 0 auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:8px 10px;text-align:center;min-width:56px"><div style="font-size:17px">'+u[0]+'</div><div style="font-size:10px;margin-top:3px">'+u[1]+'</div></div>';
+  }).join('');
+
+  box.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden">'+
+    rangerImageStrip(p, badge)+
+    '<div style="padding:14px">'+
+      '<p style="font-size:18px;font-weight:600;margin:0">'+p.name+'</p>'+
+      '<p style="font-size:11px;color:var(--muted);font-style:italic;margin:2px 0 0">'+p.sci+(score?' · '+score+'% match':'')+'</p>'+
+      ((p.alt&&p.alt.length>1)?'<p style="font-size:10.5px;color:#7d8494;margin:4px 0 0;line-height:1.45">Also called: '+p.alt.slice(1,5).join(' · ')+'</p>':'')+
+      '<div style="display:flex;gap:7px;margin:12px 0">'+
+        '<div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:9px 6px;text-align:center"><div style="font-size:15px">🌿</div><div style="font-size:9px;color:#7d8a86;margin-top:2px">In season</div><div style="font-size:11.5px;font-weight:600">'+(p.season||'—')+'</div></div>'+
+        '<div style="flex:1;background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.28);border-radius:12px;padding:9px 6px;text-align:center"><div style="color:var(--gold);font-size:15px">⏳</div><div style="font-size:9px;color:#bfae7a;margin-top:2px">Eat within</div><div style="font-size:11.5px;font-weight:600">'+(p.fresh||'—')+'</div></div></div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:5px;margin:11px 0">'+bubbles+'</div>'+
+      '<div style="background:rgba(231,200,115,.07);border-radius:11px;padding:11px 12px;margin:11px 0;font-size:12.5px;line-height:1.55">✨ '+p.wow+'</div>'+
+      '<div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.4px;margin:12px 0 5px;text-transform:uppercase">How to spot it</div>'+
+      '<p style="margin:0;font-size:12.5px;line-height:1.55">'+p.spot+'</p>'+
+      '<div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.4px;margin:12px 0 6px;text-transform:uppercase">Ways to use it</div>'+
+      '<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:2px">'+uses+'</div>'+
+      '<p style="margin:10px 0 0;font-size:12.5px;line-height:1.55">'+p.eat+'</p>'+
+      yardSourceHTML(p)+
+      '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:9px 11px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11px;color:#ffcf6b;line-height:1.45">'+p.safety+'</p></div>'+
+      '<button class="home-half" style="width:100%" id="shYard_'+id+'" onclick="shelfYardToggle(\''+id+'\')">'+(yardHas(shelf==='garden'?('gd:'+id):id)?'✓ Growing at my place':'🌱 This grows in my yard')+'</button>'+
+    '</div></div>';
+}
+function shelfYardToggle(id){
+  var key = (typeof GARDEN!=='undefined' && GARDEN[id]) ? ('gd:'+id) : id;
+  var a=yardHave(), i=a.indexOf(key);
+  if(i>=0) a.splice(i,1); else a.push(key);
+  SETTINGS.rangerHave=a; saveSettings();
+  var btn=document.getElementById('shYard_'+id);
+  if(btn) btn.textContent = (a.indexOf(key)>=0) ? '✓ Growing at my place' : '🌱 This grows in my yard';
+  toast(a.indexOf(key)>=0 ? "🌱 Added to your yard." : "Taken off your yard.");
+}
+/* ══════════ GARDEN — food you planted on purpose ══════════
+   Culinary herbs and vegetables. No foraging risk: nobody misidentifies basil
+   into danger. Sourced the same way as everything else, and marked GARDEN so
+   the card never pretends to be a wild-foraging verification. */
+var GARDEN={
+  g_basil:{name:"Sweet Basil",sci:"Ocimum basilicum · Lamiaceae",leaf:"🌿",img:"images/plants/basil.jpg",
+    alt:["Sweet Basil","Basil","Genovese Basil","Common Basil","Great Basil"], altOK:false,
+    season:"Warm months — summer",fresh:"Same day (or stand in water)",
+    nutrients:["Vit K","Vit A","Antioxidants","Calcium","Iron"],
+    src:{tier:"usda", nut:"USDA FoodData Central — Basil, fresh", id:"basil-fresh"},
+    uses:[["🍝","Pesto"],["🍅","With tomatoes"],["🥗","Salad"],["🍵","Tea"]],
+    safety:"A garden herb — pick it, rinse it, eat it. Snip above a leaf pair and it grows back bushier.",
+    wow:"Pinch the flower buds off and the plant pours everything back into leaves — one plant can feed you all summer if you never let it bloom.",
+    spot:"Square stems, glossy opposite leaves that smell unmistakably of basil when brushed, small white flower spikes if allowed to bolt.",
+    eat:"Leaves fresh — heat dulls the perfume, so add at the end. Stems are good in stock."},
+  g_rosemary:{name:"Rosemary",sci:"Salvia rosmarinus · Lamiaceae",leaf:"🌲",img:"images/plants/rosemary.jpg",
+    alt:["Rosemary","Common Rosemary","Garden Rosemary","Rosmarinus","Dew of the Sea"], altOK:false,
+    season:"Year-round in the South",fresh:"Keeps a week or more",
+    nutrients:["Vit A","Vit C","Calcium","Iron","Antioxidants"],
+    src:{tier:"usda", nut:"USDA FoodData Central — Rosemary, fresh", id:"rosemary-fresh"},
+    uses:[["🥔","Roasted potatoes"],["🍞","Bread"],["🍗","With chicken"],["🍵","Tea"]],
+    safety:"A garden herb, safe to pick and cook. Woody stems make good skewers.",
+    wow:"The Latin name means 'dew of the sea' — it evolved on Mediterranean cliffs, which is why it shrugs off drought and hates wet feet.",
+    spot:"A woody evergreen shrub with needle-like leaves, dark green on top and pale beneath, piney when crushed. Small blue flowers.",
+    eat:"Strip the needles from the stem. A little goes far — it holds up to long cooking, unlike basil."},
+  g_mint:{name:"Mint",sci:"Mentha spp. · Lamiaceae",leaf:"🍃",img:"images/plants/mint.jpg",
+    alt:["Mint","Spearmint","Peppermint","Garden Mint","Mentha"], altOK:false,
+    season:"Spring through fall",fresh:"A few days",
+    nutrients:["Vit A","Vit C","Iron","Fiber","Antioxidants"],
+    src:{tier:"usda", nut:"USDA FoodData Central — Peppermint, fresh", id:"peppermint-fresh"},
+    uses:[["🍵","Tea"],["🥤","Cold drinks"],["🥗","Salad"],["🍫","With chocolate"]],
+    safety:"A garden herb — and a determined one. Plant it in a pot unless you want it everywhere.",
+    wow:"Mint spreads by runners under the ground, which is why one plant becomes a patch. That's a feature if you like tea.",
+    spot:"Square stems, opposite toothed leaves, and the smell settles it instantly. Spreads in a mat rather than a clump.",
+    eat:"Leaves fresh or dried. Bruise them gently for tea — chopping fine turns it bitter."},
+  g_thyme:{name:"Thyme",sci:"Thymus vulgaris · Lamiaceae",leaf:"🌿",img:"images/plants/thyme.jpg",
+    alt:["Thyme","Common Thyme","Garden Thyme","English Thyme","German Thyme"], altOK:false,
+    season:"Year-round in mild winters",fresh:"Keeps well",
+    nutrients:["Vit C","Vit A","Iron","Calcium","Antioxidants"],
+    src:{tier:"usda", nut:"USDA FoodData Central — Thyme, fresh", id:"thyme-fresh"},
+    uses:[["🍲","Soups & stews"],["🍗","Roasts"],["🫘","Beans"],["🍵","Tea"]],
+    safety:"A garden herb, safe to pick. Trim it back after flowering to keep it tender.",
+    wow:"Thyme was strewn on floors in medieval houses because walking on it released the scent — an early air freshener you could also eat.",
+    spot:"A low, sprawling, half-woody plant with tiny oval leaves and a warm, savory scent. Small pink-purple flowers.",
+    eat:"Strip leaves off the stem, or drop whole sprigs in and fish them out. Loves long simmering."},
+  g_oregano:{name:"Oregano",sci:"Origanum vulgare · Lamiaceae",leaf:"🌿",img:"images/plants/oregano.jpg",
+    alt:["Oregano","Wild Marjoram","Greek Oregano","Common Oregano","Origanum"], altOK:false,
+    season:"Summer through fall",fresh:"Keeps well; dries beautifully",
+    nutrients:["Vit K","Iron","Calcium","Fiber","Antioxidants"],
+    src:{tier:"usda", nut:"USDA FoodData Central — Oregano, fresh", id:"oregano-fresh"},
+    uses:[["🍕","Tomato sauce"],["🫒","Greek dishes"],["🍖","Rubs"],["🍵","Tea"]],
+    safety:"A garden herb, safe to pick and dry.",
+    wow:"Oregano is one of the few herbs that gets *stronger* dried — the flavor concentrates instead of fading, so a good patch feeds you all winter.",
+    spot:"Square stems, small fuzzy oval leaves in pairs, clusters of tiny white-pink flowers. Sharp, peppery smell.",
+    eat:"Fresh or dried. Add early to sauces — it wants time, unlike basil."},
+  g_sage:{name:"Sage",sci:"Salvia officinalis · Lamiaceae",leaf:"🍃",img:"images/plants/sage.jpg",
+    alt:["Sage","Garden Sage","Common Sage","Kitchen Sage","Salvia"], altOK:false,
+    season:"Year-round in the South",fresh:"Keeps a week",
+    nutrients:["Vit K","Vit A","Calcium","Iron","Antioxidants"],
+    src:{tier:"usda", nut:"USDA FoodData Central — Sage, fresh", id:"sage-fresh"},
+    uses:[["🦃","With poultry"],["🧈","Browned butter"],["🥔","Squash & potatoes"],["🍵","Tea"]],
+    safety:"A garden herb, safe to pick. Strong flavor — start with less than you think.",
+    wow:"Fry whole sage leaves in butter for thirty seconds and they turn crisp as a chip, with the butter carrying the flavor into everything.",
+    spot:"Soft, pebbled gray-green leaves on a low woody shrub, velvety to the touch, with a warm musky scent.",
+    eat:"Fresh leaves whole or chopped. Pairs with fat — butter, sausage, squash."},
+  g_parsley:{name:"Parsley",sci:"Petroselinum crispum · Apiaceae",leaf:"🌿",img:"images/plants/parsley.jpg",
+    alt:["Parsley","Flat-leaf Parsley","Curly Parsley","Italian Parsley","Garden Parsley"], altOK:false,
+    season:"Cool weather — fall through spring",fresh:"A few days",
+    nutrients:["Vit K","Vit C","Vit A","Iron","Antioxidants"],
+    src:{tier:"usda", nut:"USDA FoodData Central — Parsley, fresh", id:"parsley-fresh"},
+    uses:[["🥗","Salad"],["🍲","Finishing dishes"],["🌿","Tabbouleh"],["🥣","Chimichurri"]],
+    safety:"A garden herb, safe to pick. In the same family as some plants you should never eat wild — so eat parsley from the garden, not from a field.",
+    wow:"Parsley is more vitamin K per bite than almost anything in the garden, and it's usually thrown on the plate as decoration. Eat the garnish.",
+    spot:"Bright green leaves — flat and pointed, or tightly curled — on grooved stems, in a low rosette. Clean, green, peppery smell.",
+    eat:"Leaves and tender stems, chopped. Add at the end; heat flattens it."},
+  g_chives:{name:"Chives",sci:"Allium schoenoprasum · Amaryllidaceae",leaf:"🌱",img:"images/plants/chives.jpg",
+    alt:["Chives","Garden Chives","Onion Chives","Common Chives","Allium"], altOK:false,
+    season:"Spring through fall",fresh:"A few days",
+    nutrients:["Vit K","Vit A","Vit C","Calcium","Antioxidants"],
+    src:{tier:"usda", nut:"USDA FoodData Central — Chives, raw", id:"chives-raw"},
+    uses:[["🥔","Potatoes"],["🥚","Eggs"],["🧅","Mild onion flavor"],["🌸","Flowers in salad"]],
+    safety:"A garden herb, safe to pick. If it smells of onion, it's an onion cousin — that smell is the test.",
+    wow:"The purple pom-pom flowers are edible too, and taste like a mild onion — scatter them over potato salad and people ask what they are.",
+    spot:"Fine hollow green tubes in a clump, onion smell when snipped, round purple flower heads in spring.",
+    eat:"Snip the tubes with scissors, add raw at the end. Flowers whole or pulled apart."},
+  g_tomato:{name:"Tomato",sci:"Solanum lycopersicum · Solanaceae",leaf:"🍅",img:"images/plants/tomato.jpg",
+    alt:["Tomato","Garden Tomato","Love Apple","Cherry Tomato","Beefsteak Tomato"], altOK:false,
+    season:"Summer",fresh:"Days on the counter — never the fridge",
+    nutrients:["Vit C","Vit A","Vit K","Fiber","Antioxidants"],
+    src:{tier:"usda", nut:"USDA FoodData Central — Tomatoes, red, ripe, raw", id:"tomato-raw"},
+    uses:[["🥗","Fresh"],["🍲","Sauce"],["🥪","Sandwiches"],["🫙","Canning"]],
+    safety:"Eat the ripe fruit. The leaves and stems belong to the nightshade family and are not food — fruit only.",
+    wow:"Cold ruins a tomato's flavor chemistry, and it doesn't come back when it warms up. A counter tomato and a fridge tomato are two different foods.",
+    spot:"A sprawling vine with jagged, strongly-scented compound leaves, yellow star flowers, and fruit that ripens from green.",
+    eat:"Ripe fruit only, raw or cooked. Cooking actually raises the available lycopene."},
+  g_pepper:{name:"Pepper",sci:"Capsicum annuum · Solanaceae",leaf:"🌶️",img:"images/plants/pepper.jpg",
+    alt:["Pepper","Bell Pepper","Sweet Pepper","Chili Pepper","Capsicum"], altOK:false,
+    season:"Summer into fall",fresh:"A week or more",
+    nutrients:["Vit C","Vit A","Vit K","Fiber","Antioxidants"],
+    src:{tier:"usda", nut:"USDA FoodData Central — Peppers, sweet, red, raw", id:"pepper-raw"},
+    uses:[["🥗","Raw"],["🔥","Roasted"],["🍲","Stir-fry"],["🫙","Pickled"]],
+    safety:"Eat the fruit. Like tomatoes, the leaves and stems aren't food.",
+    wow:"A red bell pepper is just a green one left on the plant longer — and it ends up with far more vitamin C than an orange.",
+    spot:"A bushy plant with smooth oval leaves, small white flowers, and hollow fruit hanging down.",
+    eat:"Fruit raw, roasted, or cooked. Roasting and peeling turns a sweet pepper into something else entirely."},
+  g_lemonbalm:{name:"Lemon Balm",sci:"Melissa officinalis · Lamiaceae",leaf:"🍋",img:"images/plants/lemon-balm.jpg",
+    alt:["Lemon Balm","Balm","Sweet Balm","Melissa","Bee Balm (lemon balm)"], altOK:false,
+    season:"Spring through fall",fresh:"Same day for tea",
+    nutrients:["Vit C","Antioxidants","Iron","Calcium"],
+    src:{tier:"lit", nut:"Published food-composition research on Melissa officinalis", id:""},
+    uses:[["🍵","Tea"],["🥤","Cold drinks"],["🍰","Desserts"],["🐝","Bees love it"]],
+    safety:"A garden herb, safe to pick. Spreads like its mint cousins — a pot keeps it polite.",
+    wow:"Rub a leaf and it smells like lemon candy, but it's a mint — the family that gave us basil and oregano learned to smell like citrus.",
+    spot:"Square stems, heart-shaped toothed leaves, wrinkled and soft, releasing a lemon scent when brushed.",
+    eat:"Fresh leaves for tea, hot or iced. Best fresh — drying loses the lemon."},
+  g_cilantro:{name:"Cilantro",sci:"Coriandrum sativum · Apiaceae",leaf:"🌿",img:"images/plants/cilantro.jpg",
+    alt:["Cilantro","Coriander","Chinese Parsley","Coriander Leaf","Dhania"], altOK:false,
+    season:"Cool weather — bolts in heat",fresh:"A few days",
+    nutrients:["Vit K","Vit A","Vit C","Antioxidants"],
+    src:{tier:"usda", nut:"USDA FoodData Central — Coriander (cilantro) leaves, raw", id:"cilantro-raw"},
+    uses:[["🌮","Salsa & tacos"],["🍜","Soups"],["🌾","Seeds as coriander"],["🥗","Salad"]],
+    safety:"A garden herb, safe to pick. Same family as parsley — garden only, never a field lookalike.",
+    wow:"Let it bolt and the seeds are coriander — one plant gives you two different spices, months apart.",
+    spot:"Lacy, fan-shaped lower leaves that turn feathery as it bolts, white flower umbels, unmistakable sharp scent people either love or don't.",
+    eat:"Leaves fresh at the end of cooking. Seeds dried and ground as coriander."}
+};
 /* ══════════ THE BACKYARD 50 — common across America ══════════
    Cousins share a card, same as the book. Grows as cards get written. */
 var BACKYARD={
@@ -16579,6 +16854,8 @@ var BACKYARD={
     season:"Fall–spring (leaves)",fresh:"A few days",
     nutrients:["Vit A","Vit C","Vit K","Calcium","Iron","Fiber","Antioxidants"],
     uses:[["🥗","Salad"],["🍳","Sautéed"],["🥞","Fritters"],["☕","Root coffee"]],
+    alt:["Dandelion", "Common Dandelion", "Lion"s Tooth", "Blowball", "Piss-a-bed"], altOK:false,
+    src:{tier:"usda", nut:"USDA FoodData Central — Dandelion greens, raw", id:"dandelion-greens-raw"},
     safety:"Pick from a yard nobody sprays — the dandelion's honest, but the chemicals aren't.",
     wow:"Every single part is edible — root, leaf, stem, and flower. Settlers brought it here on purpose, as a garden vegetable.",
     spot:"A sunny yellow flower on a hollow stem, one bloom per stem, rising from a rosette of jagged leaves. The name means \u201clion's tooth\u201d — that's the leaf edge.",
@@ -16587,6 +16864,8 @@ var BACKYARD={
     season:"Spring through fall",fresh:"A few days",
     nutrients:["Vit A","Vit C","Vit K","Calcium","Fiber"],
     uses:[["🥗","Salad"],["🍳","Cooked greens"],["🍄","Buds sautéed"]],
+    alt:["Broadleaf Plantain", "Narrowleaf Plantain", "Ribwort", "White Man"s Footprint", "Ribgrass"], altOK:false,
+    src:{tier:"lit", nut:"Published food-composition research on Plantago major & lanceolata", id:""},
     safety:"This is the famous \u201cbee sting leaf\u201d — chew a leaf and press it on a sting or bite. Grandma knew. Both plantains are gentle and hard to confuse with anything harmful.",
     wow:"Native peoples called it \u201cwhite man's footprint\u201d — it followed settlers so faithfully it sprouted wherever they walked. And the narrow-leaved cousin's flower buds taste like mushrooms in butter.",
     spot:"Broadleaf: a ground rosette of wide oval leaves with parallel veins that pull like celery strings. Narrowleaf: long ribbed lance leaves and a short dark flower head like a tiny torch.",
@@ -16595,6 +16874,8 @@ var BACKYARD={
     season:"Cool weather — fall through spring",fresh:"Same day",
     nutrients:["Vit C","Vit A","Calcium","Iron","Antioxidants"],
     uses:[["🥗","Salad"],["🥪","Sandwiches"],["🍲","Wilted in soup"]],
+    alt:["Chickweed", "Common Chickweed", "Starweed", "Winterweed", "Satin Flower"], altOK:false,
+    src:{tier:"lit", nut:"Published food-composition research on Stellaria media", id:""},
     safety:"Check for that one-sided hair line. If the stem's hairy all over or oozes milky sap, it's not our chickweed — walk on by.",
     wow:"There's a single line of hairs running up one side of the stem — switching sides at each leaf pair, like a tiny mohawk changing lanes. No lookalike has it.",
     spot:"A soft sprawling mat of small oval leaves with tiny white star flowers — five petals split so deep they look like ten.",
@@ -16603,6 +16884,8 @@ var BACKYARD={
     season:"Late spring through summer",fresh:"Same day",
     nutrients:["Vit C","B Vits","Fiber","Antioxidants"],
     uses:[["🍵","Tea"],["🥗","Salad"],["🌸","Fresh blossoms"]],
+    alt:["White Clover", "Red Clover", "Dutch Clover", "Purple Clover", "Shamrock"], altOK:false,
+    src:{tier:"lit", nut:"Published food-composition research on Trifolium species", id:""},
     safety:"Eat blossoms fresh and bright — brown, wilted clover isn't for the table. A few is plenty; clover is a \u201clittle bit often\u201d plant.",
     wow:"The flowers are little honey factories — in hard times folks stretched flour with dried clover blossoms, and red clover was so beloved Vermont made it the state flower.",
     spot:"Three leaflets with a pale V watermark. White clover hugs the ground with white pom-poms; red clover stands taller with rosy-pink ones.",
@@ -16611,6 +16894,8 @@ var BACKYARD={
     season:"Hot summer months",fresh:"A few days — it keeps well",
     nutrients:["Omega-3","Vit A","Vit C","Vit E","Calcium","Iron","Antioxidants"],
     uses:[["🥗","Salad"],["🍳","Sautéed"],["🥔","Potato salad"],["🌮","Verdolagas"]],
+    alt:["Purslane", "Verdolagas", "Little Hogweed", "Pigweed (purslane)", "Duckweed (purslane)"], altOK:false,
+    src:{tier:"usda", nut:"USDA FoodData Central — Purslane, raw", id:"purslane-raw"},
     safety:"Its lookalike, spurge, is flat and milky — snap a stem. Milky sap means put it down; clear juice means supper.",
     wow:"This sidewalk-crack \u201cweed\u201d has more omega-3s than any other leafy green ever tested. Gardeners pull it and buy fish oil — the joke writes itself.",
     spot:"A ground-hugging succulent with reddish stems and fat, smooth, paddle-shaped leaves — like a tiny jade plant. Loves heat and bare dirt.",
@@ -16619,6 +16904,8 @@ var BACKYARD={
     season:"Spring through fall",fresh:"Same day",
     nutrients:["Vit C","Vit A","Antioxidants"],
     uses:[["🥗","Garnish"],["🍋","Wild lemonade"],["🐟","With fish"]],
+    alt:["Yellow Wood Sorrel", "Wood Sorrel", "Sourgrass", "Sheep Sorrel (misapplied)", "Lemon Clover"], altOK:false,
+    src:{tier:"lit", nut:"Published food-composition research on Oxalis species", id:""},
     safety:"That sour comes from oxalic acid — same as spinach. A garnish and a nibble, not a bowlful, especially if kidneys are a concern.",
     wow:"Kids in every generation discover this one on their own and name it \u201csour grass.\u201d That lemony zing is real vitamin C — sailors' kin used it against scurvy.",
     spot:"Looks like clover but isn't — the leaflets are perfect hearts folded down the middle, flowers are yellow with five petals, and the seed pods look like tiny okra.",
@@ -16627,11 +16914,36 @@ var BACKYARD={
     season:"Early spring",fresh:"Same day",
     nutrients:["Vit C","Iron","Fiber","Antioxidants"],
     uses:[["🥗","Salad"],["🥤","Smoothies"],["🌿","Pesto"]],
+    alt:["Henbit", "Purple Deadnettle", "Henbit Deadnettle", "Red Deadnettle", "Giraffe Head"], altOK:false,
+    src:{tier:"lit", nut:"Published food-composition research on Lamium species", id:""},
     safety:"Square stem, no strong smell, purple tops — and here's the comfort: these two grow tangled together and both are friendly. One mix-up that costs you nothing.",
     wow:"Those purple carpets across fields every early spring? Free salad greens, blooming before the mowers wake up. And \u201cdead\u201d nettle just means it can't sting — nettle's costume, none of the bite.",
     spot:"Mint cousins with square stems and small purple trumpet flowers. Henbit's round scalloped leaves hug the stem like collars; deadnettle's are triangular, stacked like a pagoda, blushing purple on top.",
     eat:"Leaves, stems, and flowers of either — raw, blended into pesto, or cooked. Henbit's like celery with a whisper of mint."}
 };
+/* Where the numbers came from. Two honest tiers:
+     usda = this plant has its own entry in USDA FoodData Central
+     lit  = not in the federal database; values from published food-composition research
+   Being clear about the difference is worth more than citing USDA for everything. */
+function yardSourceHTML(p){
+  if(!p || !p.src) return '';
+  // Pending = not yet cross-referenced. Say so plainly rather than showing nothing.
+  if(p.src.tier==='pending' || !p.src.nut){
+    return '<div style="display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;padding:9px 11px;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.12);border-radius:11px">'+
+      '<div style="font-size:12px">📋</div><div style="flex:1">'+
+      '<p style="margin:0;font-size:10.5px;color:var(--muted);line-height:1.45">Sources for this plant are being cross-referenced. Nutrition notes here are general and educational only — not medical or dietary advice.</p>'+
+      '</div></div>';
+  }
+  var usda = p.src.tier==='usda';
+  var badge = usda
+    ? '<span style="font-size:9px;font-weight:700;letter-spacing:.3px;padding:2px 7px;border-radius:10px;background:rgba(143,227,192,.16);color:#8fe3c0">USDA</span>'
+    : '<span style="font-size:9px;font-weight:700;letter-spacing:.3px;padding:2px 7px;border-radius:10px;background:rgba(255,255,255,.07);color:#9aa0b4">RESEARCH</span>';
+  return '<div style="display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;padding:9px 11px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:11px">'+
+    '<div style="font-size:12px">📚</div>'+
+    '<div style="flex:1"><div style="display:flex;align-items:center;gap:6px;margin-bottom:2px"><span style="font-size:9.5px;color:var(--muted);font-weight:600;letter-spacing:.4px;text-transform:uppercase">Where this comes from</span>'+badge+'</div>'+
+    '<p style="margin:0;font-size:10.5px;color:var(--muted);line-height:1.45">'+p.src.nut+'</p>'+
+    '<p style="margin:3px 0 0;font-size:10px;color:#7d8494;line-height:1.4">Educational information only — not medical or dietary advice.</p></div></div>';
+}
 function yardHave(){ if(!Array.isArray(SETTINGS.rangerHave)) SETTINGS.rangerHave=[]; return SETTINGS.rangerHave; }
 function yardHas(id){ return yardHave().indexOf(id)>=0; }
 function yardToggle(id, el){
@@ -16674,6 +16986,7 @@ function yardShow(id){
     '<div style="padding:14px">'+
       '<p style="font-size:18px;font-weight:600;margin:0">'+p.name+'</p>'+
       '<p style="font-size:11px;color:var(--muted);font-style:italic;margin:2px 0 0">'+p.sci+'</p>'+
+      ((p.alt&&p.alt.length>1)?'<p style="font-size:10.5px;color:#7d8494;margin:4px 0 0;line-height:1.45">Also called: '+p.alt.slice(1,5).join(' · ')+'</p>':'')+
       '<div style="display:flex;gap:7px;margin:12px 0">'+
         '<div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:9px 6px;text-align:center"><div style="font-size:15px">🌿</div><div style="font-size:9px;color:#7d8a86;margin-top:2px">In season</div><div style="font-size:11.5px;color:var(--ink);font-weight:600">'+p.season+'</div></div>'+
         '<div style="flex:1;background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.28);border-radius:12px;padding:9px 6px;text-align:center"><div style="color:var(--gold);font-size:15px">⏳</div><div style="font-size:9px;color:#bfae7a;margin-top:2px">Eat within</div><div style="font-size:11.5px;color:var(--ink);font-weight:600">'+p.fresh+'</div></div></div>'+
@@ -16684,6 +16997,7 @@ function yardShow(id){
       '<div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.4px;margin:12px 0 6px;text-transform:uppercase">Ways to use it</div>'+
       '<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:2px">'+uses+'</div>'+
       '<p style="margin:10px 0 0;font-size:12.5px;line-height:1.55">'+p.eat+'</p>'+
+      yardSourceHTML(p)+
       '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:9px 11px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11px;color:#ffcf6b;line-height:1.45">'+p.safety+'</p></div>'+
       '<button onclick="yardToggle(\''+id+'\');yardShow(\''+id+'\');openYardIndexRefresh()" style="width:100%;background:'+(have?'rgba(255,255,255,.06)':'linear-gradient(180deg,#e7c873,#caa44a)')+';color:'+(have?'var(--muted)':'#1a1405')+';border:'+(have?'1px solid rgba(255,255,255,.12)':'none')+';border-radius:13px;padding:13px;font-size:14.5px;font-weight:700;cursor:pointer">'+(have?'✓ Growing at my place':'＋ This grows at my place')+'</button>'+
     '</div></div>';
