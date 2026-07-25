@@ -319,6 +319,17 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   background:linear-gradient(180deg,#e7c873,#caa44a);color:#1a1405;border:none;}
 #imgLightbox .ilb-btn.sec{background:rgba(255,255,255,.08);color:#e9e6df;border:1px solid rgba(255,255,255,.16);}
 #imgLightbox .ilb-hint{color:#7d8494;font-size:11px;margin-top:12px;text-align:center;line-height:1.5;}
+.stg-organs{display:flex;flex-wrap:wrap;gap:7px;}
+.stg-organ{flex:1 1 30%;min-height:62px;border-radius:13px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.10);color:var(--ink);font-size:12px;font-weight:600;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;}
+.stg-organ span{font-size:21px;line-height:1;}
+.stg-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:3px;}
+.stg-thumb{position:relative;flex:0 0 auto;width:88px;}
+.stg-thumb img{width:88px;height:88px;object-fit:cover;border-radius:11px;display:block;}
+.stg-tag{display:block;font-size:9.5px;color:#8fe3c0;text-align:center;margin-top:3px;font-weight:600;}
+.stg-del{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:8px;
+  background:rgba(0,0,0,.62);border:none;color:#fff;font-size:11px;line-height:1;}
 .ft-chips{display:flex;flex-wrap:wrap;gap:7px;}
 .fw-day{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
   border-radius:13px;padding:10px 12px;margin-bottom:7px;}
@@ -2222,7 +2233,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v57 · Ranger</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v58 · Food &amp; Yard</div>
   </div>
 </section>
 
@@ -15736,15 +15747,101 @@ function rangerAddDinner(id,btn){var a=rangerDinnerArr();if(a.indexOf(id)<0){a.p
 function rangerAddCook(id,btn){var a=rangerCookArr();if(a.indexOf(id)<0){a.push(id);saveSettings();}if(btn){btn.textContent='✓ On your list';btn.disabled=true;}}
 
 function openPlantHub(){ var b=document.getElementById('plantHubResult'); if(b)b.innerHTML=''; go('plantHub'); }
+/* ══════════ PHOTO STAGING — tag what you shot, add angles, then identify ══════════
+   PlantNet is far more accurate when it knows WHICH PART of the plant it's looking
+   at, and even better with two or three tagged photos. So: snap → tag it → add
+   another if you like → identify. */
+var _stage=[];              // [{data, organ, label}]
+var RANGER_ORGANS=[['leaf','🍃','Leaf'],['flower','🌸','Flower'],['bark','🪵','Bark'],['fruit','🍒','Fruit'],['habit','🌳','Whole plant']];
+var RANGER_STAGE_MAX=4;
+
 function openPlantCamera(){
   var inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.capture='environment';
-  inp.onchange=function(){ rangerIdentify(inp.files&&inp.files[0]); }; inp.click();
+  inp.onchange=function(){ stageAddFile(inp.files&&inp.files[0]); }; inp.click();
 }
 /* Pick a plant picture already saved on the phone — no 'capture' attribute, so iOS
    opens the Photos library instead of the camera. */
 function openPlantLibrary(){
   var inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
-  inp.onchange=function(){ rangerIdentify(inp.files&&inp.files[0]); }; inp.click();
+  inp.onchange=function(){ stageAddFile(inp.files&&inp.files[0]); }; inp.click();
+}
+function stageAddFile(file){
+  if(!file){ return; }
+  go('plantHub');
+  var box=document.getElementById('plantHubResult');
+  box.innerHTML='<div style="text-align:center;color:var(--muted);padding:24px">📷 Getting your picture ready…</div>';
+  var reader=new FileReader();
+  reader.onload=function(){
+    _stage.push({ data:reader.result, organ:'', label:'' });
+    stageAskOrgan(_stage.length-1);
+  };
+  reader.onerror=function(){ toast("Couldn't read that picture — try again."); stageRender(); };
+  reader.readAsDataURL(file);
+}
+function stageAskOrgan(i){
+  var it=_stage[i]; if(!it){ stageRender(); return; }
+  var box=document.getElementById('plantHubResult');
+  box.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px">'+
+    '<div style="height:150px;background:#f4f1e8;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:13px"><img src="'+it.data+'" style="width:100%;height:150px;object-fit:cover"></div>'+
+    '<p style="font-size:15px;font-weight:600;margin:0 0 4px">What did you photograph?</p>'+
+    '<p style="font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.5">Telling me the part helps me name it right.</p>'+
+    '<div class="stg-organs">'+RANGER_ORGANS.map(function(o){
+        return '<button class="stg-organ" onclick="stageSetOrgan('+i+',\''+o[0]+'\',\''+o[2]+'\')"><span>'+o[1]+'</span>'+o[2]+'</button>';
+      }).join('')+'</div>'+
+    '<button class="home-half" style="width:100%;margin-top:9px;color:var(--muted)" onclick="stageSetOrgan('+i+',\'auto\',\'Not sure\')">I\'m not sure — just look</button>'+
+  '</div>';
+}
+function stageSetOrgan(i, organ, label){
+  if(_stage[i]){ _stage[i].organ=organ; _stage[i].label=label; }
+  stageRender();
+}
+function stageRender(){
+  var box=document.getElementById('plantHubResult');
+  if(!_stage.length){ box.innerHTML=''; return; }
+  var thumbs=_stage.map(function(it,i){
+    return '<div class="stg-thumb"><img src="'+it.data+'" alt="">'+
+      '<span class="stg-tag">'+(it.label||'photo')+'</span>'+
+      '<button class="stg-del" onclick="stageRemove('+i+')" aria-label="Remove">✕</button></div>';
+  }).join('');
+  var room=_stage.length<RANGER_STAGE_MAX;
+  box.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:15px">'+
+    '<p style="font-size:14.5px;font-weight:600;margin:0 0 3px">'+_stage.length+' picture'+(_stage.length===1?'':'s')+' ready</p>'+
+    '<p style="font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.5">A leaf and a flower together give the best answer.</p>'+
+    '<div class="stg-strip">'+thumbs+'</div>'+
+    (room?'<div style="display:flex;gap:6px;margin-top:12px">'+
+      '<button class="home-half" style="flex:1" onclick="openPlantCamera()">📷 Another angle</button>'+
+      '<button class="home-half" style="flex:1" onclick="openPlantLibrary()">🖼️ From my phone</button></div>':'')+
+    '<button style="width:100%;margin-top:9px;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:14px;font-size:15px;font-weight:700;cursor:pointer" onclick="stageIdentify()">🔍 Name this plant</button>'+
+    '<button class="home-half" style="width:100%;margin-top:7px;color:var(--muted)" onclick="stageClear()">Start over</button>'+
+  '</div>';
+}
+function stageRemove(i){ _stage.splice(i,1); stageRender(); }
+function stageClear(){ _stage=[]; var b=document.getElementById('plantHubResult'); if(b) b.innerHTML=''; }
+
+function stageIdentify(){
+  if(!_stage.length){ return; }
+  var box=document.getElementById('plantHubResult');
+  box.innerHTML='<div style="text-align:center;color:var(--muted);padding:24px">🔍 Looking at your '+
+    (_stage.length===1?'photo':_stage.length+' photos')+'…</div>';
+  _rangerLastPhoto=_stage[0].data;
+  // Send the tagged array (what the upgraded plant-id function expects) AND a single
+  // `image` for backward compatibility, so this works either way.
+  var payload={
+    images:_stage.map(function(it){ return { data:it.data, organ:(it.organ&&it.organ!=='auto')?it.organ:'auto' }; }),
+    image:_stage[0].data
+  };
+  fetch(PLANT_ID_URL,{
+    method:'POST',
+    headers:{ 'apikey':PREMIUM_VOICE_KEY, 'Content-Type':'application/json' },
+    body:JSON.stringify(payload)
+  }).then(function(r){ return r.json(); }).then(function(j){
+    _stage=[];
+    if(j.error){ rangerUnknownPlant(); return; }
+    var top=(j.results&&j.results[0])||null;
+    if(!top){ rangerUnknownPlant(); return; }
+    var match=rangerMatchBookPlant(top);
+    if(match){ rangerShowResult(match); } else { rangerUnknownPlant(top); }
+  }).catch(function(){ _stage=[]; rangerUnknownPlant(); });
 }
 /* PlantNet identify — routes through the SECURE PROXY (same pattern as premium-voice / ai-media).
    The publishable key rides in the apikey header; the real PlantNet key lives server-side. */
@@ -15837,7 +15934,8 @@ function rangerShowResult(id){
         '<input type="range" min="0" max="3" step="1" value="0" style="width:100%;accent-color:var(--gold)" oninput="rangerTeach(this,\''+id+'\')">'+
         '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted)"><span>breezy</span><span>fact</span><span>teach</span><span>nerd</span></div>'+
         '<div class="rte" style="background:rgba(0,0,0,.25);border-radius:9px;padding:9px 11px;margin-top:9px;font-size:12.5px;line-height:1.5">'+p.teach[0]+'</div></div>'+
-      '<div style="display:flex;gap:6px;margin-top:11px"><button class="home-half" style="flex:1" onclick="rangerAddCook(\''+id+'\',this)">🧺 Cooking list</button><button class="home-half" style="flex:1" onclick="rangerShareBook(\''+id+'\')">↗ Share</button></div>'+
+      '<button class="home-half" style="width:100%;margin-top:11px" id="bkYard_'+id+'" onclick="bookYardToggle(\''+id+'\')">'+(bookInYard(id)?'✓ Growing at my place':'🌱 This grows in my yard')+'</button>'+
+    '<div style="display:flex;gap:6px;margin-top:7px"><button class="home-half" style="flex:1" onclick="rangerAddCook(\''+id+'\',this)">🧺 Cooking list</button><button class="home-half" style="flex:1" onclick="rangerShareBook(\''+id+'\')">↗ Share</button></div>'+
     '</div></div>'+
     '<p style="font-size:11px;color:var(--muted);margin:10px 2px 0;line-height:1.5">'+p.intro+'</p>';
 }
@@ -15873,6 +15971,19 @@ function rangerUnknownPlant(top){
     '</div></div>';
 }
 
+/* ── Book plants the person says grow at their place ──
+   Stored in the same rangerHave list with a "bk:" prefix, so Backyard-50 checks
+   and book plants coexist without either pretending to be the other. */
+function bookInYard(id){ return yardHave().indexOf('bk:'+id)>=0; }
+function bookYardToggle(id){
+  var a=yardHave(), k='bk:'+id, i=a.indexOf(k);
+  if(i>=0){ a.splice(i,1); } else { a.push(k); }
+  SETTINGS.rangerHave=a; saveSettings();
+  var btn=document.getElementById('bkYard_'+id);
+  if(btn) btn.textContent = bookInYard(id) ? '✓ Growing at my place' : '🌱 This grows in my yard';
+  toast(bookInYard(id) ? "🌱 Added to your yard." : "Taken off your yard.");
+}
+
 /* ── MY YARD ──
    NOTE: the plant name and photo are parked in these variables instead of being
    pasted into an onclick. Names with apostrophes (Cat's Ear) and huge photo data
@@ -15906,7 +16017,11 @@ function yardOpenPendingForm(){
   }
 }
 function rangerYardForm(encName,encPhoto){
-  var name=decodeURIComponent(encName||''); 
+  var name=decodeURIComponent(encName||'');
+  // Park the photo here instead of inside the Save button's onclick. A phone photo
+  // is a multi-megabyte data URL — putting that in an HTML attribute breaks the tap.
+  try{ _yardPendPhoto = decodeURIComponent(encPhoto||'') || _yardPendPhoto || ''; }catch(e){}
+  
   var box=document.getElementById('plantHubResult');
   box.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px">'+
     '<p style="font-size:15px;font-weight:600;margin:0 0 12px">🌱 Add to My Yard</p>'+
@@ -15917,19 +16032,22 @@ function rangerYardForm(encName,encPhoto){
     '<label style="font-size:11px;color:var(--muted)">In season for you</label>'+
     '<input id="myYardSeason" placeholder="e.g. Spring–summer" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:var(--ink);font-size:14px;margin:4px 0 14px">'+
     '<label style="display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink);margin-bottom:14px;cursor:pointer"><input type="checkbox" id="myYardShare" style="width:18px;height:18px;accent-color:var(--gold)"> Share a copy with Sally (helps Ranger grow)</label>'+
-    '<button style="width:100%;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:13px;font-size:15px;font-weight:700;cursor:pointer" onclick="rangerYardSave(\''+encPhoto+'\')">🌱 Save to My Yard</button>'+
+    '<button style="width:100%;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:13px;font-size:15px;font-weight:700;cursor:pointer" onclick="rangerYardSave()">🌱 Save to My Yard</button>'+
   '</div>';
 }
 function rangerYardFind(id){ return rangerMyYardArr().find(function(x){return x.id===id;}); }
-function rangerYardSave(encPhoto){
+function rangerYardSave(){
   var name=(document.getElementById('myYardName')||{}).value||'My plant';
   var note=(document.getElementById('myYardNote')||{}).value||'';
   var season=(document.getElementById('myYardSeason')||{}).value||'';
   var share=(document.getElementById('myYardShare')||{}).checked;
-  var entry={id:'y'+Date.now(),name:name.trim(),note:note.trim(),season:season.trim(),photo:decodeURIComponent(encPhoto||''),added:Date.now(),mine:true,nutrients:{},recipes:[]};
+  var entry={id:'y'+Date.now(),name:name.trim(),note:note.trim(),season:season.trim(),photo:(_yardPendPhoto||''),added:Date.now(),mine:true,nutrients:{},recipes:[]};
   rangerMyYardArr().push(entry);
   if(share){ rangerDraftsArr().push({name:entry.name,sci:'(shared by a user)',status:'user-shared',source:'My Yard share',savedAt:Date.now(),edible:null,verified:false,fromUser:true,nutrients:{},note:entry.note}); }
   saveSettings();
+  _yardPendName=""; _yardPendPhoto="";
+  toast("🌱 Added to your yard.");
+  go('myYard');
   openMyYardPlant(entry.id);
 }
 function openMyYardPlant(id){
@@ -16069,7 +16187,24 @@ function rangerMyYardCard(e){
 }
 function openMyYard(){
   var b=document.getElementById('myYardList'); var arr=rangerMyYardArr();
-  b.innerHTML = arr.length ? arr.slice().reverse().map(rangerMyYardCard).join('') : '<div style="text-align:center;color:var(--muted);padding:34px">🌱 Your yard is empty so far. When you identify a plant you know, tap "Add to My Yard" to start your own collection.</div>';
+  var html='';
+  // book plants the person marked as growing at their place
+  var bk=yardHave().filter(function(k){ return k.indexOf('bk:')===0; })
+                   .map(function(k){ return k.slice(3); })
+                   .filter(function(id){ return !!RANGER_PLANTS[id]; });
+  if(bk.length){
+    html+='<div style="font-size:11px;color:#8fe3c0;font-weight:700;letter-spacing:.4px;margin:2px 2px 8px;text-transform:uppercase">🌿 From the book, growing at your place</div>';
+    html+=bk.map(function(id){
+      var p=RANGER_PLANTS[id];
+      return '<button class="home-big" style="display:flex;width:100%;text-align:left;margin-bottom:9px" onclick="openPlantHub();setTimeout(function(){rangerShowResult(\''+id+'\')},50)">'+
+        '<span class="hb-ic">'+p.leaf+'</span><span class="hb-tx"><b>'+p.name+'</b><small>'+p.season+'</small></span></button>';
+    }).join('');
+  }
+  if(arr.length){
+    if(bk.length) html+='<div style="font-size:11px;color:#8fe3c0;font-weight:700;letter-spacing:.4px;margin:16px 2px 8px;text-transform:uppercase">🌱 Your own finds</div>';
+    html+=arr.slice().reverse().map(rangerMyYardCard).join('');
+  }
+  b.innerHTML = html || '<div style="text-align:center;color:var(--muted);padding:34px">🌱 Your yard is empty so far. Identify a plant and tap "This grows in my yard" — or add one of your own.</div>';
   go('myYard');
 }
 function openInSeason(){
@@ -16096,23 +16231,44 @@ function openCookingList(){
 function rangerB64(obj){ try{return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));}catch(e){return '';} }
 function rangerUnB64(s){ try{return JSON.parse(decodeURIComponent(escape(atob(s))));}catch(e){return null;} }
 function rangerAppBase(){ return (location.origin+location.pathname).replace(/[#?].*$/,''); }
+/* The base used in links we SEND to other people. Inside the native app the real
+   address is capacitor://localhost — meaningless to anybody else — so fall back
+   to the public web address that actually opens for a friend. */
+var RANGER_PUBLIC_BASE="https://corsodoglover.github.io/tellmehoney/";
+function rangerShareBase(){
+  var b=rangerAppBase();
+  if(/^https?:/i.test(b) && b.indexOf('localhost')<0) return b;
+  return RANGER_PUBLIC_BASE;
+}
 function rangerShareBook(id){
   var p=RANGER_PLANTS[id]; if(!p||p.edible===false) return;
-  var link=rangerAppBase()+'#plant='+rangerB64({t:'book',id:id});
+  var link=rangerShareBase()+'#plant='+rangerB64({t:'book',id:id});
   var uses=(p.uses||[]).map(function(u){return u[1];}).join(', ');
   var text='🌿 '+p.name+' — growing free in the yard!\n'+(p.sci?p.sci+'\n':'')+'\n'+p.intro+'\n'+(uses?'\nWays to use it: '+uses+'\n':'')+'\n✅ Real Food Ranger — verified edible (from Tell Me Honey)\n\nSee it in the app: '+link;
-  rangerDoShare(p.name, text);
+  rangerDoShare(p.name, text, rangerPhotoPath(p.img)||p.img);
 }
 function rangerShareMine(pid){
   var e=rangerYardFind(pid); if(!e) return;
-  var link=rangerAppBase()+'#plant='+rangerB64({t:'mine',n:e.name,no:e.note,se:e.season,nu:e.nutrients||{}});
+  var link=rangerShareBase()+'#plant='+rangerB64({t:'mine',n:e.name,no:e.note,se:e.season,nu:e.nutrients||{}});
   var nutList=Object.keys(e.nutrients||{});
   var text='🌱 '+e.name+' — I found this in my yard!\n'+(e.season?'In season: '+e.season+'\n':'')+(e.note?'\n'+e.note+'\n':'')+(nutList.length?'\nGood for: '+nutList.join(', ')+'\n':'')+'\n🌱 A neighbor\u2019s own backyard find — their own knowledge, not verified by the app.\n\nFound with Tell Me Honey: '+link;
-  rangerDoShare(e.name, text);
+  rangerDoShare(e.name, text, e.photo||'');
 }
-function rangerDoShare(title, text){
-  if(navigator.share){ navigator.share({title:title, text:text}).catch(function(){ rangerShareFallback(text); }); }
-  else { rangerShareFallback(text); }
+/* Share with a picture when we can — a plant share with no plant in it is a sad thing.
+   Falls back to text-only, then to clipboard. */
+function rangerDoShare(title, text, imgSrc){
+  if(!navigator.share){ rangerShareFallback(text); return; }
+  function textOnly(){ navigator.share({title:title, text:text}).catch(function(){ rangerShareFallback(text); }); }
+  if(!imgSrc){ textOnly(); return; }
+  var name=(title||'plant').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'plant';
+  // data: URLs (a photo they took) and file paths both work through fetch
+  fetch(imgSrc).then(function(r){ if(!r.ok) throw 0; return r.blob(); }).then(function(blob){
+    var ext=(blob.type&&blob.type.indexOf('png')>=0)?'png':'jpg';
+    var file=new File([blob], name+'.'+ext, {type: blob.type||'image/jpeg'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({ files:[file], title:title, text:text }).catch(function(){ textOnly(); });
+    } else { textOnly(); }
+  }).catch(function(){ textOnly(); });
 }
 function rangerShareFallback(text){ try{ navigator.clipboard.writeText(text); toast&&toast("Copied — paste it into a text or email 💚"); }catch(e){ try{ prompt("Copy this to share:", text); }catch(_){} } }
 function rangerCheckIncomingShare(){
