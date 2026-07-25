@@ -306,7 +306,74 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   font-size:13px;margin-top:12px;cursor:pointer;text-decoration:underline;}
 .goals-manage-list{display:flex;flex-direction:column;gap:9px;}
 /* ── MOOD TREND ── */
+.rimg-tap{cursor:pointer;-webkit-touch-callout:default;}
+#imgLightbox{position:fixed;inset:0;z-index:9999;background:rgba(8,8,10,.94);display:none;
+  flex-direction:column;align-items:center;justify-content:center;padding:18px;}
+#imgLightbox.on{display:flex;}
+#imgLightbox img{max-width:96%;max-height:66vh;border-radius:14px;object-fit:contain;
+  -webkit-touch-callout:default;user-select:auto;-webkit-user-select:auto;}
+#imgLightbox .ilb-name{color:#fff;font-size:15px;font-weight:600;margin:14px 0 2px;text-align:center;}
+#imgLightbox .ilb-sub{color:#9aa0b4;font-size:11.5px;font-style:italic;margin-bottom:16px;}
+#imgLightbox .ilb-row{display:flex;gap:10px;width:100%;max-width:340px;}
+#imgLightbox .ilb-btn{flex:1;min-height:50px;border-radius:14px;font-size:14.5px;font-weight:700;
+  background:linear-gradient(180deg,#e7c873,#caa44a);color:#1a1405;border:none;}
+#imgLightbox .ilb-btn.sec{background:rgba(255,255,255,.08);color:#e9e6df;border:1px solid rgba(255,255,255,.16);}
+#imgLightbox .ilb-hint{color:#7d8494;font-size:11px;margin-top:12px;text-align:center;line-height:1.5;}
+.ft-chips{display:flex;flex-wrap:wrap;gap:7px;}
+.ft-diets{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+.ft-diet{font-size:10px;font-weight:600;padding:3px 9px;border-radius:12px;
+  background:rgba(143,227,192,.16);color:#8fe3c0;white-space:nowrap;}
+.ft-nutri{display:flex;gap:6px;margin-top:10px;overflow-x:auto;padding-bottom:2px;}
+.ft-n{flex:0 0 auto;min-width:58px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:11px;padding:8px 6px;text-align:center;}
+.ft-na{font-size:14px;font-weight:700;color:var(--gold);line-height:1.1;}
+.ft-na small{font-size:9px;font-weight:600;margin-left:1px;}
+.ft-nl{font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:.2px;}
+.ft-chip{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-radius:999px;
+  padding:8px 14px;font-size:12.5px;color:var(--ink);min-height:38px;}
+.ft-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:9px;margin-bottom:8px;}
+.ft-row img{width:56px;height:56px;object-fit:cover;border-radius:10px;flex:0 0 auto;}
+.ft-noimg{width:56px;height:56px;border-radius:10px;background:rgba(231,200,115,.14);display:flex;
+  align-items:center;justify-content:center;font-size:22px;flex:0 0 auto;}
+.ft-mid{flex:1;min-width:0;}
+.ft-mid b{display:block;font-size:13.5px;line-height:1.3;font-weight:600;}
+.ft-mid a{font-size:11px;color:var(--gold);text-decoration:none;}
+.ft-save{flex:0 0 auto;width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.05);
+  border:1.5px solid rgba(255,255,255,.14);color:var(--muted);font-size:19px;font-weight:700;}
+.ft-save.on{background:rgba(231,200,115,.16);border-color:var(--gold);color:var(--gold);}
+.ft-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:15px;overflow:hidden;margin-bottom:11px;}
+.ft-card>img{width:100%;height:132px;object-fit:cover;display:block;}
 .mood-wrap{max-width:340px;margin:4px auto 0;}
+.yi-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.yi-name{flex:1;display:flex;align-items:center;gap:11px;text-align:left;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:11px 13px;min-height:52px;color:var(--ink);}
+.yi-name b{display:block;font-size:14.5px;font-weight:600;line-height:1.25;}
+.yi-name small{display:block;font-size:10.5px;color:var(--muted);font-style:italic;margin-top:1px;}
+.yi-leaf{font-size:21px;flex:0 0 auto;}
+.yi-box{flex:0 0 auto;width:44px;height:44px;border-radius:13px;background:rgba(255,255,255,.04);
+  border:1.5px solid rgba(255,255,255,.14);position:relative;transition:background .18s,border-color .18s;}
+.yi-box.on{background:rgba(231,200,115,.16);border-color:var(--gold);}
+.yi-box.on::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:var(--gold);font-size:19px;font-weight:700;}
+.mood-span{display:flex;gap:6px;justify-content:center;margin:2px 0 10px;}
+.ms-btn{background:var(--panel2);border:1.5px solid var(--line);border-radius:999px;
+  padding:5px 16px;font-size:12.5px;font-weight:700;color:var(--muted);min-height:32px;
+  letter-spacing:.3px;transition:border-color .18s,color .18s,background .18s;}
+.ms-btn.sel{border-color:var(--gold);background:#1c1808;color:var(--gold);}
+.mood-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;max-width:320px;margin:2px auto 0;}
+.mg-dow{font-size:9.5px;color:var(--muted);text-align:center;letter-spacing:.5px;font-weight:700;padding-bottom:2px;}
+.mg-cell{aspect-ratio:1;border-radius:9px;background:var(--panel2);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;}
+.mg-cell.empty{background:transparent;border-color:transparent;}
+.mg-cell.blank{opacity:.35;}
+.mood-year{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:330px;margin:2px auto 0;}
+.my-mo{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center;}
+.my-mo .mm-nm{font-size:9.5px;color:var(--muted);font-weight:700;letter-spacing:.6px;margin-bottom:3px;}
+.my-mo .mm-em{font-size:17px;line-height:1.1;}
+.my-mo .mm-ct{font-size:9.5px;color:var(--dim);margin-top:2px;}
+.my-mo.none .mm-em{opacity:.25;}
 .mood-wrap svg{width:100%;height:auto;display:block;}
 .mood-note{text-align:center;font-size:13.5px;color:var(--muted);margin:10px 6px 4px;line-height:1.45;}
 /* ── NOURISH ── */
@@ -1609,6 +1676,11 @@ textarea{resize:none;line-height:1.4;}
     <!-- MOOD: gentle pattern from check-ins (only shows once you've checked in) -->
     <div id="moodSection" style="display:none">
       <div class="goals-head">How you've been feeling</div>
+      <div class="mood-span" id="moodSpan">
+        <button class="ms-btn sel" onclick="setMoodSpan('week',this)">Week</button>
+        <button class="ms-btn" onclick="setMoodSpan('month',this)">Month</button>
+        <button class="ms-btn" onclick="setMoodSpan('year',this)">Year</button>
+      </div>
       <div class="mood-wrap" id="moodWrap"></div>
       <div class="mood-note" id="moodNote"></div>
     </div>
@@ -1654,6 +1726,7 @@ textarea{resize:none;line-height:1.4;}
       <button class="sl-tile" onclick="slGo('weather')"><span class="sl-ic">☀️</span><span class="sl-tx"><b>Weather</b><small>What's it like out</small></span></button>
       <button class="sl-tile" onclick="slGo('insights')"><span class="sl-ic">🍯</span><span class="sl-tx"><b>Honey Pot</b><small>Your streak &amp; insights</small></span></button>
       <button class="sl-tile" onclick="slGo('plants')"><span class="sl-ic">🌿</span><span class="sl-tx"><b>Real Food Ranger</b><small>Identify, forage &amp; cook</small></span></button>
+      <button class="sl-tile" onclick="slGo('food')"><span class="sl-ic">🍲</span><span class="sl-tx"><b>Food for Thought</b><small>Recipes, ideas &amp; keepers</small></span></button>
     </div>
     <button class="prof-row" style="margin-top:16px" onclick="openContentSwitches()">⚙️ What Honey shares — turn things on or off</button>
   </div>
@@ -1666,12 +1739,14 @@ textarea{resize:none;line-height:1.4;}
   <div class="insights-body scroll" style="padding:16px">
     <button class="home-big home-buzz" style="width:100%;margin-bottom:14px" onclick="openPlantCamera()">
       <span class="hb-ic">📷</span><span class="hb-tx"><b>Identify a plant</b><small>Snap it — sent to PlantNet, named by Ranger</small></span></button>
+    <button class="home-half" style="width:100%;margin:-6px 0 14px" onclick="openPlantLibrary()"><span class="hh-ic">🖼️</span><span class="hh-tx">Use a picture from my phone</span></button>
     <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px">While you're here</div>
     <div class="home-half-row">
       <button class="home-half" onclick="openInSeason()"><span class="hh-ic">📅</span><span class="hh-tx">In season now</span></button>
       <button class="home-half" onclick="openCookingList()"><span class="hh-ic">🧺</span><span class="hh-tx">Cooking list</span></button>
     </div>
     <button class="home-half" style="width:100%;margin-top:10px" onclick="openMyYard()"><span class="hh-ic">🌱</span><span class="hh-tx">Plants From My Yard</span></button>
+    <button class="home-half" style="width:100%;margin-top:10px" onclick="openYardIndex()"><span class="hh-ic">🌾</span><span class="hh-tx">What's growing in your yard?</span></button>
     <div id="plantHubResult" style="margin-top:16px"></div>
     <button class="prof-row" style="margin-top:16px" onclick="openRangerSettings()">⚙️ Where Real Food Ranger shows up</button>
     <p style="font-size:11px;color:var(--muted);margin:14px 2px 0;line-height:1.5">🌿 Never eat a wild plant based on this app alone — always confirm with a trusted local expert first.</p>
@@ -1702,6 +1777,35 @@ textarea{resize:none;line-height:1.4;}
   <div class="insights-body scroll" style="padding:16px">
     <p style="font-size:12px;color:var(--muted);margin:0 0 14px;line-height:1.5">Your own finds — your knowledge, your kitchen. These are yours alone, kept separate from my vetted book.</p>
     <div id="myYardList"></div>
+  </div>
+</section>
+
+<section class="screen" id="foodThought">
+  <div class="bar"><button class="back" onclick="goBack()">‹</button>
+    <h2>🍲 Food for Thought</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll" style="padding:16px">
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.5">Ideas worth cooking. Search something, or start from what's already growing at your place.</p>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <input id="ftSearch" placeholder="A food, or a dish…" style="flex:1;min-height:48px;padding:10px 13px;border-radius:13px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--ink);font-size:15px" onkeydown="if(event.key==='Enter')ftSearch()">
+      <button class="home-half" style="flex:0 0 auto;min-width:64px" onclick="ftSearch()">Find</button>
+    </div>
+    <div class="ft-chips" id="ftChips"></div>
+    <div id="ftResults" style="margin-top:14px"></div>
+    <div class="goals-head" style="margin-top:22px">📔 My recipe cards</div>
+    <div id="ftCards"></div>
+    <p style="font-size:11px;color:var(--muted);margin:16px 2px 0;line-height:1.5">🍲 Recipe ideas come from the web — yours to look over and decide on, same as always.</p>
+  </div>
+</section>
+
+<section class="screen" id="yardIndex">
+  <div class="bar"><button class="back" onclick="openPlantHub()">‹</button>
+    <h2>🌾 What's in your yard</h2><span style="width:40px"></span></div>
+  <div class="insights-body scroll" style="padding:16px">
+    <p style="font-size:13px;color:var(--muted);margin:0 0 4px;line-height:1.5">These grow in yards all over America. Tap a name to read about it — check the box if it's growing at your place.</p>
+    <p id="yiCount" style="font-size:12px;color:var(--gold);font-weight:600;margin:0 0 14px"></p>
+    <div id="yiList"></div>
+    <div id="yiCard" style="margin-top:16px"></div>
+    <p style="font-size:11px;color:var(--muted);margin:14px 2px 0;line-height:1.5">🌿 Never eat a wild plant based on this app alone — always confirm with a trusted local expert first.</p>
   </div>
 </section>
 
@@ -4303,7 +4407,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, rangerHave:[], foodCards:[], checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -4988,6 +5092,7 @@ function slGo(where){
     case 'puzzle':   openPuzzle(); break;
     case 'memory':   openMemory(); break;
     case 'plants':   openPlantHub(); break;
+    case 'food':     openFoodThought(); break;
     case 'weather':  homeWeather(); break;
     case 'insights': openInsights(); break;
   }
@@ -5728,6 +5833,20 @@ function loadDemoData(){
     HISTORY.days[todayKey(d)]={ lang:{growth:3,goal:2,curiosity:3,stress:1}, msgs:6+Math.floor(Math.random()*6), thriving:thr };
   }
   var _oldseq=[58,62,55,71,68,76,82]; // (kept for reference; replaced by span loop above)
+  // mood check-ins — ~8 months of them, mostly good with honest variety, so the
+  // Week / Month / Year feeling views all have a real story to show.
+  SETTINGS.checkins=[];
+  var notes=["Walked the yard this morning.","Sue called — good long talk.","Quiet day. Read a while.",
+             "Grandbabies came by.","Got the porch swept.","Slept good for once.","Church this morning.",
+             "Made soup. House smelled wonderful.","Long day, but it's done.","Found blackberries out back."];
+  for(var j=0;j<240;j++){
+    var dd=new Date(); dd.setDate(dd.getDate()-j);
+    if(j%7===3 || j%11===5) continue;                 // real people skip days
+    var lean=Math.random() + (240-j)/240*0.35;        // gently better over time
+    var mood = lean>1.05?0 : lean>0.78?1 : lean>0.45?2 : lean>0.2?3 : 4;
+    SETTINGS.checkins.push({ when: dd.getTime(), mood: mood,
+      note: (Math.random()<0.45 ? notes[Math.floor(Math.random()*notes.length)] : "") });
+  }
   // honey + streak
   SETTINGS.honey=1240; SETTINGS.honeyToday=86; SETTINGS.honeyDay=todayKey();
   SETTINGS.streakOn=true; SETTINGS.streakCount=5; SETTINGS.lastDay=todayKey();
@@ -6272,7 +6391,7 @@ var SETUP_LINES={
 
 /* ════ NAV ════ */
 var _navPrev=null, _navCur='welcome', _navOrigin=null;
-var _UTIL_SCREENS=['listsHub','shopping','calendar','jokes','learn','roster','prayers','honeyMoney','checkin','sweetLife','contentSwitches','vault','verses','loved','goalBuilder','goalsManage','journalChoice','journalBooks','dailyJournal','djEditor','plantHub','inSeason','cookingList','myYard','rangerSettings'];
+var _UTIL_SCREENS=['listsHub','shopping','calendar','jokes','learn','roster','prayers','honeyMoney','checkin','sweetLife','contentSwitches','vault','verses','loved','goalBuilder','goalsManage','journalChoice','journalBooks','dailyJournal','djEditor','plantHub','inSeason','cookingList','myYard','rangerSettings','yardIndex','foodThought'];
 function go(id){
   var el=document.getElementById(id);
   if(!el){ // safety: unknown screen — don't go black, fall back to a working screen
@@ -9055,6 +9174,28 @@ function renderNourish(){
   if(nn && !n.eaten.length) nn.textContent="Every nourishing choice fills your honey pot a little more. 🍯";
   else if(nn && n.eaten.length>=5) nn.textContent="Look at all that goodness today — you're really taking care of yourself. 🍯";
 }
+var _moodSpan='week';
+function setMoodSpan(s, btn){
+  _moodSpan=s;
+  try{
+    var wrap=document.getElementById('moodSpan');
+    if(wrap) Array.prototype.forEach.call(wrap.children,function(b){ b.classList.toggle('sel', b===btn); });
+  }catch(e){}
+  renderMoodTrend();
+}
+/* One check-in per day wins: the most recent entry for that date. */
+function moodByDay(){
+  var map={};
+  (SETTINGS.checkins||[]).forEach(function(c){
+    if(c.mood===null||c.mood===undefined) return;
+    var d=new Date(c.when);
+    var k=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+    if(!(k in map)) map[k]=c.mood;   // checkins are newest-first, so first seen = latest that day
+  });
+  return map;
+}
+function dayKeyOf(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+
 function renderMoodTrend(){
   var section=document.getElementById('moodSection');
   var wrap=document.getElementById('moodWrap'), note=document.getElementById('moodNote');
@@ -9062,6 +9203,14 @@ function renderMoodTrend(){
   var withMood=(SETTINGS.checkins||[]).filter(function(c){return c.mood!==null && c.mood!==undefined;});
   if(withMood.length<2){ section.style.display='none'; return; }  // need a couple to show a trend
   section.style.display='block';
+  if(_moodSpan==='month'){ renderMoodMonth(wrap,note); return; }
+  if(_moodSpan==='year'){ renderMoodYear(wrap,note); return; }
+  renderMoodWeek(wrap,note);
+}
+
+/* ── WEEK: the gold line, emoji riding on top (the original view) ── */
+function renderMoodWeek(wrap,note){
+  var withMood=(SETTINGS.checkins||[]).filter(function(c){return c.mood!==null && c.mood!==undefined;});
   var pts=withMood.slice(0,14).reverse();        // oldest→newest, max 14
   var n=pts.length;
   var W=340, H=120, padX=24, padY=18, plotW=W-padX*2, plotH=H-padY*2;
@@ -9069,13 +9218,10 @@ function renderMoodTrend(){
   function x(i){ return padX + (n===1?plotW/2:(plotW*i/(n-1))); }
   function y(s){ return padY + plotH*(1-(s-1)/4); } // s in 1..5
   var svg='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">';
-  // soft baseline
   svg+='<line x1="'+padX+'" y1="'+y(3)+'" x2="'+(W-padX)+'" y2="'+y(3)+'" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 4"/>';
-  // connecting line
   var path='';
   pts.forEach(function(c,i){ path+=(i?'L':'M')+x(i).toFixed(1)+' '+y(score(c.mood)).toFixed(1)+' '; });
   svg+='<path d="'+path+'" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>';
-  // mood dots with emoji
   pts.forEach(function(c,i){
     var cx=x(i), cy=y(score(c.mood));
     svg+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="4.5" fill="var(--gold)"/>';
@@ -9083,18 +9229,74 @@ function renderMoodTrend(){
   });
   svg+='</svg>';
   wrap.innerHTML=svg;
-  // gentle, supportive noticing (never diagnostic)
   if(note){
-    var avg=pts.reduce(function(a,c){return a+score(c.mood);},0)/n;
-    var recent=score(pts[n-1].mood), older=score(pts[0].mood);
+    var n2=pts.length;
+    var sc=function(m){return 5-m;};
+    var avg=pts.reduce(function(a,c){return a+sc(c.mood);},0)/n2;
+    var recent=sc(pts[n2-1].mood), older=sc(pts[0].mood);
     var msg;
     if(recent>older+0.5) msg="Things seem to be looking up lately — I'm glad to see it. 🍯";
-    else if(recent<older-0.5) msg="Looks like a heavier stretch lately. Be gentle with yourself, and lean on someone you trust if you need to.";
+    else if(recent<older-0.5) msg="Be gentle with yourself this stretch, and lean on someone you trust if you need to.";
     else if(avg>=4) msg="You've been feeling pretty good overall. Whatever you're doing, it's working.";
-    else if(avg<=2) msg="It's been a tender stretch. Showing up to check in at all takes something — I see you.";
+    else if(avg<=2) msg="Showing up to check in at all takes something — I see you.";
     else msg="A mix of days, like life tends to be. Thank you for keeping track with me.";
     note.textContent=msg;
   }
+}
+
+/* ── MONTH: a calendar of emoji — the whole month at a glance ── */
+function renderMoodMonth(wrap,note){
+  var map=moodByDay();
+  var now=new Date();
+  var yr=now.getFullYear(), mo=now.getMonth();
+  var first=new Date(yr,mo,1), startDow=first.getDay();
+  var days=new Date(yr,mo+1,0).getDate();
+  var dows=['S','M','T','W','T','F','S'];
+  var html='<div class="mood-grid">';
+  dows.forEach(function(d){ html+='<div class="mg-dow">'+d+'</div>'; });
+  for(var i=0;i<startDow;i++) html+='<div class="mg-cell empty"></div>';
+  var count=0;
+  for(var d=1; d<=days; d++){
+    var k=yr+'-'+(mo+1)+'-'+d;
+    if(k in map){ count++; html+='<div class="mg-cell">'+CI_MOODS[map[k]].e+'</div>'; }
+    else html+='<div class="mg-cell blank"></div>';
+  }
+  html+='</div>';
+  wrap.innerHTML=html;
+  if(note){
+    var monthName=first.toLocaleDateString([], {month:'long'});
+    note.textContent = count
+      ? ("You checked in "+count+(count===1?" day":" days")+" in "+monthName+". Every one of them counts. 🍯")
+      : ("A fresh page for "+monthName+" — check in whenever you like.");
+  }
+}
+
+/* ── YEAR: twelve blocks, each month's most-common feeling ── */
+function renderMoodYear(wrap,note){
+  var map=moodByDay();
+  var yr=new Date().getFullYear();
+  var names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var buckets=[]; for(var i=0;i<12;i++) buckets.push([]);
+  Object.keys(map).forEach(function(k){
+    var p=k.split('-');
+    if(parseInt(p[0],10)!==yr) return;
+    buckets[parseInt(p[1],10)-1].push(map[k]);
+  });
+  var html='<div class="mood-year">', total=0;
+  for(var m=0;m<12;m++){
+    var b=buckets[m]; total+=b.length;
+    if(!b.length){ html+='<div class="my-mo none"><div class="mm-nm">'+names[m]+'</div><div class="mm-em">·</div><div class="mm-ct">&nbsp;</div></div>'; continue; }
+    var tally={}; b.forEach(function(v){ tally[v]=(tally[v]||0)+1; });
+    var best=null, bestN=-1;
+    Object.keys(tally).forEach(function(v){ if(tally[v]>bestN){ bestN=tally[v]; best=parseInt(v,10); } });
+    html+='<div class="my-mo"><div class="mm-nm">'+names[m]+'</div><div class="mm-em">'+CI_MOODS[best].e+
+          '</div><div class="mm-ct">'+b.length+'</div></div>';
+  }
+  html+='</div>';
+  wrap.innerHTML=html;
+  if(note) note.textContent = total
+    ? ("A year in the making — "+total+" check-in"+(total===1?"":"s")+" so far in "+yr+". 🍯")
+    : (yr+" is just getting started.");
 }
 function celebrateGoalMaybe(g, st){
   var c=st.count;
@@ -15471,6 +15673,12 @@ function openPlantCamera(){
   var inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.capture='environment';
   inp.onchange=function(){ rangerIdentify(inp.files&&inp.files[0]); }; inp.click();
 }
+/* Pick a plant picture already saved on the phone — no 'capture' attribute, so iOS
+   opens the Photos library instead of the camera. */
+function openPlantLibrary(){
+  var inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+  inp.onchange=function(){ rangerIdentify(inp.files&&inp.files[0]); }; inp.click();
+}
 /* PlantNet identify — routes through the SECURE PROXY (same pattern as premium-voice / ai-media).
    The publishable key rides in the apikey header; the real PlantNet key lives server-side. */
 var PLANT_ID_URL="https://gphzfuhruwlwvitktqjg.supabase.co/functions/v1/plant-id";
@@ -15523,11 +15731,12 @@ function rangerMatchBookPlant(top){
 function rangerPhotoPath(imgPath){ if(!imgPath) return ''; return imgPath.replace(/(\.[a-z]+)$/i, '-photo$1'); }
 function rangerImageStrip(p, badges){
   var draw=p.img||''; var photo=rangerPhotoPath(draw); var leaf=p.leaf||'🌿';
+  var nm=(p.name||'').replace(/'/g,"\\'");
   var drawHalf = draw
-    ? '<div style="flex:1;height:150px;background:#f4f1e8;display:flex;align-items:center;justify-content:center;position:relative;border-right:1px solid rgba(0,0,0,.08)"><img src="'+draw+'" alt="'+p.name+' drawing" style="max-height:138px;max-width:94%;object-fit:contain" onerror="this.parentNode.style.background=\'linear-gradient(135deg,#1d3a2a,#11231a)\';this.outerHTML=\'<div style=&quot;font-size:40px&quot;>'+leaf+'</div>\'"><div style="position:absolute;bottom:6px;left:8px;font-size:9px;color:#9a8f70;font-style:italic">drawing</div></div>'
+    ? '<div class="rimg-tap" onclick="openPlantImage(\''+draw+'\',\''+nm+'\',\'botanical drawing\')" style="flex:1;height:150px;background:#f4f1e8;display:flex;align-items:center;justify-content:center;position:relative;border-right:1px solid rgba(0,0,0,.08)"><img src="'+draw+'" alt="'+p.name+' drawing" style="max-height:138px;max-width:94%;object-fit:contain" onerror="this.parentNode.style.background=\'linear-gradient(135deg,#1d3a2a,#11231a)\';this.outerHTML=\'<div style=&quot;font-size:40px&quot;>'+leaf+'</div>\'"><div style="position:absolute;bottom:6px;left:8px;font-size:9px;color:#9a8f70;font-style:italic">drawing</div></div>'
     : '<div style="flex:1;height:150px;background:linear-gradient(135deg,#1d3a2a,#11231a);display:flex;align-items:center;justify-content:center"><div style="font-size:40px">'+leaf+'</div></div>';
   var photoHalf = draw
-    ? '<div style="flex:1;height:150px;background:#eef2ee;display:flex;align-items:center;justify-content:center;position:relative"><img src="'+photo+'" alt="'+p.name+' photo" style="width:100%;height:150px;object-fit:cover" onerror="this.style.display=\'none\';this.parentNode.querySelector(\'.rphoto-soon\').style.display=\'flex\'"><div class="rphoto-soon" style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#243024,#18201a);flex-direction:column;align-items:center;justify-content:center;color:#7d8a80"><div style="font-size:26px">📷</div><div style="font-size:10px;margin-top:4px">photo coming</div></div><div style="position:absolute;bottom:6px;left:8px;font-size:9px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)">photo</div></div>'
+    ? '<div class="rimg-tap" onclick="openPlantImage(\''+photo+'\',\''+nm+'\',\'photo\')" style="flex:1;height:150px;background:#eef2ee;display:flex;align-items:center;justify-content:center;position:relative"><img src="'+photo+'" alt="'+p.name+' photo" style="width:100%;height:150px;object-fit:cover" onerror="this.style.display=\'none\';this.parentNode.querySelector(\'.rphoto-soon\').style.display=\'flex\';this.parentNode.onclick=null;this.parentNode.classList.remove(\'rimg-tap\')"><div class="rphoto-soon" style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#243024,#18201a);flex-direction:column;align-items:center;justify-content:center;color:#7d8a80"><div style="font-size:26px">📷</div><div style="font-size:10px;margin-top:4px">photo coming</div></div><div style="position:absolute;bottom:6px;left:8px;font-size:9px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)">photo</div></div>'
     : '';
   return '<div style="display:flex;position:relative">'+drawHalf+photoHalf+(badges||'')+'</div>';
 }
@@ -15691,7 +15900,47 @@ function rangerRecipeSearch(name, cb){
       return {
         title: r.title || r.name || 'Recipe',
         image: r.image || r.thumbnail || '',
-        url: r.sourceUrl || r.url || r.spoonacularSourceUrl || (r.id?('https://spoonacular.com/recipes/-'+r.id):'')
+        url: r.sourceUrl || r.url || r.spoonacularSourceUrl || (r.id?('https://spoonacular.com/recipes/-'+r.id):''),
+        // Diet flags — Spoonacular sends these when the proxy asks for recipe information.
+        diets: (function(){
+          var d=[];
+          if(r.vegan) d.push(['🌱','Vegan']);
+          if(r.vegetarian && !r.vegan) d.push(['🥗','Vegetarian']);
+          if(r.glutenFree) d.push(['🌾','Gluten free']);
+          if(r.dairyFree) d.push(['🥛','Dairy free']);
+          if(r.ketogenic || r.veryLowCarb) d.push(['🥑','Low carb']);
+          if(r.whole30) d.push(['🍖','Paleo-friendly']);
+          // some responses carry a plain diets array instead of booleans
+          var arr=r.diets||[];
+          if(Array.isArray(arr)){
+            arr.forEach(function(x){
+              x=(x||'').toString().toLowerCase();
+              if(x.indexOf('ketogenic')>=0 && !r.ketogenic) d.push(['🥑','Low carb']);
+              if(x.indexOf('paleo')>=0 && !r.whole30) d.push(['🍖','Paleo-friendly']);
+            });
+          }
+          var seen={}; return d.filter(function(x){ if(seen[x[1]])return false; seen[x[1]]=1; return true; });
+        })(),
+        // Nutrition — present when the proxy asks for it
+        nutri: (function(){
+          var n = (r.nutrition && r.nutrition.nutrients) || [];
+          if(!Array.isArray(n) || !n.length) return [];
+          var want={'Calories':'cal','Carbohydrates':'carbs','Fiber':'fiber','Protein':'protein','Sugar':'sugar','Fat':'fat'};
+          var out=[];
+          n.forEach(function(x){
+            var k=want[x.name]; if(!k) return;
+            out.push({ k:k, label:x.name, amt:Math.round(x.amount||0), unit:x.unit||'g' });
+          });
+          var order=['cal','carbs','fiber','protein','sugar','fat'];
+          return out.sort(function(a,b){ return order.indexOf(a.k)-order.indexOf(b.k); });
+        })(),
+        // ingredients only exist if the proxy asks Spoonacular for them; harmless when absent
+        ingredients: (function(){
+          var src = r.extendedIngredients || r.missedIngredients || r.usedIngredients || r.ingredients || [];
+          if(!Array.isArray(src)) return [];
+          return src.map(function(x){ return (typeof x==='string') ? x : (x.original || x.name || x.originalName || ''); })
+                    .filter(Boolean).slice(0,25);
+        })()
       };
     });
     cb(out);
@@ -15819,6 +16068,279 @@ function rangerSaveIncoming(enc){
   openMyYardPlant(entry.id);
 }
 
+/* ── Tap any plant picture to open it big, then share or save it ── */
+var _ilbSrc="", _ilbName="";
+function openPlantImage(src, name, sub){
+  _ilbSrc=src; _ilbName=name||"Plant";
+  var el=document.getElementById('imgLightbox'); if(!el)return;
+  document.getElementById('ilbImg').src=src;
+  document.getElementById('ilbName').textContent=name||"";
+  document.getElementById('ilbSub').textContent=sub||"";
+  el.classList.add('on');
+}
+function closePlantImage(){ var el=document.getElementById('imgLightbox'); if(el) el.classList.remove('on'); }
+function sharePlantImage(){
+  if(!_ilbSrc) return;
+  var nm=(_ilbName||'plant').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'plant';
+  fetch(_ilbSrc).then(function(r){ return r.blob(); }).then(function(blob){
+    var file=new File([blob], nm+'.jpg', {type: blob.type||'image/jpeg'});
+    if(navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
+      navigator.share({ files:[file], title:_ilbName, text:_ilbName+' — from Tell Me Honey 🌿' })
+        .catch(function(){});
+    } else if(navigator.share){
+      navigator.share({ title:_ilbName, text:_ilbName+' — from Tell Me Honey 🌿' }).catch(function(){});
+    } else {
+      toast("Press and hold the picture to save it. 🌿");
+    }
+  }).catch(function(){ toast("Press and hold the picture to save it. 🌿"); });
+}
+
+/* ══════════ FOOD FOR THOUGHT — recipes, ideas & keepers ══════════
+   Uses the same Spoonacular proxy Ranger uses (key stays server-side).
+   If the proxy returns ingredients, we use them; if not, we skip gracefully. */
+function ftCardsArr(){ if(!Array.isArray(SETTINGS.foodCards)) SETTINGS.foodCards=[]; return SETTINGS.foodCards; }
+function ftSaved(url){ return ftCardsArr().some(function(c){ return c.url===url; }); }
+
+function openFoodThought(){
+  go('foodThought');
+  ftRenderChips(); ftRenderCards();
+  var r=document.getElementById('ftResults'); if(r) r.innerHTML='';
+}
+function ftRenderChips(){
+  var box=document.getElementById('ftChips'); if(!box)return;
+  var chips=[];
+  // from what's growing at their place (the yard index) — the collaboration Sally wanted
+  try{
+    var have=(SETTINGS.rangerHave||[]).map(function(id){ return BACKYARD[id] && BACKYARD[id].name.split(' —')[0]; }).filter(Boolean);
+    have.slice(0,4).forEach(function(n){ chips.push(['🌿',n]); });
+  }catch(e){}
+  // from tonight's cooking list
+  try{
+    (SETTINGS.rangerCook||[]).slice(0,3).forEach(function(id){
+      var p=RANGER_PLANTS[id]; if(p) chips.push(['🧺',p.name.split(' &')[0]]);
+    });
+  }catch(e){}
+  if(!chips.length) chips=[['🥬','Greens'],['🍲','Soup'],['🥗','Fresh salad'],['🫘','Beans']];
+  box.innerHTML=chips.map(function(c){
+    return '<button class="ft-chip" onclick="ftSearch(\''+c[1].replace(/'/g,"\\'")+'\')">'+c[0]+' '+c[1]+'</button>';
+  }).join('');
+}
+function ftSearch(term){
+  var inp=document.getElementById('ftSearch');
+  var q=(term||(inp&&inp.value)||'').trim();
+  if(!q){ toast("Type a food or tap one below. 🍲"); return; }
+  if(inp && term) inp.value=q;
+  var box=document.getElementById('ftResults');
+  box.innerHTML='<p style="font-size:13px;color:var(--muted);text-align:center;padding:18px">Looking for ideas…</p>';
+  rangerRecipeSearch(q, function(list){
+    if(!list||!list.length){
+      box.innerHTML='<div style="background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.28);border-radius:12px;padding:13px;font-size:12.5px;color:var(--gold);line-height:1.5">🍲 Nothing came back for that one just now — try another word, or come back in a bit.</div>';
+      return;
+    }
+    box.innerHTML='<div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.4px;margin:0 0 8px;text-transform:uppercase">Ideas for '+esc(q)+'</div>'+
+      list.map(function(r){ return ftResultHTML(r); }).join('');
+  });
+}
+function ftResultHTML(r){
+  var saved=ftSaved(r.url);
+  var d=encodeURIComponent(JSON.stringify({t:r.title,i:r.image,u:r.url,g:r.ingredients||[],d:r.diets||[],n:r.nutri||[]}));
+  return '<div class="ft-row">'+
+    (r.image?'<img src="'+r.image+'" alt="">':'<div class="ft-noimg">🍽️</div>')+
+    '<div class="ft-mid"><b>'+esc(r.title)+'</b>'+
+      ((r.diets&&r.diets.length)?'<div class="ft-diets">'+r.diets.map(function(d){return '<span class="ft-diet">'+d[0]+' '+d[1]+'</span>';}).join('')+'</div>':'')+
+      (r.url?'<a href="'+r.url+'" target="_blank" rel="noopener">open the recipe ↗</a>':'')+'</div>'+
+    '<button class="ft-save'+(saved?' on':'')+'" onclick="ftSaveCard(\''+d+'\',this)" aria-label="Keep this">'+(saved?'✓':'＋')+'</button>'+
+  '</div>';
+}
+function ftSaveCard(payload, el){
+  var o; try{ o=JSON.parse(decodeURIComponent(payload)); }catch(e){ return; }
+  var arr=ftCardsArr();
+  var i=arr.findIndex(function(c){ return c.url===o.u; });
+  if(i>=0){ arr.splice(i,1); if(el){ el.classList.remove('on'); el.textContent='＋'; } toast("Taken off your cards."); }
+  else {
+    arr.unshift({ title:o.t, image:o.i, url:o.u, ingredients:o.g||[], diets:o.d||[], nutri:o.n||[], note:"", made:Date.now() });
+    if(el){ el.classList.add('on'); el.textContent='✓'; }
+    toast("🍲 Kept on your recipe cards.");
+  }
+  SETTINGS.foodCards=arr; saveSettings(); ftRenderCards();
+}
+function ftRenderCards(){
+  var box=document.getElementById('ftCards'); if(!box)return;
+  var arr=ftCardsArr();
+  if(!arr.length){
+    box.innerHTML='<p style="font-size:12.5px;color:var(--muted);line-height:1.5;margin:2px 0 0">Nothing kept yet. Tap ＋ on any idea and it lands here — yours to come back to.</p>';
+    return;
+  }
+  box.innerHTML=arr.map(function(c,i){
+    var ing=(c.ingredients&&c.ingredients.length)
+      ? '<button class="home-half" style="width:100%;margin-top:9px" onclick="ftIngredientsToList('+i+')">🛒 Add '+c.ingredients.length+' ingredients to my list</button>'
+      : '';
+    var diets=(c.diets&&c.diets.length)
+      ? '<div class="ft-diets" style="margin-top:8px">'+c.diets.map(function(d){return '<span class="ft-diet">'+d[0]+' '+d[1]+'</span>';}).join('')+'</div>'
+      : '';
+    var nut=(c.nutri&&c.nutri.length)
+      ? '<div class="ft-nutri">'+c.nutri.map(function(n){
+          return '<div class="ft-n"><div class="ft-na">'+n.amt+'<small>'+(n.k==='cal'?'':n.unit)+'</small></div><div class="ft-nl">'+esc(n.label)+'</div></div>';
+        }).join('')+'</div>'
+      : '';
+    return '<div class="ft-card">'+
+      (c.image?'<img src="'+c.image+'" alt="">':'')+
+      '<div style="padding:12px">'+
+        '<b style="font-size:14.5px;display:block;line-height:1.3">'+esc(c.title)+'</b>'+
+        (c.url?'<a href="'+c.url+'" target="_blank" rel="noopener" style="font-size:11.5px;color:var(--gold);text-decoration:none">open the recipe ↗</a>':'')+
+        diets + nut +
+        '<textarea placeholder="Your notes — what you changed, who liked it…" onchange="ftNote('+i+',this.value)" style="width:100%;margin-top:9px;min-height:52px;padding:9px 11px;border-radius:11px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);color:var(--ink);font-size:12.5px;line-height:1.45">'+esc(c.note||'')+'</textarea>'+
+        ing+
+        '<button class="home-half" style="width:100%;margin-top:7px;color:var(--muted)" onclick="ftRemoveCard('+i+')">Remove this card</button>'+
+      '</div></div>';
+  }).join('');
+}
+function ftNote(i,v){ var a=ftCardsArr(); if(a[i]){ a[i].note=v; SETTINGS.foodCards=a; saveSettings(); } }
+function ftRemoveCard(i){
+  var a=ftCardsArr(); if(!a[i])return;
+  if(!confirm('Remove "'+a[i].title+'" from your cards?')) return;
+  a.splice(i,1); SETTINGS.foodCards=a; saveSettings(); ftRenderCards();
+}
+function ftIngredientsToList(i){
+  var a=ftCardsArr(), c=a[i]; if(!c||!c.ingredients||!c.ingredients.length)return;
+  var l=getList("shopping"); if(!l)return;
+  var added=0;
+  c.ingredients.forEach(function(nm){
+    nm=(nm||'').toString().trim(); if(!nm)return;
+    if(!l.items.some(function(x){ return x.item.toLowerCase()===nm.toLowerCase(); })){
+      var it={item:nm,made:Date.now(),done:false};
+      try{ it.section=grocerySectionFor(nm)||"Other"; }catch(e){ it.section="Other"; }
+      l.items.push(it); added++;
+    }
+  });
+  saveSettings();
+  toast(added? ("🛒 "+added+" added to your shopping list.") : "Already on your list. 🍯");
+}
+
+/* ══════════ THE BACKYARD 50 — common across America ══════════
+   Cousins share a card, same as the book. Grows as cards get written. */
+var BACKYARD={
+  b1:{name:"Dandelion",sci:"Taraxacum officinale · Asteraceae",leaf:"🌼",img:"images/plants/dandelion.jpg",
+    season:"Fall–spring (leaves)",fresh:"A few days",
+    nutrients:["Vit A","Vit C","Vit K","Calcium","Iron","Fiber","Antioxidants"],
+    uses:[["🥗","Salad"],["🍳","Sautéed"],["🥞","Fritters"],["☕","Root coffee"]],
+    safety:"Pick from a yard nobody sprays — the dandelion's honest, but the chemicals aren't.",
+    wow:"Every single part is edible — root, leaf, stem, and flower. Settlers brought it here on purpose, as a garden vegetable.",
+    spot:"A sunny yellow flower on a hollow stem, one bloom per stem, rising from a rosette of jagged leaves. The name means \u201clion's tooth\u201d — that's the leaf edge.",
+    eat:"Young leaves before it flowers, when they're least bitter. Flowers make fritters and jelly. Roots roast into a coffee-like drink."},
+  b2:{name:"Plantain — Broadleaf & Narrowleaf",sci:"Plantago major & lanceolata · Plantaginaceae",leaf:"🌿",img:"images/plants/plantain.jpg",
+    season:"Spring through fall",fresh:"A few days",
+    nutrients:["Vit A","Vit C","Vit K","Calcium","Fiber"],
+    uses:[["🥗","Salad"],["🍳","Cooked greens"],["🍄","Buds sautéed"]],
+    safety:"This is the famous \u201cbee sting leaf\u201d — chew a leaf and press it on a sting or bite. Grandma knew. Both plantains are gentle and hard to confuse with anything harmful.",
+    wow:"Native peoples called it \u201cwhite man's footprint\u201d — it followed settlers so faithfully it sprouted wherever they walked. And the narrow-leaved cousin's flower buds taste like mushrooms in butter.",
+    spot:"Broadleaf: a ground rosette of wide oval leaves with parallel veins that pull like celery strings. Narrowleaf: long ribbed lance leaves and a short dark flower head like a tiny torch.",
+    eat:"Young leaves raw or cooked like spinach — older ones get stringy, so cook those. Narrowleaf buds sauté like mushrooms."},
+  b3:{name:"Chickweed",sci:"Stellaria media · Caryophyllaceae",leaf:"⭐",img:"images/plants/chickweed.jpg",
+    season:"Cool weather — fall through spring",fresh:"Same day",
+    nutrients:["Vit C","Vit A","Calcium","Iron","Antioxidants"],
+    uses:[["🥗","Salad"],["🥪","Sandwiches"],["🍲","Wilted in soup"]],
+    safety:"Check for that one-sided hair line. If the stem's hairy all over or oozes milky sap, it's not our chickweed — walk on by.",
+    wow:"There's a single line of hairs running up one side of the stem — switching sides at each leaf pair, like a tiny mohawk changing lanes. No lookalike has it.",
+    spot:"A soft sprawling mat of small oval leaves with tiny white star flowers — five petals split so deep they look like ten.",
+    eat:"The whole tender top — stems, leaves, flowers — raw. Tastes like sweet corn silk."},
+  b4:{name:"Clover — White & Red",sci:"Trifolium repens & pratense · Fabaceae",leaf:"🍀",img:"images/plants/white-clover.jpg",
+    season:"Late spring through summer",fresh:"Same day",
+    nutrients:["Vit C","B Vits","Fiber","Antioxidants"],
+    uses:[["🍵","Tea"],["🥗","Salad"],["🌸","Fresh blossoms"]],
+    safety:"Eat blossoms fresh and bright — brown, wilted clover isn't for the table. A few is plenty; clover is a \u201clittle bit often\u201d plant.",
+    wow:"The flowers are little honey factories — in hard times folks stretched flour with dried clover blossoms, and red clover was so beloved Vermont made it the state flower.",
+    spot:"Three leaflets with a pale V watermark. White clover hugs the ground with white pom-poms; red clover stands taller with rosy-pink ones.",
+    eat:"The blossoms — pull the tiny petals and scatter them over salads, or dry the heads for a sweet tea."},
+  b5:{name:"Purslane",sci:"Portulaca oleracea · Portulacaceae",leaf:"🌱",img:"images/plants/purslane.jpg",
+    season:"Hot summer months",fresh:"A few days — it keeps well",
+    nutrients:["Omega-3","Vit A","Vit C","Vit E","Calcium","Iron","Antioxidants"],
+    uses:[["🥗","Salad"],["🍳","Sautéed"],["🥔","Potato salad"],["🌮","Verdolagas"]],
+    safety:"Its lookalike, spurge, is flat and milky — snap a stem. Milky sap means put it down; clear juice means supper.",
+    wow:"This sidewalk-crack \u201cweed\u201d has more omega-3s than any other leafy green ever tested. Gardeners pull it and buy fish oil — the joke writes itself.",
+    spot:"A ground-hugging succulent with reddish stems and fat, smooth, paddle-shaped leaves — like a tiny jade plant. Loves heat and bare dirt.",
+    eat:"Stems and leaves raw — crunchy, lemony, a little salty. Mexicans cook it as verdolagas with pork."},
+  b6:{name:"Wood Sorrel",sci:"Oxalis stricta · Oxalidaceae",leaf:"💛",img:"images/plants/wood-sorrel.jpg",
+    season:"Spring through fall",fresh:"Same day",
+    nutrients:["Vit C","Vit A","Antioxidants"],
+    uses:[["🥗","Garnish"],["🍋","Wild lemonade"],["🐟","With fish"]],
+    safety:"That sour comes from oxalic acid — same as spinach. A garnish and a nibble, not a bowlful, especially if kidneys are a concern.",
+    wow:"Kids in every generation discover this one on their own and name it \u201csour grass.\u201d That lemony zing is real vitamin C — sailors' kin used it against scurvy.",
+    spot:"Looks like clover but isn't — the leaflets are perfect hearts folded down the middle, flowers are yellow with five petals, and the seed pods look like tiny okra.",
+    eat:"Leaves, flowers, and those little pods — a sour sparkle on salads and fish, or steeped into \u201clemonade.\u201d"},
+  b7:{name:"Henbit Deadnettle",sci:"Lamium amplexicaule & purpureum · Lamiaceae",leaf:"💜",img:"images/plants/henbit-deadnettle.jpg",
+    season:"Early spring",fresh:"Same day",
+    nutrients:["Vit C","Iron","Fiber","Antioxidants"],
+    uses:[["🥗","Salad"],["🥤","Smoothies"],["🌿","Pesto"]],
+    safety:"Square stem, no strong smell, purple tops — and here's the comfort: these two grow tangled together and both are friendly. One mix-up that costs you nothing.",
+    wow:"Those purple carpets across fields every early spring? Free salad greens, blooming before the mowers wake up. And \u201cdead\u201d nettle just means it can't sting — nettle's costume, none of the bite.",
+    spot:"Mint cousins with square stems and small purple trumpet flowers. Henbit's round scalloped leaves hug the stem like collars; deadnettle's are triangular, stacked like a pagoda, blushing purple on top.",
+    eat:"Leaves, stems, and flowers of either — raw, blended into pesto, or cooked. Henbit's like celery with a whisper of mint."}
+};
+function yardHave(){ if(!Array.isArray(SETTINGS.rangerHave)) SETTINGS.rangerHave=[]; return SETTINGS.rangerHave; }
+function yardHas(id){ return yardHave().indexOf(id)>=0; }
+function yardToggle(id, el){
+  var a=yardHave(), i=a.indexOf(id);
+  if(i>=0) a.splice(i,1); else a.push(id);
+  SETTINGS.rangerHave=a; saveSettings();
+  if(el) el.classList.toggle('on', i<0);
+  renderYardCount();
+}
+function renderYardCount(){
+  var el=document.getElementById('yiCount'); if(!el)return;
+  var n=yardHave().length;
+  el.textContent = n ? ("🌿 "+n+" growing at your place") : "";
+}
+function openYardIndex(){
+  go('yardIndex');
+  var box=document.getElementById('yiList'); if(!box)return;
+  document.getElementById('yiCard').innerHTML='';
+  var keys=Object.keys(BACKYARD).sort(function(a,b){
+    return BACKYARD[a].name.localeCompare(BACKYARD[b].name);
+  });
+  box.innerHTML=keys.map(function(id){
+    var p=BACKYARD[id], on=yardHas(id);
+    return '<div class="yi-row">'+
+      '<button class="yi-name" onclick="yardShow(\''+id+'\')"><span class="yi-leaf">'+p.leaf+'</span>'+
+        '<span><b>'+p.name+'</b><small>'+p.sci.split(' · ')[0]+'</small></span></button>'+
+      '<button class="yi-box'+(on?' on':'')+'" onclick="yardToggle(\''+id+'\',this)" aria-label="I have this"></button>'+
+    '</div>';
+  }).join('');
+  renderYardCount();
+}
+function yardShow(id){
+  var p=BACKYARD[id]; if(!p)return;
+  var card=document.getElementById('yiCard'); if(!card)return;
+  var bubbles=RANGER_ALL_NUTRIENTS.map(function(n){var on=p.nutrients.indexOf(n)>=0;return '<span style="font-size:10px;font-weight:600;padding:4px 9px;border-radius:14px;'+(on?'background:rgba(143,227,192,.16);color:#8fe3c0':'background:rgba(255,255,255,.05);color:#646a80')+'">'+n+'</span>';}).join(' ');
+  var uses=p.uses.map(function(u){return '<div style="flex:0 0 auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:8px 10px;text-align:center;min-width:56px"><div style="font-size:17px">'+u[0]+'</div><div style="font-size:10px;margin-top:3px">'+u[1]+'</div></div>';}).join('');
+  var have=yardHas(id);
+  card.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden">'+
+    rangerImageStrip(p, '')+
+    '<div style="padding:14px">'+
+      '<p style="font-size:18px;font-weight:600;margin:0">'+p.name+'</p>'+
+      '<p style="font-size:11px;color:var(--muted);font-style:italic;margin:2px 0 0">'+p.sci+'</p>'+
+      '<div style="display:flex;gap:7px;margin:12px 0">'+
+        '<div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:9px 6px;text-align:center"><div style="font-size:15px">🌿</div><div style="font-size:9px;color:#7d8a86;margin-top:2px">In season</div><div style="font-size:11.5px;color:var(--ink);font-weight:600">'+p.season+'</div></div>'+
+        '<div style="flex:1;background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.28);border-radius:12px;padding:9px 6px;text-align:center"><div style="color:var(--gold);font-size:15px">⏳</div><div style="font-size:9px;color:#bfae7a;margin-top:2px">Eat within</div><div style="font-size:11.5px;color:var(--ink);font-weight:600">'+p.fresh+'</div></div></div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:5px;margin:11px 0">'+bubbles+'</div>'+
+      '<div style="background:rgba(231,200,115,.07);border-radius:11px;padding:11px 12px;margin:11px 0;font-size:12.5px;line-height:1.55">✨ '+p.wow+'</div>'+
+      '<div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.4px;margin:12px 0 5px;text-transform:uppercase">How to spot it</div>'+
+      '<p style="margin:0;font-size:12.5px;line-height:1.55">'+p.spot+'</p>'+
+      '<div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.4px;margin:12px 0 6px;text-transform:uppercase">Ways to use it</div>'+
+      '<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:2px">'+uses+'</div>'+
+      '<p style="margin:10px 0 0;font-size:12.5px;line-height:1.55">'+p.eat+'</p>'+
+      '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:9px 11px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11px;color:#ffcf6b;line-height:1.45">'+p.safety+'</p></div>'+
+      '<button onclick="yardToggle(\''+id+'\');yardShow(\''+id+'\');openYardIndexRefresh()" style="width:100%;background:'+(have?'rgba(255,255,255,.06)':'linear-gradient(180deg,#e7c873,#caa44a)')+';color:'+(have?'var(--muted)':'#1a1405')+';border:'+(have?'1px solid rgba(255,255,255,.12)':'none')+';border-radius:13px;padding:13px;font-size:14.5px;font-weight:700;cursor:pointer">'+(have?'✓ Growing at my place':'＋ This grows at my place')+'</button>'+
+    '</div></div>';
+  card.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function openYardIndexRefresh(){
+  var box=document.getElementById('yiList'); if(!box)return;
+  Array.prototype.forEach.call(box.querySelectorAll('.yi-box'),function(b,i){
+    var id=Object.keys(BACKYARD).sort(function(x,y){return BACKYARD[x].name.localeCompare(BACKYARD[y].name);})[i];
+    b.classList.toggle('on', yardHas(id));
+  });
+}
 /* ── RANGER SETTINGS: where it shows up (chat / home) ── */
 function openRangerSettings(){
   go('rangerSettings');
@@ -15899,4 +16421,14 @@ setTimeout(()=>{ try{ if(!document.querySelector('.screen.on')) bootFallback(); 
   </div>
 </div>
 
+<div id="imgLightbox" onclick="if(event.target===this)closePlantImage()">
+  <img id="ilbImg" src="" alt="">
+  <div class="ilb-name" id="ilbName"></div>
+  <div class="ilb-sub" id="ilbSub"></div>
+  <div class="ilb-row">
+    <button class="ilb-btn" onclick="sharePlantImage()">↗ Share or save</button>
+    <button class="ilb-btn sec" onclick="closePlantImage()">Close</button>
+  </div>
+  <div class="ilb-hint">Share sends it to a friend — or tap Save Image to keep it on your phone.</div>
+</div>
 </body></html>
