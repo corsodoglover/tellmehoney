@@ -320,6 +320,28 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 #imgLightbox .ilb-btn.sec{background:rgba(255,255,255,.08);color:#e9e6df;border:1px solid rgba(255,255,255,.16);}
 #imgLightbox .ilb-hint{color:#7d8494;font-size:11px;margin-top:12px;text-align:center;line-height:1.5;}
 .ft-chips{display:flex;flex-wrap:wrap;gap:7px;}
+.fw-day{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:13px;padding:10px 12px;margin-bottom:7px;}
+.fw-day.today{border-color:rgba(231,200,115,.42);background:rgba(231,200,115,.06);}
+.fw-head{display:flex;align-items:baseline;gap:7px;margin-bottom:6px;}
+.fw-head b{font-size:13px;font-weight:700;letter-spacing:.2px;}
+.fw-head small{font-size:10.5px;color:var(--muted);}
+.fw-add{width:100%;text-align:left;background:transparent;border:1px dashed rgba(255,255,255,.16);
+  border-radius:10px;padding:9px 11px;font-size:12.5px;color:var(--muted);min-height:40px;}
+.fw-meal{display:flex;align-items:center;gap:8px;background:rgba(143,227,192,.10);
+  border:1px solid rgba(143,227,192,.26);border-radius:10px;padding:8px 10px;margin-bottom:5px;}
+.fw-meal span{flex:1;font-size:13px;line-height:1.3;}
+.fw-x{flex:0 0 auto;width:32px;height:32px;border-radius:9px;background:transparent;
+  border:1px solid rgba(255,255,255,.14);color:var(--muted);font-size:13px;}
+.fw-sheet{background:rgba(255,255,255,.04);border:1px solid rgba(231,200,115,.3);border-radius:14px;padding:12px;}
+.fw-sheet-h{font-size:13.5px;font-weight:600;margin-bottom:9px;}
+.fw-opt{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:11px;
+  padding:8px;margin-bottom:6px;min-height:52px;color:var(--ink);}
+.fw-opt img{width:40px;height:40px;object-fit:cover;border-radius:8px;flex:0 0 auto;}
+.fw-opt .fw-noimg{width:40px;height:40px;border-radius:8px;background:rgba(231,200,115,.14);
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.fw-opt span:last-child{flex:1;font-size:13px;line-height:1.3;}
 .ft-diets{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
 .ft-diet{font-size:10px;font-weight:600;padding:3px 9px;border-radius:12px;
   background:rgba(143,227,192,.16);color:#8fe3c0;white-space:nowrap;}
@@ -1791,6 +1813,9 @@ textarea{resize:none;line-height:1.4;}
     </div>
     <div class="ft-chips" id="ftChips"></div>
     <div id="ftResults" style="margin-top:14px"></div>
+    <div class="goals-head" style="margin-top:22px">📅 This week's meals</div>
+    <div class="goals-sub" style="margin-bottom:10px">Tap a day to put one of your cards on it. Planned meals show up in your calendar too.</div>
+    <div id="ftWeek"></div>
     <div class="goals-head" style="margin-top:22px">📔 My recipe cards</div>
     <div id="ftCards"></div>
     <p style="font-size:11px;color:var(--muted);margin:16px 2px 0;line-height:1.5">🍲 Recipe ideas come from the web — yours to look over and decide on, same as always.</p>
@@ -7789,7 +7814,7 @@ function doCalendar(orig){
     SETTINGS.reminders.push({title:title, when:when.date.getTime(), label:when.label, made:Date.now()});
     persist();
     pushThem(vibeColor("Got it, thank you. Tap to add it to your calendar:"));
-    pushAction('🗓️ Add: '+title, icsDataUri(title,when.date), true, makeICSFilename(title));
+    (function(t,ms){ pushAction('🗓️ Add: '+t, '#', false, null, function(){ addToPhoneCalendar(t, ms, false, null); }); })(title, when.date.getTime());
     setTimeout(()=>themTyping(()=>pushThem(vibeColor("I saved it to your list too — say \"what's on my calendar\" anytime."))),900);
   });
 }
@@ -8102,6 +8127,8 @@ function renderCalendar(){
     el.innerHTML='<div class="ci-ic">'+(it.icon||"🗓️")+'</div>'+
       '<div class="ci-tx">'+esc(it.title)+'<small>'+sub+'</small></div>'+
       '<a class="ci-add" href="'+a+'" download="'+makeICSFilename(it.title)+'">Add</a>';
+    (function(t,w){ var lnk=el.querySelector('.ci-add');
+      if(lnk) lnk.onclick=function(e){ return addToPhoneCalendar(t,w,false,e); }; })(it.title, it.when);
     box.appendChild(el);
   });
 }
@@ -8119,7 +8146,17 @@ function renderCalendar(){
   // gather upcoming reminders + this week's scheduled goals
   var items=[];
   (SETTINGS.reminders||[]).filter(function(r){return r.when>=Date.now()-3600000;})
-    .forEach(function(r){ items.push({when:r.when, title:r.title, ic:"🗓️", kind:"reminder", allDay:false}); });
+    .forEach(function(r){
+      // planned meals from Food for Thought read as meals, not generic reminders
+      var isMeal = !!r.meal || /^🍲/.test(r.title||'');
+      items.push({
+        when:r.when,
+        title:(r.title||'').replace(/^🍲\s*/,''),
+        ic: isMeal ? "🍲" : "🗓️",
+        kind: isMeal ? "meal" : "reminder",
+        allDay:false
+      });
+    });
   // scheduled goals → upcoming dated occurrences within the next 7 days
   var now=new Date();
   SETTINGS.goals.forEach(function(g){
@@ -8136,7 +8173,7 @@ function renderCalendar(){
   });
   items.sort(function(a,b){return a.when-b.when;});
   if(!items.length){
-    box.innerHTML='<div class="cal-empty">Nothing scheduled yet. Say “remind me to…” in chat, or add a goal with days, and it’ll show here — ready to drop into your phone’s calendar.</div>';
+    box.innerHTML='<div class="cal-empty">Nothing scheduled yet. Say “remind me to…” in chat, add a goal with days, or plan a supper from Food for Thought — it’ll all show here, ready to drop into your phone’s calendar.</div>';
     return;
   }
   box.innerHTML="";
@@ -8153,8 +8190,9 @@ function renderCalendar(){
     var timeStr=it.allDay ? "all day" : d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit', hour12:true});
     var a=document.createElement('a'); a.className='ci-add'; a.textContent='Add';
     a.href=icsDataUri(it.title, d, it.allDay); a.setAttribute('download', makeICSFilename(it.title));
+    (function(t,w,ad){ a.onclick=function(e){ return addToPhoneCalendar(t,w,ad,e); }; })(it.title, it.when, it.allDay);
     el.innerHTML='<div class="ci-ic">'+it.ic+'</div>'+
-      '<div class="ci-tx">'+esc(it.title)+'<small>'+(it.kind==="goal"?"goal · ":"")+timeStr+'</small></div>';
+      '<div class="ci-tx">'+esc(it.title)+'<small>'+(it.kind==="goal"?"goal · ":(it.kind==="meal"?"supper · ":""))+timeStr+'</small></div>';
     el.appendChild(a);
     box.appendChild(el);
   });
@@ -9881,6 +9919,35 @@ function icsDataUri(title,date,allDay){
     "UID:"+newId()+"@tellmehoney\r\nDTSTAMP:"+fmtUTC(new Date())+"\r\n"+body+
     "\r\nSUMMARY:"+title.replace(/[\r\n,;]/g,' ')+"\r\nDESCRIPTION:Set with "+S.name+" in Tell Me Honey\r\nEND:VEVENT\r\nEND:VCALENDAR";
   return 'data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
+}
+/* Add an event to the phone's calendar.
+   The plain <a download> route works in a desktop browser but is BLOCKED inside
+   the iOS app wrapper — nothing happens. So: hand the .ics file to the native
+   share sheet, which offers "Add to Calendar". Falls back to the download link
+   on desktop, and to a copy-able message if neither is available. */
+function addToPhoneCalendar(title, whenMs, allDay, ev){
+  var d=new Date(whenMs);
+  var uri=icsDataUri(title, d, !!allDay);
+  var ics=decodeURIComponent(uri.replace(/^data:text\/calendar;charset=utf-8,/,''));
+  var fname=makeICSFilename(title);
+  try{
+    var file=new File([ics], fname, {type:'text/calendar'});
+    if(navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
+      if(ev && ev.preventDefault) ev.preventDefault();
+      navigator.share({ files:[file], title:title })
+        .then(function(){ toast("📅 Choose Calendar to add it."); })
+        .catch(function(){});
+      return false;
+    }
+  }catch(e){}
+  // desktop browsers: let the normal download link do its job
+  if(ev && ev.target && ev.target.tagName==='A') return true;
+  try{
+    var a=document.createElement('a');
+    a.href=uri; a.setAttribute('download', fname);
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }catch(e){ toast("Couldn't hand that to your calendar."); }
+  return false;
 }
 function makeICSFilename(t){ return (t.replace(/[^a-z0-9]+/gi,'_').slice(0,30)||'reminder')+'.ics'; }
 /* render a tappable action bubble (call link / calendar download) */
@@ -15806,19 +15873,37 @@ function rangerUnknownPlant(top){
     '</div></div>';
 }
 
-/* ── MY YARD ── */
+/* ── MY YARD ──
+   NOTE: the plant name and photo are parked in these variables instead of being
+   pasted into an onclick. Names with apostrophes (Cat's Ear) and huge photo data
+   URLs both broke the inline version — the button just silently did nothing. */
+var _yardPendName="", _yardPendPhoto="";
 function rangerAddToMyYard(name,photo){
+  _yardPendName = name||"";
+  _yardPendPhoto = photo||"";
   if(!SETTINGS.rangerYardNoteSeen){
     var box=document.getElementById('plantHubResult');
     box.innerHTML='<div style="background:rgba(143,227,192,.08);border:1px solid rgba(143,227,192,.3);border-radius:16px;padding:18px">'+
       '<div style="font-size:30px;text-align:center;margin-bottom:8px">🌱</div>'+
       '<p style="font-size:15px;font-weight:600;text-align:center;margin:0 0 8px">This is your yard, your knowledge</p>'+
       '<p style="font-size:12.5px;color:var(--muted);line-height:1.6;text-align:center;margin:0 0 16px">Plants you add here are your own — Ranger keeps them just for you. They\'re your call, not mine, so they won\'t carry my kitchen\'s ✓ badge.</p>'+
-      '<button style="width:100%;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:13px;font-size:15px;font-weight:700;cursor:pointer" onclick="SETTINGS.rangerYardNoteSeen=true;saveSettings();rangerYardForm(\''+encodeURIComponent(name||'')+'\',\''+encodeURIComponent(photo||'')+'\')">Got it — add my plant</button>'+
+      '<button style="width:100%;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:13px;font-size:15px;font-weight:700;cursor:pointer" onclick="yardNoteGotIt()">Got it — add my plant</button>'+
     '</div>';
     return;
   }
-  rangerYardForm(encodeURIComponent(name||''), encodeURIComponent(photo||''));
+  yardOpenPendingForm();
+}
+function yardNoteGotIt(){
+  SETTINGS.rangerYardNoteSeen=true; saveSettings();
+  yardOpenPendingForm();
+}
+function yardOpenPendingForm(){
+  try{
+    rangerYardForm(encodeURIComponent(_yardPendName||''), encodeURIComponent(_yardPendPhoto||''));
+  }catch(e){
+    try{ toast("Couldn't open that form — try once more."); }catch(_){}
+    try{ console.log('yardOpenPendingForm error', e); }catch(_){}
+  }
 }
 function rangerYardForm(encName,encPhoto){
   var name=decodeURIComponent(encName||''); 
@@ -16103,7 +16188,7 @@ function ftSaved(url){ return ftCardsArr().some(function(c){ return c.url===url;
 
 function openFoodThought(){
   go('foodThought');
-  ftRenderChips(); ftRenderCards();
+  ftRenderChips(); ftRenderCards(); ftRenderWeek();
   var r=document.getElementById('ftResults'); if(r) r.innerHTML='';
 }
 function ftRenderChips(){
@@ -16194,6 +16279,120 @@ function ftRenderCards(){
         '<button class="home-half" style="width:100%;margin-top:7px;color:var(--muted)" onclick="ftRemoveCard('+i+')">Remove this card</button>'+
       '</div></div>';
   }).join('');
+}
+/* ── PLAN IT FOR SUPPER — puts a recipe on the calendar at 6pm ──
+   Uses the same reminders store the rest of the calendar uses, so planned
+   meals show up right alongside appointments. */
+function ftPlanRow(i){
+  return '<div style="display:flex;gap:6px;margin-top:7px">'+
+    '<button class="home-half" style="flex:1" onclick="ftPlan('+i+',0)">🍽️ Tonight</button>'+
+    '<button class="home-half" style="flex:1" onclick="ftPlan('+i+',1)">Tomorrow</button>'+
+    '<button class="home-half" style="flex:1" onclick="ftPlanPick('+i+')">Pick a day</button>'+
+  '</div>';
+}
+function ftPlan(i, daysAhead, hour){
+  var c=ftCardsArr()[i]; if(!c)return;
+  var d=new Date();
+  d.setDate(d.getDate()+(daysAhead||0));
+  d.setHours(hour===undefined?18:hour, 0, 0, 0);
+  // if "tonight" has already passed 6pm, put it at the next round hour instead
+  if((daysAhead||0)===0 && d.getTime() < Date.now()){
+    d=new Date(); d.setMinutes(0,0,0); d.setHours(d.getHours()+1);
+  }
+  if(!Array.isArray(SETTINGS.reminders)) SETTINGS.reminders=[];
+  var title="🍲 "+c.title;
+  var dupe=SETTINGS.reminders.some(function(r){
+    return r.title===title && Math.abs(r.when-d.getTime())<60*60*1000;
+  });
+  if(dupe){ toast("Already on the calendar for then. 🍯"); return; }
+  SETTINGS.reminders.push({ title:title, when:d.getTime(), label:_friendlyWhen(d), made:Date.now(), meal:true });
+  saveSettings();
+  try{ if(typeof renderCalendar==='function') renderCalendar(); }catch(e){}
+  try{ ftRenderWeek(); }catch(e){}
+  toast("📅 Planned for "+_friendlyWhen(d));
+}
+function ftPlanPick(i){
+  var c=ftCardsArr()[i]; if(!c)return;
+  var v=prompt("What day? Type a number of days from today — 0 for tonight, 2 for the day after tomorrow, 7 for next week.", "3");
+  if(v===null) return;
+  var n=parseInt(v,10);
+  if(isNaN(n) || n<0 || n>60){ toast("Try a number from 0 to 60."); return; }
+  ftPlan(i, n);
+}
+/* ── THE WEEK PLANNER — seven days, one supper each ──
+   Reads and writes the same reminders store, so the week view and the
+   calendar are always the same truth. */
+function ftWeekDays(){
+  var out=[], base=new Date(); base.setHours(0,0,0,0);
+  for(var i=0;i<7;i++){
+    var d=new Date(base.getFullYear(), base.getMonth(), base.getDate()+i);
+    out.push(d);
+  }
+  return out;
+}
+function ftMealsOn(d){
+  var start=new Date(d.getFullYear(),d.getMonth(),d.getDate(),0,0,0).getTime();
+  var end=start+86400000;
+  return (SETTINGS.reminders||[]).map(function(r,idx){ return {r:r, idx:idx}; })
+    .filter(function(o){
+      var r=o.r;
+      var isMeal = !!r.meal || /^🍲/.test(r.title||'');
+      return isMeal && r.when>=start && r.when<end;
+    });
+}
+function ftRenderWeek(){
+  var box=document.getElementById('ftWeek'); if(!box)return;
+  var DOW=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  box.innerHTML=ftWeekDays().map(function(d,i){
+    var meals=ftMealsOn(d);
+    var label=(i===0?"Today":(i===1?"Tomorrow":DOW[d.getDay()]));
+    var sub=(d.getMonth()+1)+"/"+d.getDate();
+    var inner;
+    if(meals.length){
+      inner=meals.map(function(o){
+        var nm=(o.r.title||'').replace(/^🍲\s*/,'');
+        return '<div class="fw-meal"><span>🍲 '+esc(nm)+'</span>'+
+               '<button class="fw-x" onclick="ftWeekClear('+o.idx+')" aria-label="Take off">✕</button></div>';
+      }).join('');
+    } else {
+      inner='<button class="fw-add" onclick="ftWeekPick('+i+')">＋ plan something</button>';
+    }
+    return '<div class="fw-day'+(i===0?' today':'')+'">'+
+      '<div class="fw-head"><b>'+label+'</b><small>'+sub+'</small></div>'+
+      inner+'</div>';
+  }).join('');
+}
+function ftWeekClear(idx){
+  var arr=SETTINGS.reminders||[]; if(!arr[idx])return;
+  arr.splice(idx,1); SETTINGS.reminders=arr; saveSettings();
+  ftRenderWeek();
+  try{ if(typeof renderCalendar==='function') renderCalendar(); }catch(e){}
+  toast("Taken off that day.");
+}
+var _ftPickDay=0;
+function ftWeekPick(dayIndex){
+  _ftPickDay=dayIndex;
+  var cards=ftCardsArr();
+  var box=document.getElementById('ftWeek');
+  if(!cards.length){
+    toast("Keep a recipe card first — tap ＋ on any idea. 🍲");
+    return;
+  }
+  var d=ftWeekDays()[dayIndex];
+  var DOW=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  var label=(dayIndex===0?"today":(dayIndex===1?"tomorrow":DOW[d.getDay()]));
+  var html='<div class="fw-sheet"><div class="fw-sheet-h">What are we having '+label+'?</div>'+
+    cards.map(function(c,ci){
+      return '<button class="fw-opt" onclick="ftWeekAssign('+ci+')">'+
+        (c.image?'<img src="'+c.image+'" alt="">':'<span class="fw-noimg">🍽️</span>')+
+        '<span>'+esc(c.title)+'</span></button>';
+    }).join('')+
+    '<button class="home-half" style="width:100%;margin-top:8px;color:var(--muted)" onclick="ftRenderWeek()">Never mind</button></div>';
+  box.innerHTML=html;
+}
+function ftWeekAssign(cardIndex){
+  ftPlan(cardIndex, _ftPickDay);
+  ftRenderWeek();
 }
 function ftNote(i,v){ var a=ftCardsArr(); if(a[i]){ a[i].note=v; SETTINGS.foodCards=a; saveSettings(); } }
 function ftRemoveCard(i){
