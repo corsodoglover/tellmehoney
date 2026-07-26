@@ -32,12 +32,16 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Tell Me Honey uses your camera so you can add photos to your journal.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Honey uses your steps and sleep to gently notice how your week is going. This stays on your phone.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string></string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Tell Me Honey uses your location to show your local weather.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Honey uses your microphone so you can talk with her hands-free.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Honey saves the pictures you take to your photo library, so they are always yours to keep.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Tell Me Honey uses your photos so you can add them to your journal.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>

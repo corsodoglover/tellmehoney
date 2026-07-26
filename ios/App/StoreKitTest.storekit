@@ -1,0 +1,379 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "2898EE70",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "6793770807",
+      "localizations" : [
+        {
+          "description" : "30 days of writing to stop rushing",
+          "displayName" : "A Season of Patience",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.tellmehoney.journal.patience",
+      "referenceName" : "A Season of Patience Journal",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "6793754344",
+      "localizations" : [
+        {
+          "description" : "Blessings, greetings, and words of grace",
+          "displayName" : "Blessings & Grace",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.tellmehoney.pack.langchurch",
+      "referenceName" : "Blessings and Grace Language Pack",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "6793759897",
+      "localizations" : [
+        {
+          "description" : "Five more AI videos — they never expire",
+          "displayName" : "Five Extra Videos",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.tellmehoney.topup.video5",
+      "referenceName" : "Five Extra AI Videos",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "6793753071",
+      "localizations" : [
+        {
+          "description" : "Sweet little phrases for the little ones",
+          "displayName" : "Kid Words",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.tellmehoney.pack.langgrandkids",
+      "referenceName" : "Kid Words Language Pack",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "6793757656",
+      "localizations" : [
+        {
+          "description" : "Cooking, sharing, and second helpings",
+          "displayName" : "Kitchen Table",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.tellmehoney.pack.langkitchen",
+      "referenceName" : "Kitchen Table Language Pack",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "6793777957",
+      "localizations" : [
+        {
+          "description" : "30 days of writing through grief",
+          "displayName" : "A Season of Comfort",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.tellmehoney.journal.comfort",
+      "referenceName" : "Season of Comfort Journal",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "6793775992",
+      "localizations" : [
+        {
+          "description" : "30 days of noticing what's good",
+          "displayName" : "A Season of Gratitude",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.tellmehoney.journal.gratitude",
+      "referenceName" : "Season of Gratitude Journal",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "6793778465",
+      "localizations" : [
+        {
+          "description" : "30 days of writing toward lighter days",
+          "displayName" : "A Season of Joy",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.tellmehoney.journal.joy",
+      "referenceName" : "Season of Joy Journal",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "6793773341",
+      "localizations" : [
+        {
+          "description" : "30 days of writing for a settled mind",
+          "displayName" : "A Season of Peace",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.tellmehoney.journal.peace",
+      "referenceName" : "Season of Peace Journal",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "6793739081",
+      "localizations" : [
+        {
+          "description" : "Airports, hotels, and ordering dinner abroad",
+          "displayName" : "Travel Talk",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.tellmehoney.pack.langtravel",
+      "referenceName" : "Travel Talk Language Pack",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "6.99",
+      "familyShareable" : false,
+      "internalID" : "6793760820",
+      "localizations" : [
+        {
+          "description" : "Twenty more AI videos — they never expire",
+          "displayName" : "Twenty Extra Videos",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.tellmehoney.topup.video20",
+      "referenceName" : "Twenty Extra AI Videos",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6793667662",
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_developerTeamID" : "JJJUKJP6PR",
+    "_disableDialogs" : false,
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 806689320.43722606,
+    "_locale" : "en_US",
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+
+    ],
+    "_timeRate" : 0
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "22257293",
+      "localizations" : [
+
+      ],
+      "name" : "Tell Me Honey Membership",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "16.99",
+          "familyShareable" : false,
+          "groupNumber" : 4,
+          "internalID" : "6793710273",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Clone your voice or a loved one's on keepsakes",
+              "displayName" : "Gallon",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.tellmehoney.gallon.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Gallon Monthly",
+          "subscriptionGroupID" : "22257293",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "29.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6793721871",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Your voice alive all day, unlimited friends",
+              "displayName" : "Gallon Plus Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.tellmehoney.gallonplus.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Gallon Plus Monthly",
+          "subscriptionGroupID" : "22257293",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "269.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6793723416",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Your voice alive all day, unlimited friends",
+              "displayName" : "Gallon Plus Yearly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.tellmehoney.gallonplus.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Gallon Plus yearly",
+          "subscriptionGroupID" : "22257293",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "119.0",
+          "familyShareable" : false,
+          "groupNumber" : 3,
+          "internalID" : "6793711638",
+          "introductoryOffer" : null,
+          "localizations" : [
+
+          ],
+          "productID" : "com.tellmehoney.gallon.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Gallon Yearly",
+          "subscriptionGroupID" : "22257293",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "8.99",
+          "familyShareable" : false,
+          "groupNumber" : 6,
+          "internalID" : "6793675135",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Premium AI voices, real chat, and two friends",
+              "displayName" : "Quart",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.tellmehoney.quart.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Quart Monthly",
+          "subscriptionGroupID" : "22257293",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "59.99",
+          "familyShareable" : false,
+          "groupNumber" : 5,
+          "internalID" : "6793699250",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Premium AI voices, real chat, and two friends",
+              "displayName" : "Quart",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.tellmehoney.quart.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Quart Yearly",
+          "subscriptionGroupID" : "22257293",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}
