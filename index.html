@@ -2325,7 +2325,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v106 · Fold fix</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v107 · Real calendar</div>
   </div>
 </section>
 
@@ -7454,7 +7454,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v106";
+window.HONEY_BUILD = "v107";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -12092,12 +12092,58 @@ function icsDataUri(title,date,allDay){
     "\r\nSUMMARY:"+title.replace(/[\r\n,;]/g,' ')+"\r\nDESCRIPTION:Set with "+S.name+" in Tell Me Honey\r\nEND:VEVENT\r\nEND:VCALENDAR";
   return 'data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
 }
+/* ══════════ THE REAL CALENDAR ══════════════════════════════════════════════
+   Before this, "Add" built a .ics file and handed it to the share sheet — which
+   iOS blocks inside an app wrapper, and Calendar isn't a share target anyway.
+   Now it writes straight into the calendar through the native plugin.
+   Plugin: @capgo/capacitor-calendar (iOS + Android). */
+function calPlugin(){
+  try{
+    var C=window.Capacitor;
+    if(!C || !C.Plugins || !C.isNativePlatform || !C.isNativePlatform()) return null;
+    return C.Plugins.CapacitorCalendar || C.Plugins.Calendar || null;
+  }catch(e){ return null; }
+}
+/* Apple's own "Add Event" sheet, pre-filled. Needs no read permission, and the
+   person sees exactly what's going in before it lands. */
+function calAddEvent(title, whenMs, minutes, cb){
+  var P=calPlugin();
+  if(!P){ cb && cb(false); return; }
+  var start=Number(whenMs)||Date.now();
+  var end=start + (minutes||30)*60000;
+  var opts={ title:(title||'Reminder'), startDate:start, endDate:end };
+  function fallbackSilent(){
+    // if the prompt isn't available, ask for write access and add it directly
+    var ask = P.requestWriteOnlyCalendarAccess || P.requestFullCalendarAccess;
+    if(!ask){ cb && cb(false); return; }
+    ask.call(P).then(function(){
+      return P.createEvent(opts);
+    }).then(function(){ cb && cb(true); })
+      .catch(function(){ cb && cb(false); });
+  }
+  if(P.createEventWithPrompt){
+    P.createEventWithPrompt(opts)
+      .then(function(){ cb && cb(true); })
+      .catch(function(){ fallbackSilent(); });
+  } else fallbackSilent();
+}
+
 /* Add an event to the phone's calendar.
    The plain <a download> route works in a desktop browser but is BLOCKED inside
    the iOS app wrapper — nothing happens. So: hand the .ics file to the native
    share sheet, which offers "Add to Calendar". Falls back to the download link
    on desktop, and to a copy-able message if neither is available. */
 function addToPhoneCalendar(title, whenMs, allDay, ev){
+  /* Native calendar first — one tap and it's in. The .ics share route stays
+     below as the fallback for the browser and anything odd. */
+  if(calPlugin()){
+    if(ev && ev.preventDefault) ev.preventDefault();
+    calAddEvent(title, whenMs, allDay?24*60:30, function(ok){
+      if(ok) toast("\ud83d\udcc5 On your calendar.");
+      else toast("Couldn't reach your calendar just now.");
+    });
+    return false;
+  }
   var d=new Date(whenMs);
   var uri=icsDataUri(title, d, !!allDay);
   var ics=decodeURIComponent(uri.replace(/^data:text\/calendar;charset=utf-8,/,''));
