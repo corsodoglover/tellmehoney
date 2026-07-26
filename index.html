@@ -441,9 +441,13 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .ft-save{flex:0 0 auto;width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.05);
   border:1.5px solid rgba(255,255,255,.14);color:var(--muted);font-size:19px;font-weight:700;}
 .ft-save.on{background:rgba(231,200,115,.16);border-color:var(--gold);color:var(--gold);}
+.ft-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}
 .ft-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-  border-radius:15px;overflow:hidden;margin-bottom:11px;}
-.ft-card>img{width:100%;height:132px;object-fit:cover;display:block;}
+  border-radius:15px;overflow:hidden;margin-bottom:0;}
+.ft-card>img{width:100%;height:104px;object-fit:cover;display:block;}
+.ft-grid .ft-card b{font-size:13.5px !important;}
+.ft-grid .ft-card textarea{min-height:44px !important;font-size:11.5px !important;}
+.ft-grid .ft-card .home-half{font-size:11.5px;min-height:40px;padding:6px 8px;}
 .mood-wrap{max-width:340px;margin:4px auto 0;}
 .yi-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
 .yi-name{flex:1;display:flex;align-items:center;gap:11px;text-align:left;background:rgba(255,255,255,.04);
@@ -2304,7 +2308,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v79 · Recall fixes</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v83 · Recipe grid</div>
   </div>
 </section>
 
@@ -4538,7 +4542,7 @@ var COLOR_THEMES=[
    mood:"Quiet & steady", why:"Soft, cool grays-blue tones feel settled and unhurried — an easy, low-stimulation backdrop when you want things gentle."},
   {id:"natural",    nm:"Deep Forest",     ic:"🌲", cost:600, sw:"#5e9a4e", bg:"#f6f8f3", kind:"Light",
    mood:"Balanced & restful", why:"Green is tied to balance and well-being, eases eye strain, and echoes the calm of nature and green spaces."},
-  {id:"honeydark",  nm:"Honey Dark",      ic:"🌙", cost:600, sw:"#e7c873", bg:"#0b0c12", kind:"Dark",
+  {id:"honeydark",  nm:"Honey Dark",      ic:"🌙", cost:0,   sw:"#e7c873", bg:"#0b0c12", kind:"Dark",
    mood:"Cozy & easy on the eyes", why:"A warm, dim palette for evenings and low light — gentle on tired eyes when the day winds down."},
   {id:"honey",      nm:"Honey Classic",   ic:"🐝", cost:0, sw:"#e7c873", bg:"#07080d", kind:"Dark",
    mood:"The original", why:"The first Tell Me Honey look — deep and warm, with golden honey accents."}
@@ -7420,7 +7424,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v79";
+window.HONEY_BUILD = "v83";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -8044,6 +8048,55 @@ function handleHealthRequest(t, l){
   return false;
 }
 
+/* ── SOMEBODY SAID HELLO ───────────────────────────────────────────────────
+   Typing "hello" used to match nothing at all and land on the generic
+   catch-all — "Noted. You want company or comedy?" — which is a cold thing to
+   say to somebody who just walked in. The recorded greeting clips existed but
+   only played when the chat OPENED, never when a person actually said hi. */
+function isPlainGreeting(l){
+  var t=(l||'').trim().replace(/[.!?,]+$/,'');
+  return /^(hi|hey|hello|heya|hiya|yo|howdy|hi there|hey there|hello there|good morning|good afternoon|good evening|mornin['g]?|evenin['g]?|hey honey|hi honey|hello honey|hey you|knock knock)$/i.test(t)
+      || /^(hi|hey|hello|howdy|good morning|good afternoon|good evening)\b.{0,18}$/i.test(t);
+}
+function isHowAreYou(l){
+  return /(how are you|how are ya|how're you|how you doin|how's it going|hows it going|you doing (ok|alright|good)|you good|what's up|whats up|how have you been|how you been)/i.test(l||'');
+}
+/* Answer a greeting the way a friend would: greet back, then leave the door open. */
+function honeyGreetBack(l){
+  var pool;
+  try{ pool = (GREET && GREET[S.vibe]) ? GREET[S.vibe].slice() : GREET.Warm.slice(); }
+  catch(e){ pool = ["Well, hey there. I was hoping you'd come see me."]; }
+  // these are recorded, so they play in Honey's own voice
+  pool = pool.concat([
+    "Aw, there you are. Hope your day's been kind.",
+    "Hey you. Genuinely happy to see you.",
+    "Hi friend, welcome back. I'm so glad you returned.",
+    "Good to see your name pop up. How are you, really?"
+  ]);
+  var hour=new Date().getHours();
+  if(/good morning|mornin/i.test(l) || (hour<11 && Math.random()<0.5)){
+    pool = pool.concat(["Morning, you. Did you sleep alright?","Good morning. I like this part of the day with you."]);
+  } else if(/good evening|evenin/i.test(l) || (hour>=19 && Math.random()<0.5)){
+    pool = pool.concat(["Evening. Come sit a while.","Good evening, you. How'd the day treat you?"]);
+  }
+  themTyping(function(){
+    pushThem(vibeColor(rand(pool)));
+    // a second, softer beat — an opening, not a menu
+    setTimeout(function(){
+      themTyping(function(){
+        pushThem(vibeColor(rand([
+          "What's going on with you today?",
+          "Tell me something \u2014 anything.",
+          "How's your heart today?",
+          "What have you been up to?",
+          "Anything good happen today?"
+        ])));
+        resetIdle();
+      });
+    }, 850);
+  });
+}
+
 /* ── SAY A WORD, GET A JOKE ABOUT THAT WORD ────────────────────────────────
    The category match was too blunt: "goat" landed in the farm-animal category,
    which then handed back a random tractor joke. Now we search the actual joke
@@ -8397,6 +8450,20 @@ function userSays(t){
   if(/^(my )?(steps?|sleep)( today| this week| last night| for the week)?[.!?]*$/.test((l||'').trim())){
     if(handleHealthRequest(t, l)) return;
   }
+  // ── HELLO: answer a greeting like a person, not with a menu ──
+  if(isPlainGreeting(l)){ honeyGreetBack(l); return; }
+  if(isHowAreYou(l) && !/\b(steps?|sleep|slept|walk)\b/.test(l)){
+    themTyping(function(){
+      pushThem(vibeColor(rand([
+        "Better now you're here. How about you — how's your day going?",
+        "I'm good, thank you for asking. Nobody ever does. How are you?",
+        "Can't complain, and nobody'd listen if I did. What about you?",
+        "Just fine, sitting here waiting on you. Tell me about your day."
+      ])));
+      resetIdle();
+    });
+    return;
+  }
   if(/(joke|funny|laugh|make me|comedy)/.test(l)){ handleJokeRequest(t, l); return; }
   /* "another" on its own means another joke — but only when they haven't named
      something else. "another verse" and "another prayer" were being answered
@@ -8462,7 +8529,12 @@ function userSays(t){
      && /\b(to[-\s]?do|notes?|shopping|grocery|groceries|store|household)\b.*\blist\b|\bto\s+(my\s+|the\s+)?(to[-\s]?do|notes?|shopping|grocery|groceries)\b|\bto\s+notes?\b/.test(l)){
     doShopping(t); return;
   }
-  if(/(call|phone|dial|ring)\b/.test(l) && !/calling|recall|so[- ]?called/.test(l)){ doCall(t); return; }
+  /* "Remind me to call the doctor Tuesday" is a REMINDER, not a dial request.
+     This rule used to grab any sentence with "call" in it and go asking for a
+     phone number, so the reminder never got made. Now the reminder wins, and
+     the offer to save their number comes afterwards as a bonus. */
+  var _isReminderFirst = /(remind me|reminder|remember to|don'?t let me forget|make sure i|i need to|i have to|i gotta|put it on (my|the) calendar|add to (my|the) calendar|schedule)/.test(l);
+  if(/(call|phone|dial|ring)\b/.test(l) && !/calling|recall|so[- ]?called/.test(l) && !_isReminderFirst){ doCall(t); return; }
   // Save-a-contact: catch "save Andy's number 843-...", "Andy's number is 843-...
   // remember it", "add this number for Mom" — anything with a name-ish word and a
   // real phone number. The app saves it itself (tap-to-call) so the AI never has
@@ -8743,7 +8815,34 @@ function doCalendar(orig){
     persist();
     pushThem(vibeColor("Got it, thank you. Tap to add it to your calendar:"));
     (function(t,ms){ pushAction('🗓️ Add: '+t, '#', false, null, function(){ addToPhoneCalendar(t, ms, false, null); }); })(title, when.date.getTime());
-    setTimeout(()=>themTyping(()=>pushThem(vibeColor("I saved it to your list too — say \"what's on my calendar\" anytime."))),900);
+
+    /* If the reminder is about ringing somebody, offer their number too — but
+       only after the reminder is safely made, and only if we don't have it. */
+    var callWho = (orig.match(/\bcall\s+(?:the\s+|my\s+|dr\.?\s+|doctor\s+)?([A-Za-z][A-Za-z\s'.-]{1,28})/i)||[])[1];
+    if(callWho){
+      callWho = callWho.trim().replace(/[.,;:!?]+$/,'')
+        .replace(/\s+(tomorrow|today|tonight|monday|tuesday|wednesday|thursday|friday|saturday|sunday|next week|at\b.*|on\b.*|about\b.*)$/i,'')
+        .trim();
+    }
+    if(callWho && callWho.length>1){
+      var known=[]; try{ known=findContacts(callWho)||[]; }catch(e){}
+      setTimeout(function(){
+        themTyping(function(){
+          if(known.length===1){
+            pushThem(vibeColor("Want to ring them now instead?"));
+            pushAction('\ud83d\udcde Call '+known[0].name, 'tel:'+known[0].num, false);
+          } else {
+            pushThem(vibeColor("Want me to keep "+callWho+"'s number, so you can just tap to call when Tuesday comes?"));
+            pushAction('\ud83d\udcde Save '+callWho+"'s number", '#', false, null, function(){
+              S.pendingContact={name:callWho};
+              themTyping(function(){ pushThem(vibeColor("What's the number? I'll keep it for you.")); });
+            });
+          }
+        });
+      }, 1100);
+    } else {
+      setTimeout(()=>themTyping(()=>pushThem(vibeColor("I saved it to your list too \u2014 say \"what's on my calendar\" anytime."))),900);
+    }
   });
 }
 /* ════ LISTS (multi-list: Shopping, To-Do, Notes, + custom) ════ */
@@ -10819,6 +10918,77 @@ function parseWhen(s){
   if(/\bdinner|suppertime|supper\b/i.test(s)){ d.setHours(18,0,0,0); label+=(label?" ":"")+"at dinner"; return {date:d,label:label}; }
   if(/\bbreakfast\b/i.test(s)){ d.setHours(8,0,0,0); label+=(label?" ":"")+"at breakfast"; return {date:d,label:label}; }
   if(/\bmidnight\b/i.test(s)){ d.setHours(0,0,0,0); label+=(label?" ":"")+"at midnight"; return {date:d,label:label}; }
+  /* ── A NAMED DAY OR A REAL DATE ────────────────────────────────────────
+     None of this existed. "Tuesday" and "July 28" matched nothing, so the
+     whole thing fell through to "an hour from now, today" — which is why a
+     reminder set for a specific day couldn't be found afterwards. */
+  var _gotDay = /tomorrow|next week/i.test(label);
+  if(!_gotDay){
+    var DOWNAMES=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+    var dw=s.match(/\b(?:on\s+|this\s+|next\s+|come\s+)?(sun|mon|tues?|wed(?:nes)?|thur?s?|fri|sat(?:ur)?)(?:day)?\b/i);
+    if(dw){
+      var w=dw[1].toLowerCase();
+      var idx = w.indexOf('sun')===0?0 : w.indexOf('mon')===0?1 : w.indexOf('tue')===0?2 :
+                w.indexOf('wed')===0?3 : (w.indexOf('thu')===0||w.indexOf('thur')===0)?4 :
+                w.indexOf('fri')===0?5 : 6;
+      var ahead=(idx - d.getDay() + 7) % 7;
+      if(ahead===0) ahead=7;                       // "Tuesday" on a Tuesday means next one
+      if(/next\s/i.test(s) && ahead<7) ahead+=0;   // "next Tuesday" is still the coming one
+      d.setDate(d.getDate()+ahead);
+      label = (label?label+" ":"") + DOWNAMES[idx].charAt(0).toUpperCase()+DOWNAMES[idx].slice(1);
+      _gotDay = true;
+    }
+  }
+  if(!_gotDay){
+    var MON=["january","february","march","april","may","june","july","august","september","october","november","december"];
+    var md=s.match(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2})(?:st|nd|rd|th)?\b/i);
+    if(!md){
+      var dm=s.match(/\b(\d{1,2})(?:st|nd|rd|th)?\s+(?:of\s+)?(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b/i);
+      if(dm) md=[dm[0], dm[2], dm[1]];
+    }
+    if(md){
+      var mi=MON.findIndex(function(m){ return m.indexOf(md[1].toLowerCase())===0; });
+      var dayN=parseInt(md[2],10);
+      if(mi>=0 && dayN>=1 && dayN<=31){
+        var yr=d.getFullYear();
+        var cand=new Date(yr, mi, dayN, 9,0,0,0);
+        if(cand < new Date(new Date().setHours(0,0,0,0))) cand=new Date(yr+1, mi, dayN, 9,0,0,0);
+        d=cand;
+        label=(label?label+" ":"")+MON[mi].charAt(0).toUpperCase()+MON[mi].slice(1)+" "+dayN;
+        _gotDay=true;
+      }
+    }
+  }
+  if(!_gotDay){
+    // 7/28 or 7-28
+    var nd=s.match(/\b(\d{1,2})[\/\-](\d{1,2})\b/);
+    if(nd){
+      var m2=parseInt(nd[1],10)-1, d2=parseInt(nd[2],10);
+      if(m2>=0 && m2<=11 && d2>=1 && d2<=31){
+        var y2=d.getFullYear();
+        var c2=new Date(y2, m2, d2, 9,0,0,0);
+        if(c2 < new Date(new Date().setHours(0,0,0,0))) c2=new Date(y2+1, m2, d2, 9,0,0,0);
+        d=c2;
+        label=(label?label+" ":"")+(m2+1)+"/"+d2;
+        _gotDay=true;
+      }
+    }
+  }
+  if(!_gotDay){
+    // "on the 28th"
+    var om=s.match(/\bon\s+the\s+(\d{1,2})(?:st|nd|rd|th)\b/i);
+    if(om){
+      var dn=parseInt(om[1],10);
+      if(dn>=1 && dn<=31){
+        var c3=new Date(d.getFullYear(), d.getMonth(), dn, 9,0,0,0);
+        if(c3 < new Date(new Date().setHours(0,0,0,0))) c3=new Date(d.getFullYear(), d.getMonth()+1, dn, 9,0,0,0);
+        d=c3;
+        label=(label?label+" ":"")+"the "+dn+(dn%10===1&&dn!==11?"st":dn%10===2&&dn!==12?"nd":dn%10===3&&dn!==13?"rd":"th");
+        _gotDay=true;
+      }
+    }
+  }
+
   var tm=s.match(/(\d{1,2})(:(\d{2}))?\s*(am|pm)/i);
   if(tm){ var hr=parseInt(tm[1],10)%12; if(/pm/i.test(tm[4]))hr+=12; d.setHours(hr,tm[3]?parseInt(tm[3],10):0,0,0);
     label+=(label?" ":"")+"at "+tm[0]; }
@@ -10833,7 +11003,8 @@ function parseWhen(s){
       d.setHours(bh,bm,0,0);
       label+=(label?" ":"")+"at "+(bh%12||12)+(bm?":"+(bm<10?"0"+bm:bm):"")+(bh<12?" a.m.":" p.m.");
     }
-    else if(!/tonight/i.test(s)){ d.setHours(d.getHours()+1,0,0,0); }
+    else if(!/tonight/i.test(s) && !_gotDay){ d.setHours(d.getHours()+1,0,0,0); }
+    else if(_gotDay){ d.setHours(9,0,0,0); }   // a day with no time means that morning
   }
   return {date:d,label:label};
 }
@@ -10931,9 +11102,15 @@ function replyTo(l){
     return "Logged that. I'll keep poking you about it — that's what I'm for. Joke to seal the deal?";
   }
   // keyword memory callback
-  var generic=["Mm. Tell me more, or want a joke to break it up?",
-    "I'm listening — and I've always got a joke if the conversation stalls.",
-    "Noted. You want company or comedy? I do both."];
+  /* The old third line — "Noted. You want company or comedy?" — was landing on
+     anything unmatched, including plain hellos. A catch-all should keep the
+     conversation going, not hand somebody a menu. */
+  var generic=["Mm. Tell me more.",
+    "I'm listening. Go on.",
+    "Tell me more about that.",
+    "I hear you. What else?",
+    "Mm-hmm. And how do you feel about it?",
+    "Keep going, I'm right here."];
   return vibeColor(rand(generic));
 }
 
@@ -17757,24 +17934,11 @@ function openFoodThought(){
   ftRenderChips(); ftRenderCards(); ftRenderWeek();
   var r=document.getElementById('ftResults'); if(r) r.innerHTML='';
 }
+/* The herb chips are gone. They cluttered the top of the screen and people can
+   plainly type or say what they're after — no nudging needed. */
 function ftRenderChips(){
-  var box=document.getElementById('ftChips'); if(!box)return;
-  var chips=[];
-  // from what's growing at their place (the yard index) — the collaboration Sally wanted
-  try{
-    var have=(SETTINGS.rangerHave||[]).map(function(id){ return BACKYARD[id] && BACKYARD[id].name.split(' —')[0]; }).filter(Boolean);
-    have.slice(0,4).forEach(function(n){ chips.push(['🌿',n]); });
-  }catch(e){}
-  // from tonight's cooking list
-  try{
-    (SETTINGS.rangerCook||[]).slice(0,3).forEach(function(id){
-      var p=RANGER_PLANTS[id]; if(p) chips.push(['🧺',p.name.split(' &')[0]]);
-    });
-  }catch(e){}
-  if(!chips.length) chips=[['🥬','Greens'],['🍲','Soup'],['🥗','Fresh salad'],['🫘','Beans']];
-  box.innerHTML=chips.map(function(c){
-    return '<button class="ft-chip" onclick="ftSearch(\''+c[1].replace(/'/g,"\\'")+'\')">'+c[0]+' '+c[1]+'</button>';
-  }).join('');
+  var box=document.getElementById('ftChips');
+  if(box) box.innerHTML='';
 }
 function ftSearch(term){
   if(isOffline()){
@@ -17827,6 +17991,7 @@ function ftRenderCards(){
     box.innerHTML='<p style="font-size:12.5px;color:var(--muted);line-height:1.5;margin:2px 0 0">Nothing kept yet. Tap ＋ on any idea and it lands here — yours to come back to.</p>';
     return;
   }
+  box.className='ft-grid';
   box.innerHTML=arr.map(function(c,i){
     var ing=(c.ingredients&&c.ingredients.length)
       ? '<button class="home-half" style="width:100%;margin-top:9px" onclick="ftIngredientsToList('+i+')">🛒 Add '+c.ingredients.length+' ingredients to my list</button>'
