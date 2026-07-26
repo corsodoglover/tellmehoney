@@ -2309,7 +2309,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v97 · Comic scenes</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v101 · Comics kept</div>
   </div>
 </section>
 
@@ -2892,8 +2892,8 @@ textarea{resize:none;line-height:1.4;}
       <button class="rec-mic" onclick="recDictate(&#39;recPunch&#39;,this)">🎤</button>
     </div>
     <button class="rec-save" onclick="saveMyJoke()">Save joke</button>
-    <button class="home-half" style="width:100%;margin-top:8px" onclick="honeyComicFromSheet()">🎨 Draw it as a Honey comic</button>
-    <button class="home-half" style="width:100%;margin-top:7px" onclick="jokeCardFromSheet()">🖼️ Make a simple card (free)</button>
+    <button class="home-half" id="comicBtn" style="width:100%;margin-top:8px" onclick="honeyComicFromSheet()">🎨 Draw it as a Honey comic</button>
+    <button class="home-half" style="width:100%;margin-top:7px" onclick="jokeCardFromSheet()">🖼️ Make a picture card — always free</button>
     <button class="home-half" style="width:100%;margin-top:7px" onclick="jokeCardTellHoney()">📣 Have Honey tell it</button>
     <button class="home-half" style="width:100%;margin-top:7px" onclick="funnelOpen()">😂 Send it to the Funny Funnel</button>
     <p class="rec-hint" style="margin:6px 0 0;font-size:11px;color:var(--muted)">Make a card to share, or send it in and it might go in the app for everybody.</p>
@@ -7436,7 +7436,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v97";
+window.HONEY_BUILD = "v101";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -8119,9 +8119,7 @@ function _buildVerseVideo(p, audioBlob){
     ctx.fillStyle='#B9561F';
     ctx.font='italic 34px Georgia, serif';
     ctx.fillText('in my own voice', W/2, H*0.80);
-    ctx.fillStyle='rgba(58,44,18,.55)';
-    ctx.font='600 26px -apple-system, Arial, sans-serif';
-    ctx.fillText('Tell Me Honey', W/2, H-64);
+    honeyMark(ctx, W, H);
   }
 
   var audio=new Audio(URL.createObjectURL(audioBlob));
@@ -11203,13 +11201,42 @@ function saveMyJoke(){
   var _cn=(jokeColls().find(function(c){return c.id===_coll;})||{}).name||'your jokes';
   toast('Saved to '+_cn+'. Say \u201ctell me one of my jokes\u201d anytime.');
 }
+/* ── THE MARK ───────────────────────────────────────────────────────────────
+   One corner treatment for everything we share: the real honeypot and the web
+   address, bottom right, on a soft light patch so it reads on any background.
+   Comics, joke cards, verse videos — all the same, so a feed of them looks
+   like one hand made them. */
+function honeyMark(ctx, W, H){
+  try{
+    var pad=Math.round(W*0.035);
+    var potH=Math.round(H*0.11);
+    var bx=Math.round(W*0.40), by=H-potH-Math.round(pad*2.1);
+    var grd=ctx.createLinearGradient(bx,by,W,H);
+    grd.addColorStop(0,'rgba(255,253,247,0)');
+    grd.addColorStop(1,'rgba(255,253,247,.82)');
+    ctx.save();
+    ctx.fillStyle=grd; ctx.fillRect(bx,by,W-bx,H-by);
+    ctx.textAlign='right'; ctx.textBaseline='alphabetic';
+    ctx.fillStyle='rgba(58,44,18,.78)';
+    ctx.font='600 '+Math.round(W*0.028)+'px -apple-system, Arial, sans-serif';
+    ctx.fillText('tellmehoneyapp.com', W-pad, H-pad);
+    if(_vvPot && _vvPot.complete && _vvPot.naturalWidth){
+      var pw=_vvPot.naturalWidth*potH/_vvPot.naturalHeight;
+      ctx.drawImage(_vvPot, W-pad-pw, H-pad-Math.round(W*0.052)-potH, pw, potH);
+    }
+    ctx.restore();
+  }catch(e){}
+}
+
 /* ══════════ THE HONEY COMIC — a joke drawn as a panel ═════════════════════
    First one's on us. After that it costs a little honey, so nobody can run up
    the bill and the ones people make mean something.
    Character and style are locked so every panel belongs to the same comic. */
 var COMIC_COST = 50;              // honey per panel after the free one
-var COMIC_SIGNATURE =
-  "with a small round golden honey pot and a wooden dipper tucked somewhere in the scene";
+/* No longer asks the generator for a honey pot — it drew a different one every
+   time and sometimes not at all. The REAL logo gets stamped on afterwards, so
+   every panel carries the same mark in the same corner. */
+var COMIC_SIGNATURE = "warm and inviting";
 var COMIC_STYLE =
   "a completely wordless picture-only illustration with no writing anywhere in the frame, "+
   "soft hand-drawn ink linework with gentle watercolor wash, warm muted palette of honey gold, "+
@@ -11217,6 +11244,24 @@ var COMIC_STYLE =
   "simple rounded shapes, storybook illustration, calm and unhurried, no crosshatching, no harsh outlines, "+
   "no text, no words, no letters, no captions, no title, no speech bubbles, no signage, no watermark, "+
   "single panel, square";
+
+/* The comic button says what it costs, and greys itself out when they can't
+   reach it. Better than letting somebody tap and get told no — and the free
+   card sits right underneath either way, so nobody hits a dead end. */
+function comicBtnRender(){
+  var b=document.getElementById('comicBtn'); if(!b) return;
+  var g=comicCanMake();
+  if(g.ok && g.free){
+    b.textContent='\ud83c\udfa8 Draw it as a Honey comic \u2014 first one\u2019s free';
+    b.disabled=false; b.style.opacity=''; b.style.color='';
+  } else if(g.ok){
+    b.textContent='\ud83c\udfa8 Draw it as a Honey comic \u00b7 '+COMIC_COST+' \ud83c\udf6f';
+    b.disabled=false; b.style.opacity=''; b.style.color='';
+  } else {
+    b.textContent='\ud83c\udfa8 Honey comic \u00b7 '+COMIC_COST+' \ud83c\udf6f \u2014 '+g.need+' more to go';
+    b.disabled=true; b.style.opacity='.45'; b.style.color='var(--muted)';
+  }
+}
 
 function comicFreeUsed(){ return SETTINGS.comicFreeUsed === true; }
 function comicCanMake(){
@@ -11264,7 +11309,7 @@ function comicSceneFor(setup, punch, cb){
     }).catch(function(){ cb(fallback); });
   }catch(e){ cb(fallback); }
 }
-function honeyComic(setup, punch){
+function honeyComic(setup, punch, jokeRef){
   setup=(setup||'').trim(); punch=(punch||'').trim();
   if(!punch){ toast("It needs a punchline first."); return; }
   if(isOffline()){ toast("The comic needs a signal. The picture card still works."); return; }
@@ -11291,11 +11336,12 @@ function honeyComic(setup, punch){
       // only charge once it's actually underway
       if(!gate.free){ if(!spendHoney(COMIC_COST)){ return; } }
       else { SETTINGS.comicFreeUsed=true; saveSettings(); }
-      _comicPoll(id, setup, punch, 0);
+      try{ comicBtnRender(); }catch(e){}
+      _comicPoll(id, setup, punch, 0, jokeRef);
     }).catch(function(){ toast("Couldn't reach the drawing board."); });
   });
 }
-function _comicPoll(reqId, setup, punch, tries){
+function _comicPoll(reqId, setup, punch, tries, jokeRef){
   if(tries>40){ toast("That one's taking too long. Try again in a bit."); return; }
   fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
     body:JSON.stringify({mode:'status',kind:'draw',request_id:reqId})})
@@ -11306,13 +11352,13 @@ function _comicPoll(reqId, setup, punch, tries){
         body:JSON.stringify({mode:'result',kind:'draw',request_id:reqId})})
       .then(function(r){ return r.json(); }).then(function(res){
         var url=_comicUrl(res);
-        if(url) _comicShow(url, setup, punch);
+        if(url) _comicBrand(url, function(branded, blob){ _comicKeep(jokeRef, blob, setup, punch, branded); });
         else toast("The drawing came back empty. Try once more.");
       }).catch(function(){ toast("Couldn't fetch the drawing."); });
       return;
     }
-    setTimeout(function(){ _comicPoll(reqId, setup, punch, tries+1); }, 2000);
-  }).catch(function(){ setTimeout(function(){ _comicPoll(reqId, setup, punch, tries+1); }, 2500); });
+    setTimeout(function(){ _comicPoll(reqId, setup, punch, tries+1, jokeRef); }, 2000);
+  }).catch(function(){ setTimeout(function(){ _comicPoll(reqId, setup, punch, tries+1, jokeRef); }, 2500); });
 }
 function _comicUrl(res){
   try{
@@ -11325,8 +11371,60 @@ function _comicUrl(res){
   }catch(e){}
   return '';
 }
+/* Stamp our own logo and web address into the bottom-right corner, then show it.
+   Doing it here rather than in the prompt means it's the same mark every time. */
+function _comicBrand(url, cb){
+  var img=new Image();
+  img.crossOrigin='anonymous';
+  img.onload=function(){
+    try{
+      var W=img.naturalWidth||1024, H=img.naturalHeight||1024;
+      var cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+      var ctx=cv.getContext('2d');
+      ctx.drawImage(img,0,0,W,H);
+
+      honeyMark(ctx, W, H);
+
+      function done(){
+        cv.toBlob(function(blob){
+          cb(blob ? URL.createObjectURL(blob) : url, blob);
+        },'image/png');
+      }
+      if(_vvPot && !_vvPot.complete){
+        _vvPot.onload=function(){ honeyMark(ctx,W,H); done(); };
+        _vvPot.onerror=done;
+        setTimeout(done, 1500);
+      } else done();
+    }catch(e){ cb(url, null); }
+  };
+  img.onerror=function(){ cb(url, null); };
+  img.src=url;
+}
+/* Keep the finished panel WITH the joke. Before this, closing the window lost
+   the picture and the only way back was to pay for another one — which is a
+   rotten thing to do to somebody. */
+function _comicKeep(jokeRef, blob, setup, punch, fallbackUrl){
+  function done(dataUrl){
+    if(jokeRef && dataUrl){
+      try{
+        var mine=(S.myJokes||[]);
+        var j=mine.filter(function(x){ return x.s===jokeRef.s && x.p===jokeRef.p; })[0];
+        if(j){ j.comic=dataUrl; persist(); try{ renderMyJokes(); }catch(e){} }
+      }catch(e){}
+    }
+    _comicShow(dataUrl||fallbackUrl, setup, punch, blob, !!jokeRef);
+  }
+  if(!blob){ done(fallbackUrl); return; }
+  try{
+    var fr=new FileReader();
+    fr.onload=function(){ done(fr.result); };
+    fr.onerror=function(){ done(fallbackUrl); };
+    fr.readAsDataURL(blob);
+  }catch(e){ done(fallbackUrl); }
+}
+
 /* Show it big, with the joke under it, and a share button. */
-function _comicShow(url, setup, punch){
+function _comicShow(url, setup, punch, blob, kept){
   var old=document.getElementById('comicOverlay'); if(old) old.remove();
   var d=document.createElement('div');
   d.id='comicOverlay';
@@ -11338,10 +11436,12 @@ function _comicShow(url, setup, punch){
       '<p style="font-family:Georgia,serif;font-style:italic;font-size:17px;color:#f0a878;margin:0 6px 16px;line-height:1.35">'+esc(punch)+'</p>'+
       '<button class="home-half" style="width:100%;min-height:52px" onclick="comicShareNow()">\u2197 Share it</button>'+
       '<button class="home-half" style="width:100%;margin-top:8px;color:#b9c0d0" onclick="comicClose()">Close</button>'+
-      '<p style="font-size:11px;color:#8d94a6;margin:12px 6px 0;line-height:1.5">tellmehoneyapp.com</p>'+
+      '<p style="font-size:12px;color:#9fd8bf;margin:12px 6px 0;line-height:1.5">'+
+        (kept ? '\u2713 Kept with your joke \u2014 tap Comic on it any time to see this again, no charge.'
+              : 'Save the joke first and the picture stays with it.')+'</p>'+
     '</div>';
   document.body.appendChild(d);
-  _comicLast={url:url, setup:setup, punch:punch};
+  _comicLast={url:url, setup:setup, punch:punch, blob:blob||null};
   toast("There she is \ud83c\udf6f");
 }
 var _comicLast=null;
@@ -11350,7 +11450,8 @@ function comicShareNow(){
   if(!_comicLast) return;
   var c=_comicLast;
   var txt=c.setup+'\n'+c.punch+'\n\n\ud83c\udf6f tellmehoneyapp.com';
-  fetch(c.url).then(function(r){ return r.blob(); }).then(function(blob){
+  var got = c.blob ? Promise.resolve(c.blob) : fetch(c.url).then(function(r){ return r.blob(); });
+  got.then(function(blob){
     var file=new File([blob],'honey-comic.png',{type:blob.type||'image/png'});
     if(navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
       navigator.share({files:[file], title:'A joke from Tell Me Honey', text:txt}).catch(function(){});
@@ -11367,7 +11468,17 @@ function honeyComicFromSheet(){
   var st=((document.getElementById('recSetup')||{}).value||'').trim();
   var pn=((document.getElementById('recPunch')||{}).value||'').trim();
   if(!st && !pn){ toast("Type or speak a joke first."); return; }
-  honeyComic(st, pn);
+  // if this joke is already saved, the picture gets kept with it
+  var ref=null;
+  try{
+    var hit=(S.myJokes||[]).filter(function(x){ return x.s===st && x.p===pn; })[0];
+    if(hit) ref={s:hit.s,p:hit.p};
+  }catch(e){}
+  if(!ref){
+    toast("Saving your joke first so the picture stays with it.");
+    try{ saveMyJoke(); ref={s:st,p:pn}; }catch(e){}
+  }
+  honeyComic(st, pn, ref);
 }
 
 /* ══════════ MAKE A PICTURE OF YOUR JOKE ═══════════════════════════════════
@@ -11414,18 +11525,7 @@ function jokeCardShare(setup, punch){
   y=_jcWrap(ctx, punch, W/2, y, W-170, Math.round(pSize*1.26));
 
   function finish(){
-    // pot near the bottom
-    try{
-      if(_vvPot && _vvPot.complete && _vvPot.naturalWidth){
-        var ph=190, pw=_vvPot.naturalWidth*ph/_vvPot.naturalHeight;
-        ctx.drawImage(_vvPot,(W-pw)/2, H-300, pw, ph);
-      }
-    }catch(e){}
-    ctx.textAlign='center';
-    ctx.fillStyle='rgba(58,44,18,.62)';
-    ctx.font='600 30px -apple-system, Arial, sans-serif';
-    ctx.fillText('tellmehoneyapp.com', W/2, H-72);
-
+    honeyMark(ctx, W, H);
     cv.toBlob(function(blob){
       if(!blob){ toast("Couldn't make the picture."); return; }
       var name='honey-joke-'+Date.now()+'.png';
@@ -11617,6 +11717,7 @@ function jcMove(idx){
 }
 function renderMyJokes(){
   jcFillPicker();
+  try{ comicBtnRender(); }catch(e){}
   var list=document.getElementById('recList'); list.innerHTML='';
   var head=document.getElementById('recListHead');
   var mine=S.myJokes||[];
@@ -11640,7 +11741,8 @@ function renderMyJokes(){
       d.innerHTML='<div class="s">'+esc(j.s)+'</div><div class="p">'+esc(j.p)+'</div>'+
         '<div class="row"><button class="tell">\ud83d\udce3 Tell it now</button>'+
         '<button class="pic">\ud83d\uddbc\ufe0f Card</button>'+
-        '<button class="cmc">\ud83c\udfa8 Comic</button>'+
+        (j.comic ? '<button class="cmc">\ud83c\udfa8 See comic</button>'
+                 : '<button class="cmc">\ud83c\udfa8 Comic</button>')+
         '<button class="mv">\u21c4 Move</button>'+
         '<button class="del">\ud83d\uddd1\ufe0f Delete</button></div>';
       d.querySelector('.tell').onclick=function(){
@@ -11649,7 +11751,19 @@ function renderMyJokes(){
         themTyping(function(){ pushThem(vibeColor("Your own one \u2014")); setTimeout(function(){ pushJoke(jj); },500); });
       };
       d.querySelector('.pic').onclick=function(){ jokeCardShare(j.s, j.p); };
-      d.querySelector('.cmc').onclick=function(){ honeyComic(j.s, j.p); };
+      (function(btn){
+        if(j.comic){
+          // already drawn and paid for — looking at it again is free
+          btn.onclick=function(){ _comicShow(j.comic, j.s, j.p, null, true); };
+          return;
+        }
+        var gg=comicCanMake();
+        if(!gg.ok){
+          btn.disabled=true; btn.style.opacity='.4';
+          btn.title=COMIC_COST+' honey \u2014 '+gg.need+' more to go';
+        }
+        btn.onclick=function(){ honeyComic(j.s, j.p, {s:j.s,p:j.p}); };
+      })(d.querySelector('.cmc'));
       d.querySelector('.mv').onclick=function(){ jcMove(o.idx); };
       d.querySelector('.del').onclick=function(){
         S.myJokes=S.myJokes.filter(function(x){ return x!==j; });
