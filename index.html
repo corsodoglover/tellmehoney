@@ -2309,7 +2309,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v88 · Share a verse</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v92 · Joke boxes</div>
   </div>
 </section>
 
@@ -2875,7 +2875,12 @@ textarea{resize:none;line-height:1.4;}
 <div class="rec-overlay" id="recOverlay">
   <div class="rec-sheet">
     <div class="rec-head"><span>Record a joke</span><button class="rec-x" onclick="closeRecordJoke()">✕</button></div>
-    <p class="rec-hint">Type it, or tap 🎤 to speak each line. She'll mix your jokes into the rotation.</p>
+    <p class="rec-hint">Type it, or tap 🎤 to speak each line. Then just ask — "tell me one of my jokes."</p>
+    <label class="rec-label">Which box?</label>
+    <div class="rec-field" style="padding:0">
+      <select id="recColl" style="width:100%;background:transparent;border:none;color:var(--ink);font-size:15px;padding:12px"></select>
+    </div>
+    <button class="home-half" style="width:100%;margin:0 0 10px" onclick="jcAddPrompt()">＋ New box</button>
     <label class="rec-label">Setup</label>
     <div class="rec-field">
       <textarea id="recSetup" rows="2" placeholder="Why did the…"></textarea>
@@ -4529,7 +4534,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, rangerHave:[], foodCards:[], cloneForKeepsakes:false, verseColls:[], jokeColls:[], myJokesInChat:true, checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, rangerHave:[], foodCards:[], cloneForKeepsakes:false, verseColls:[], jokeColls:[], myJokesInChat:false, lastJokeColl:'mine', checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -7426,7 +7431,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v88";
+window.HONEY_BUILD = "v92";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -8259,7 +8264,10 @@ function findJokeCollByWords(l){
   return bestScore>=3 ? best : null;
 }
 /* Should the person's own jokes get mixed into ordinary chat? Their choice. */
-function myJokesInChat(){ return SETTINGS.myJokesInChat !== false; }
+/* OFF by default. Mixing somebody's single joke into a library of 1,342 either
+   buries it or repeats it — neither is good. Their own jokes are heard by
+   ASKING for them: "tell me one of my jokes", or by the box name they chose. */
+function myJokesInChat(){ return SETTINGS.myJokesInChat === true; }
 
 /* ── SOMEBODY SAID HELLO ───────────────────────────────────────────────────
    Typing "hello" used to match nothing at all and land on the generic
@@ -8419,6 +8427,20 @@ function handleJokeRequest(t, l){
   //    Skip this when they just want any old joke ("tell me a joke", "another one").
   var vague = /^(tell me|give me|say|i want|i need|got|have)?\s*(a|an|another|one|some)?\s*(good|funny|new|clean|quick|short)?\s*(joke|jokes|something funny|comedy)\s*(please|for me|honey)?[.!?]*$/.test((l||'').trim());
   if(!vague){
+    /* "tell me one of my jokes" — the plain way to reach your own bank */
+    if(/\b(my|our|one of (my|our)|from my)\b[^.]{0,20}\bjokes?\b/.test(l)
+       || /\bmy joke\b/.test(l)){
+      var allMine=(S.myJokes||[]).filter(function(j){ return j && j.s; });
+      if(allMine.length){
+        var mp=allMine[Math.floor(Math.random()*allMine.length)];
+        tellJoke(false, null, false, {s:mp.s, p:mp.p, mine:true});
+        return;
+      }
+      themTyping(function(){
+        pushThem(vibeColor("You haven't saved any of your own yet. Heard a good one? Save it and I'll keep it for you."));
+      });
+      return;
+    }
     // A named joke box of their own — "tell me one of Granddad's jokes"
     var jbox = findJokeCollByWords(l);
     if(jbox){
@@ -11163,30 +11185,98 @@ function saveMyJoke(){
   if(!s && !p){ toast("Type or speak a joke first."); return; }
   if(!p){ toast("Add a punchline too."); return; }
   if(!s){ s="(no setup)"; }
-  S.myJokes.push({s:s,p:p,made:Date.now()});
+  // file it in whichever box the picker is showing
+  var _sel=document.getElementById('recColl');
+  var _coll=(_sel && _sel.value) ? _sel.value : (SETTINGS.lastJokeColl||'mine');
+  SETTINGS.lastJokeColl=_coll; saveSettings();
+  S.myJokes.push({s:s,p:p,made:Date.now(),coll:_coll});
   persist();
   document.getElementById('recSetup').value='';
   document.getElementById('recPunch').value='';
   renderMyJokes();
   if(typeof renderMyJokesScreen==='function') renderMyJokesScreen();
-  toast("Saved. She'll work it into the rotation.");
+  var _cn=(jokeColls().find(function(c){return c.id===_coll;})||{}).name||'your jokes';
+  toast('Saved to '+_cn+'. Say \u201ctell me one of my jokes\u201d anytime.');
+}
+/* ── joke boxes: fill the picker, make new ones ── */
+function jcFillPicker(){
+  var sel=document.getElementById('recColl'); if(!sel) return;
+  var colls=jokeColls();
+  var cur=sel.value||SETTINGS.lastJokeColl||'mine';
+  sel.innerHTML=colls.map(function(c){
+    return '<option value="'+c.id+'"'+(c.id===cur?' selected':'')+'>'+esc(c.name)+'</option>';
+  }).join('');
+}
+function jcAddPrompt(){
+  appPrompt("Name the box — Granddad's Jokes, Church Jokes, anything.", "", function(v){
+    if(!v || !v.trim()) return;
+    var c=jokeCollAdd(v);
+    if(!c){ toast("You already have one by that name."); return; }
+    SETTINGS.lastJokeColl=c.id; saveSettings();
+    jcFillPicker();
+    var sel=document.getElementById('recColl'); if(sel) sel.value=c.id;
+    renderMyJokes();
+    toast('\u201c'+c.name+'\u201d is ready.');
+  });
+}
+function jcMove(idx){
+  var mine=S.myJokes||[]; var j=mine[idx]; if(!j) return;
+  var colls=jokeColls();
+  if(colls.length<2){ toast("Make another box first."); return; }
+  var names=colls.map(function(c,i){ return (i+1)+'. '+c.name; }).join('\n');
+  appPrompt("Move it to which box?\n\n"+names, "", function(v){
+    var n=parseInt((v||'').trim(),10);
+    if(n>=1 && n<=colls.length){
+      j.coll=colls[n-1].id; persist(); renderMyJokes();
+      toast("Moved to "+colls[n-1].name+".");
+    }
+  });
 }
 function renderMyJokes(){
+  jcFillPicker();
   var list=document.getElementById('recList'); list.innerHTML='';
   var head=document.getElementById('recListHead');
   var mine=S.myJokes||[];
   if(!mine.length){ head.style.display='none'; return; }
   head.style.display='block';
   document.getElementById('recCount').textContent='('+mine.length+')';
-  mine.slice().reverse().forEach((j)=>{
-    var d=document.createElement('div'); d.className='rec-jcard';
-    d.innerHTML='<div class="s">'+esc(j.s)+'</div><div class="p">'+esc(j.p)+'</div>'+
-      '<div class="row"><button class="tell">📣 Tell it now</button><button class="del">🗑️ Delete</button></div>';
-    d.querySelector('.tell').onclick=()=>{ closeRecordJoke(); var jj={s:j.s,p:j.p,mine:true};
-      themTyping(()=>{ pushThem(vibeColor("Your own one —")); setTimeout(()=>pushJoke(jj),500); }); };
-    d.querySelector('.del').onclick=()=>{ S.myJokes=S.myJokes.filter(x=>x!==j); persist(); renderMyJokes(); toast("Deleted."); };
-    list.appendChild(d);
+
+  // grouped into the boxes they made, same idea as the journals
+  jokeColls().forEach(function(c){
+    var inBox=[];
+    mine.forEach(function(j,idx){ if((j.coll||'mine')===c.id) inBox.push({j:j,idx:idx}); });
+    if(!inBox.length) return;
+    var h=document.createElement('div');
+    h.className='rec-list-head';
+    h.style.cssText='margin-top:14px;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold)';
+    h.textContent=c.name+'  ('+inBox.length+')';
+    list.appendChild(h);
+    inBox.slice().reverse().forEach(function(o){
+      var j=o.j;
+      var d=document.createElement('div'); d.className='rec-jcard';
+      d.innerHTML='<div class="s">'+esc(j.s)+'</div><div class="p">'+esc(j.p)+'</div>'+
+        '<div class="row"><button class="tell">\ud83d\udce3 Tell it now</button>'+
+        '<button class="mv">\u21c4 Move</button>'+
+        '<button class="del">\ud83d\uddd1\ufe0f Delete</button></div>';
+      d.querySelector('.tell').onclick=function(){
+        closeRecordJoke();
+        var jj={s:j.s,p:j.p,mine:true};
+        themTyping(function(){ pushThem(vibeColor("Your own one \u2014")); setTimeout(function(){ pushJoke(jj); },500); });
+      };
+      d.querySelector('.mv').onclick=function(){ jcMove(o.idx); };
+      d.querySelector('.del').onclick=function(){
+        S.myJokes=S.myJokes.filter(function(x){ return x!==j; });
+        persist(); renderMyJokes(); toast("Deleted.");
+      };
+      list.appendChild(d);
+    });
   });
+  // a quiet note about how to hear them
+  var tip=document.createElement('div');
+  tip.style.cssText='margin-top:14px;font-size:11.5px;color:var(--muted);line-height:1.5';
+  tip.innerHTML='Say <b>\u201ctell me one of my jokes\u201d</b>' +
+    (jokeColls().length>1 ? ' \u2014 or ask for a box by name, like <b>\u201ctell me one of '+esc(jokeColls()[1].name)+'\u201d</b>.' : '.');
+  list.appendChild(tip);
 }
 /* dictate into a field via speech recognition */
 var recDictRecog=null, recDictField=null, recDictBtn=null;
@@ -12800,7 +12890,9 @@ function setTalking(on){
 }
 
 /* ════ VIDEO STUDIO ════ */
-var VIDCFG={ key:"", shadow:true, enhance:false, look:"none", smile:false, zoom:1, noMark:false };
+/* Shadow starts OFF. It was auto-selected every time you opened the suite,
+   so people got a drop shadow they never asked for and had to go turn off. */
+var VIDCFG={ key:"", shadow:false, enhance:false, look:"none", smile:false, zoom:1, noMark:false };
 /* one-tap Enhance: warmer, brighter, a touch more contrast & pop — like good phone auto-fix.
    Combined with an optional "look" filter (B&W, warm, cool, vintage, soft). */
 function enhanceFilter(){
@@ -15327,17 +15419,39 @@ function renderLearnFacts(){
 }
 /* speak a phrase in the target language — uses OpenAI voice (from key) when available
    (handles languages well + cheaper), otherwise the free device voice. */
+/* Wait until Honey has actually finished talking, then run something.
+   The language voice used to call stopAllAudio() and cut her off mid-sentence. */
+function afterHoneyQuiet(fn, capMs){
+  var waited=0, step=140, cap=capMs||12000;
+  function busy(){
+    try{
+      if(typeof cloudPlaying!=='undefined' && cloudPlaying) return true;
+      if(typeof cloudQueue!=='undefined' && cloudQueue && cloudQueue.length) return true;
+      if(typeof cloudInFlight!=='undefined' && cloudInFlight>0) return true;
+      if(window.speechSynthesis && (speechSynthesis.speaking || speechSynthesis.pending)) return true;
+      var el=(typeof _honeyEl==='function') ? _honeyEl() : null;
+      if(el && !el.paused && !el.ended) return true;
+    }catch(e){}
+    return false;
+  }
+  (function tick(){
+    if(!busy() || waited>=cap){ setTimeout(fn, 260); return; }   // a small breath after her
+    waited+=step; setTimeout(tick, step);
+  })();
+}
 function sayLearn(text, langCode){
   // speak only the script, not the romaji hint in parentheses
   var spoken=(text||'').replace(/\s*\([^)]*\)\s*/g,' ').trim() || text;
   // Always use the phone's built-in (stock) voice for the target language.
-  // Native device voices (ja-JP, es-ES, etc.) pronounce each language correctly —
-  // a general/cloud voice often mispronounces foreign phrases.
-  sayLearnDevice(spoken, langCode);
+  // Native device voices (ja-JP, es-ES, etc.) pronounce each language correctly.
+  // Let Honey finish her sentence first — she introduces it, then it's said properly.
+  afterHoneyQuiet(function(){ sayLearnDevice(spoken, langCode); });
 }
 function sayLearnDevice(text, langCode){
   if(!('speechSynthesis'in window)){ toast(text); return; }
-  try{ stopAllAudio();
+  // NOTE: no stopAllAudio() here — that was cutting Honey off. afterHoneyQuiet()
+  // has already waited for her to finish before we get called.
+  try{ try{ speechSynthesis.cancel(); }catch(e){}
     var u=new SpeechSynthesisUtterance(text);
     var map={es:'es-ES',fr:'fr-FR',de:'de-DE',it:'it-IT',ja:'ja-JP'};
     var tag=map[langCode]||'es-ES'; u.lang=tag; u.rate=0.9;
