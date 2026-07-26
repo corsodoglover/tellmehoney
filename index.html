@@ -227,7 +227,17 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .full-wipe-link{display:block;margin:18px auto 4px;background:none;border:none;
   color:var(--dim);font-size:11.5px;text-decoration:underline;cursor:pointer;}
 .thrive-card{background:linear-gradient(180deg,#1c1808,#14121a);border:1px solid var(--line);
-  border-radius:20px;padding:20px 18px;text-align:center;margin-bottom:18px;}
+  border-radius:20px;padding:20px 18px;text-align:center;margin-bottom:18px;position:relative;}
+.thrive-shrink{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:10px;
+  background:transparent;border:none;color:var(--gold);opacity:.75;font-size:13px;line-height:1;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.thrive-shrink:active{opacity:.4;}
+/* the small version: ring and words side by side, about a third the height */
+.thrive-card.small{display:flex;align-items:center;gap:14px;text-align:left;
+  padding:12px 46px 12px 14px;margin-bottom:12px;}
+.thrive-card.small .thrive-ring{width:64px;height:64px;margin:0;flex:0 0 auto;}
+.thrive-card.small .thrive-reflect{font-size:12.5px;line-height:1.45;flex:1;min-width:0;
+  max-height:56px;overflow:hidden;}
 .thrive-ring{width:140px;height:140px;margin:0 auto 12px;}
 .thrive-ring svg{width:100%;height:100%;}
 .thrive-reflect{font-size:14px;line-height:1.55;color:var(--ink);}
@@ -396,6 +406,11 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .cook-open .hb-tx small{display:block;font-size:10.5px;color:var(--muted);margin-top:1px;}
 .cook-x{flex:0 0 auto;width:46px;border-radius:13px;background:rgba(255,255,255,.04);
   border:1px solid rgba(255,255,255,.12);color:var(--muted);font-size:14px;}
+.foldable{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;}
+.foldable:active{opacity:.7;}
+.fold-tri{flex:0 0 auto;font-size:13px;color:var(--gold);opacity:.85;
+  transition:transform .18s ease;line-height:1;padding:6px 2px 6px 10px;}
 .ft-chips{display:flex;flex-wrap:wrap;gap:7px;}
 .fw-day{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
   border-radius:13px;padding:10px 12px;margin-bottom:7px;}
@@ -1736,7 +1751,8 @@ textarea{resize:none;line-height:1.4;}
     <div class="pot-date" id="potDate">Today</div>
 
     <!-- Thriving score + reflection (the centerpiece) -->
-    <div class="thrive-card">
+    <div class="thrive-card" id="thriveCard">
+      <button class="thrive-shrink" id="thriveShrink" onclick="thriveToggleSize()" title="Make it smaller">▾</button>
       <div class="thrive-ring" id="thriveRing"></div>
       <div class="thrive-reflect" id="thriveReflect"></div>
     </div>
@@ -1745,15 +1761,15 @@ textarea{resize:none;line-height:1.4;}
     <div class="lang-bars" id="langBars"></div>
 
     <!-- Honeycomb hive -->
-    <div class="hive-head">Your hive this week</div>
+    <div class="hive-head foldable" data-fold="hive" onclick="mirrorToggle('hive')">Your hive this week<span class="fold-tri">▾</span></div>
     <div class="hive-wrap" id="hiveWrap"></div>
 
     <!-- Honey Mirror noticings -->
-    <div class="mirror-head">Here's what I've noticed</div>
+    <div class="mirror-head foldable" data-fold="noticed" onclick="mirrorToggle('noticed')">Here's what I've noticed<span class="fold-tri">▾</span></div>
     <div class="mirror-list" id="mirrorList"></div>
 
     <!-- Thriving trend -->
-    <div class="trend-head">Thriving trend</div>
+    <div class="trend-head foldable" data-fold="trend" onclick="mirrorToggle('trend')">Thriving trend<span class="fold-tri">▾</span></div>
     <div class="trend-range" id="trendRange">
       <button data-range="week" onclick="setTrendRange(&#39;week&#39;)">Week</button>
       <button data-range="month" onclick="setTrendRange(&#39;month&#39;)">Month</button>
@@ -1763,12 +1779,12 @@ textarea{resize:none;line-height:1.4;}
     <div class="trend-wrap" id="trendWrap"></div>
 
     <!-- The realism jar -->
-    <div class="jar-head">Your honey pot</div>
+    <div class="jar-head foldable" data-fold="pot" onclick="mirrorToggle('pot')">Your honey pot<span class="fold-tri">▾</span></div>
     <div class="pot-wrap" id="potWrap"></div>
     <div class="pot-momentum" id="potMomentum"></div>
 
     <!-- GOALS: the painless daily/weekly/monthly structure -->
-    <div class="goals-head">Your goals</div>
+    <div class="goals-head foldable" data-fold="goals" onclick="mirrorToggle('goals')">Your goals<span class="fold-tri">▾</span></div>
     <div class="goals-sub" id="goalsSub">Little things, sprinkled through your week. Tap one to check it off.</div>
     <div class="goals-today" id="goalsToday"></div>
     <div class="goals-actions">
@@ -1778,7 +1794,7 @@ textarea{resize:none;line-height:1.4;}
 
     <!-- MOOD: gentle pattern from check-ins (only shows once you've checked in) -->
     <div id="moodSection" style="display:none">
-      <div class="goals-head">How you've been feeling</div>
+      <div class="goals-head foldable" data-fold="mood" onclick="mirrorToggle('mood')">How you've been feeling<span class="fold-tri">▾</span></div>
       <div class="mood-span" id="moodSpan">
         <button class="ms-btn sel" onclick="setMoodSpan('week',this)">Week</button>
         <button class="ms-btn" onclick="setMoodSpan('month',this)">Month</button>
@@ -1789,7 +1805,7 @@ textarea{resize:none;line-height:1.4;}
     </div>
 
     <!-- NOURISH: focus on what to eat — tap nourishing foods, earn honey -->
-    <div class="goals-head">Nourish &amp; earn honey</div>
+    <div class="goals-head foldable" data-fold="nourish" onclick="mirrorToggle('nourish')">Nourish &amp; earn honey<span class="fold-tri">▾</span></div>
     <div class="goals-sub">Tap the good things you ate today. We celebrate what you add — never what you don't.</div>
     <div class="nourish-grid" id="nourishGrid"></div>
     <div class="nourish-note" id="nourishNote"></div>
@@ -2309,7 +2325,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v101 · Comics kept</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v106 · Fold fix</div>
   </div>
 </section>
 
@@ -2369,8 +2385,8 @@ textarea{resize:none;line-height:1.4;}
     <div class="vid-status" id="bgStatus"></div>
 
     <!-- SHARE YOUR OWN VIDEO (FREE) — no preview, straight to the share sheet -->
-    <div class="cloud-box" style="margin-bottom:14px">
-      <div class="cloud-head"><span>🎥 Send a video from your phone</span></div>
+    <div class="cloud-box" id="tpOwnVidBox" style="margin-bottom:14px">
+      <div class="cloud-head foldable" onclick="boxToggle('tpOwnVid','tpOwnVidBox')"><span>🎥 Send a video from your phone</span><span class="fold-tri">▾</span></div>
       <p class="rec-hint" style="margin:6px 0 10px">Pick any video off your phone, add a line, and send it — a joke, a birthday, an announcement. Free, nothing stored.</p>
       <div class="rec-field"><input id="tpOwnVidLine" placeholder="Add a line to send with it — e.g. Happy Birthday!"></div>
       <button class="rec-save" onclick="document.getElementById('tpOwnVid').click()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">🎥 Pick a video</button>
@@ -2382,7 +2398,7 @@ textarea{resize:none;line-height:1.4;}
     <!-- STEP 1: SCENE (PAID) -->
     <div class="cloud-box" id="tpSceneBox" style="margin-bottom:14px">
       <div id="tpSceneLock"></div>
-      <div class="cloud-head"><span>🎨 Change the scene</span></div>
+      <div class="cloud-head foldable" onclick="boxToggle('tpScene','tpSceneBox')"><span>🎨 Change the scene</span><span class="fold-tri">▾</span></div>
       <p class="rec-hint" style="margin:6px 0 10px">Describe a new look — e.g. "put me on a beach with sailboats."</p>
       <div class="rec-field"><input id="tpScenePrompt" placeholder="e.g. put me on a beach with sailboats"></div>
       <button class="rec-save" onclick="tpMakeScene()">🎨 Make the scene</button>
@@ -2392,7 +2408,7 @@ textarea{resize:none;line-height:1.4;}
     <!-- STEP 2: VIDEO (PAID) -->
     <div class="cloud-box" id="tpVideoBox">
       <div id="tpVideoLock"></div>
-      <div class="cloud-head"><span>✨ Bring it to life</span></div>
+      <div class="cloud-head foldable" onclick="boxToggle('tpVideo','tpVideoBox')"><span>✨ Bring it to life</span><span class="fold-tri">▾</span></div>
       <p class="rec-hint" style="margin:6px 0 10px">Turn the photo above into a gently moving video.</p>
       <div class="rec-field"><input id="tpVidPrompt" placeholder="e.g. waves rolling, hair blowing gently"></div>
       <button class="rec-save" onclick="tpMakeVideo()">🎬 Make a video</button>
@@ -2792,7 +2808,7 @@ textarea{resize:none;line-height:1.4;}
     <!-- PREMIUM AI ZONE (user-facing). Dimmed with a gentle top-up when credits are out;
          fully open when the user has credits. Never blocks the free stuff above. -->
     <div class="cloud-box" id="aiPremiumBox">
-      <div class="cloud-head"><span>🎨 Change the scene</span></div>
+      <div class="cloud-head foldable" onclick="boxToggle('tpScene','tpSceneBox')"><span>🎨 Change the scene</span><span class="fold-tri">▾</span></div>
       <p class="rec-hint" style="margin:6px 0 12px">Describe a new look and AI recreates the photo — e.g. "put me on a beach with sailboats," "add a garden background," "make it look like fall."</p>
       <div id="aiEditTools">
         <div class="rec-field"><input id="editPrompt" placeholder="e.g. put me on a beach with sailboats behind me"></div>
@@ -2802,7 +2818,7 @@ textarea{resize:none;line-height:1.4;}
     </div>
 
     <div class="cloud-box" id="aiVideoBox">
-      <div class="cloud-head"><span>✨ Bring it to life</span></div>
+      <div class="cloud-head foldable" onclick="boxToggle('tpVideo','tpVideoBox')"><span>✨ Bring it to life</span><span class="fold-tri">▾</span></div>
       <p class="rec-hint" style="margin:6px 0 12px">Turn the current photo into a gently moving video. (Adds soft motion — recreate the scene above first if you want a new background.)</p>
       <div id="aiLockNote"></div>
       <div id="aiPremiumTools">
@@ -5287,7 +5303,8 @@ function tagInsights(t){
 }
 
 /* ════ HONEY POT RENDER ════ */
-function openInsights(){ document.getElementById('welcome').classList.remove('sleeping','waking'); go('insights'); renderInsights(); }
+function openInsights(){
+  try{ mirrorApplyFolds(); }catch(e){} document.getElementById('welcome').classList.remove('sleeping','waking'); go('insights'); renderInsights(); }
 /* ── MY SWEET LIFE — the hub for everything (opened by the big button) ── */
 function openSweetLife(){
   if(!hasSetup()){ newAgentFlow(true); return; }
@@ -6071,6 +6088,7 @@ function loadDemoData(){
   toast("Demo data loaded — this is sample data.");
 }
 function renderInsights(){
+  try{ mirrorApplyFolds(); }catch(e){}
   ensureWeek();
   try{ renderGoalsToday(); }catch(e){}
   try{ renderMoodTrend(); }catch(e){}
@@ -7436,7 +7454,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v101";
+window.HONEY_BUILD = "v106";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -11201,29 +11219,125 @@ function saveMyJoke(){
   var _cn=(jokeColls().find(function(c){return c.id===_coll;})||{}).name||'your jokes';
   toast('Saved to '+_cn+'. Say \u201ctell me one of my jokes\u201d anytime.');
 }
+/* Folding for boxes that contain their own contents — the Photo Suite's paid
+   sections are each one box, so we fold what's inside rather than everything
+   until the next heading. Somebody on the free tier can tuck away the two paid
+   panels and never look at them again. */
+function boxToggle(key, boxId){
+  var f=mirrorFolded();
+  f[key]=!f[key];
+  SETTINGS.mirrorFold=f; saveSettings();
+  boxApplyFold(key, boxId);
+}
+function boxApplyFold(key, boxId){
+  var box=document.getElementById(boxId); if(!box) return;
+  var folded=mirrorIsFolded(key);
+  var head=box.querySelector('.cloud-head');
+  var kids=box.children;
+  for(var i=0;i<kids.length;i++){
+    var el=kids[i];
+    if(el===head) continue;
+    if(el.id && /Lock$/.test(el.id)) continue;    // the lock notice stays visible
+    el.style.display = folded ? 'none' : '';
+  }
+  var tri=box.querySelector('.fold-tri');
+  if(tri) tri.style.transform = folded ? 'rotate(-90deg)' : '';
+}
+function tpApplyFolds(){
+  try{ boxApplyFold('tpOwnVid','tpOwnVidBox'); }catch(e){}
+  try{ boxApplyFold('tpScene','tpSceneBox'); }catch(e){}
+  try{ boxApplyFold('tpVideo','tpVideoBox'); }catch(e){}
+}
+
+/* The thriving card is lovely and it's also the biggest thing on the screen.
+   One tap shrinks it to a small ring with the score beside it, so somebody who
+   came to see their honey pot isn't scrolling past a centrepiece first. */
+function thriveIsSmall(){ return SETTINGS.thriveSmall === true; }
+function thriveToggleSize(){
+  SETTINGS.thriveSmall = !thriveIsSmall();
+  saveSettings();
+  thriveApplySize();
+}
+function thriveApplySize(){
+  var card=document.getElementById('thriveCard');
+  var btn=document.getElementById('thriveShrink');
+  if(!card) return;
+  var small=thriveIsSmall();
+  card.classList.toggle('small', small);
+  if(btn){
+    btn.textContent = small ? '\u25b8' : '\u25be';
+    btn.title = small ? 'Show it full size' : 'Make it smaller';
+  }
+}
+
+/* ══════════ FOLDING THE MIRROR AWAY ══════════════════════════════════════
+   Not everybody wants all of it. Somebody who only cares about their honey pot
+   shouldn't have to scroll past goals and mood charts to see it. Each section
+   gets a little triangle: tap the heading to fold it away, and it stays folded
+   until they say otherwise. */
+function mirrorFolded(){
+  if(!SETTINGS.mirrorFold || typeof SETTINGS.mirrorFold!=='object') SETTINGS.mirrorFold={};
+  return SETTINGS.mirrorFold;
+}
+function mirrorIsFolded(key){ return mirrorFolded()[key]===true; }
+function mirrorToggle(key){
+  var f=mirrorFolded();
+  f[key]=!f[key];
+  SETTINGS.mirrorFold=f; saveSettings();
+  mirrorApplyFolds();
+}
+/* Show or hide each section's body, and turn its triangle. */
+function mirrorApplyFolds(){
+  try{ thriveApplySize(); }catch(e){}
+  document.querySelectorAll('[data-fold]').forEach(function(el){
+    var key=el.getAttribute('data-fold');
+    var folded=mirrorIsFolded(key);
+    /* Walk forward, but ONLY over the few elements that belong to this section,
+       and never disturb anything that was deliberately hidden. The first version
+       ran until it met the next foldable heading, so folding a middle section
+       swallowed everything under it and un-hid things meant to stay hidden. */
+    var n=el.nextElementSibling, steps=0;
+    while(n && !n.hasAttribute('data-fold') && steps<6){
+      // leave alone anything the app hides on purpose
+      var ownHidden = n.getAttribute('data-keephidden')!==null ||
+                      (n.getAttribute('style')||'').indexOf('display:none')>=0;
+      if(!ownHidden){
+        if(folded){
+          if(n.style.display!=='none'){ n.setAttribute('data-wasfolded','1'); n.style.display='none'; }
+        } else if(n.getAttribute('data-wasfolded')){
+          n.style.display=''; n.removeAttribute('data-wasfolded');
+        }
+      }
+      n=n.nextElementSibling; steps++;
+    }
+    var tri=el.querySelector('.fold-tri');
+    if(tri) tri.style.transform = folded ? 'rotate(-90deg)' : '';
+    el.setAttribute('aria-expanded', folded ? 'false' : 'true');
+  });
+  try{ tpApplyFolds(); }catch(e){}
+}
+
 /* ── THE MARK ───────────────────────────────────────────────────────────────
    One corner treatment for everything we share: the real honeypot and the web
    address, bottom right, on a soft light patch so it reads on any background.
    Comics, joke cards, verse videos — all the same, so a feed of them looks
    like one hand made them. */
 function honeyMark(ctx, W, H){
+  /* Matched to the Photo Suite's watermark — small serif, 80% opacity, tight to
+     the corner. The big version I built first looked like a sticker rather than
+     a mark, and it crowded everything else out. */
   try{
-    var pad=Math.round(W*0.035);
-    var potH=Math.round(H*0.11);
-    var bx=Math.round(W*0.40), by=H-potH-Math.round(pad*2.1);
-    var grd=ctx.createLinearGradient(bx,by,W,H);
-    grd.addColorStop(0,'rgba(255,253,247,0)');
-    grd.addColorStop(1,'rgba(255,253,247,.82)');
+    var sz=Math.max(14, Math.round(W*0.021));
     ctx.save();
-    ctx.fillStyle=grd; ctx.fillRect(bx,by,W-bx,H-by);
+    ctx.font=sz+'px Georgia, serif';
     ctx.textAlign='right'; ctx.textBaseline='alphabetic';
-    ctx.fillStyle='rgba(58,44,18,.78)';
-    ctx.font='600 '+Math.round(W*0.028)+'px -apple-system, Arial, sans-serif';
-    ctx.fillText('tellmehoneyapp.com', W-pad, H-pad);
-    if(_vvPot && _vvPot.complete && _vvPot.naturalWidth){
-      var pw=_vvPot.naturalWidth*potH/_vvPot.naturalHeight;
-      ctx.drawImage(_vvPot, W-pad-pw, H-pad-Math.round(W*0.052)-potH, pw, potH);
-    }
+    ctx.globalAlpha=.8;
+    // a soft dark edge so it reads on pale backgrounds too
+    ctx.fillStyle='rgba(255,255,255,.55)';
+    ctx.fillText('\ud83c\udf6f Tell me Honey', W-Math.round(sz*0.65)+1, H-Math.round(sz*0.7)+1);
+    ctx.fillStyle='#5a4a1e';
+    ctx.fillText('\ud83c\udf6f Tell me Honey', W-Math.round(sz*0.65), H-Math.round(sz*0.7));
+    ctx.globalAlpha=1;
     ctx.restore();
   }catch(e){}
 }
@@ -11352,7 +11466,7 @@ function _comicPoll(reqId, setup, punch, tries, jokeRef){
         body:JSON.stringify({mode:'result',kind:'draw',request_id:reqId})})
       .then(function(r){ return r.json(); }).then(function(res){
         var url=_comicUrl(res);
-        if(url) _comicBrand(url, function(branded, blob){ _comicKeep(jokeRef, blob, setup, punch, branded); });
+        if(url) _comicBrand(url, setup, punch, function(branded, blob){ _comicKeep(jokeRef, blob, setup, punch, branded); });
         else toast("The drawing came back empty. Try once more.");
       }).catch(function(){ toast("Couldn't fetch the drawing."); });
       return;
@@ -11373,17 +11487,57 @@ function _comicUrl(res){
 }
 /* Stamp our own logo and web address into the bottom-right corner, then show it.
    Doing it here rather than in the prompt means it's the same mark every time. */
-function _comicBrand(url, cb){
+function _comicBrand(url, setup, punch, cb){
+  /* The panel arrives wordless, then we add the joke ourselves in our own type —
+     on a cream band beneath the picture, so the words are always crisp and the
+     picture never gets covered up. */
   var img=new Image();
   img.crossOrigin='anonymous';
   img.onload=function(){
     try{
-      var W=img.naturalWidth||1024, H=img.naturalHeight||1024;
+      var W=1080;
+      var picH=Math.round(W * ((img.naturalHeight||1024)/(img.naturalWidth||1024)));
+      var ctx0=document.createElement('canvas').getContext('2d');
+
+      function fit(txt, weight, ital, start, min, maxW){
+        var sz=start;
+        while(sz>min){
+          ctx0.font=(ital?'italic ':'')+weight+' '+sz+'px Georgia, serif';
+          var words=String(txt).split(' '), line='', lines=1;
+          for(var i=0;i<words.length;i++){
+            var t=line?line+' '+words[i]:words[i];
+            if(ctx0.measureText(t).width>maxW && line){ lines++; line=words[i]; } else line=t;
+          }
+          if(lines<=2) return {size:sz, lines:lines};
+          sz-=2;
+        }
+        return {size:min, lines:3};
+      }
+      var maxW=W-120;
+      var fs=fit(setup, 700, false, 54, 32, maxW);
+      var fp=fit(punch, 700, true,  50, 30, maxW);
+      var lhS=Math.round(fs.size*1.24), lhP=Math.round(fp.size*1.24);
+      var bandH = 44 + fs.lines*lhS + 18 + fp.lines*lhP + 52;
+
+      var H=picH+bandH;
       var cv=document.createElement('canvas'); cv.width=W; cv.height=H;
       var ctx=cv.getContext('2d');
-      ctx.drawImage(img,0,0,W,H);
 
-      honeyMark(ctx, W, H);
+      ctx.drawImage(img,0,0,W,picH);
+
+      // the caption band
+      ctx.fillStyle='#FFFDF9'; ctx.fillRect(0,picH,W,bandH);
+      ctx.fillStyle='rgba(190,158,87,.55)'; ctx.fillRect(0,picH,W,3);
+
+      ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+      var y=picH+44+fs.size;
+      ctx.fillStyle='#3A2C12';
+      ctx.font='700 '+fs.size+'px Georgia, serif';
+      y=_jcWrap(ctx, setup, W/2, y, maxW, lhS);
+      y += 18 + fp.size;
+      ctx.fillStyle='#B9561F';
+      ctx.font='italic 700 '+fp.size+'px Georgia, serif';
+      y=_jcWrap(ctx, punch, W/2, y, maxW, lhP);
 
       function done(){
         cv.toBlob(function(blob){
@@ -11394,7 +11548,7 @@ function _comicBrand(url, cb){
         _vvPot.onload=function(){ honeyMark(ctx,W,H); done(); };
         _vvPot.onerror=done;
         setTimeout(done, 1500);
-      } else done();
+      } else { honeyMark(ctx,W,H); done(); }
     }catch(e){ cb(url, null); }
   };
   img.onerror=function(){ cb(url, null); };
@@ -14049,6 +14203,7 @@ var tpImageData=null;   // the current working image (data URL or https URL)
 var tpVideoUrl=null;    // the finished video URL (for share/keep)
 
 function openTestPhoto(){
+  try{ setTimeout(tpApplyFolds, 60); }catch(e){}
   go('testPhoto');
   // start the animation engine on this screen's canvas
   try{ renderVidStyles(); }catch(e){ console.log('renderVidStyles failed:', e && e.message); if(isOwner()) toast('Looks failed: '+(e&&e.message)); }
