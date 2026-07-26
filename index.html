@@ -2309,7 +2309,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v96 · Comic wired</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v97 · Comic scenes</div>
   </div>
 </section>
 
@@ -7436,7 +7436,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v96";
+window.HONEY_BUILD = "v97";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -11208,15 +11208,15 @@ function saveMyJoke(){
    the bill and the ones people make mean something.
    Character and style are locked so every panel belongs to the same comic. */
 var COMIC_COST = 50;              // honey per panel after the free one
-var COMIC_CHARACTER =
-  "Honey, a small round honey pot character with a warm amber-gold glazed body, "+
-  "a wooden dipper resting on the rim, two simple black dot eyes, a tiny curved smile, "+
-  "short stubby arms, no nose, no ears, friendly and calm expression";
+var COMIC_SIGNATURE =
+  "with a small round golden honey pot and a wooden dipper tucked somewhere in the scene";
 var COMIC_STYLE =
+  "a completely wordless picture-only illustration with no writing anywhere in the frame, "+
   "soft hand-drawn ink linework with gentle watercolor wash, warm muted palette of honey gold, "+
   "amber, soft rust and warm brown on a pale sky-blue and cream background, generous white space, "+
-  "simple rounded shapes, storybook illustration, calm and unhurried, no crosshatching, "+
-  "no harsh outlines, no text, no words, no letters, no speech bubbles, no watermark, single panel, square";
+  "simple rounded shapes, storybook illustration, calm and unhurried, no crosshatching, no harsh outlines, "+
+  "no text, no words, no letters, no captions, no title, no speech bubbles, no signage, no watermark, "+
+  "single panel, square";
 
 function comicFreeUsed(){ return SETTINGS.comicFreeUsed === true; }
 function comicCanMake(){
@@ -11226,26 +11226,44 @@ function comicCanMake(){
   return {ok:false, need:COMIC_COST-(SETTINGS.honey||0)};
 }
 
-/* Ask Honey's own brain for a simple drawable scene. Costs a fraction of a cent
-   and it's what stops every picture being a literal illustration of a pun. */
+/* Turn a joke setup into something drawable, with no AI needed.
+   The old fallback passed the raw question straight through — so the model
+   tried to letter "Why did the goat join the choir?" into the picture instead
+   of drawing a goat. A prompt must describe a SCENE, never ask a question. */
+function comicSceneLocal(setup, punch){
+  /* Turn the setup into a plain description of a scene. No verb gymnastics —
+     just strip the question and hand the model the subject. */
+  var t=(setup||punch||'').trim();
+  t=t.replace(/[?!.]+\s*$/,'');
+  t=t.replace(/^\s*(why|what|how|when|where|who|which)\s+(did|do|does|is|are|was|were|would|will|can|could)\s+/i,'');
+  t=t.replace(/^\s*(why|what|how|when|where|who)\s+/i,'');
+  t=t.replace(/\s+/g,' ').trim();
+  return t || 'a quiet kitchen table with a cup of tea';
+}
+/* If Honey's brain is available, ask it for something better. Costs a fraction
+   of a cent and it writes a proper little scene. */
 function comicSceneFor(setup, punch, cb){
-  var fallback = (setup||punch||'').replace(/[?!.]+$/,'').slice(0,90);
+  var fallback = comicSceneLocal(setup, punch);
   try{
     if(typeof askHoney!=='function' || (typeof aiAvailable==='function' && !aiAvailable())){
       cb(fallback); return;
     }
     askHoney(
-      "Here is a joke. Describe ONE simple scene from its SETUP that an illustrator could draw. "+
-      "Never illustrate the punchline. One short sentence, under 15 words, concrete objects only, "+
-      "no people's faces, no text in the picture. Just the sentence, nothing else.\n\n"+
+      "Describe ONE simple scene an illustrator could draw, based on this joke's SETUP only. "+
+      "Never draw the punchline. Reply with a short phrase describing what is happening \u2014 "+
+      "objects and actions only, under 12 words, no question marks, no names, no text in the scene. "+
+      "Example: 'a goat in a choir robe beside an upright piano'.\n\n"+
       "Setup: "+setup+"\nPunchline: "+punch
     ).then(function(r){
       var line=(r||'').split('\n')[0].replace(/^["'\s]+|["'\s.]+$/g,'');
-      cb(line && line.length>6 ? line.slice(0,140) : fallback);
+      // a question came back? that's not a scene — use ours
+      if(!line || line.length<6 || /\?/.test(line) || /^(why|what|how|when|where|who)\b/i.test(line)){
+        cb(fallback); return;
+      }
+      cb(line.slice(0,120));
     }).catch(function(){ cb(fallback); });
   }catch(e){ cb(fallback); }
 }
-
 function honeyComic(setup, punch){
   setup=(setup||'').trim(); punch=(punch||'').trim();
   if(!punch){ toast("It needs a punchline first."); return; }
@@ -11262,7 +11280,7 @@ function honeyComic(setup, punch){
 
   toast(gate.free ? "Drawing your panel\u2026" : "Drawing your panel \u2014 "+COMIC_COST+" honey");
   comicSceneFor(setup, punch, function(scene){
-    var prompt = COMIC_CHARACTER + " " + scene + ", " + COMIC_STYLE;
+    var prompt = "A warm storybook scene showing " + scene + ", " + COMIC_SIGNATURE + ", " + COMIC_STYLE;
     fetch(AI_MEDIA_URL,{
       method:'POST',
       headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
