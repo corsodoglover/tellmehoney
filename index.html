@@ -2184,6 +2184,7 @@ textarea{resize:none;line-height:1.4;}
     <div id="prayerList"></div>
     <div style="margin-top:18px;border-top:1px solid var(--line,rgba(0,0,0,.1));padding-top:16px">
       <label class="rec-label">Add your own — type it, or record it in your real voice</label>
+      <p class="rec-hint" id="vcAddingTo" style="margin:0 0 8px;color:var(--gold)"></p>
       <input id="upTitle" placeholder="Title (e.g. Grandma's blessing)" style="width:100%;margin:6px 0;padding:10px;border-radius:10px;border:1px solid var(--line,rgba(0,0,0,.15))">
       <textarea id="upText" rows="3" placeholder="Type the words (optional if you record your voice)" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--line,rgba(0,0,0,.15))"></textarea>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px">
@@ -2308,7 +2309,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v83 · Recipe grid</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v88 · Share a verse</div>
   </div>
 </section>
 
@@ -4528,7 +4529,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, rangerHave:[], foodCards:[], cloneForKeepsakes:false, checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, rangerHave:[], foodCards:[], cloneForKeepsakes:false, verseColls:[], jokeColls:[], myJokesInChat:true, checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -7385,6 +7386,7 @@ function pickCategory(surprise,forceCat){
   return rand(styleCats());
 }
 function getMyJoke(){
+  if(!myJokesInChat()) return null;     // they'd rather keep their own jokes separate
   var avail=(S.myJokes||[]).filter(j=>!S.blacklist[j.s]&&!S.served[j.s]);
   if(!avail.length){ (S.myJokes||[]).forEach(j=>{ if(S.served[j.s])delete S.served[j.s]; });
     avail=(S.myJokes||[]).filter(j=>!S.blacklist[j.s]); }
@@ -7424,7 +7426,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v83";
+window.HONEY_BUILD = "v88";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -7567,8 +7569,12 @@ function pvWords(l){
 }
 /* Best prayer for what they said, or null. Title matches beat body matches. */
 function findPrayerByWords(l){
+  /* Search their OWN recordings first, then the built-in ones. visiblePrayers()
+     only ever returned the built-ins, so "tell me Papa's verse" could never find
+     a thing somebody recorded themselves — which is the whole reason to record. */
   var list=[];
-  try{ list=visiblePrayers()||[]; }catch(e){ list=PRAYERS||[]; }
+  try{ list=(userPrayers()||[]).slice(); }catch(e){}
+  try{ list=list.concat(visiblePrayers()||[]); }catch(e){ list=list.concat(PRAYERS||[]); }
   if(!list.length) return null;
   var words=pvWords(l);
   if(!words.length) return null;
@@ -7581,6 +7587,7 @@ function findPrayerByWords(l){
       if(title.indexOf(w)>=0) score+=3;      // said what it's called
       else if(body.indexOf(w)>=0) score+=1;  // said something inside it
     });
+    if(score>0 && p.hasAudio) score+=1;      // their own recording wins a tie
     if(score>bestScore){ bestScore=score; best=p; }
   });
   return bestScore>=3 ? best : null;         // needs at least one title word
@@ -8048,6 +8055,212 @@ function handleHealthRequest(t, l){
   return false;
 }
 
+/* ══════════ SHARE A VERSE AS A LITTLE VIDEO ═══════════════════════════════
+   A bare audio file mostly gets ignored by Facebook and Messages. A still
+   picture with the recording as its soundtrack is a VIDEO — and video plays
+   inline everywhere. So: draw a card, play their recording through it, record
+   both together, hand the result to the share sheet. */
+var _vvPot=null;
+try{ _vvPot=new Image(); _vvPot.src='honeypot.png'; }catch(e){}
+
+function shareVerseVideo(prayerId){
+  var p=userPrayers().find(function(x){ return x.id===prayerId; });
+  if(!p){ toast("Couldn't find that one."); return; }
+  if(!p.hasAudio){ toast("This one has no recording yet."); return; }
+  if(typeof MediaRecorder==='undefined'){ toast("This phone can't make the video."); return; }
+  toast("Making your card\u2026");
+  getPrayerAudio(prayerId, function(blob){
+    if(!blob){ toast("Couldn't read the recording."); return; }
+    try{ _buildVerseVideo(p, blob); }catch(e){ toast("Couldn't make the video."); }
+  });
+}
+function _vvWrap(c,text,x,y,maxW,lh){
+  var words=String(text).split(' '), line='', lines=[];
+  words.forEach(function(w){
+    var test=line?line+' '+w:w;
+    if(c.measureText(test).width>maxW && line){ lines.push(line); line=w; } else line=test;
+  });
+  if(line) lines.push(line);
+  lines=lines.slice(0,3);
+  var startY=y-((lines.length-1)*lh)/2;
+  lines.forEach(function(L,i){ c.fillText(L,x,startY+i*lh); });
+}
+function _buildVerseVideo(p, audioBlob){
+  var W=1080, H=1080;
+  var cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+  var ctx=cv.getContext('2d');
+
+  function paint(t){
+    var g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#5ca8db'); g.addColorStop(1,'#c6e4f7');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    var r=280+Math.sin(t/900)*18;
+    var rg=ctx.createRadialGradient(W/2,H*0.40,20,W/2,H*0.40,r);
+    rg.addColorStop(0,'rgba(255,241,205,.55)'); rg.addColorStop(1,'rgba(255,241,205,0)');
+    ctx.fillStyle=rg; ctx.fillRect(0,0,W,H);
+    if(_vvPot && _vvPot.complete && _vvPot.naturalWidth){
+      var ph=330, pw=_vvPot.naturalWidth*ph/_vvPot.naturalHeight;
+      ctx.drawImage(_vvPot,(W-pw)/2,H*0.40-ph/2,pw,ph);
+    }
+    ctx.textAlign='center';
+    ctx.fillStyle='#3A2C12';
+    ctx.font='700 62px Georgia, serif';
+    _vvWrap(ctx, p.title||'A verse', W/2, H*0.66, W-160, 74);
+    ctx.fillStyle='#B9561F';
+    ctx.font='italic 34px Georgia, serif';
+    ctx.fillText('in my own voice', W/2, H*0.80);
+    ctx.fillStyle='rgba(58,44,18,.55)';
+    ctx.font='600 26px -apple-system, Arial, sans-serif';
+    ctx.fillText('Tell Me Honey', W/2, H-64);
+  }
+
+  var audio=new Audio(URL.createObjectURL(audioBlob));
+  audio.onerror=function(){ toast("Couldn't play the recording."); };
+  audio.onloadedmetadata=function(){
+    var AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC){ toast("This phone can't mix the sound in."); return; }
+    var ac=new AC();
+    var src=ac.createMediaElementSource(audio);
+    var dest=ac.createMediaStreamDestination();
+    src.connect(dest); src.connect(ac.destination);
+
+    var vstream=cv.captureStream(30);
+    var mixed=new MediaStream();
+    vstream.getVideoTracks().forEach(function(t){ mixed.addTrack(t); });
+    dest.stream.getAudioTracks().forEach(function(t){ mixed.addTrack(t); });
+
+    var MIME='';
+    ['video/mp4;codecs=h264','video/mp4','video/webm;codecs=vp9','video/webm'].forEach(function(t){
+      if(!MIME && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) MIME=t;
+    });
+    var rec;
+    try{ rec = MIME ? new MediaRecorder(mixed,{mimeType:MIME}) : new MediaRecorder(mixed); }
+    catch(e){ toast("Couldn't start the recorder."); return; }
+
+    var chunks=[];
+    rec.ondataavailable=function(e){ if(e.data.size) chunks.push(e.data); };
+    rec.onstop=function(){
+      try{ ac.close(); }catch(e){}
+      var type=(rec.mimeType||MIME||'video/mp4');
+      var blob=new Blob(chunks,{type:type});
+      var ext=/mp4/.test(type)?'mp4':'webm';
+      var name=(p.title||'verse').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'verse';
+      var file=new File([blob], name+'.'+ext, {type:type});
+      if(navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
+        navigator.share({ files:[file], title:p.title||'A verse',
+          text:(p.title||'A verse')+' \u2014 in my own voice \ud83c\udf6f' }).catch(function(){});
+      } else {
+        var a=document.createElement('a');
+        a.href=URL.createObjectURL(blob); a.download=name+'.'+ext;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      }
+      toast("Ready to share \ud83c\udf99\ufe0f");
+    };
+
+    var t0=Date.now();
+    (function loop(){ paint(Date.now()-t0); if(rec.state==='recording') requestAnimationFrame(loop); })();
+    rec.start();
+    audio.play().catch(function(){ try{ rec.stop(); }catch(e){} toast("Tap it once more."); });
+    audio.onended=function(){ setTimeout(function(){ try{ rec.stop(); }catch(e){} }, 350); };
+    setTimeout(function(){ if(rec.state==='recording'){ try{ rec.stop(); }catch(e){} } },
+      Math.min(((audio.duration||30)*1000)+2000, 120000));
+  };
+}
+
+/* ══════════ COLLECTIONS FOR VERSES & PRAYERS ══════════════════════════════
+   Same shape as Lists and Journals: you name a box, and things go in it.
+   "Granddad's Verses", "Bedtime Prayers", "Mama's Sayings" — whatever a person
+   wants. Named boxes are what make recall work: say the name, get the box. */
+function verseColls(){
+  if(!Array.isArray(SETTINGS.verseColls) || !SETTINGS.verseColls.length){
+    SETTINGS.verseColls=[{id:'mine', name:'My Verses & Prayers'}];
+  }
+  return SETTINGS.verseColls;
+}
+function verseCollAdd(name){
+  name=(name||'').trim(); if(!name) return null;
+  var list=verseColls();
+  if(list.some(function(c){ return c.name.toLowerCase()===name.toLowerCase(); })) return null;
+  var c={ id:'vc'+Date.now().toString(36), name:name };
+  list.push(c); SETTINGS.verseColls=list; saveSettings();
+  return c;
+}
+function verseCollRename(id, name){
+  name=(name||'').trim(); if(!name) return;
+  var c=verseColls().find(function(x){ return x.id===id; });
+  if(c){ c.name=name; saveSettings(); }
+}
+function verseCollDelete(id){
+  if(id==='mine') return;                       // the default box stays
+  SETTINGS.verseColls=verseColls().filter(function(c){ return c.id!==id; });
+  // anything filed there falls back to the default box rather than vanishing
+  userPrayers().forEach(function(p){ if(p.coll===id) p.coll='mine'; });
+  saveSettings();
+}
+function versesIn(collId){
+  return userPrayers().filter(function(p){ return (p.coll||'mine')===collId; });
+}
+/* Ask for a whole box by name: "read me Granddad's verses" */
+function findVerseCollByWords(l){
+  var words=pvWords(l);
+  if(!words.length) return null;
+  var best=null, bestScore=0;
+  verseColls().forEach(function(c){
+    var nm=pvFlat(c.name);
+    var score=0;
+    words.forEach(function(w){ if(nm.indexOf(w)>=0) score+=3; });
+    if(score>bestScore){ bestScore=score; best=c; }
+  });
+  return bestScore>=3 ? best : null;
+}
+
+/* ══════════ THE PERSON'S OWN JOKE BANK ════════════════════════════════════
+   Record a joke, file it under a category you made up. Then it can be recalled
+   by that name, and optionally mixed into ordinary chat. */
+function jokeColls(){
+  if(!Array.isArray(SETTINGS.jokeColls) || !SETTINGS.jokeColls.length){
+    SETTINGS.jokeColls=[{id:'mine', name:'My Jokes'}];
+  }
+  return SETTINGS.jokeColls;
+}
+function jokeCollAdd(name){
+  name=(name||'').trim(); if(!name) return null;
+  var list=jokeColls();
+  if(list.some(function(c){ return c.name.toLowerCase()===name.toLowerCase(); })) return null;
+  var c={ id:'jc'+Date.now().toString(36), name:name };
+  list.push(c); SETTINGS.jokeColls=list; saveSettings();
+  return c;
+}
+function jokeCollRename(id,name){
+  name=(name||'').trim(); if(!name) return;
+  var c=jokeColls().find(function(x){ return x.id===id; });
+  if(c){ c.name=name; saveSettings(); }
+}
+function jokeCollDelete(id){
+  if(id==='mine') return;
+  SETTINGS.jokeColls=jokeColls().filter(function(c){ return c.id!==id; });
+  (S.myJokes||[]).forEach(function(j){ if(j.coll===id) j.coll='mine'; });
+  saveSettings(); persist();
+}
+function jokesIn(collId){
+  return (S.myJokes||[]).filter(function(j){ return (j.coll||'mine')===collId; });
+}
+/* "Tell me one of Granddad's jokes" */
+function findJokeCollByWords(l){
+  var words=jokeTopicWords(l);
+  if(!words.length) return null;
+  var best=null, bestScore=0;
+  jokeColls().forEach(function(c){
+    var nm=(c.name||'').toLowerCase().replace(/['\u2018\u2019]/g,'');
+    var score=0;
+    words.forEach(function(w){ if(nm.indexOf(w.replace(/['\u2018\u2019]/g,''))>=0) score+=3; });
+    if(score>bestScore){ bestScore=score; best=c; }
+  });
+  return bestScore>=3 ? best : null;
+}
+/* Should the person's own jokes get mixed into ordinary chat? Their choice. */
+function myJokesInChat(){ return SETTINGS.myJokesInChat !== false; }
+
 /* ── SOMEBODY SAID HELLO ───────────────────────────────────────────────────
    Typing "hello" used to match nothing at all and land on the generic
    catch-all — "Noted. You want company or comedy?" — which is a cold thing to
@@ -8061,39 +8274,39 @@ function isPlainGreeting(l){
 function isHowAreYou(l){
   return /(how are you|how are ya|how're you|how you doin|how's it going|hows it going|you doing (ok|alright|good)|you good|what's up|whats up|how have you been|how you been)/i.test(l||'');
 }
-/* Answer a greeting the way a friend would: greet back, then leave the door open. */
+/* Answer a greeting the way a friend would.
+   IMPORTANT: every line here is one that's actually RECORDED in Honey's voice,
+   so she speaks instead of appearing silently. Most of them already carry the
+   invitation ("...tell me everything", "...what's up?"), so there's no second
+   unrecorded question tacked on afterwards. */
+var HELLO_BACK=[
+  "Well, hey there. I was hoping you'd come see me.",
+  "Look who it is — come on in, sit down, tell me everything.",
+  "Good to see your name pop up. How are you, really?",
+  "Aw, there you are. Hope your day's been kind.",
+  "Hey you. Genuinely happy to see you.",
+  "Hey you. Good to have you back — really.",
+  "Hi friend, welcome back. I'm so glad you returned.",
+  "Hi, friend. I'm really glad you called today.",
+  "There you are again. Pull up a chair — I'm all yours.",
+  "Oh nice, you're here. Pull up a chair.",
+  "Heyyy. No rush, just hangin'. What's up?",
+  "Hey, there you are. I was hoping you'd call.",
+  "Welcome back. Glad you woke me up, thank you.",
+  "Heyyy, welcome back. Right where we left off."
+];
 function honeyGreetBack(l){
-  var pool;
-  try{ pool = (GREET && GREET[S.vibe]) ? GREET[S.vibe].slice() : GREET.Warm.slice(); }
-  catch(e){ pool = ["Well, hey there. I was hoping you'd come see me."]; }
-  // these are recorded, so they play in Honey's own voice
-  pool = pool.concat([
-    "Aw, there you are. Hope your day's been kind.",
-    "Hey you. Genuinely happy to see you.",
-    "Hi friend, welcome back. I'm so glad you returned.",
-    "Good to see your name pop up. How are you, really?"
-  ]);
-  var hour=new Date().getHours();
-  if(/good morning|mornin/i.test(l) || (hour<11 && Math.random()<0.5)){
-    pool = pool.concat(["Morning, you. Did you sleep alright?","Good morning. I like this part of the day with you."]);
-  } else if(/good evening|evenin/i.test(l) || (hour>=19 && Math.random()<0.5)){
-    pool = pool.concat(["Evening. Come sit a while.","Good evening, you. How'd the day treat you?"]);
-  }
+  var pool = HELLO_BACK.slice();
+  // vibe-matched openers, also recorded
+  try{
+    if(S.vibe==='Flirty') pool=pool.concat(["Well hello there. Took you long enough.","Mmm, look who couldn't stay away. Welcome back."]);
+    if(S.vibe==='Hyper')  pool=pool.concat(["You're here okay okay okay sit down I have so much.","Hi hi hi — what are we doing, what's the move?!","Finally!! I've been bursting. Ready?"]);
+    if(S.vibe==='Chill')  pool=pool.concat(["Was just vibing. Glad you called.","Oh nice, you're back. I was just vibing in standby."]);
+    if(S.vibe==='Sarcastic') pool=pool.concat(["Look who returned. Missed my charm, huh."]);
+  }catch(e){}
   themTyping(function(){
     pushThem(vibeColor(rand(pool)));
-    // a second, softer beat — an opening, not a menu
-    setTimeout(function(){
-      themTyping(function(){
-        pushThem(vibeColor(rand([
-          "What's going on with you today?",
-          "Tell me something \u2014 anything.",
-          "How's your heart today?",
-          "What have you been up to?",
-          "Anything good happen today?"
-        ])));
-        resetIdle();
-      });
-    }, 850);
+    resetIdle();
   });
 }
 
@@ -8206,6 +8419,20 @@ function handleJokeRequest(t, l){
   //    Skip this when they just want any old joke ("tell me a joke", "another one").
   var vague = /^(tell me|give me|say|i want|i need|got|have)?\s*(a|an|another|one|some)?\s*(good|funny|new|clean|quick|short)?\s*(joke|jokes|something funny|comedy)\s*(please|for me|honey)?[.!?]*$/.test((l||'').trim());
   if(!vague){
+    // A named joke box of their own — "tell me one of Granddad's jokes"
+    var jbox = findJokeCollByWords(l);
+    if(jbox){
+      var pool = jokesIn(jbox.id);
+      if(pool.length){
+        var pick = pool[Math.floor(Math.random()*pool.length)];
+        tellJoke(false, null, false, {s:pick.s, p:pick.p, mine:true});
+        return;
+      }
+      themTyping(function(){
+        pushThem(vibeColor("There's nothing in "+jbox.name+" yet \u2014 record one and I'll keep it there for you."));
+      });
+      return;
+    }
     var found = jokesAboutRequest(l);
     if(!found){
       /* They named something and we have nothing about it. Say so, rather than
@@ -8427,7 +8654,16 @@ function userSays(t){
   // verse / scripture requests (incl. "another", "similar", "comforting" verse)
   if(/\bverses?\b|scripture|passage|word from god|proverb|john \d|psalm/.test(l)){
     if(!/^\s*(another|again|one more|next)/.test(l)){
-      // THEIR OWN first: somebody who recorded "Papa's Verse" asks for it by that
+      // A whole named box first — "read me Granddad's verses"
+      var box=findVerseCollByWords(l);
+      if(box){
+        var inBox=versesIn(box.id);
+        if(inBox.length){
+          sayPrayer(inBox[Math.floor(Math.random()*inBox.length)]);
+          return;
+        }
+      }
+      // THEIR OWN next: somebody who recorded "Papa's Verse" asks for it by that
       // name, and the word "verse" was sending them to scripture instead.
       var mine=findPrayerByWords(l);
       if(mine){ sayPrayer(mine); return; }
@@ -8455,10 +8691,10 @@ function userSays(t){
   if(isHowAreYou(l) && !/\b(steps?|sleep|slept|walk)\b/.test(l)){
     themTyping(function(){
       pushThem(vibeColor(rand([
-        "Better now you're here. How about you — how's your day going?",
-        "I'm good, thank you for asking. Nobody ever does. How are you?",
-        "Can't complain, and nobody'd listen if I did. What about you?",
-        "Just fine, sitting here waiting on you. Tell me about your day."
+        "Good to see your name pop up. How are you, really?",
+        "Aw, there you are. Hope your day's been kind.",
+        "Hey you. Genuinely happy to see you.",
+        "Look who it is — come on in, sit down, tell me everything."
       ])));
       resetIdle();
     });
@@ -10123,6 +10359,8 @@ function playUserPrayer(p){
 function openPrayers(){ go("prayers"); renderPrayers(); }
 function renderPrayers(){
   var box=document.getElementById("prayerList"); if(!box) return;
+  _vcOpen=null;
+  try{ var h0=document.getElementById('vcAddingTo'); if(h0) h0.textContent='Saving into: My Verses & Prayers'; }catch(e){}
   var h=prayerHidden(), html="";
   // built-in prayers
   html+='<div style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#a08a55;margin:6px 0">Common prayers</div>';
@@ -10138,19 +10376,101 @@ function renderPrayers(){
     }
     html+='</div>';
   });
-  // user prayers
-  var up=userPrayers();
-  if(up.length){
-    html+='<div style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#a08a55;margin:14px 0 6px">Your own</div>';
-    up.forEach(function(p){
-      html+='<div class="chip" style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--warm,rgba(246,207,110,.18));border:1px solid var(--line,rgba(200,150,40,.3));border-radius:12px;padding:10px 12px;margin:6px 0">';
-      html+='<div style="flex:1"><b>'+esc(p.title||"My prayer")+'</b>'+(p.hasAudio?' <span style="font-size:11px;color:#a08a55">🎤 your voice</span>':'')+'</div>';
-      html+='<button class="icon-btn icon-play" title="Play" onclick="playSavedPrayer(\''+p.id+'\')">▶︎</button>';
-      html+='<button class="icon-btn icon-del" title="Delete" onclick="removeUserPrayer(\''+p.id+'\')">🗑</button>';
-      html+='</div>';
-    });
-  }
+  // ── THEIR OWN, IN NAMED BOXES — same tiles as the journals ──
+  var colls=verseColls();
+  html+='<div style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#a08a55;margin:16px 0 8px">Your own</div>';
+  html+='<div class="jb-grid">';
+  colls.forEach(function(c){
+    var items=versesIn(c.id);
+    var n=items.length;
+    var withVoice=items.filter(function(x){return x.hasAudio;}).length;
+    html+='<button class="jb-tile" onclick="openVerseColl(\''+c.id+'\')">'+
+      '<div class="jb-nocover">'+(withVoice?'\ud83c\udf99\ufe0f':'\ud83d\ude4f')+'</div>'+
+      '<div class="jb-info"><div class="jb-name">'+esc(c.name)+'</div>'+
+      '<div class="jb-count">'+n+(n===1?' saved':' saved')+(withVoice?' \u00b7 '+withVoice+' in your voice':'')+'</div></div></button>';
+  });
+  html+='<button class="jb-add" onclick="addVerseColl()"><span class="jb-plus">＋</span>Add &amp; name a box</button>';
+  html+='</div>';
+  html+='<div id="vcNameBox" style="display:none;margin-top:10px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:12px">'+
+    '<label class="rec-label">Name it \u2014 Granddad\u2019s Verses, Bedtime Prayers, anything</label>'+
+    '<input id="vcNameInput" placeholder="Granddad\u2019s Verses" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;padding:11px;color:var(--ink);font-size:15px;margin:6px 0 10px">'+
+    '<div style="display:flex;gap:7px">'+
+      '<button class="home-half" style="flex:1" onclick="vcConfirmAdd()">Make the box</button>'+
+      '<button class="home-half" style="flex:1;color:var(--muted)" onclick="vcCancelAdd()">Never mind</button>'+
+    '</div></div>';
   box.innerHTML=html;
+}
+/* ── one box, opened ── */
+var _vcOpen=null;
+function openVerseColl(id){
+  _vcOpen=id;
+  try{
+    var c0=verseColls().find(function(x){return x.id===id;});
+    var hint=document.getElementById('vcAddingTo');
+    if(hint && c0) hint.textContent='Saving into: '+c0.name;
+  }catch(e){}
+  var c=verseColls().find(function(x){return x.id===id;}); if(!c) return;
+  var box=document.getElementById("prayerList"); if(!box) return;
+  var items=versesIn(id);
+  var html='<button class="home-half" style="margin-bottom:12px" onclick="renderPrayers()">\u2039 All boxes</button>';
+  html+='<div style="display:flex;align-items:center;gap:8px;margin:0 2px 10px">'+
+    '<div style="flex:1;font-size:19px;font-weight:700">'+esc(c.name)+'</div>'+
+    (id!=='mine' ? '<button class="icon-btn" title="Rename" onclick="vcRename(\''+id+'\')">\u270e</button>'+
+                   '<button class="icon-btn icon-del" title="Delete box" onclick="vcDelete(\''+id+'\')">\ud83d\uddd1</button>' : '')+
+  '</div>';
+  if(!items.length){
+    html+='<div style="text-align:center;color:var(--muted);padding:26px;font-size:13px;line-height:1.6">Nothing in here yet. Record one below and it\u2019ll land in this box.<br><br>Then just say \u201cread me '+esc(c.name)+'\u201d and I\u2019ll find it.</div>';
+  }
+  items.forEach(function(p){
+    html+='<div class="chip" style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--warm,rgba(246,207,110,.18));border:1px solid var(--line,rgba(200,150,40,.3));border-radius:12px;padding:10px 12px;margin:6px 0">';
+    html+='<div style="flex:1"><b>'+esc(p.title||"Untitled")+'</b>'+(p.hasAudio?' <span style="font-size:11px;color:#a08a55">\ud83c\udfa4 your voice</span>':'')+'</div>';
+    html+='<button class="icon-btn icon-play" title="Play" onclick="playSavedPrayer(\''+p.id+'\')">\u25b6\ufe0e</button>';
+    if(p.hasAudio) html+='<button class="icon-btn" title="Share as a video" onclick="shareVerseVideo(\''+p.id+'\')">\u2197</button>';
+    html+='<button class="icon-btn" title="Move" onclick="vcMove(\''+p.id+'\')">\u21c4</button>';
+    html+='<button class="icon-btn icon-del" title="Delete" onclick="removeUserPrayer(\''+p.id+'\')">\ud83d\uddd1</button>';
+    html+='</div>';
+  });
+  box.innerHTML=html;
+}
+function addVerseColl(){
+  var b=document.getElementById('vcNameBox'), i=document.getElementById('vcNameInput');
+  if(b) b.style.display='block';
+  if(i){ i.value=''; setTimeout(function(){ try{ i.focus(); }catch(e){} },150); }
+}
+function vcCancelAdd(){ var b=document.getElementById('vcNameBox'); if(b) b.style.display='none'; }
+function vcConfirmAdd(){
+  var i=document.getElementById('vcNameInput'); if(!i) return;
+  var c=verseCollAdd(i.value);
+  vcCancelAdd();
+  renderPrayers();
+  if(c) toast('\u201c'+c.name+'\u201d is ready.');
+}
+function vcRename(id){
+  var c=verseColls().find(function(x){return x.id===id;}); if(!c) return;
+  appPrompt("What should this box be called?", c.name, function(v){
+    if(v && v.trim()){ verseCollRename(id, v); openVerseColl(id); }
+  });
+}
+function vcDelete(id){
+  var c=verseColls().find(function(x){return x.id===id;}); if(!c) return;
+  if(!confirm('Delete the box \u201c'+c.name+'\u201d?\n\nWhat\u2019s inside moves to your first box \u2014 nothing gets lost.')) return;
+  verseCollDelete(id);
+  renderPrayers();
+}
+/* move one item to another box */
+function vcMove(prayerId){
+  var colls=verseColls();
+  if(colls.length<2){ toast("Make another box first."); return; }
+  var p=userPrayers().find(function(x){return x.id===prayerId;}); if(!p) return;
+  var names=colls.map(function(c,i){ return (i+1)+'. '+c.name; }).join('\n');
+  appPrompt("Move \u201c"+(p.title||'this')+"\u201d to which box?\n\n"+names, "", function(v){
+    var n=parseInt((v||'').trim(),10);
+    if(n>=1 && n<=colls.length){
+      p.coll=colls[n-1].id; saveSettings();
+      openVerseColl(_vcOpen||'mine');
+      toast("Moved to "+colls[n-1].name+".");
+    }
+  });
 }
 function sayBuiltinPrayer(id){ var p=PRAYERS.find(function(x){return x.id===id;}); if(p) sayPrayer(p); }
 function hidePrayer(id){ var h=prayerHidden(); if(h.indexOf(id)<0){h.push(id);} saveSettings(); renderPrayers(); }
@@ -10188,7 +10508,9 @@ function addUserPrayer(){
   var text=(document.getElementById("upText").value||"").trim();
   if(!title && !text && !_prayerBlob){ appAlert("Add a title, some words, or a recording first."); return; }
   var id="p"+Date.now();
-  var rec={id:id, title:title||"My prayer", text:text, hasAudio:!!_prayerBlob, ts:Date.now()};
+  // file it in the box they're standing in
+  var rec={id:id, title:title||"My prayer", text:text, hasAudio:!!_prayerBlob, ts:Date.now(),
+           coll:(_vcOpen||'mine')};
   if(_prayerBlob){
     putPrayerAudio(id, _prayerBlob, function(ok){ rec.hasAudio=ok; saveUserPrayer(rec); finishAddPrayer(); });
   } else { saveUserPrayer(rec); finishAddPrayer(); }
@@ -10197,7 +10519,7 @@ function finishAddPrayer(){
   _prayerBlob=null; _prayerChunks=[];
   document.getElementById("upTitle").value=""; document.getElementById("upText").value="";
   document.getElementById("upRecStatus").textContent="";
-  renderPrayers();
+  if(_vcOpen) openVerseColl(_vcOpen); else renderPrayers();
 }
 function getNourishToday(){
   if(!SETTINGS.nourish || SETTINGS.nourish.day!==todayKey()){ SETTINGS.nourish={day:todayKey(), eaten:[]}; }
