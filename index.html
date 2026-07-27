@@ -412,17 +412,30 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .fold-tri{flex:0 0 auto;font-size:13px;color:var(--gold);opacity:.85;
   transition:transform .18s ease;line-height:1;padding:6px 2px 6px 10px;}
 .ft-chips{display:flex;flex-wrap:wrap;gap:7px;}
+/* A food screen should look like food. Warmer surfaces, a little depth, and
+   the meal rows carry the dish's own photograph. */
+.ft-hero{background:linear-gradient(180deg,rgba(231,200,115,.13),rgba(231,200,115,.03));
+  border:1px solid rgba(231,200,115,.22);border-radius:18px;padding:14px 15px;margin-bottom:14px;}
+.ft-own-btn{width:100%;background:linear-gradient(180deg,rgba(231,200,115,.20),rgba(231,200,115,.09));
+  border:1px solid rgba(231,200,115,.38);color:var(--ink);border-radius:14px;
+  padding:14px;font-size:15px;font-weight:700;cursor:pointer;}
+.ft-own-btn:active{opacity:.85;}
 .fw-day{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
   border-radius:13px;padding:10px 12px;margin-bottom:7px;}
-.fw-day.today{border-color:rgba(231,200,115,.42);background:rgba(231,200,115,.06);}
+.fw-day{background:rgba(255,255,255,.035);}
+.fw-day.today{box-shadow:0 0 0 1px rgba(231,200,115,.25) inset;border-color:rgba(231,200,115,.42);background:rgba(231,200,115,.06);}
 .fw-head{display:flex;align-items:baseline;gap:7px;margin-bottom:6px;}
 .fw-head b{font-size:13px;font-weight:700;letter-spacing:.2px;}
 .fw-head small{font-size:10.5px;color:var(--muted);}
 .fw-add{width:100%;text-align:left;background:transparent;border:1px dashed rgba(255,255,255,.16);
   border-radius:10px;padding:9px 11px;font-size:12.5px;color:var(--muted);min-height:40px;}
+.fw-pic{flex:0 0 auto;width:46px;height:46px;border-radius:11px;object-fit:cover;
+  display:block;background:rgba(255,255,255,.05);}
+.fw-nopic{display:flex;align-items:center;justify-content:center;font-size:20px;opacity:.55;}
+.fw-nm{flex:1;min-width:0;font-size:14px;line-height:1.3;}
 .fw-meal{display:flex;align-items:center;gap:8px;background:rgba(143,227,192,.10);
   border:1px solid rgba(143,227,192,.26);border-radius:10px;padding:8px 10px;margin-bottom:5px;}
-.fw-meal span{flex:1;font-size:13px;line-height:1.3;}
+.fw-meal .fw-nm{flex:1;font-size:14px;line-height:1.3;font-weight:600;}
 .fw-x{flex:0 0 auto;width:32px;height:32px;border-radius:9px;background:transparent;
   border:1px solid rgba(255,255,255,.14);color:var(--muted);font-size:13px;}
 .fw-sheet{background:rgba(255,255,255,.04);border:1px solid rgba(231,200,115,.3);border-radius:14px;padding:12px;}
@@ -1908,7 +1921,7 @@ textarea{resize:none;line-height:1.4;}
       <input id="ftSearch" placeholder="A food, or a dish…" style="flex:1;min-height:48px;padding:10px 13px;border-radius:13px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--ink);font-size:15px" onkeydown="if(event.key==='Enter')ftSearch()">
       <button class="home-half" style="flex:0 0 auto;min-width:64px" onclick="ftSearch()">Find</button>
     </div>
-      <button class="home-half" style="width:100%;margin-top:8px" onclick="ftOwnOpen()">📝 Add one of my own</button>
+      <button class="ft-own-btn" style="margin-top:10px" onclick="ftOwnOpen()">📝 Add one of my own</button>
       <p class="rec-hint" style="margin:5px 2px 0;font-size:11px;color:var(--muted)">Write it out, or photograph a cookbook page and I'll read it in.</p>
     <div class="ft-chips" id="ftChips"></div>
     <div id="ftResults" style="margin-top:14px"></div>
@@ -2349,7 +2362,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v127 · Recipe shelves</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v133 · Easy conversation</div>
   </div>
 </section>
 
@@ -7165,7 +7178,8 @@ var CHIP_DEFS=[
   ["record",  "✍️ Record a joke",   ()=>openRecordJoke()],
   ["voice",   "🎚️ Voice",          ()=>openVoicePicker()],
   ["video",   "🎬 Video",           ()=>openVideoStudio()],
-  ["plants",  "🌿 Real Food Ranger",()=>openPlantHub()]
+  ["plants",  "🌿 Real Food Ranger",()=>openPlantHub()],
+  ["food",    "🍲 Food for Thought",()=>openFoodThought()]
 ];
 var CHIP_DEFAULT_OFF={plants:1};
 /* is a chip shown? default ON unless the user turned it off */
@@ -7536,7 +7550,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v127";
+window.HONEY_BUILD = "v133";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -8899,9 +8913,9 @@ function userSays(t){
   }
   // if we asked for a contact's number, capture it and save
   if(S.pendingContact){
-    var pcNum=(t.match(/[+]?[\d][\d\s().-]{6}\d/)||[])[0];
-    if(pcNum){
-      var pcClean=pcNum.replace(/[^\d+]/g,''); var pcName=S.pendingContact.name; S.pendingContact=null;
+    var pcClean=grabPhone(t);
+    if(pcClean){
+      var pcName=S.pendingContact.name; S.pendingContact=null;
       saveContact(pcName, pcClean);
       themTyping(()=>{ pushThem(vibeColor("Saved, thank you. Tap to give them a call:")); pushAction('📞 Call '+pcName, 'tel:'+pcClean, false); });
       return;
@@ -9062,7 +9076,7 @@ function userSays(t){
   // remember it", "add this number for Mom" — anything with a name-ish word and a
   // real phone number. The app saves it itself (tap-to-call) so the AI never has
   // to, and never gives the "can't store personal information" refusal.
-  if(/\d[\d\s().-]{6}\d/.test(l)
+  if(looksLikePhone(l)
      && /(save|remember|keep|store|add|my|number|contact|reach|his|her|their)\b/.test(l)){
     doCall(t); return;
   }
@@ -9115,6 +9129,8 @@ function userSays(t){
   if(!_blockAdd && /(remind me|reminder|remember to|don'?t let me forget|make sure i|i need to|i have to|i gotta|i should|note to self|set (a |an )?(reminder|alarm|appointment|event|alert)|schedule|book|plan to|add (a |an )?(reminder|event|appointment)?( to)?( my)? calendar|put .* (on|in) (my )?calendar|jot down|wake me|ping me|nudge me|alert me|tell me (later|to)|got to|need a reminder|add to calendar|new (event|appointment|reminder))/.test(l)){ doCalendar(t); return; }
   // "how much have I got left?" — answered from their own numbers, nothing sent anywhere
   if(isMoneyQuestion(l)){ moneyAnswer(); return; }
+  // "what's for dinner?"
+  if(isFoodQuestion(l)){ foodAnswer(); return; }
   // AI BRAIN — real questions always answered (budget-gated); filler stays scripted
   if(aiShouldAnswer(t)){
     themTyping(function(){
@@ -9263,6 +9279,19 @@ function weatherFallback(why){
   _weatherBusy=false;                    // failed -> allow trying again
   themTyping(()=>pushThem(vibeColor("I'd check, but "+why+". Tell me your city and I'll have a look — or just enjoy the mystery.")));
 }
+
+/* ══════════ READING A PHONE NUMBER ═══════════════════════════════════════
+   The old pattern matched exactly eight characters, so "843-472-7995" came back
+   as "43-472-7" and the app dialled 434727. Every format was wrong. */
+function grabPhone(text){
+  var m=(text||'').match(/[+]?[\d][\d\s().\-]{5,20}\d/);
+  if(!m) return null;
+  var clean=m[0].replace(/[^\d+]/g,'');
+  var digits=clean.replace(/\D/g,'');
+  if(digits.length<7 || digits.length>15) return null;
+  return clean;
+}
+function looksLikePhone(text){ return !!grabPhone(text); }
 
 /* ════ LIVE: CALL HANDOFF (tel: link) + saved contacts ════ */
 function normName(s){ return (s||'').toLowerCase().replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim(); }
@@ -11995,12 +12024,7 @@ function jokeCardTellHoney(){
   var st=((document.getElementById('recSetup')||{}).value||'').trim();
   var pn=((document.getElementById('recPunch')||{}).value||'').trim();
   if(!pn){ toast("Add a punchline first."); return; }
-  closeRecordJoke();
-  var jj={s:st||"(no setup)", p:pn, mine:true};
-  themTyping(function(){
-    pushThem(vibeColor("Let's hear how it lands \u2014"));
-    setTimeout(function(){ pushJoke(jj); }, 500);
-  });
+  tellMyJokeNow({ s:st||"(no setup)", p:pn });
 }
 
 /* from the record sheet, using whatever is typed there */
@@ -12115,6 +12139,23 @@ function funnelSend(){
   try{ earnHoney("I shared a joke"); }catch(e){}
 }
 
+/* Tell one of their own jokes all the way through.
+   "Tell it now" used to say "Your own one —", get half-spoken and cut off, then
+   show the setup and wait for a tap nobody on the record screen would make. */
+function tellMyJokeNow(j){
+  var jj={s:j.s, p:j.p, mine:true};
+  try{ closeRecordJoke(); }catch(e){}
+  try{ if(typeof loadedOrFirst!=='function' || loadedOrFirst()) enterChat(); }catch(e){}
+  setTimeout(function(){
+    pushJoke(jj);
+    var words=(jj.s||'').split(/\s+/).length;
+    var wait=Math.min(9000, Math.max(2600, words*420));
+    setTimeout(function(){
+      if(S.pendingPunch && S.pendingPunch.s===jj.s){ try{ revealPunch(true); }catch(e){} }
+    }, wait);
+  }, 420);
+}
+
 /* ── joke boxes: fill the picker, make new ones ── */
 function jcFillPicker(){
   var sel=document.getElementById('recColl'); if(!sel) return;
@@ -12179,11 +12220,7 @@ function renderMyJokes(){
                  : '<button class="cmc">\ud83c\udfa8 Comic</button>')+
         '<button class="mv">\u21c4 Move</button>'+
         '<button class="del">\ud83d\uddd1\ufe0f Delete</button></div>';
-      d.querySelector('.tell').onclick=function(){
-        closeRecordJoke();
-        var jj={s:j.s,p:j.p,mine:true};
-        themTyping(function(){ pushThem(vibeColor("Your own one \u2014")); setTimeout(function(){ pushJoke(jj); },500); });
-      };
+      d.querySelector('.tell').onclick=function(){ tellMyJokeNow(j); };
       d.querySelector('.pic').onclick=function(){ jokeCardShare(j.s, j.p); };
       (function(btn){
         if(j.comic){
@@ -12538,6 +12575,40 @@ function nudgeSeenToday(){
       setTimeout(nudgeSchedule, 1200);
     }).catch(function(){});
   }
+}
+
+/* "What's for dinner?" should reach the food screen the same way "what's on my
+   calendar" reaches the calendar — asking out loud is the point of her. */
+function isFoodQuestion(l){
+  return /(what('s| is) for (dinner|supper|tea|lunch)|what should i (cook|make|have) (for )?(dinner|supper|tonight|tomorrow)|what am i (cooking|having)|dinner ideas?|supper ideas?|meal plan|plan (my|the) meals?|what's? cooking|something to cook|recipe ideas?|find (me )?a recipe)/i.test(l||'');
+}
+function foodAnswer(){
+  var planned=[];
+  try{
+    var today=new Date(); today.setHours(0,0,0,0);
+    var tom=new Date(today.getTime()+86400000);
+    planned=(SETTINGS.reminders||[]).filter(function(r){
+      return r.meal && r.when>=today.getTime() && r.when<tom.getTime()+86400000;
+    }).sort(function(a,b){ return a.when-b.when; });
+  }catch(e){}
+  themTyping(function(){
+    if(planned.length){
+      var nm=(planned[0].title||'').replace(/^\ud83c\udf72\s*/,'');
+      var when=(new Date(planned[0].when)) < new Date(new Date().setHours(23,59,59)) ? "tonight" : "tomorrow";
+      pushThem(vibeColor("You've got "+nm+" planned for "+when+"."));
+    } else {
+      pushThem(vibeColor(rand([
+        "Nothing planned yet. Want me to find you something?",
+        "Your week's empty so far \u2014 shall we sort it out?",
+        "No plan yet. Let's find something worth cooking."
+      ])));
+    }
+    setTimeout(function(){
+      themTyping(function(){
+        pushAction('\ud83c\udf72 Open Food for Thought', null, false, null, 'openFoodThought');
+      });
+    }, 500);
+  });
 }
 
 /* ══════════ "HOW MUCH HAVE I GOT?" ═══════════════════════════════════════
@@ -16854,9 +16925,7 @@ function renderMyJokesScreen(){
     var d=document.createElement('div'); d.className='rec-jcard';
     d.innerHTML='<div class="s">'+esc(j.s)+'</div><div class="p">'+esc(j.p)+'</div>'+
       '<div class="row"><button class="tell">📣 Tell it now</button><button class="del">🗑️ Delete</button></div>';
-    d.querySelector('.tell').onclick=()=>{ var jj={s:j.s,p:j.p,mine:true};
-      if(loadedOrFirst()){ enterChat(); }
-      themTyping(()=>{ pushThem(vibeColor("Your own one —")); setTimeout(()=>pushJoke(jj),500); }); };
+    d.querySelector('.tell').onclick=()=>{ tellMyJokeNow(j); };
     d.querySelector('.del').onclick=()=>{ S.myJokes=S.myJokes.filter(x=>x!==j); persist(); renderMyJokesScreen(); toast("Deleted."); };
     list.appendChild(d);
   });
@@ -18081,6 +18150,61 @@ function resetIdle(){ stopIdle(); S.idleStage=0;
 function stopIdle(){ idleTimers.forEach(clearTimeout); idleTimers=[]; stopJokeSpark(); }
 /* how often she volunteers jokes unprompted */
 function jokesAllowedAuto(){ return S.jokeFreq!=='off' && S.jokeFreq!=='ask'; }
+/* ══════════ SOMETHING TO SAY IN THE QUIET ════════════════════════════════
+   She used to fill a gap with "want a joke?" every time, which turns her into
+   a vending machine. These are the things a friend says when the conversation
+   dips — a small observation, a bit of nonsense, a door left open. */
+var CASUAL_ANY=[
+  "I was just thinking about how nobody ever thanks a Tuesday.",
+  "You know what I like about this? Nothing has to happen.",
+  "Somebody somewhere is having a much stranger day than us.",
+  "I've been sitting here rearranging my thoughts. They look the same.",
+  "Tell me something you noticed today. Anything at all.",
+  "What's the best thing that's happened this week?",
+  "I like the quiet ones. You don't have to fill it.",
+  "If you could be anywhere right now, where would you put yourself?",
+  "What are you up to over there?",
+  "I've got nowhere to be, if you fancy a chat.",
+  "Anything on your mind, or are we just sitting?",
+  "Sitting here's fine by me, for what it's worth.",
+  "What did you have for lunch? I'm nosy.",
+  "Somebody ought to write a song about ordinary afternoons.",
+  "Is it a good day out there, or one of the other kind?"
+];
+var CASUAL_MORNING=[
+  "How'd you sleep? Be honest.",
+  "Morning's my favourite part. Everything's still possible.",
+  "What's the first thing on your list today?",
+  "Coffee sorted, or are we still working on that?",
+  "Anything nice happening today?"
+];
+var CASUAL_AFTERNOON=[
+  "How's the day treating you so far?",
+  "This is the bit of the afternoon where nothing much happens. I like it.",
+  "Have you been outside yet? No judgment either way.",
+  "Halfway through. How are we doing?"
+];
+var CASUAL_EVENING=[
+  "How was your day, really?",
+  "Evenings are for slowing down. That's my professional opinion.",
+  "Anything good happen today worth telling me about?",
+  "Long day, or an alright one?",
+  "You can put your feet up now, you know."
+];
+/* One casual line, matched to the time of day. Never offers a joke. */
+function casualLine(){
+  var h=new Date().getHours();
+  var pool=CASUAL_ANY.slice();
+  if(h<11)      pool=pool.concat(CASUAL_MORNING, CASUAL_MORNING);
+  else if(h<17) pool=pool.concat(CASUAL_AFTERNOON, CASUAL_AFTERNOON);
+  else          pool=pool.concat(CASUAL_EVENING, CASUAL_EVENING);
+  /* don't repeat the last one — nothing kills the illusion faster */
+  var pick, tries=0;
+  do{ pick=rand(pool); tries++; }while(pick===S._lastCasual && tries<8);
+  S._lastCasual=pick;
+  return pick;
+}
+
 function idleNudge(stage){
   if(!document.getElementById('chat').classList.contains('on'))return;
   if(S.pendingPunch)return; // she's waiting on your answer — stay quiet
@@ -18090,11 +18214,18 @@ function idleNudge(stage){
                  (typeof cloudPlaying!=='undefined' && cloudPlaying) ||
                  (window.speechSynthesis && speechSynthesis.speaking);
   if(speaking){ resetIdle(); return; }
-  if(stage===1){ themTyping(()=>pushThem(vibeColor(rand(["Still there? No rush.","You went quiet — I'm right here.","Take your time. I'm around."])))); }
+  if(stage===1){
+    /* half the time a real remark rather than "still there?" — a friend doesn't
+       check whether you've left, they just say something. */
+    themTyping(()=>pushThem(vibeColor(
+      Math.random()<0.55 ? casualLine()
+      : rand(["Still there? No rush.","You went quiet — I'm right here.","Take your time. I'm around."])
+    )));
+  }
   else if(stage===2){
     // only auto-tell a joke on chatty/balanced; otherwise just a gentle line
     if(S.jokeFreq==='chatty'){ themTyping(()=>{ var j=getJoke(); pushThem(rand(["Here, take this one:","Thought of one:"])); setTimeout(()=>themTyping(()=>pushJoke(j)),500); }); }
-    else { themTyping(()=>pushThem(vibeColor(rand(["Want a joke? Just say the word.","Tap “Tell me a joke” whenever you want a laugh."])))); }
+    else { themTyping(()=>pushThem(vibeColor(casualLine()))); }
   }
   else { themTyping(()=>pushThem(vibeColor("I'll be right here whenever you're back. 🍯"))); }
 }
@@ -18948,7 +19079,7 @@ function stageAddFile(file){
 function stageAskOrgan(i){
   var it=_stage[i]; if(!it){ stageRender(); return; }
   var box=document.getElementById('plantHubResult');
-  box.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px">'+
+  box.innerHTML=rangerConfidenceBanner()+'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px">'+
     '<div style="height:150px;background:#f4f1e8;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:13px"><img src="'+it.data+'" style="width:100%;height:150px;object-fit:cover"></div>'+
     '<p style="font-size:15px;font-weight:600;margin:0 0 4px">What did you photograph?</p>'+
     '<p style="font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.5">Telling me the part helps me name it right.</p>'+
@@ -19380,6 +19511,26 @@ function rimgPhotoFallback(img, nm){
   }catch(e){}
 }
 var RANGER_NLAB=["Just the laugh","A fun fact","Teach me","Full nerd"];
+/* ══════════ SAYING HOW SURE SHE IS ═══════════════════════════════════════
+   A 3% match was showing the same confident card as a 92% one, green "edible"
+   badge and all. This is the one place in the app where sounding certain could
+   actually hurt somebody. */
+function rangerConfidenceBanner(){
+  var c;
+  try{ c=rangerConfidence(_lastResults); }catch(e){ return ''; }
+  if(!c || !c.score) return '';
+  if(c.level==='sure') return '';
+  var bg = c.level==='likely' ? 'rgba(231,200,115,.10)' : 'rgba(200,90,60,.12)';
+  var bd = c.level==='likely' ? 'rgba(231,200,115,.35)' : 'rgba(220,110,80,.4)';
+  var col= c.level==='likely' ? '#e7c873' : '#ff9d7a';
+  var words = c.level==='likely'
+    ? "I think this is right, but I'm not certain \u2014 have a look at the other guesses below before you trust it."
+    : "\u26a0\ufe0f I'm really not sure about this one. It's my best guess at "+Math.round(c.score)+
+      "%, which isn't much. Check it against the others, and don't eat anything on a maybe.";
+  return '<div style="background:'+bg+';border:1px solid '+bd+';border-radius:14px;padding:13px 15px;margin-bottom:12px">'+
+    '<p style="margin:0;font-size:13px;line-height:1.6;color:'+col+'">'+words+'</p></div>';
+}
+
 function rangerShowResult(id){
   var box=document.getElementById('plantHubResult');
   if(id==='unknown'||!RANGER_PLANTS[id]){ rangerUnknownPlant(); return; }
@@ -19394,7 +19545,11 @@ function rangerShowResult(id){
     '<div style="flex:1;background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.28);border-radius:12px;padding:9px 6px;text-align:center"><div style="color:var(--gold);font-size:15px">⏳</div><div style="font-size:9px;color:#bfae7a;margin-top:2px">Eat within</div><div style="font-size:12px;color:var(--ink);font-weight:600">'+eat+'</div></div></div>';
   var onMenu=rangerDinnerArr().indexOf(id)>=0;
   var dinnerBtn='<button onclick="rangerAddDinner(\''+id+'\',this)"'+(onMenu?' disabled':'')+' style="width:100%;background:linear-gradient(180deg,#e7c873,#caa44a);color:#1a1405;border:none;border-radius:13px;padding:14px;font-size:15px;font-weight:700;margin-top:12px;cursor:pointer">'+(onMenu?'✓ On tonight\u2019s menu':'🍽️ Add to tonight\u2019s dinner')+'</button>';
-  var badges='<div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,.45);color:#8fe3c0;font-size:10px;font-weight:600;padding:4px 9px;border-radius:14px;z-index:2">🌿 '+p.match+'% match</div><div style="position:absolute;top:8px;right:8px;background:#1d3a2a;color:#9ad9a0;font-size:10px;font-weight:600;padding:4px 9px;border-radius:14px;z-index:2">✓ edible</div>';
+  var _cf; try{ _cf=rangerConfidence(_lastResults); }catch(e){ _cf={level:'sure'}; }
+  var _weak = _cf && _cf.level!=='sure';
+  var _mtxt = (_lastResults&&_lastResults[0]&&_lastResults[0].score) ? Math.round(_lastResults[0].score) : p.match;
+  var badges='<div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,.45);color:'+(_weak?'#e7c873':'#8fe3c0')+';font-size:10px;font-weight:600;padding:4px 9px;border-radius:14px;z-index:2">🌿 '+_mtxt+'% match</div>'+
+    '<div style="position:absolute;top:8px;right:8px;background:'+(_weak?'#3a2c12':'#1d3a2a')+';color:'+(_weak?'#e7c873':'#9ad9a0')+';font-size:10px;font-weight:600;padding:4px 9px;border-radius:14px;z-index:2">'+(_weak?'usually edible':'✓ edible')+'</div>';
   box.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden">'+
     rangerCompareStrip(p, badges, id)+
     '<div style="padding:14px">'+
@@ -20453,8 +20608,19 @@ function ftRenderWeek(){
     if(meals.length){
       inner=meals.map(function(o){
         var nm=(o.r.title||'').replace(/^🍲\s*/,'');
-        return '<div class="fw-meal"><span>🍲 '+esc(nm)+'</span>'+
-               '<button class="fw-x" onclick="ftWeekClear('+o.idx+')" aria-label="Take off">✕</button></div>';
+        /* Find the card this meal came from, so we can show the food itself.
+           A food screen with no food on it is just a list. */
+        var pic='';
+        try{
+          var card=ftCardsArr().filter(function(c){
+            return (c.title||'').toLowerCase()===nm.toLowerCase();
+          })[0];
+          if(card && card.image) pic=card.image;
+        }catch(e){}
+        return '<div class="fw-meal">'+
+          (pic ? '<img class="fw-pic" src="'+pic+'" alt="">' : '<span class="fw-pic fw-nopic">🍲</span>')+
+          '<span class="fw-nm">'+esc(nm)+'</span>'+
+          '<button class="fw-x" onclick="ftWeekClear('+o.idx+')" aria-label="Take off">✕</button></div>';
       }).join('');
     } else {
       inner='<button class="fw-add" onclick="ftWeekPick('+i+')">＋ plan something</button>';
