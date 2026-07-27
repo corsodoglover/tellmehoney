@@ -2270,6 +2270,10 @@ textarea{resize:none;line-height:1.4;}
     <div class="store-sub">Extra AI videos — yours to keep, and they never expire.</div>
     <div class="store-list" id="storeVideo"></div>
 
+    <h3 class="store-h">👥 Room for a friend</h3>
+    <div class="store-sub">One more friend to talk to, for a month. Comes free with a bigger pour.</div>
+    <div class="store-list" id="storeFriend"></div>
+
     <h3 class="store-h">🎨 Themes</h3>
     <div class="store-sub">Change how Honey looks. Free with Gallon.</div>
     <div class="store-list" id="storeThemes"></div>
@@ -2345,7 +2349,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v120 · Keep the pictures</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v124 · Store friend slot</div>
   </div>
 </section>
 
@@ -5571,7 +5575,43 @@ function buyPackWithMoney(id){
 
 function openStore(){ go('store'); setTab('store'); renderStore(); }
 
+/* One more friend, rented for a month with honey. It lives in the Store with
+   everything else you can spend on, rather than off on the tiers page. */
+function renderFriendSlot(){
+  var w=document.getElementById('storeFriend'); if(!w) return;
+  w.innerHTML='';
+  var r=(REWARDS||[]).filter(function(x){ return x.id==='perk_friend'; })[0];
+  if(!r) return;
+  var days=extraFriendDaysLeft();
+  var afford=honeyBal()>=r.cost;
+  var lim=0; try{ lim=tier().friends; }catch(e){}
+  var c=document.createElement('div'); c.className='store-card';
+  if(lim<0){
+    // unlimited already — nothing to sell them
+    c.innerHTML = '<div class="sc-em">\ud83d\udc65</div>'
+      + '<div class="sc-mid"><div class="sc-nm">Room for everybody</div>'
+      + '<div class="sc-ds">Your pour already includes all the friends you like</div></div>';
+  } else if(days>0){
+    c.innerHTML = '<div class="sc-em">\ud83d\udc65</div>'
+      + '<div class="sc-mid"><div class="sc-nm">One extra friend \u2014 '+days+(days===1?' day':' days')+' left</div>'
+      + '<div class="sc-ds">Buy again to add another 30 days</div></div>'
+      + '<div class="sc-buy"><button class="sc-btn coin'+(afford?'':' off')+'" onclick="friendSlotBuy()">'+r.cost+' \ud83c\udf6f</button></div>';
+  } else {
+    c.innerHTML = '<div class="sc-em">\ud83d\udc65</div>'
+      + '<div class="sc-mid"><div class="sc-nm">+1 friend for a month</div>'
+      + '<div class="sc-ds">Room for one more, 30 days. Earn it again when it runs out.</div></div>'
+      + '<div class="sc-buy"><button class="sc-btn coin'+(afford?'':' off')+'" onclick="friendSlotBuy()">'+r.cost+' \ud83c\udf6f</button></div>';
+  }
+  w.appendChild(c);
+}
+function friendSlotBuy(){
+  var r=(REWARDS||[]).filter(function(x){ return x.id==='perk_friend'; })[0];
+  if(!r) return;
+  redeemReward(r);
+  try{ renderStore(); }catch(e){}
+}
 function renderStore(){
+  try{ renderFriendSlot(); }catch(e){}
   var t = tier();
   document.getElementById('storeBal').textContent = '🍯 ' + (SETTINGS.honey||0) + ' honey';
 
@@ -7496,7 +7536,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v120";
+window.HONEY_BUILD = "v124";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -17788,7 +17828,10 @@ function renderTierCards(){
   });
   // guarantee + launch note under the cards
   var note=document.createElement('p'); note.className='rec-hint'; note.style.cssText='text-align:center;margin:4px 8px 0;line-height:1.5';
-  note.innerHTML='✓ 7-day money-back guarantee — try it risk-free.';
+  /* We can't promise a refund — Apple handles those, and a guarantee we don't
+     control is a promise we can't keep. The free week IS ours to offer, so say
+     that instead. */
+  note.innerHTML='\u2713 Your first week is free \u2014 cancel any time in your Apple settings.';
   w.appendChild(note);
 }
 /* Tapping "Upgrade now" on a tier card. Owner/testing switches instantly so you
@@ -17871,8 +17914,24 @@ function renderTierDemo(){
    pointing at a theme that doesn't exist.) */
 var REWARDS=[
   { id:"perk_friend", kind:"perk", cost:1500, need:"pint",
-    nm:"+1 friend slot (keep it)", desc:"Add one more friend to chat with, permanently" }
+    nm:"+1 friend for a month", desc:"Room for one more friend, 30 days. Earn it again when it runs out." }
 ];
+/* Is their rented friend slot still running? */
+function extraFriendSlots(){
+  try{
+    var until=SETTINGS.perks && SETTINGS.perks.extraFriendsUntil;
+    return (until && until>Date.now()) ? 1 : 0;
+  }catch(e){}
+  return 0;
+}
+function extraFriendDaysLeft(){
+  try{
+    var until=SETTINGS.perks && SETTINGS.perks.extraFriendsUntil;
+    if(!until || until<=Date.now()) return 0;
+    return Math.ceil((until-Date.now())/86400000);
+  }catch(e){ return 0; }
+}
+
 function honeyBal(){ return SETTINGS.honey||0; }
 function trialActive(id){ var t=SETTINGS.trials&&SETTINGS.trials[id]; return t && t>Date.now(); }
 function themeOwned(themeId){ return SETTINGS.perks && SETTINGS.perks.themes && SETTINGS.perks.themes.indexOf(themeId)>=0; }
@@ -17882,10 +17941,20 @@ function renderRewards(){
   REWARDS.forEach(r=>{
     // hide a theme reward the user already unlocked
     if(r.kind==='theme' && themeOwned(r.themeId)) return;
+    // the friend slot lives in the Store now, with everything else you buy
+    if(r.id==='perk_friend') return;
     var row=document.createElement('div'); row.className='reward-row';
     var afford = honeyBal()>=r.cost;
     var btn='<button class="rw-btn'+(afford?'':' off')+'">'+r.cost+' 🍯</button>';
-    row.innerHTML='<div class="rw-tx"><b>'+esc(r.nm)+'</b><small>'+esc(r.desc)+'</small></div>'+btn;
+    /* If they've already got the friend slot running, say how long is left —
+       so nobody's surprised when it ends. */
+    var extra='';
+    if(r.id==='perk_friend'){
+      var d=extraFriendDaysLeft();
+      if(d>0) extra='<span style="display:block;font-size:11px;color:var(--gold);margin-top:3px">'+
+        d+(d===1?' day':' days')+' left \u2014 buy again to add another 30</span>';
+    }
+    row.innerHTML='<div class="rw-tx"><b>'+esc(r.nm)+'</b><small>'+esc(r.desc)+'</small>'+extra+'</div>'+btn;
     var b=row.querySelector('.rw-btn');
     if(b) b.onclick=()=>redeemReward(r);
     w.appendChild(row);
@@ -17901,7 +17970,13 @@ function redeemReward(r){
     setColorTheme(r.themeId);
     toast("Unlocked the "+r.nm+"! 🍯");
   } else if(r.id==='perk_friend'){
-    SETTINGS.perks.extraFriends=(SETTINGS.perks.extraFriends||0)+1;
+    /* A month, not forever. A permanent slot bought with honey would undercut
+       the tiers — and the honest thing is that they're renting the room, so the
+       wording and the code should both say so. */
+    var _now=Date.now();
+    var _from=(SETTINGS.perks.extraFriendsUntil && SETTINGS.perks.extraFriendsUntil>_now)
+              ? SETTINGS.perks.extraFriendsUntil : _now;
+    SETTINGS.perks.extraFriendsUntil = _from + 30*86400000;
     toast("Extra friend slot added — it's yours to keep. 🍯");
   }
   saveSettings();
@@ -18142,7 +18217,7 @@ function createDefaultHoney(){
 function newAgentFlow(asSelf){
   // tier friend limit (the "self" / first friend is always allowed)
   var lim=tier().friends;
-  if(lim>=0) lim += (SETTINGS.perks&&SETTINGS.perks.extraFriends)||0;
+  if(lim>=0) lim += extraFriendSlots();
   // First-week taste: everyone gets the full Gallon circle (3 friends) to enjoy.
   // After the trial, extra friends aren't deleted — they show darkened/locked
   // until they upgrade (see renderFriendRoster).
@@ -18223,7 +18298,7 @@ function renderRoster(){
   // Which friends are beyond what the current tier holds? Those made during the
   // free week stay VISIBLE but darkened/locked once the trial ends — never deleted.
   var lim=tier().friends;
-  if(lim>=0) lim += (SETTINGS.perks&&SETTINGS.perks.extraFriends)||0;
+  if(lim>=0) lim += extraFriendSlots();
   if(lim>=0 && trialActive() && lim<TIERS.gallon.friends) lim=TIERS.gallon.friends;
   live.forEach(function(a,i){
     // self + the first (lim) friends are unlocked; the rest are locked (over limit)
@@ -18304,7 +18379,7 @@ function buildFriendSwitch(){
   // any friend beyond the current tier's limit shows darkened/locked here too
   // (previously this dropdown showed everyone as tappable — the blackout bug).
   var lim=tier().friends;
-  if(lim>=0) lim += (SETTINGS.perks&&SETTINGS.perks.extraFriends)||0;
+  if(lim>=0) lim += extraFriendSlots();
   if(lim>=0 && trialActive() && lim<TIERS.gallon.friends) lim=TIERS.gallon.friends;
   var ordered=activeAgents().slice().sort((a,b)=>(b.isSelf?1:0)-(a.isSelf?1:0));
   ordered.forEach((a,i)=>{
