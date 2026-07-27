@@ -2349,7 +2349,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v124 · Store friend slot</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v127 · Recipe shelves</div>
   </div>
 </section>
 
@@ -7536,7 +7536,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v124";
+window.HONEY_BUILD = "v127";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -19014,7 +19014,25 @@ function stageIdentify(){
     // when we have no picture of our own for that plant.
     _lastRefImg    = (_lastResults[0] && _lastResults[0].refImage)  ? _lastResults[0].refImage  : '';
     _lastRefCredit = (_lastResults[0] && _lastResults[0].refCredit) ? _lastResults[0].refCredit : '';
-    if(j.error){ rangerUnknownPlant(); return; }
+    if(j.error){
+      var bx2=document.getElementById('plantHubResult');
+      if(bx2){
+        bx2.innerHTML='<div style="background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.3);border-radius:14px;padding:15px;font-size:13px;line-height:1.6">'+
+          '\u26a0\ufe0f My plant book gave me trouble just then \u2014 it\'s not your photo.'+
+          '<div style="margin-top:8px;font-size:10px;opacity:.55;font-family:monospace">'+
+            esc(String(j.error)).slice(0,140)+(j.detail?(' \u00b7 '+esc(JSON.stringify(j.detail)).slice(0,140)):'')+
+          '</div></div>'+rangerRetryPanel();
+      } else rangerUnknownPlant();
+      return;
+    }
+    // no results at all — that's a real "couldn't tell", not an error
+    if(!_lastResults.length){
+      var bx3=document.getElementById('plantHubResult');
+      if(bx3) bx3.innerHTML='<div style="background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.3);border-radius:14px;padding:15px;font-size:13px;line-height:1.6">'+
+        '\ud83d\udd0d I couldn\'t make that one out at all. A closer shot of a leaf or a flower usually does it.</div>'+rangerRetryPanel();
+      else rangerUnknownPlant();
+      return;
+    }
     var top=_lastResults[0]||null;
     if(!top){ rangerUnknownPlant(); return; }
     var hit=rangerFindPlant(top);
@@ -19023,10 +19041,18 @@ function stageIdentify(){
     if(_lastRefImg) refPhotoRemember(hit.id, _lastRefImg, _lastRefCredit);
     if(hit.shelf==='book') rangerShowResult(hit.id);
     else rangerShowShelfPlant(hit.id, hit.shelf, top);
-  }).catch(function(){
-    // couldn't reach the plant book — that's a signal problem, not a mystery plant
+  }).catch(function(err){
+    /* Say what actually went wrong. The first version blamed the signal for
+       everything, which meant a server problem looked like a dead spot and
+       nobody could tell the difference. */
     var bx=document.getElementById('plantHubResult');
-    if(bx) bx.innerHTML='<div style="background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.3);border-radius:14px;padding:15px;font-size:13px;line-height:1.6">\ud83d\udcf6 '+offlineNote('plant')+'</div>'+rangerRetryPanel();
+    var msg = isOffline()
+      ? offlineNote('plant')
+      : "Something went wrong reaching my plant book. Not your photo \u2014 my end. Try again in a moment.";
+    var detail = (err && (err.message||err.toString())) || '';
+    if(bx) bx.innerHTML='<div style="background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.3);border-radius:14px;padding:15px;font-size:13px;line-height:1.6">\ud83d\udcf6 '+msg+
+      (detail? '<div style="margin-top:8px;font-size:10px;opacity:.55;font-family:monospace">'+esc(detail).slice(0,120)+'</div>' : '')+
+      '</div>'+rangerRetryPanel();
     else rangerUnknownPlant();
   });
 }
@@ -19047,16 +19073,42 @@ function rangerIdentify(file){
       headers:{ 'apikey':PREMIUM_VOICE_KEY, 'Content-Type':'application/json' },
       body:JSON.stringify({ image:dataUrl })
     }).then(function(r){ return r.json(); }).then(function(j){
-      if(j.error){ rangerUnknownPlant(); return; }
+      if(j.error){
+      var bx2=document.getElementById('plantHubResult');
+      if(bx2){
+        bx2.innerHTML='<div style="background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.3);border-radius:14px;padding:15px;font-size:13px;line-height:1.6">'+
+          '\u26a0\ufe0f My plant book gave me trouble just then \u2014 it\'s not your photo.'+
+          '<div style="margin-top:8px;font-size:10px;opacity:.55;font-family:monospace">'+
+            esc(String(j.error)).slice(0,140)+(j.detail?(' \u00b7 '+esc(JSON.stringify(j.detail)).slice(0,140)):'')+
+          '</div></div>'+rangerRetryPanel();
+      } else rangerUnknownPlant();
+      return;
+    }
+    // no results at all — that's a real "couldn't tell", not an error
+    if(!_lastResults.length){
+      var bx3=document.getElementById('plantHubResult');
+      if(bx3) bx3.innerHTML='<div style="background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.3);border-radius:14px;padding:15px;font-size:13px;line-height:1.6">'+
+        '\ud83d\udd0d I couldn\'t make that one out at all. A closer shot of a leaf or a flower usually does it.</div>'+rangerRetryPanel();
+      else rangerUnknownPlant();
+      return;
+    }
       var top=(j.results&&j.results[0])||null;
       if(!top){ rangerUnknownPlant(); return; }
       var match=rangerMatchBookPlant(top);
       if(match){ rangerShowResult(match); }
       else { rangerUnknownPlant(top); }
-    }).catch(function(){
-    // couldn't reach the plant book — that's a signal problem, not a mystery plant
+    }).catch(function(err){
+    /* Say what actually went wrong. The first version blamed the signal for
+       everything, which meant a server problem looked like a dead spot and
+       nobody could tell the difference. */
     var bx=document.getElementById('plantHubResult');
-    if(bx) bx.innerHTML='<div style="background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.3);border-radius:14px;padding:15px;font-size:13px;line-height:1.6">\ud83d\udcf6 '+offlineNote('plant')+'</div>'+rangerRetryPanel();
+    var msg = isOffline()
+      ? offlineNote('plant')
+      : "Something went wrong reaching my plant book. Not your photo \u2014 my end. Try again in a moment.";
+    var detail = (err && (err.message||err.toString())) || '';
+    if(bx) bx.innerHTML='<div style="background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.3);border-radius:14px;padding:15px;font-size:13px;line-height:1.6">\ud83d\udcf6 '+msg+
+      (detail? '<div style="margin-top:8px;font-size:10px;opacity:.55;font-family:monospace">'+esc(detail).slice(0,120)+'</div>' : '')+
+      '</div>'+rangerRetryPanel();
     else rangerUnknownPlant();
   });
   };
@@ -19404,7 +19456,24 @@ function rangerUnknownPlant(top){
 /* Entry point for "I know this one — add to My Yard". Reads the parked name and
    photo rather than receiving them through the button. */
 function yardStartFromResult(){
-  rangerAddToMyYard(_yardPendName, _yardPendPhoto);
+  /* This used to hand over _yardPendName and _yardPendPhoto — the very
+     variables the function is supposed to SET. Both were empty, so every
+     plant added from a result lost its photograph.
+     Take the picture they actually shot, and PlantNet's best guess at a name. */
+  var photo = '';
+  try{
+    if(typeof _stage!=='undefined' && _stage.length && _stage[0].data) photo=_stage[0].data;
+    else if(typeof _rangerLastPhoto!=='undefined') photo=_rangerLastPhoto||'';
+  }catch(e){}
+  var name = '';
+  try{
+    var t=_lastResults && _lastResults[0];
+    if(t){
+      name = (t.commonNames && t.commonNames[0]) ? t.commonNames[0]
+           : (t.scientificName || '');
+    }
+  }catch(e){}
+  rangerAddToMyYard(name, photo);
 }
 
 /* ── Book plants the person says grow at their place ──
@@ -19461,6 +19530,8 @@ function rangerYardForm(encName,encPhoto){
   var box=document.getElementById('plantHubResult');
   box.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px">'+
     '<p style="font-size:15px;font-weight:600;margin:0 0 12px">🌱 Add to My Yard</p>'+
+    /* show the picture they took, so they can see it's coming with them */
+    (photo ? '<img src="'+photo+'" style="width:100%;border-radius:13px;display:block;margin:0 0 12px">' : '')+
     '<label style="font-size:11px;color:var(--muted)">Plant name</label>'+
     '<input id="myYardName" value="'+name.replace(/"/g,'&quot;')+'" placeholder="What is it?" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:var(--ink);font-size:14px;margin:4px 0 12px">'+
     '<label style="font-size:11px;color:var(--muted)">Your notes</label>'+
@@ -19905,6 +19976,7 @@ function sharePlantImage(){
    can see pictures). Costs a fraction of a cent and the photo isn't kept
    anywhere but your own phone. */
 function ftOwnOpen(prefill){
+  if(!prefill) _ftEditIndex=-1;
   var old=document.getElementById('ftOwnBox'); if(old) old.remove();
   var p=prefill||{};
   var d=document.createElement('div');
@@ -19952,7 +20024,7 @@ function ftOwnSave(){
   var st=((document.getElementById('ftOwnSteps')||{}).value||'').trim();
   if(!t){ toast("Give it a name first."); return; }
   var arr=ftCardsArr();
-  arr.unshift({
+  var rec={
     title:t,
     image:_ftOwnImg||'',
     url:'',
@@ -19962,7 +20034,15 @@ function ftOwnSave(){
     nutri: [],
     mine: true,
     made: Date.now()
-  });
+  };
+  // editing one replaces it in place, rather than leaving two copies behind
+  if(typeof _ftEditIndex==='number' && _ftEditIndex>=0 && arr[_ftEditIndex]){
+    if(!rec.image) rec.image=arr[_ftEditIndex].image||'';
+    arr[_ftEditIndex]=rec;
+    _ftEditIndex=-1;
+  } else {
+    arr.unshift(rec);
+  }
   SETTINGS.foodCards=arr; saveSettings();
   _ftOwnImg='';
   ftOwnClose();
@@ -20080,37 +20160,225 @@ function ftSaveCard(payload, el){
   }
   SETTINGS.foodCards=arr; saveSettings(); ftRenderCards();
 }
+/* ══════════ OPENING AND SHARING YOUR OWN RECIPE ══════════════════════════
+   A recipe off the web has a link to open. One you wrote or photographed had
+   nowhere to go — the ingredients and method were saved but couldn't be read.
+   And there was no way to tell yours apart from the ones we found for you. */
+function ftOpenOwn(i){
+  var c=ftCardsArr()[i]; if(!c) return;
+  var old=document.getElementById('ftReadBox'); if(old) old.remove();
+  var d=document.createElement('div');
+  d.id='ftReadBox';
+  d.style.cssText='position:fixed;inset:0;z-index:9999;background:var(--bg,#0e1014);overflow:auto;';
+  var ing=(c.ingredients||[]);
+  var steps=(c.steps||'').split('\n').map(function(x){ return x.trim(); }).filter(Boolean);
+  d.innerHTML=
+    '<div style="max-width:520px;margin:0 auto;padding:16px 18px 60px">'+
+      '<button class="home-half" style="margin-bottom:14px" onclick="ftCloseOwn()">\u2039 Back</button>'+
+      (c.image? '<img src="'+c.image+'" style="width:100%;border-radius:16px;display:block;margin-bottom:14px">' : '')+
+      '<h2 style="font-family:Georgia,serif;font-size:24px;margin:0 0 4px;color:var(--ink)">'+esc(c.title||'Your recipe')+'</h2>'+
+      '<p style="font-size:11.5px;color:var(--gold);margin:0 0 18px">\u270e One of yours</p>'+
+
+      (ing.length ? '<div style="font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);margin:0 0 8px">What goes in it</div>'+
+        '<div style="margin-bottom:20px">'+ing.map(function(x){
+          return '<div style="padding:7px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.4">'+esc(x)+'</div>';
+        }).join('')+'</div>' : '')+
+
+      (steps.length ? '<div style="font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);margin:0 0 8px">How to make it</div>'+
+        '<div style="margin-bottom:22px">'+steps.map(function(x,n){
+          return '<div style="display:flex;gap:11px;padding:8px 0;border-bottom:1px solid var(--line)">'+
+            '<span style="flex:0 0 auto;color:var(--gold);font-weight:700;font-size:13px">'+(n+1)+'</span>'+
+            '<span style="font-size:14.5px;line-height:1.5">'+esc(x)+'</span></div>';
+        }).join('')+'</div>' : '')+
+
+      (!ing.length && !steps.length ? '<p style="color:var(--muted);font-size:13.5px;line-height:1.6">Nothing written down for this one yet. Tap edit and add what goes in it.</p>' : '')+
+
+      '<button class="home-half" style="width:100%;margin-bottom:8px" onclick="ftShareOwn('+i+')">\u2197 Share this recipe</button>'+
+      '<button class="home-half" style="width:100%;margin-bottom:8px" onclick="ftEditOwn('+i+')">\u270e Edit it</button>'+
+      (ing.length? '<button class="home-half" style="width:100%" onclick="ftCloseOwn();ftIngredientsToList('+i+')">\ud83d\uded2 Add '+ing.length+' ingredients to my list</button>' : '')+
+    '</div>';
+  document.body.appendChild(d);
+}
+function ftCloseOwn(){ var d=document.getElementById('ftReadBox'); if(d) d.remove(); }
+function ftEditOwn(i){
+  var c=ftCardsArr()[i]; if(!c) return;
+  ftCloseOwn();
+  _ftEditIndex=i;
+  ftOwnOpen({ title:c.title, ingredients:c.ingredients||[], steps:c.steps||'', image:c.image||'' });
+}
+var _ftEditIndex=-1;
+
+/* Send it to somebody — the words, and the picture if there is one. */
+function ftShareOwn(i){
+  var c=ftCardsArr()[i]; if(!c) return;
+  var txt=(c.title||'A recipe')+'\n\n';
+  if((c.ingredients||[]).length){
+    txt+='WHAT GOES IN IT\n'+c.ingredients.map(function(x){ return '\u2022 '+x; }).join('\n')+'\n\n';
+  }
+  if(c.steps){ txt+='HOW TO MAKE IT\n'+c.steps+'\n\n'; }
+  txt+='\ud83c\udf6f Kept in Tell Me Honey \u00b7 tellmehoneyapp.com';
+
+  function plain(){
+    if(navigator.share) navigator.share({ title:c.title||'A recipe', text:txt }).catch(function(){});
+    else { try{ navigator.clipboard.writeText(txt); toast("Copied \u2014 paste it wherever you like."); }catch(e){} }
+  }
+  if(c.image && /^data:/.test(c.image)){
+    try{
+      fetch(c.image).then(function(r){ return r.blob(); }).then(function(b){
+        var f=new File([b], 'recipe.jpg', {type:b.type||'image/jpeg'});
+        if(navigator.canShare && navigator.canShare({files:[f]}) && navigator.share){
+          navigator.share({ files:[f], title:c.title||'A recipe', text:txt }).catch(function(){});
+        } else plain();
+      }).catch(plain);
+    }catch(e){ plain(); }
+  } else plain();
+}
+
+/* ══════════ THE RECIPE SHELVES ══════════════════════════════════════════
+   Two shelves — the ones you wrote or photographed, and the ones we found for
+   you — with the usual kinds inside each. Same idea as the journals and the
+   verse boxes, so there's nothing new to learn.
+   Everything already saved lands in "Anything else" until it's filed. */
+var FT_KINDS=[
+  {id:'main',    nm:'Main dishes', em:'\ud83c\udf7d\ufe0f'},
+  {id:'side',    nm:'Sides',       em:'\ud83e\udd57'},
+  {id:'dessert', nm:'Desserts',    em:'\ud83c\udf70'},
+  {id:'sauce',   nm:'Sauces',      em:'\ud83e\uded9'},
+  {id:'drink',   nm:'Drinks',      em:'\ud83e\udd64'},
+  {id:'bread',   nm:'Breads',      em:'\ud83c\udf5e'},
+  {id:'other',   nm:'Anything else', em:'\ud83e\udd44'}
+];
+function ftKindName(id){
+  var k=FT_KINDS.filter(function(x){ return x.id===id; })[0];
+  return k? k.nm : 'Anything else';
+}
+/* A guess at the kind, so nothing arrives unfiled. They can always change it. */
+function ftGuessKind(c){
+  var t=((c.title||'')+' '+(c.ingredients||[]).join(' ')).toLowerCase();
+  if(/cake|pie|cobbler|crisp|brownie|cookie|pudding|ice cream|frosting|dessert|sweet/.test(t)) return 'dessert';
+  if(/smoothie|juice|tea|coffee|lemonade|punch|cocktail|shake/.test(t)) return 'drink';
+  if(/sauce|gravy|dressing|marinade|salsa|glaze|butter\b/.test(t)) return 'sauce';
+  if(/bread|biscuit|roll|muffin|scone|cornbread|loaf/.test(t)) return 'bread';
+  if(/salad|slaw|greens|casserole side|potatoes|beans|rice pilaf/.test(t)) return 'side';
+  if(/chicken|beef|pork|fish|pasta|rigatoni|casserole|stew|soup|roast|burger|taco/.test(t)) return 'main';
+  return 'other';
+}
+function ftKindOf(c){ return c.kind || ftGuessKind(c); }
+function ftSetKind(i, kind){
+  var arr=ftCardsArr();
+  if(!arr[i]) return;
+  arr[i].kind=kind;
+  SETTINGS.foodCards=arr; saveSettings();
+  ftRenderCards();
+  toast('Filed under '+ftKindName(kind)+'.');
+}
+/* Which shelf are we looking at? '' = the front page */
+var _ftShelf='', _ftKind='';
+function ftOpenShelf(which){ _ftShelf=which; _ftKind=''; ftRenderCards(); }
+function ftOpenKind(k){ _ftKind=k; ftRenderCards(); }
+function ftShelfBack(){
+  if(_ftKind){ _ftKind=''; } else { _ftShelf=''; }
+  ftRenderCards();
+}
+function ftCardsOn(shelf){
+  return ftCardsArr().filter(function(c){ return shelf==='mine' ? !!c.mine : !c.mine; });
+}
+
 function ftRenderCards(){
   var box=document.getElementById('ftCards'); if(!box)return;
   var arr=ftCardsArr();
   if(!arr.length){
+    box.className='';
     box.innerHTML='<p style="font-size:12.5px;color:var(--muted);line-height:1.5;margin:2px 0 0">Nothing kept yet. Tap ＋ on any idea and it lands here — yours to come back to.</p>';
     return;
   }
-  box.className='ft-grid';
-  box.innerHTML=arr.map(function(c,i){
-    var ing=(c.ingredients&&c.ingredients.length)
-      ? '<button class="home-half" style="width:100%;margin-top:9px" onclick="ftIngredientsToList('+i+')">🛒 Add '+c.ingredients.length+' ingredients to my list</button>'
-      : '';
-    var diets=(c.diets&&c.diets.length)
-      ? '<div class="ft-diets" style="margin-top:8px">'+c.diets.map(function(d){return '<span class="ft-diet">'+d[0]+' '+d[1]+'</span>';}).join('')+'</div>'
-      : '';
-    var nut=(c.nutri&&c.nutri.length)
-      ? '<div class="ft-nutri">'+c.nutri.map(function(n){
-          return '<div class="ft-n"><div class="ft-na">'+n.amt+'<small>'+(n.k==='cal'?'':n.unit)+'</small></div><div class="ft-nl">'+esc(n.label)+'</div></div>';
-        }).join('')+'</div>'
-      : '';
-    return '<div class="ft-card">'+
-      (c.image?'<img src="'+c.image+'" alt="">':'')+
-      '<div style="padding:12px">'+
-        '<b style="font-size:14.5px;display:block;line-height:1.3">'+esc(c.title)+'</b>'+
-        (c.url?'<a href="'+c.url+'" target="_blank" rel="noopener" style="font-size:11.5px;color:var(--gold);text-decoration:none">open the recipe ↗</a>':'')+
-        diets + nut +
-        '<textarea placeholder="Your notes — what you changed, who liked it…" onchange="ftNote('+i+',this.value)" style="width:100%;margin-top:9px;min-height:52px;padding:9px 11px;border-radius:11px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);color:var(--ink);font-size:12.5px;line-height:1.45">'+esc(c.note||'')+'</textarea>'+
-        ing+
-        '<button class="home-half" style="width:100%;margin-top:7px;color:var(--muted)" onclick="ftRemoveCard('+i+')">Remove this card</button>'+
-      '</div></div>';
-  }).join('');
+
+  /* ── the front page: the last few, then the two shelves ── */
+  if(!_ftShelf){
+    var mine=ftCardsOn('mine'), web=ftCardsOn('web');
+    var recent=arr.slice(0,4);
+    var html='';
+    if(recent.length){
+      html+='<div style="font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);margin:0 2px 8px">Lately</div>';
+      html+='<div class="ft-grid">'+recent.map(function(c,n){ return ftCardHTML(c, arr.indexOf(c)); }).join('')+'</div>';
+    }
+    html+='<div style="font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);margin:20px 2px 8px">All of them</div>';
+    html+='<div class="jb-grid">'+
+      '<button class="jb-tile" onclick="ftOpenShelf(\'mine\')">'+
+        '<div class="jb-nocover">\u270e</div>'+
+        '<div class="jb-info"><div class="jb-name">My recipes</div>'+
+        '<div class="jb-count">'+mine.length+(mine.length===1?' kept':' kept')+'</div></div></button>'+
+      '<button class="jb-tile" onclick="ftOpenShelf(\'web\')">'+
+        '<div class="jb-nocover">\ud83c\udf10</div>'+
+        '<div class="jb-info"><div class="jb-name">Found online</div>'+
+        '<div class="jb-count">'+web.length+' kept</div></div></button>'+
+    '</div>';
+    box.className='';
+    box.innerHTML=html;
+    return;
+  }
+
+  /* ── inside a shelf: the kinds, or the cards of one kind ── */
+  var list=ftCardsOn(_ftShelf);
+  var shelfName=(_ftShelf==='mine') ? 'My recipes' : 'Found online';
+  var head='<button class="home-half" style="margin-bottom:12px" onclick="ftShelfBack()">\u2039 '+
+    (_ftKind ? esc(shelfName) : 'All recipes')+'</button>'+
+    '<div style="font-size:19px;font-weight:700;margin:0 2px 12px">'+
+      esc(_ftKind ? ftKindName(_ftKind) : shelfName)+'</div>';
+
+  if(!_ftKind){
+    var counts={};
+    list.forEach(function(c){ var k=ftKindOf(c); counts[k]=(counts[k]||0)+1; });
+    var tiles=FT_KINDS.filter(function(k){ return counts[k.id]; }).map(function(k){
+      return '<button class="jb-tile" onclick="ftOpenKind(\''+k.id+'\')">'+
+        '<div class="jb-nocover">'+k.em+'</div>'+
+        '<div class="jb-info"><div class="jb-name">'+esc(k.nm)+'</div>'+
+        '<div class="jb-count">'+counts[k.id]+'</div></div></button>';
+    }).join('');
+    box.className='';
+    box.innerHTML=head+(tiles
+      ? '<div class="jb-grid">'+tiles+'</div>'
+      : '<p style="color:var(--muted);font-size:13px;padding:20px 4px">Nothing on this shelf yet.</p>');
+    return;
+  }
+
+  var inKind=list.filter(function(c){ return ftKindOf(c)===_ftKind; });
+  box.className='';
+  box.innerHTML=head+'<div class="ft-grid">'+
+    inKind.map(function(c){ return ftCardHTML(c, ftCardsArr().indexOf(c)); }).join('')+'</div>';
+}
+
+/* one card — used on the front page and inside a kind */
+function ftCardHTML(c, i){
+  var ing=(c.ingredients&&c.ingredients.length)
+    ? '<button class="home-half" style="width:100%;margin-top:9px" onclick="ftIngredientsToList('+i+')">\ud83d\uded2 Add '+c.ingredients.length+' ingredients to my list</button>'
+    : '';
+  var diets=(c.diets&&c.diets.length)
+    ? '<div class="ft-diets" style="margin-top:8px">'+c.diets.map(function(d){return '<span class="ft-diet">'+d[0]+' '+d[1]+'</span>';}).join('')+'</div>'
+    : '';
+  var nut=(c.nutri&&c.nutri.length)
+    ? '<div class="ft-nutri">'+c.nutri.map(function(n){
+        return '<div class="ft-n"><div class="ft-na">'+n.amt+'<small>'+(n.k==='cal'?'':n.unit)+'</small></div><div class="ft-nl">'+esc(n.label)+'</div></div>';
+      }).join('')+'</div>'
+    : '';
+  var kind=ftKindOf(c);
+  var kindPicker='<select onchange="ftSetKind('+i+',this.value)" style="width:100%;margin-top:8px;background:rgba(0,0,0,.18);border:1px solid var(--line);border-radius:9px;color:var(--muted);font-size:11.5px;padding:7px">'+
+    FT_KINDS.map(function(k){ return '<option value="'+k.id+'"'+(k.id===kind?' selected':'')+'>'+k.em+' '+esc(k.nm)+'</option>'; }).join('')+
+  '</select>';
+  return '<div class="ft-card">'+
+    (c.image?'<img src="'+c.image+'" alt="">':'')+
+    '<div style="padding:12px">'+
+      '<b style="font-size:14.5px;display:block;line-height:1.3">'+esc(c.title)+'</b>'+
+      (c.url
+        ? '<a href="'+c.url+'" target="_blank" rel="noopener" style="font-size:11.5px;color:var(--gold);text-decoration:none">open the recipe \u2197</a>'
+        : '<button onclick="ftOpenOwn('+i+')" style="background:none;border:none;padding:0;font-size:11.5px;color:var(--gold);cursor:pointer">open the recipe \u2197</button>')+
+      (c.mine ? '<div style="font-size:10.5px;color:var(--gold);opacity:.75;margin-top:2px">\u270e one of yours</div>' : '')+
+      diets+nut+
+      '<textarea placeholder="Your notes — what you changed, who liked it" oninput="ftNote('+i+',this.value)" style="width:100%;margin-top:9px;min-height:44px;background:rgba(0,0,0,.18);border:1px solid var(--line);border-radius:10px;color:var(--ink);font-size:11.5px;padding:8px;resize:vertical">'+esc(c.note||'')+'</textarea>'+
+      kindPicker+
+      ing+
+      '<button class="home-half" style="width:100%;margin-top:7px;color:var(--muted)" onclick="ftRemoveCard('+i+')">Remove this card</button>'+
+    '</div></div>';
 }
 /* ── PLAN IT FOR SUPPER — puts a recipe on the calendar at 6pm ──
    Uses the same reminders store the rest of the calendar uses, so planned
