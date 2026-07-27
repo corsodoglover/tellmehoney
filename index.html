@@ -1908,6 +1908,8 @@ textarea{resize:none;line-height:1.4;}
       <input id="ftSearch" placeholder="A food, or a dish…" style="flex:1;min-height:48px;padding:10px 13px;border-radius:13px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--ink);font-size:15px" onkeydown="if(event.key==='Enter')ftSearch()">
       <button class="home-half" style="flex:0 0 auto;min-width:64px" onclick="ftSearch()">Find</button>
     </div>
+      <button class="home-half" style="width:100%;margin-top:8px" onclick="ftOwnOpen()">📝 Add one of my own</button>
+      <p class="rec-hint" style="margin:5px 2px 0;font-size:11px;color:var(--muted)">Write it out, or photograph a cookbook page and I'll read it in.</p>
     <div class="ft-chips" id="ftChips"></div>
     <div id="ftResults" style="margin-top:14px"></div>
     <div class="goals-head" style="margin-top:22px">📅 This week's meals</div>
@@ -2343,7 +2345,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v112 · A daily hello</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v120 · Keep the pictures</div>
   </div>
 </section>
 
@@ -4573,7 +4575,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, rangerHave:[], foodCards:[], cloneForKeepsakes:false, verseColls:[], jokeColls:[], myJokesInChat:false, lastJokeColl:'mine', comicFreeUsed:false, calSync:false, nudgeOn:false, nudgeWhen:'morning', checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, rangerHave:[], foodCards:[], cloneForKeepsakes:false, verseColls:[], jokeColls:[], keptVerses:[], myJokesInChat:false, lastJokeColl:'mine', comicFreeUsed:false, calSync:false, nudgeOn:false, nudgeWhen:'morning', checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -4842,6 +4844,10 @@ function mergeReceiptItems(items){
   var existing={};
   l.items.forEach(function(it){ existing[it.item.toLowerCase().trim()]=true; });
   var addedCount=0;
+  // a pasted blob becomes proper separate items
+  var expanded=[];
+  items.forEach(function(x){ expanded=expanded.concat(smartSplitItems(x)); });
+  items=expanded;
   items.forEach(function(name){
     name=(name||'').trim(); if(!name) return;
     var key=name.toLowerCase().trim();
@@ -5978,6 +5984,22 @@ function renderVerses(){
   list.appendChild(any);
 }
 function tellVerse(cat){
+  /* Their own kept verses in this category join the pool, so the ones they
+     chose keep coming round — which is the whole point of keeping them. */
+  try{
+    var mine=keptVersesIn(cat);
+    if(mine.length && Math.random()<0.45){
+      var pick=mine[Math.floor(Math.random()*mine.length)];
+      _lastVerseCat=cat;
+      _cloneKeepsake=true; setTimeout(function(){ _cloneKeepsake=false; }, 2500);
+      themTyping(function(){
+        pushThem(vibeColor('\u201c'+pick.t+'\u201d'));
+        if(pick.r) setTimeout(function(){ themTyping(function(){ pushThem(vibeColor('\u2014 '+pick.r+'  \u00b7 one of yours')); }); }, 450);
+        S.lastShareable={ text:pick.t+'\n'+(pick.r||''), kind:'verse' };
+      });
+      return;
+    }
+  }catch(e){}
   var pool=VERSES[cat]||[]; if(!pool.length)return;
   var seen=verseServed[cat]||{};
   var avail=pool.filter(function(v){ return !seen[v.r]; });
@@ -5987,6 +6009,7 @@ function tellVerse(cat){
   go('chat');
   S.lastVerse = v;   // remember it so "hear it again" can replay
   S.lastShareable = { text:v.t+'\n'+v.r, kind:'verse' };
+  try{ _lastVerseCat = cat || _lastVerseCat; }catch(e){}
   themTyping(function(){
     pushThem('\u201C'+v.t+'\u201D  \u2014 '+v.r);
     pushAction('🔁 Hear it again', null, false, null, function(){ repeatVerse(); });
@@ -7473,7 +7496,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v112";
+window.HONEY_BUILD = "v120";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -7534,6 +7557,148 @@ function openLegal(which){
     }
   }catch(e){}
   try{ window.open(url,'_blank','noopener'); }catch(e){ location.href=url; }
+}
+
+/* ══════════ FILING A KEPT VERSE ══════════════════════════════════════════
+   A hearted verse lands in one of the fourteen categories they already browse
+   — Peace, Patience, Comfort — rather than a separate pile. So when they ask
+   for "a verse about peace", theirs comes up alongside ours, and the ones they
+   chose are the ones they keep meeting. That's how a verse gets remembered. */
+function keptVerses(){
+  if(!Array.isArray(SETTINGS.keptVerses)) SETTINGS.keptVerses=[];
+  return SETTINGS.keptVerses;
+}
+function keptVersesIn(cat){
+  return keptVerses().filter(function(v){ return v.cat===cat; });
+}
+/* Which category was that verse showing from? */
+var _lastVerseCat='';
+function verseCatOf(refOrText){
+  try{
+    var keys=Object.keys(VERSES);
+    for(var i=0;i<keys.length;i++){
+      var hit=(VERSES[keys[i]]||[]).some(function(v){
+        return v.r===refOrText || (v.t&&refOrText&&refOrText.indexOf(v.t.slice(0,30))>=0);
+      });
+      if(hit) return keys[i];
+    }
+  }catch(e){}
+  return '';
+}
+/* The little row of category chips that appears after hearting one. */
+function verseFileOffer(body, ref){
+  var suggested=_lastVerseCat || verseCatOf(ref) || verseCatOf(body) || '';
+  var cats=[];
+  try{ cats=Object.keys(VERSES); }catch(e){ return; }
+  var payload=encodeURIComponent(JSON.stringify({b:body, r:ref}));
+  var chips=cats.map(function(c){
+    var on=(c===suggested);
+    return '<button class="ms-btn'+(on?' sel':'')+'" style="font-size:11.5px" '+
+      'onclick="verseFileInto(\''+payload+'\',\''+encodeURIComponent(c)+'\')">'+esc(c)+'</button>';
+  }).join('');
+  var box=document.createElement('div');
+  box.className='bub them';
+  box.style.cssText='max-width:96%;background:transparent;border:1px solid var(--line);padding:11px 12px;';
+  box.innerHTML='<div style="font-size:11.5px;color:var(--muted);margin:0 2px 7px">Keep it under\u2026</div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:6px">'+chips+'</div>'+
+    '<button class="home-half" style="width:100%;margin-top:8px;font-size:12.5px;color:var(--muted)" '+
+      'onclick="verseFileSkip(this)">Not this time</button>';
+  var msgs=document.getElementById('msgs');
+  if(msgs){ msgs.appendChild(box); try{ scrollMsgs(); }catch(e){} }
+}
+function verseFileInto(payload, catEnc){
+  var o; try{ o=JSON.parse(decodeURIComponent(payload)); }catch(e){ return; }
+  var cat=decodeURIComponent(catEnc||'');
+  var list=keptVerses();
+  var dupe=list.some(function(v){ return v.t===o.b; });
+  if(!dupe){
+    list.unshift({ t:o.b, r:o.r||'', cat:cat, ts:Date.now() });
+    SETTINGS.keptVerses=list;
+    saveSettings();
+  }
+  try{
+    var rows=document.querySelectorAll('#msgs .bub.them');
+    var last=rows[rows.length-1];
+    if(last && last.textContent.indexOf('Keep it under')>=0) last.remove();
+  }catch(e){}
+  themTyping(function(){
+    pushThem(vibeColor("Kept it under "+cat+". Ask me for a "+cat.split(' ')[0].toLowerCase()+" verse and it'll come round again."));
+  });
+}
+function verseFileSkip(btn){
+  try{ var box=btn.closest('.bub')||btn.parentNode; if(box) box.remove(); }catch(e){}
+}
+
+/* ══════════ ANY VERSE, NOT JUST OURS ═════════════════════════════════════
+   The 135 in the app are a starting canvas. If somebody names one we haven't
+   got — "read me Psalm 46:10" — she looks it up rather than handing over a
+   random one, and hearting it puts it in their own box. Between the two, the
+   canvas is the whole Bible. */
+var BIBLE_BOOKS = "genesis|exodus|leviticus|numbers|deuteronomy|joshua|judges|ruth|samuel|kings|"+
+  "chronicles|ezra|nehemiah|esther|job|psalms?|proverbs|ecclesiastes|song of solomon|songs?|isaiah|"+
+  "jeremiah|lamentations|ezekiel|daniel|hosea|joel|amos|obadiah|jonah|micah|nahum|habakkuk|"+
+  "zephaniah|haggai|zechariah|malachi|matthew|mark|luke|john|acts|romans|corinthians|galatians|"+
+  "ephesians|philippians|colossians|thessalonians|timothy|titus|philemon|hebrews|james|peter|"+
+  "jude|revelation";
+/* Pull "Psalm 46:10" or "1 Corinthians 13 4" out of what they said. */
+function verseRefIn(l){
+  var re=new RegExp("\\b((?:1|2|3|first|second|third)\\s+)?("+BIBLE_BOOKS+")\\s+(\\d{1,3})\\s*[:.\\s]\\s*(\\d{1,3})", "i");
+  var m=(l||'').match(re);
+  if(!m) return null;
+  var pre=(m[1]||'').trim().toLowerCase()
+    .replace('first','1').replace('second','2').replace('third','3');
+  var book=m[2].replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+  return (pre? pre+' ':'') + book + ' ' + m[3] + ':' + m[4];
+}
+/* Ask for it, show it, and let them keep it. */
+function verseLookUp(ref){
+  var a=null; try{ a=aiCfg(); }catch(e){}
+  if(!a || !a.key || (typeof aiAvailable==='function' && !aiAvailable())){
+    themTyping(function(){
+      pushThem(vibeColor("I haven't got "+ref+" in my book, and my looking-up part is switched off. Turn it on in Profile and I'll fetch any verse you like."));
+    });
+    return;
+  }
+  themTyping(function(){ pushThem(vibeColor("Let me find "+ref+" for you\u2026")); });
+  var body={
+    model:"gpt-4o-mini", max_tokens:180, temperature:0,
+    messages:[{ role:"user", content:
+      "Give the King James Version text of "+ref+". Reply with ONLY the verse text \u2014 "+
+      "no reference, no quotation marks, no commentary. If that reference doesn't exist, reply exactly: NOTFOUND" }]
+  };
+  var ctrl=(typeof AbortController!=="undefined")?new AbortController():null;
+  var timer=ctrl?setTimeout(function(){ try{ctrl.abort();}catch(e){} },14000):null;
+  fetch("https://api.openai.com/v1/chat/completions",{
+    method:"POST",
+    headers:{ "Authorization":"Bearer "+a.key, "Content-Type":"application/json" },
+    body:JSON.stringify(body), signal: ctrl?ctrl.signal:undefined
+  }).then(function(r){ if(timer) clearTimeout(timer); return r.json(); })
+    .then(function(j){
+      var txt=j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;
+      txt=(txt||'').trim().replace(/^["\u201c]|["\u201d]$/g,'');
+      if(!txt || /NOTFOUND/i.test(txt)){
+        themTyping(function(){ pushThem(vibeColor("I couldn't find "+ref+". Have I got the reference right?")); });
+        return;
+      }
+      _cloneKeepsake=true; setTimeout(function(){ _cloneKeepsake=false; }, 2500);
+      themTyping(function(){
+        pushThem(vibeColor('\u201c'+txt+'\u201d'));
+        setTimeout(function(){
+          themTyping(function(){
+            pushThem(vibeColor('\u2014 '+ref));
+            S.lastShareable={ text:txt+'\n'+ref, kind:'verse' };
+            setTimeout(function(){
+              themTyping(function(){
+                pushThem(vibeColor("Tap the \u2665 to keep it with your verses."));
+              });
+            }, 550);
+          });
+        }, 500);
+      });
+    })
+    .catch(function(){
+      themTyping(function(){ pushThem(vibeColor("Couldn't reach my books just now. Try again in a moment?")); });
+    });
 }
 
 /* Say one particular verse they asked for. Flagged as a keepsake so a Gallon
@@ -8723,6 +8888,13 @@ function userSays(t){
     }
   }
   // verse / scripture requests (incl. "another", "similar", "comforting" verse)
+  // "Psalm 46:10" on its own, with no other words
+  if(!/\bverses?\b|scripture/.test(l)){
+    var bareRef=verseRefIn(l);
+    if(bareRef && l.replace(/[^a-z0-9:\s]/gi,'').trim().length < bareRef.length+18){
+      verseLookUp(bareRef); return;
+    }
+  }
   if(/\bverses?\b|scripture|passage|word from god|proverb|john \d|psalm/.test(l)){
     if(!/^\s*(another|again|one more|next)/.test(l)){
       // A whole named box first — "read me Granddad's verses"
@@ -8740,6 +8912,10 @@ function userSays(t){
       if(mine){ sayPrayer(mine); return; }
       var vFound=findVerseByWords(l);
       if(vFound){ tellVerseSpecific(vFound); return; }
+      // they named a reference we haven't got — fetch it rather than
+      // handing over a random verse, which is worse than saying so
+      var ref=verseRefIn(l);
+      if(ref){ verseLookUp(ref); return; }
     }
     var vcat = VERSE_CATS[Math.floor(Math.random()*VERSE_CATS.length)];
     tellVerse(vcat); return;
@@ -11015,11 +11191,17 @@ function renderShopList(){
     if(it.done) anyChecked=true;
     var row=document.createElement('div'); row.className='shop-item'+(it.done?' checked':'');
     var secChip = '<div class="shop-move" title="Put in a group">⇄</div>';
-    row.innerHTML='<div class="bub">'+(it.done?'✓':'')+'</div><div class="txt">'+esc(it.item)+'</div>'+secChip+'<div class="del">×</div>';
+    /* A long run-together item gets a split button — one tap and it becomes
+       proper separate lines you can actually tick off. */
+    var canSplit = it.item.length>28 && smartSplitItems(it.item).length>1;
+    var splitChip = canSplit ? '<div class="shop-move shop-split" title="Break this into separate items">✂️</div>' : '';
+    row.innerHTML='<div class="bub">'+(it.done?'✓':'')+'</div><div class="txt">'+esc(it.item)+'</div>'+splitChip+secChip+'<div class="del">×</div>';
     row.querySelector('.txt').onclick=()=>toggleShop(idx);
     row.querySelector('.bub').onclick=()=>toggleShop(idx);
     row.querySelector('.del').onclick=(e)=>{ e.stopPropagation(); delShop(idx); };
-    var mv=row.querySelector('.shop-move');
+    var sp=row.querySelector('.shop-split');
+    if(sp) sp.onclick=(e)=>{ e.stopPropagation(); listSplitItem(l.id, idx); };
+    var mv=row.querySelector('.shop-move:not(.shop-split)');
     if(mv) mv.onclick=(e)=>{ e.stopPropagation(); moveItemSection(idx); };
     return row;
   }
@@ -12150,6 +12332,50 @@ function icsDataUri(title,date,allDay){
     "\r\nSUMMARY:"+title.replace(/[\r\n,;]/g,' ')+"\r\nDESCRIPTION:Set with "+S.name+" in Tell Me Honey\r\nEND:VEVENT\r\nEND:VCALENDAR";
   return 'data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
 }
+/* Break up a long item that's already sitting in a list. */
+function listSplitItem(listId, idx){
+  var l=getList(listId); if(!l||!l.items||!l.items[idx]) return;
+  var it=l.items[idx];
+  var bits=smartSplitItems(it.item);
+  if(bits.length<2){ toast("I can't see where to break that one up."); return; }
+  var rest=l.items.slice(idx+1);
+  l.items=l.items.slice(0,idx);
+  bits.forEach(function(b){
+    if(l.items.some(function(y){ return y.item.toLowerCase()===b.toLowerCase(); })) return;
+    l.items.push({ item:b, made:Date.now(), done:false, section:(grocerySectionFor(b)||'Other') });
+  });
+  l.items=l.items.concat(rest);
+  persist();
+  try{ renderShopList(); }catch(e){}
+  try{ renderList(); }catch(e){}
+  toast("Broke it into "+bits.length+" \u2014 much easier to tick off.");
+}
+
+/* ══════════ ONE BIG BLOB → A PROPER LIST ═════════════════════════════════
+   Paste a recipe's ingredients with no commas and it used to land as a single
+   enormous line you couldn't tick off. But every ingredient starts with an
+   amount — "2 cans", "1/2 cup", "1 teaspoon" — so that's where to cut.
+   Careful about two things: never cut inside a fraction, and never split
+   "1 1/2 cups" into "1" and "1/2 cups". */
+var _SPLIT_UNITS='cups?|cans?|teaspoons?|tsps?|tablespoons?|tbsps?|pounds?|lbs?|ounces?|ozs?|'+
+  'cloves?|packages?|pkgs?|pinches|pinch|dashes|dash|quarts?|qts?|liters?|litres?|ml|grams?|kg|'+
+  'sticks?|slices?|bunches|bunch|heads?|jars?|boxes|box|bags?|bottles?|sprigs?|stalks?|ears?|pints?';
+var _SPLIT_QTY='\\d+\\s+\\d+\\/\\d+|\\d+\\/\\d+|\\d+(?:\\.\\d+)?';
+function smartSplitItems(text){
+  var parts=String(text||'').split(/[\n;]+|,\s*/).map(function(x){ return x.trim(); }).filter(Boolean);
+  var out=[];
+  var re;
+  try{
+    re=new RegExp('(?<![\\d\\/]|\\d\\s)(?=(?:'+_SPLIT_QTY+')\\s+(?:'+_SPLIT_UNITS+')\\b)','gi');
+  }catch(e){ return parts; }        // older engines without lookbehind — leave as is
+  parts.forEach(function(p){
+    if(p.length<=28){ out.push(p); return; }
+    var bits=p.split(re).map(function(x){ return (x||'').trim(); }).filter(Boolean);
+    if(bits.length>1) out=out.concat(bits); else out.push(p);
+  });
+  return out;
+}
+
 /* ══════════ A LITTLE HELLO EACH DAY ══════════════════════════════════════
    The one thing every app in the category has and we didn't: a way for Honey
    to say hello first. Scheduled on the phone — no server, no push service,
@@ -15244,11 +15470,50 @@ function currentJokeText(){
 }
 /* the ♥ heart in chat: saves whatever was last shown (joke, verse, phrase, scratch&sniff),
    quietly. Offers a share right after — never forces the share card open. */
+/* Put a hearted verse into their own box, so it can be asked for by name.
+   The scripture library is a canvas — these are the ones they chose. */
+function keepVerseFromHeart(txt){
+  try{
+    var lines=String(txt||'').split('\n').map(function(x){ return x.trim(); }).filter(Boolean);
+    var body=lines[0]||'';
+    var ref =lines[1]||'';
+    if(!body) return;
+    var list=userPrayers();
+    // already got it?
+    var have=list.some(function(p){ return (p.text||'').indexOf(body.slice(0,40))>=0; });
+    if(have){ return; }
+    list.unshift({
+      id:'v'+Date.now().toString(36),
+      title: ref || body.slice(0,42),
+      text: body + (ref? ('\n\u2014 '+ref) : ''),
+      hasAudio:false,
+      coll:'mine',
+      kept:true,
+      ts:Date.now()
+    });
+    SETTINGS.userPrayers=list;
+    saveSettings();
+    setTimeout(function(){
+      themTyping(function(){
+        pushThem(vibeColor("Kept it with your verses \u2014 say \u201c"+(ref||'that verse')+"\u201d any time and I'll read it back."));
+      });
+    }, 700);
+  }catch(e){}
+}
+
 function loveJoke(){
   var item = S.lastShareable;                 // {text, kind} set whenever Honey shows something
   var jt = item && item.text ? item.text : currentJokeText();
   var kind = item && item.kind ? item.kind : 'joke';
   if(!jt){ toast("Nothing to save yet — I'll show you something first."); return; }
+  /* A hearted verse goes into their own verse box as well — which is what makes
+     it recallable by name later, and how somebody builds a small set they'll
+     actually learn rather than seeing 135 at random forever. */
+  if(kind==='verse'){
+    var _ln=String(jt||'').split('\n').map(function(x){return x.trim();}).filter(Boolean);
+    var _body=_ln[0]||'', _ref=(_ln[1]||'').replace(/^\u2014\s*/,'');
+    if(_body){ setTimeout(function(){ verseFileOffer(_body,_ref); }, 400); }
+  }
   lovedAddText(jt, kind);
   var hb=document.getElementById('tbHeart'); if(hb)hb.classList.add('loved');
   loveCurrent=jt; loveKind=kind;
@@ -18473,12 +18738,12 @@ function openPlantHub(){ var b=document.getElementById('plantHubResult'); if(b)b
    the runner-up guesses, since PlantNet's second answer is often the right one. */
 function rangerRetryPanel(){
   var others=[];
-  for(var i=1;i<_lastResults.length && others.length<2;i++){
+  for(var i=1;i<_lastResults.length && others.length<3;i++){
     var r=_lastResults[i]; if(!r) continue;
     var nm=(r.commonNames&&r.commonNames[0]) ? r.commonNames[0] : (r.scientificName||'');
     if(!nm) continue;
-    others.push('<button class="home-half" style="width:100%;margin-top:6px;text-align:left" onclick="rangerUseCandidate('+i+')">'+
-      '🔎 '+esc(nm)+(r.score?' · '+r.score+'%':'')+'</button>');
+    others.push('<button class="home-half" style="width:100%;margin-top:6px;text-align:left" onclick="rangerPeekCandidate('+i+')">'+
+      '🔎 '+esc(nm)+(r.score?' · '+r.score+'%':'')+' &nbsp;<span style="opacity:.6">see it</span></button>');
   }
   var shots=_stage.length;
   return '<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:13px;margin-top:12px">'+
@@ -18496,6 +18761,64 @@ function rangerRetryPanel(){
   '</div>';
 }
 /* Pick one of PlantNet's runner-up guesses instead. */
+/* ══════════ "IS THIS IT?" — LOOK BEFORE YOU CHOOSE ═══════════════════════
+   Tapping a runner-up used to jump straight to it. Now it shows PlantNet's own
+   photographs of that species beside your own picture, so you can actually
+   compare before deciding. Every reference photo is credited. */
+function rangerPeekCandidate(i){
+  var r=_lastResults[i]; if(!r) return;
+  var nm=(r.commonNames&&r.commonNames[0]) ? r.commonNames[0] : (r.scientificName||'this one');
+  var sci=r.scientificName||'';
+  var refs=(Array.isArray(r.refImages)?r.refImages:[]).filter(function(x){ return x && x.url; }).slice(0,4);
+  if(!refs.length && r.refImage) refs=[{url:r.refImage, credit:r.refCredit||''}];
+
+  var yours=(_stage.length && _stage[0].data) ? _stage[0].data : '';
+
+  var old=document.getElementById('peekOverlay'); if(old) old.remove();
+  var d=document.createElement('div');
+  d.id='peekOverlay';
+  d.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(6,8,6,.95);overflow:auto;padding:16px;';
+
+  var html='<div style="max-width:440px;margin:0 auto">';
+  html+='<div style="text-align:center;margin:6px 0 12px">'+
+        '<div style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:#fff">'+esc(nm)+'</div>'+
+        (sci? '<div style="font-style:italic;font-size:13px;color:#9fb8a5;margin-top:2px">'+esc(sci)+'</div>':'')+
+        (r.score? '<div style="font-size:12px;color:#8d9a8f;margin-top:4px">'+r.score+'% match</div>':'')+
+        '</div>';
+
+  if(yours){
+    html+='<div style="font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:#8fe3c0;margin:0 2px 5px">Your picture</div>'+
+          '<img src="'+yours+'" style="width:100%;border-radius:14px;display:block;margin-bottom:14px">';
+  }
+  if(refs.length){
+    html+='<div style="font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:#c9b98a;margin:0 2px 5px">What '+esc(nm)+' looks like</div>';
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px">';
+    refs.forEach(function(x){
+      html+='<div style="position:relative">'+
+        '<img src="'+x.url+'" style="width:100%;height:150px;object-fit:cover;border-radius:11px;display:block;background:#1a1f18" onclick="openPlantImage(\''+x.url+'\',\''+esc(nm).replace(/'/g,'')+'\',\''+(x.credit? esc(x.credit).replace(/'/g,'') : 'reference photo')+'\')">'+
+        (x.organ? '<span style="position:absolute;top:5px;left:5px;font-size:9px;background:rgba(0,0,0,.6);color:#fff;border-radius:8px;padding:2px 7px">'+esc(x.organ)+'</span>':'')+
+        (x.credit? '<div style="font-size:7.5px;color:#fff;opacity:.7;margin-top:3px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">'+esc(x.credit)+'</div>':'')+
+        '<button onclick="yardPicOffer(\''+x.url+'\',\''+(x.credit?esc(x.credit).replace(/\'/g,''):'')+'\',\''+(x.organ||'')+'\')" style="position:absolute;bottom:16px;right:5px;width:26px;height:26px;border:none;border-radius:9px;background:rgba(0,0,0,.55);color:#fff;font-size:13px;line-height:1;cursor:pointer" title="Keep this picture">\uff0b</button>'+
+      '</div>';
+    });
+    html+='</div>';
+    html+='<p style="font-size:10.5px;color:#7f8c83;margin:0 2px 14px;line-height:1.5">Photographs from Pl@ntNet. Tap any to see it big.</p>';
+  } else {
+    html+='<p style="color:#8d9a8f;text-align:center;padding:22px 10px;font-size:13px;line-height:1.6">No reference photos came back for this one. Search the name to have a proper look before you decide.</p>';
+  }
+
+  html+='<button class="home-half" style="width:100%;min-height:52px" onclick="rangerPeekAccept('+i+')">\u2713 Yes, that\u2019s the one</button>'+
+        '<button class="home-half" style="width:100%;margin-top:8px;color:#b9c0d0" onclick="rangerPeekClose()">\u2039 Not it \u2014 go back</button>'+
+        '</div>';
+  d.innerHTML=html;
+  document.body.appendChild(d);
+}
+function rangerPeekClose(){ var d=document.getElementById('peekOverlay'); if(d) d.remove(); }
+function rangerPeekAccept(i){
+  rangerPeekClose();
+  rangerUseCandidate(i);
+}
+
 function rangerUseCandidate(i){
   var top=_lastResults[i]; if(!top) return;
   var hit=rangerFindPlant(top);
@@ -18678,6 +19001,102 @@ function rangerShelves(){
   try{ if(typeof GARDEN!=='undefined') out.push(['garden', GARDEN]); }catch(e){}
   return out;
 }
+/* ══════════ KEEPING THE PICTURES THAT HELP ═══════════════════════════════
+   Colour photographs, not drawings — a real user (my mother) was clear about
+   that, and she's the one this is for. PlantNet supplies them, and somebody can
+   keep several against their own plant: the leaf, the flower, the whole thing.
+   Then when they're standing in the yard next spring they've got what they need
+   without a signal. */
+function yardPics(entryId){
+  var e=(rangerMyYardArr()||[]).filter(function(x){ return x.id===entryId; })[0];
+  if(!e) return [];
+  if(!Array.isArray(e.pics)) e.pics=[];
+  return e.pics;
+}
+function yardPicAdd(entryId, url, credit, organ){
+  var arr=rangerMyYardArr()||[];
+  var e=arr.filter(function(x){ return x.id===entryId; })[0];
+  if(!e){ toast("Save the plant first, then I can keep pictures with it."); return; }
+  if(!Array.isArray(e.pics)) e.pics=[];
+  if(e.pics.some(function(p){ return p.url===url; })){ toast("Already got that one."); return; }
+  if(e.pics.length>=6){ toast("Six is plenty for one plant \u2014 remove one first."); return; }
+  e.pics.push({ url:url, credit:credit||'', organ:organ||'', ts:Date.now() });
+  saveSettings();
+  toast("\ud83d\udcf7 Kept with your plant.");
+  try{ yardShow(entryId); }catch(e2){}
+}
+function yardPicRemove(entryId, idx){
+  var arr=rangerMyYardArr()||[];
+  var e=arr.filter(function(x){ return x.id===entryId; })[0];
+  if(!e || !Array.isArray(e.pics)) return;
+  e.pics.splice(idx,1); saveSettings();
+  try{ yardShow(entryId); }catch(e2){}
+}
+/* The strip of kept pictures on a My Yard card. */
+function yardPicsHTML(e){
+  var pics=Array.isArray(e.pics)?e.pics:[];
+  if(!pics.length) return '';
+  var nm=(e.name||'').replace(/'/g,"");
+  return '<div style="margin:10px 0 4px">'+
+    '<div style="font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);margin:0 2px 6px">Pictures you kept</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">'+
+    pics.map(function(p,i){
+      return '<div style="position:relative">'+
+        '<img src="'+p.url+'" style="width:100%;height:88px;object-fit:cover;border-radius:10px;display:block;background:#1a1f18" '+
+          'onclick="openPlantImage(\''+p.url+'\',\''+nm+'\',\''+(p.credit? esc(p.credit).replace(/'/g,'') : 'kept picture')+'\')">'+
+        (p.organ? '<span style="position:absolute;top:4px;left:4px;font-size:8px;background:rgba(0,0,0,.6);color:#fff;border-radius:7px;padding:1px 6px">'+esc(p.organ)+'</span>':'')+
+        '<button onclick="yardPicRemove(\''+e.id+'\','+i+')" style="position:absolute;top:3px;right:3px;width:22px;height:22px;border:none;border-radius:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;line-height:1;cursor:pointer">\u2715</button>'+
+      '</div>';
+    }).join('')+
+    '</div></div>';
+}
+/* Offer to keep a reference photo against one of their plants. */
+function yardPicOffer(url, credit, organ){
+  var arr=(rangerMyYardArr()||[]);
+  if(!arr.length){ toast("Add the plant to My Yard first, then you can keep pictures with it."); return; }
+  var rows=arr.slice(0,12).map(function(e){
+    return '<button class="home-half" style="width:100%;margin-bottom:6px;text-align:left" '+
+      'onclick="yardPicPick(\''+e.id+'\')">\ud83c\udf3f '+esc(e.name||'My plant')+'</button>';
+  }).join('');
+  _pendPic={url:url, credit:credit, organ:organ};
+  var old=document.getElementById('picPickBox'); if(old) old.remove();
+  var d=document.createElement('div');
+  d.id='picPickBox'; d.className='rec-overlay'; d.style.display='flex';
+  d.innerHTML='<div class="rec-sheet">'+
+    '<div class="rec-head"><span>\ud83d\udcf7 Keep it with which plant?</span>'+
+    '<button class="rec-x" onclick="yardPicCancel()">\u2715</button></div>'+
+    '<p class="rec-hint" style="margin:0 0 10px">It\u2019ll be there next time, signal or not.</p>'+
+    rows+'</div>';
+  document.body.appendChild(d);
+}
+var _pendPic=null;
+function yardPicCancel(){ var d=document.getElementById('picPickBox'); if(d) d.remove(); _pendPic=null; }
+function yardPicPick(entryId){
+  if(!_pendPic) return;
+  var p=_pendPic; yardPicCancel();
+  yardPicAdd(entryId, p.url, p.credit, p.organ);
+}
+
+/* ══════════ HOW SURE IS IT, REALLY? ══════════════════════════════════════
+   PlantNet's score on its own isn't enough. What matters just as much is the
+   GAP to the runner-up: 34% against 31% is a coin flip, while 61% against 9%
+   is a proper answer. So we look at both, and let it change what she says
+   rather than only what colour a badge is. */
+function rangerConfidence(results){
+  var a=(results&&results[0]&&results[0].score)||0;
+  var b=(results&&results[1]&&results[1].score)||0;
+  var gap = b>0 ? (a/b) : 99;
+  if(a>=50 && gap>=2.5) return {level:'sure',   score:a, gap:gap};
+  if(a>=30 && gap>=1.8) return {level:'likely', score:a, gap:gap};
+  return {level:'unsure', score:a, gap:gap};
+}
+/* What she says about it, in plain words rather than a percentage. */
+function rangerConfidenceLine(c, name){
+  if(c.level==='sure')   return "That's "+name+" \u2014 I'm confident.";
+  if(c.level==='likely') return "Looks like "+name+" to me, though have a look at the others below before you trust it.";
+  return "I'm not certain. "+name+" is the closest, but check it against the others \u2014 and don't eat anything on a maybe.";
+}
+
 function rangerFindPlant(top){
   var sci=(top.scientificName||'').toLowerCase();
   var genus=(top.genus||'').toLowerCase();
@@ -19402,6 +19821,132 @@ function sharePlantImage(){
 /* ══════════ FOOD FOR THOUGHT — recipes, ideas & keepers ══════════
    Uses the same Spoonacular proxy Ranger uses (key stays server-side).
    If the proxy returns ingredients, we use them; if not, we skip gracefully. */
+/* ══════════ YOUR OWN RECIPES ════════════════════════════════════════════
+   Two ways in: write it out yourself, or photograph one — a cookbook page,
+   a card in your mother's handwriting, a magazine clipping — and let Honey
+   read it into a card for you.
+
+   The reading is done by the same brain that handles chat (gpt-4o-mini, which
+   can see pictures). Costs a fraction of a cent and the photo isn't kept
+   anywhere but your own phone. */
+function ftOwnOpen(prefill){
+  var old=document.getElementById('ftOwnBox'); if(old) old.remove();
+  var p=prefill||{};
+  var d=document.createElement('div');
+  d.id='ftOwnBox'; d.className='rec-overlay'; d.style.display='flex';
+  d.innerHTML=
+    '<div class="rec-sheet">'+
+      '<div class="rec-head"><span>\ud83d\udcdd Your own recipe</span>'+
+        '<button class="rec-x" onclick="ftOwnClose()">\u2715</button></div>'+
+
+      '<button class="home-half" style="width:100%;margin-bottom:10px" onclick="ftScanRecipe()">\ud83d\udcf7 Photograph one instead</button>'+
+      '<p class="rec-hint" style="margin:0 0 12px;font-size:11px">A cookbook page, a recipe card, a clipping \u2014 I\u2019ll read it in.</p>'+
+
+      '<label class="rec-label">What\u2019s it called?</label>'+
+      '<div class="rec-field"><input id="ftOwnTitle" placeholder="Mama\u2019s chicken and rice" value="'+esc(p.title||'')+'"></div>'+
+
+      '<label class="rec-label">What goes in it</label>'+
+      '<div class="rec-field"><textarea id="ftOwnIng" rows="5" placeholder="One per line, or paste it in any old how">'+esc((p.ingredients||[]).join('\n'))+'</textarea></div>'+
+
+      '<label class="rec-label">How to make it</label>'+
+      '<div class="rec-field"><textarea id="ftOwnSteps" rows="5" placeholder="Step by step, or however you like to write it">'+esc(p.steps||'')+'</textarea></div>'+
+
+      '<div id="ftOwnPhotoWrap" style="margin:4px 0 10px">'+
+        (p.image? '<img id="ftOwnPhoto" src="'+p.image+'" style="width:100%;border-radius:13px;display:block">' : '<img id="ftOwnPhoto" style="display:none;width:100%;border-radius:13px">')+
+      '</div>'+
+      '<button class="home-half" style="width:100%;margin-bottom:10px" onclick="ftOwnAddPhoto()">\ud83d\uddbc\ufe0f Add a picture of the dish</button>'+
+
+      '<button class="rec-save" onclick="ftOwnSave()">Keep this recipe</button>'+
+    '</div>';
+  document.body.appendChild(d);
+  if(p.image){ _ftOwnImg=p.image; }
+}
+var _ftOwnImg='';
+function ftOwnClose(){ var d=document.getElementById('ftOwnBox'); if(d) d.remove(); }
+function ftOwnAddPhoto(){
+  honeyTakePhoto({ source:'prompt', saveToGallery:false }).then(function(dataUrl){
+    if(!dataUrl) return;
+    _ftOwnImg=dataUrl;
+    var img=document.getElementById('ftOwnPhoto');
+    if(img){ img.src=dataUrl; img.style.display='block'; }
+  }).catch(function(){});
+}
+function ftOwnSave(){
+  var t=((document.getElementById('ftOwnTitle')||{}).value||'').trim();
+  var ing=((document.getElementById('ftOwnIng')||{}).value||'').trim();
+  var st=((document.getElementById('ftOwnSteps')||{}).value||'').trim();
+  if(!t){ toast("Give it a name first."); return; }
+  var arr=ftCardsArr();
+  arr.unshift({
+    title:t,
+    image:_ftOwnImg||'',
+    url:'',
+    ingredients: ing? smartSplitItems(ing) : [],
+    steps: st,
+    diets: [],
+    nutri: [],
+    mine: true,
+    made: Date.now()
+  });
+  SETTINGS.foodCards=arr; saveSettings();
+  _ftOwnImg='';
+  ftOwnClose();
+  try{ ftRenderCards(); }catch(e){}
+  toast("\ud83c\udf72 Kept \u2014 it\u2019s yours now.");
+}
+
+/* Photograph a recipe and have it read in. */
+function ftScanRecipe(){
+  if(isOffline()){ toast("Reading a recipe needs a signal. You can type it in meanwhile."); return; }
+  var a=null; try{ a=aiCfg(); }catch(e){}
+  if(!a || !a.key){ toast("Reading a photo needs the AI turned on in Profile."); return; }
+  honeyTakePhoto({ source:'prompt', saveToGallery:false }).then(function(dataUrl){
+    if(!dataUrl) return;
+    toast("Reading it\u2026 give me a moment.");
+    _ftReadRecipe(dataUrl, a);
+  }).catch(function(){});
+}
+function _ftReadRecipe(dataUrl, a){
+  var body={
+    model:"gpt-4o-mini",
+    max_tokens:900,
+    messages:[{
+      role:"user",
+      content:[
+        { type:"text", text:
+          "Read this recipe and return ONLY JSON, no other words, in exactly this shape:\n"+
+          '{"title":"","ingredients":["",""],"steps":""}\n'+
+          "One ingredient per array entry, keeping amounts. Put the method in steps as plain "+
+          "text with each step on its own line. If you can't read it, return "+
+          '{"title":"","ingredients":[],"steps":""}.' },
+        { type:"image_url", image_url:{ url:dataUrl } }
+      ]
+    }]
+  };
+  var ctrl=(typeof AbortController!=="undefined")?new AbortController():null;
+  var timer=ctrl?setTimeout(function(){ try{ctrl.abort();}catch(e){} },25000):null;
+  fetch("https://api.openai.com/v1/chat/completions",{
+    method:"POST",
+    headers:{ "Authorization":"Bearer "+a.key, "Content-Type":"application/json" },
+    body:JSON.stringify(body),
+    signal: ctrl?ctrl.signal:undefined
+  }).then(function(r){ if(timer) clearTimeout(timer); return r.json(); })
+    .then(function(j){
+      var txt=j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+      if(!txt){ toast("Couldn't make that one out. Try a straighter photo?"); return; }
+      var clean=txt.replace(/```json|```/g,'').trim();
+      var o=null; try{ o=JSON.parse(clean); }catch(e){}
+      if(!o || (!o.title && !(o.ingredients||[]).length)){
+        toast("Couldn't make that one out \u2014 more light and a straight-on shot helps.");
+        return;
+      }
+      ftOwnClose();
+      ftOwnOpen({ title:o.title||'', ingredients:o.ingredients||[], steps:o.steps||'', image:dataUrl });
+      toast("Read it in \u2014 have a look and fix anything I got wrong.");
+    })
+    .catch(function(){ toast("Couldn't read that just now."); });
+}
+
 function ftCardsArr(){ if(!Array.isArray(SETTINGS.foodCards)) SETTINGS.foodCards=[]; return SETTINGS.foodCards; }
 function ftSaved(url){ return ftCardsArr().some(function(c){ return c.url===url; }); }
 
@@ -19946,6 +20491,7 @@ function yardShow(id){
   var have=yardHas(id);
   card.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden">'+
     rangerImageStrip(p, '', id)+
+    (typeof yardPicsHTML==='function' ? yardPicsHTML(p) : '')+
     '<div style="padding:14px">'+
       '<p style="font-size:18px;font-weight:600;margin:0">'+p.name+'</p>'+
       '<p style="font-size:11px;color:var(--muted);font-style:italic;margin:2px 0 0">'+p.sci+'</p>'+
