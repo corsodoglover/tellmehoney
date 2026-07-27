@@ -2000,8 +2000,18 @@ textarea{resize:none;line-height:1.4;}
     <h2>📅 Calendar</h2>
     <button class="act" onclick="shareCalendar()" style="color:var(--gold)">Text it</button></div>
   <div class="insights-body scroll">
-    <p class="rec-hint" style="text-align:center;margin:2px 8px 10px">Your schedule and scheduled goals. Tap any item to add it to your phone’s calendar.</p>
-    <button class="w-cta" onclick="addCalendarItem()" style="margin:0 8px 14px;width:calc(100% - 16px);">➕ Add to calendar</button>
+    <p class="rec-hint" style="text-align:center;margin:2px 8px 10px">Your week at a glance. Keep it in here, or send it on to your phone's calendar.</p>
+      <button class="w-cta" onclick="addCalendarItem()" style="margin:0 8px 10px;width:calc(100% - 16px);">➕ Add to calendar</button>
+
+      <!-- keep the phone's real calendar in step -->
+      <div id="calSyncRow" style="display:none;margin:0 8px 14px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:12px 14px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;font-weight:600">
+          <input type="checkbox" id="calSyncBox" onchange="calSyncToggle()" style="width:20px;height:20px;accent-color:var(--gold)">
+          🔄 Keep my phone's calendar in step
+        </label>
+        <p class="rec-hint" id="calSyncHint" style="margin:6px 0 0;font-size:11.5px;line-height:1.5"></p>
+        <button class="home-half" style="width:100%;margin-top:9px" onclick="calSyncAll(false)">📅 Send everything across now</button>
+      </div>
     <div class="cal-list" id="calList"></div>
   </div>
 </section>
@@ -2325,7 +2335,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v107 · Real calendar</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v110 · Share your steps</div>
   </div>
 </section>
 
@@ -4555,7 +4565,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, rangerHave:[], foodCards:[], cloneForKeepsakes:false, verseColls:[], jokeColls:[], myJokesInChat:false, lastJokeColl:'mine', comicFreeUsed:false, checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, rangerHave:[], foodCards:[], cloneForKeepsakes:false, verseColls:[], jokeColls:[], myJokesInChat:false, lastJokeColl:'mine', comicFreeUsed:false, calSync:false, checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -7454,7 +7464,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v107";
+window.HONEY_BUILD = "v110";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -8037,6 +8047,10 @@ function healthTellSteps(spanWeek){
                      n>=4000 ? " That's a nice bit of moving." :
                      " Every one of them counts.";
           pushThem(vibeColor("You're at "+_commas(n)+" steps today."+tail));
+          /* heart it and it shares — good for anybody walking with a friend */
+          S.lastShareable={ text:"\ud83d\udc63 "+_commas(n)+" steps today"+
+            (n>=8000?" \u2014 a good day of moving!":n>=4000?" \u2014 keeping at it.":"."),
+            kind:'steps' };
           try{ earnHoney("I walked today"); }catch(e){}
           return;
         }
@@ -8052,6 +8066,10 @@ function healthTellSteps(spanWeek){
         msg += ".";
         if(best && best.steps>0) msg += " Your biggest was "+DOW[best.day.getDay()]+" — "+_commas(best.steps)+".";
         pushThem(vibeColor(msg));
+        S.lastShareable={ text:"\ud83d\udc63 "+_commas(total)+" steps this week"+
+          (moved?" \u00b7 "+moved+(moved===1?" good day":" good days")+" of moving":"")+
+          (best&&best.steps>0?"\\nBest day: "+DOW[best.day.getDay()]+", "+_commas(best.steps):""),
+          kind:'steps' };
       });
     });
   });
@@ -8067,6 +8085,7 @@ function healthTellSleep(){
                    h>=5   ? " Take it easy on yourself today." :
                    " Be gentle with yourself today.";
         pushThem(vibeColor("Looks like about "+_hoursWords(h)+" last night."+tail));
+        S.lastShareable={ text:"\ud83d\ude34 About "+_hoursWords(h)+" of sleep last night.", kind:'sleep' };
       });
     });
   });
@@ -9090,8 +9109,10 @@ function doCalendar(orig){
     if(!title) title="Reminder from "+S.name;
     var when=parseWhen(orig);
     // save it so "what's on my calendar" can read it back
-    SETTINGS.reminders.push({title:title, when:when.date.getTime(), label:when.label, made:Date.now()});
+    var _rem={title:title, when:when.date.getTime(), label:when.label, made:Date.now()};
+    SETTINGS.reminders.push(_rem);
     persist();
+    try{ calAutoPush(_rem); }catch(e){}
     pushThem(vibeColor("Got it, thank you. Tap to add it to your calendar:"));
     (function(t,ms){ pushAction('🗓️ Add: '+t, '#', false, null, function(){ addToPhoneCalendar(t, ms, false, null); }); })(title, when.date.getTime());
 
@@ -9120,7 +9141,7 @@ function doCalendar(orig){
         });
       }, 1100);
     } else {
-      setTimeout(()=>themTyping(()=>pushThem(vibeColor("I saved it to your list too \u2014 say \"what's on my calendar\" anytime."))),900);
+      setTimeout(()=>themTyping(()=>pushThem(vibeColor("It's on your calendar in here too \u2014 tap the calendar any time to see your week."))),900);
     }
   });
 }
@@ -9193,16 +9214,26 @@ function doShopping(t){
   pushAction(list.icon+' Open '+list.name, null, false, null, 'openList:'+list.id);
 }
 function showShopping(){
+  /* Same idea as the calendar — a count and a button, not the whole list read
+     out loud. Forty items recited into a chat is nobody's idea of help. */
   var list=getList(SETTINGS.lastList||"shopping")||getList("shopping");
-  var items=(list.items||[]).filter(x=>!x.done);
-  themTyping(()=>{
-    if(!items.length){ pushThem(vibeColor("Your list's empty for now — just tell me what you need.")); return; }
-    pushThem(vibeColor("Here's your list:"));
-    var lines=items.slice(0,40).map(x=>"• "+x.item).join("\n");
-    setTimeout(()=>themTyping(()=>{
-      pushThem(lines);
-      setTimeout(()=>themTyping(()=>{ pushThem(vibeColor("Want me to text it to you, or open it to check things off?")); pushAction('📲 Text me the list', null, false, null, 'shareList:'+list.id); pushAction(list.icon+' Open '+list.name, null, false, null, 'openList:'+list.id); }),700);
-    }),600);
+  var items=(list.items||[]).filter(function(x){ return !x.done; });
+  themTyping(function(){
+    if(!items.length){
+      pushThem(vibeColor("Your "+list.name.toLowerCase()+" list is empty \u2014 just tell me what you need."));
+      return;
+    }
+    var n=items.length;
+    var msg = n===1
+      ? "One thing on your "+list.name.toLowerCase()+" list: "+items[0].item+"."
+      : n+" things on your "+list.name.toLowerCase()+" list. Tap to see them and check them off.";
+    pushThem(vibeColor(msg));
+    setTimeout(function(){
+      themTyping(function(){
+        pushAction(list.icon+' Open '+list.name, null, false, null, 'openList:'+list.id);
+        pushAction('\ud83d\udcf2 Text me the list', null, false, null, 'shareList:'+list.id);
+      });
+    }, 550);
   });
 }
 /* ── LISTS HUB (4 blocks) ── */
@@ -9348,8 +9379,10 @@ function addCalendarItem(){
       var when = _parseWhenLoose(whenStr);
       if(!when){ appAlert("I couldn't read that date. Try \"tomorrow 3pm\" or \"July 15 10am\"."); return; }
       if(!Array.isArray(SETTINGS.reminders)) SETTINGS.reminders=[];
-      SETTINGS.reminders.push({ title: what.trim(), when: when.getTime(), label: _friendlyWhen(when), made: Date.now() });
+      var _r2={ title: what.trim(), when: when.getTime(), label: _friendlyWhen(when), made: Date.now() };
+      SETTINGS.reminders.push(_r2);
       try{ saveSettings(); }catch(e){}
+      try{ calAutoPush(_r2); }catch(e){}
       renderCalendar();
       try{ toast("Added to your calendar \ud83d\udcc5"); }catch(e){}
     }, {placeholder:'tomorrow 3pm'});
@@ -9389,6 +9422,7 @@ function _friendlyWhen(d){
   return days[d.getDay()]+" "+(d.getMonth()+1)+"/"+d.getDate()+" · "+h12+":"+mm+ap;
 }
 function renderCalendar(){
+  try{ calSyncRender(); }catch(e){}
   ensureGoals();
   var box=document.getElementById('calList'); if(!box)return;
   box.innerHTML="";
@@ -11139,16 +11173,29 @@ function restoreTrash(i){
 }
 /* read back app-saved reminders */
 function showReminders(){
-  var up=(SETTINGS.reminders||[]).filter(r=>r.when >= Date.now()-3600000).sort((a,b)=>a.when-b.when);
-  themTyping(()=>{
-    if(!up.length){ pushThem(vibeColor("Nothing saved with me yet. Tell me \"remind me to…\" and I'll keep the list.")); return; }
-    pushThem(vibeColor("Here's what you've got with me:"));
-    var lines=up.slice(0,12).map(r=>{ var d=new Date(r.when);
-      return "• "+r.title+" — "+fmtWhen(d); }).join("\n");
-    setTimeout(()=>themTyping(()=>{
-      pushThem(lines);
-      setTimeout(()=>themTyping(()=>{ pushThem(vibeColor("Want me to text it to you?")); pushAction('📅 Open my calendar', null, false, null, 'openCalendar'); pushAction('📲 Yes, text me my schedule', null, false, null, 'shareCalendar'); }),700);
-    }),650);
+  /* She used to read out up to twelve items, one per line, then offer to text
+     them. Nobody needs their whole week recited — a count, the next thing, and
+     a button to look is plenty. */
+  var up=(SETTINGS.reminders||[]).filter(function(r){ return r.when >= Date.now()-3600000; })
+          .sort(function(a,b){ return a.when-b.when; });
+  themTyping(function(){
+    if(!up.length){
+      pushThem(vibeColor("Nothing on your calendar yet. Tell me \"remind me to\u2026\" and I'll keep it for you."));
+      return;
+    }
+    var n=up.length;
+    var next=up[0];
+    var when=fmtWhen(new Date(next.when));
+    var msg = n===1
+      ? "You've got one thing coming up \u2014 "+next.title+", "+when+"."
+      : "You've got "+n+" things coming up. The next is "+next.title+", "+when+".";
+    pushThem(vibeColor(msg));
+    setTimeout(function(){
+      themTyping(function(){
+        pushThem(vibeColor("Tap to see your whole week."));
+        pushAction('\ud83d\udcc5 Open my calendar', null, false, null, 'openCalendar');
+      });
+    }, 600);
   });
 }
 function shareCalendar(){
@@ -12092,6 +12139,108 @@ function icsDataUri(title,date,allDay){
     "\r\nSUMMARY:"+title.replace(/[\r\n,;]/g,' ')+"\r\nDESCRIPTION:Set with "+S.name+" in Tell Me Honey\r\nEND:VEVENT\r\nEND:VCALENDAR";
   return 'data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
 }
+/* ══════════ KEEPING THE PHONE'S CALENDAR IN STEP ═════════════════════════
+   Turn it on once and anything you tell Honey lands on your real calendar too —
+   which means it reaches your Google calendar, your watch, whoever you share
+   with. No tapping Add on each one.
+   We remember which ones went across, so nothing lands twice. */
+function calSyncOn(){ return SETTINGS.calSync === true; }
+
+/* Ask for write access once, quietly. */
+function calEnsureAccess(cb){
+  var P=calPlugin();
+  if(!P){ cb(false); return; }
+  var ask = P.requestWriteOnlyCalendarAccess || P.requestFullCalendarAccess;
+  if(!ask){ cb(false); return; }
+  ask.call(P).then(function(r){
+    var ok = !r || r.result===undefined || r.result==='granted' || r.result==='authorized' || r===true;
+    cb(!!ok);
+  }).catch(function(){ cb(false); });
+}
+
+/* Put one reminder across, silently. Returns via callback. */
+function calPushOne(rem, cb){
+  var P=calPlugin();
+  if(!P || !P.createEvent){ cb && cb(false); return; }
+  var start=Number(rem.when)||Date.now();
+  P.createEvent({
+    title: rem.title || 'Reminder',
+    startDate: start,
+    endDate: start + 30*60000,
+    description: 'Added by Tell Me Honey'
+  }).then(function(res){
+    rem.calId = (res && (res.id || res.eventId)) || 'sent';
+    cb && cb(true);
+  }).catch(function(){ cb && cb(false); });
+}
+
+/* Anything not yet across, goes across. */
+function calSyncAll(quiet){
+  var P=calPlugin();
+  if(!P){ if(!quiet) toast("Calendar isn't available here."); return; }
+  var pending=(SETTINGS.reminders||[]).filter(function(r){
+    return !r.calId && r.when >= Date.now()-86400000;
+  });
+  if(!pending.length){
+    if(!quiet) toast("Everything's already on your calendar. \ud83c\udf6f");
+    return;
+  }
+  calEnsureAccess(function(ok){
+    if(!ok){ if(!quiet) toast("Your phone didn't give me calendar access."); return; }
+    var done=0, tried=0;
+    function next(){
+      if(tried>=pending.length){
+        saveSettings();
+        try{ renderCalendar(); }catch(e){}
+        if(!quiet) toast(done ? ("\ud83d\udcc5 "+done+" added to your phone's calendar.") : "Nothing went across \u2014 try again in a bit.");
+        return;
+      }
+      var r=pending[tried++];
+      calPushOne(r, function(okOne){ if(okOne) done++; setTimeout(next, 120); });
+    }
+    if(!quiet) toast("Adding "+pending.length+" to your calendar\u2026");
+    next();
+  });
+}
+
+/* The switch itself. */
+function calSyncToggle(){
+  if(!calPlugin()){ toast("Calendar sync works in the app on your phone."); return; }
+  if(calSyncOn()){
+    SETTINGS.calSync=false; saveSettings();
+    calSyncRender();
+    toast("Sync off. Things stay in here only.");
+    return;
+  }
+  calEnsureAccess(function(ok){
+    if(!ok){
+      toast("Your phone didn't give me calendar access. You can turn it on in Settings \u2192 Privacy \u2192 Calendars.");
+      return;
+    }
+    SETTINGS.calSync=true; saveSettings();
+    calSyncRender();
+    toast("Sync on \u2014 catching up now.");
+    calSyncAll(false);
+  });
+}
+function calSyncRender(){
+  var row=document.getElementById('calSyncRow');
+  if(!row) return;
+  if(!calPlugin()){ row.style.display='none'; return; }
+  row.style.display='block';
+  var cb=document.getElementById('calSyncBox');
+  if(cb) cb.checked=calSyncOn();
+  var hint=document.getElementById('calSyncHint');
+  if(hint) hint.textContent = calSyncOn()
+    ? "New things go straight to your phone's calendar."
+    : "Turn this on and anything you tell me lands on your phone's calendar too.";
+}
+/* Called whenever a reminder is made — if sync is on, it goes across quietly. */
+function calAutoPush(rem){
+  if(!calSyncOn() || !rem) return;
+  calPushOne(rem, function(ok){ if(ok){ saveSettings(); } });
+}
+
 /* ══════════ THE REAL CALENDAR ══════════════════════════════════════════════
    Before this, "Add" built a .ics file and handed it to the share sheet — which
    iOS blocks inside an app wrapper, and Calendar isn't a share target anyway.
@@ -19179,7 +19328,9 @@ function ftPlan(i, daysAhead, hour){
     return r.title===title && Math.abs(r.when-d.getTime())<60*60*1000;
   });
   if(dupe){ toast("Already on the calendar for then. 🍯"); return; }
-  SETTINGS.reminders.push({ title:title, when:d.getTime(), label:_friendlyWhen(d), made:Date.now(), meal:true });
+  var _r3={ title:title, when:d.getTime(), label:_friendlyWhen(d), made:Date.now(), meal:true };
+  SETTINGS.reminders.push(_r3);
+  try{ calAutoPush(_r3); }catch(e){}
   saveSettings();
   try{ if(typeof renderCalendar==='function') renderCalendar(); }catch(e){}
   try{ ftRenderWeek(); }catch(e){}
