@@ -30,6 +30,10 @@
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Honey adds your reminders and planned suppers to your calendar, and can read them back when you ask what's coming up.</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>Honey adds your reminders and planned suppers to your calendar, so nothing gets forgotten.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Tell Me Honey uses your camera so you can add photos to your journal.</string>
 	<key>NSHealthShareUsageDescription</key>
@@ -44,6 +48,8 @@
 	<string>Honey saves the pictures you take to your photo library, so they are always yours to keep.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Tell Me Honey uses your photos so you can add them to your journal.</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>Honey can add things to your reminders when you ask her to.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Honey listens to turn your words into text so she can chat with you.
 

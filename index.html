@@ -2327,6 +2327,14 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="openLovedScreen()">♥ Saved jokes, verses &amp; phrases</button>
     <button class="prof-row" onclick="toggleStreakSetting()" id="streakSettingRow">🔥 Daily streak: On</button>
     <button class="prof-row" onclick="newAgentFlow(false)">➕ Add a friend</button>
+    <div id="nudgeRow" style="display:none;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:10px">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14.5px;font-weight:600">
+        <input type="checkbox" id="nudgeBox" onchange="nudgeToggle()" style="width:20px;height:20px;accent-color:var(--gold)">
+        👋 A little hello each day
+      </label>
+      <p class="rec-hint" id="nudgeHint" style="margin:6px 0 0;font-size:11.5px;line-height:1.5"></p>
+      <div id="nudgeTimes" class="mood-span" style="display:none;margin-top:9px;gap:6px"></div>
+    </div>
     <button class="prof-row" onclick="openManageSubscription()">💳 Manage my subscription</button>
     <button class="prof-row" onclick="openHelpPage()">❓ Help &amp; how-to videos</button>
     <div class="prof-legal">
@@ -2335,7 +2343,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v110 · Share your steps</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v112 · A daily hello</div>
   </div>
 </section>
 
@@ -4565,7 +4573,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, rangerHave:[], foodCards:[], cloneForKeepsakes:false, verseColls:[], jokeColls:[], myJokesInChat:false, lastJokeColl:'mine', comicFreeUsed:false, calSync:false, checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, rangerHave:[], foodCards:[], cloneForKeepsakes:false, verseColls:[], jokeColls:[], myJokesInChat:false, lastJokeColl:'mine', comicFreeUsed:false, calSync:false, nudgeOn:false, nudgeWhen:'morning', checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -6001,6 +6009,7 @@ function startChatWithPrompt(send){
 }
 /* Profile — quick overview + entry points */
 function openProfile(){
+  try{ nudgeRender(); }catch(e){}
   document.getElementById('welcome').classList.remove('sleeping','waking');
   go('profile'); setTab('profile'); renderProfile();
 }
@@ -7464,7 +7473,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v110";
+window.HONEY_BUILD = "v112";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -8888,6 +8897,8 @@ function userSays(t){
   if(/(what('s| is| do i have)?.*(calendar|schedule|reminder|coming up|planned|going on)|my (calendar|schedule|reminders|agenda)|on my (calendar|schedule|plate)|anything (coming up|planned|scheduled)|do i have (any )?(plans|reminders|anything))/.test(l)){ showReminders(); return; }
   // create a reminder — broad set of phrasings
   if(!_blockAdd && /(remind me|reminder|remember to|don'?t let me forget|make sure i|i need to|i have to|i gotta|i should|note to self|set (a |an )?(reminder|alarm|appointment|event|alert)|schedule|book|plan to|add (a |an )?(reminder|event|appointment)?( to)?( my)? calendar|put .* (on|in) (my )?calendar|jot down|wake me|ping me|nudge me|alert me|tell me (later|to)|got to|need a reminder|add to calendar|new (event|appointment|reminder))/.test(l)){ doCalendar(t); return; }
+  // "how much have I got left?" — answered from their own numbers, nothing sent anywhere
+  if(isMoneyQuestion(l)){ moneyAnswer(); return; }
   // AI BRAIN — real questions always answered (budget-gated); filler stays scripted
   if(aiShouldAnswer(t)){
     themTyping(function(){
@@ -12139,6 +12150,184 @@ function icsDataUri(title,date,allDay){
     "\r\nSUMMARY:"+title.replace(/[\r\n,;]/g,' ')+"\r\nDESCRIPTION:Set with "+S.name+" in Tell Me Honey\r\nEND:VEVENT\r\nEND:VCALENDAR";
   return 'data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
 }
+/* ══════════ A LITTLE HELLO EACH DAY ══════════════════════════════════════
+   The one thing every app in the category has and we didn't: a way for Honey
+   to say hello first. Scheduled on the phone — no server, no push service,
+   nothing sent anywhere.
+
+   Rules we hold to:
+     · One a day. Never more.
+     · Never before 8am, never after 9pm, whatever they pick.
+     · Never mentions how long it's been. A friend who keeps score isn't one.
+     · Nothing about whether they're alright — she's looking forward to seeing
+       them, not checking up on them.
+     · Skipped entirely if they've already opened the app today. */
+var NUDGE_LINES=[
+  "Morning, you. Got a fresh one saved up.",
+  "There's a good one waiting when you've got a minute.",
+  "Sun's up. So am I.",
+  "Been thinking about a joke I want to try on you.",
+  "Come see me when you get a chance \u2014 I've got something.",
+  "Saved you a good one.",
+  "I'm here whenever you fancy a laugh.",
+  "Got a new one that made me smile. Your turn.",
+  "Whenever you're ready, I'm right here.",
+  "Something good's waiting on you."
+];
+var NUDGE_TIMES=[
+  {id:'morning',   nm:'Morning',   h:9,  m:30, lbl:'9:30 in the morning'},
+  {id:'midday',    nm:'Midday',    h:12, m:30, lbl:'half twelve'},
+  {id:'afternoon', nm:'Afternoon', h:15, m:0,  lbl:'3 in the afternoon'},
+  {id:'evening',   nm:'Evening',   h:19, m:0,  lbl:'7 in the evening'}
+];
+function nudgePlugin(){
+  try{
+    var C=window.Capacitor;
+    if(!C || !C.Plugins || !C.isNativePlatform || !C.isNativePlatform()) return null;
+    return C.Plugins.LocalNotifications || null;
+  }catch(e){ return null; }
+}
+function nudgeOn(){ return SETTINGS.nudgeOn === true; }
+function nudgeSlot(){
+  var id=SETTINGS.nudgeWhen||'morning';
+  return NUDGE_TIMES.filter(function(t){ return t.id===id; })[0] || NUDGE_TIMES[0];
+}
+/* Kept inside civilised hours no matter what. */
+function nudgeSafeHour(h){ return Math.min(21, Math.max(8, h)); }
+
+function nudgeSchedule(){
+  var P=nudgePlugin(); if(!P) return;
+  var slot=nudgeSlot();
+  var hour=nudgeSafeHour(slot.h);
+  P.cancel({ notifications:[{id:8801}] }).catch(function(){}).then(function(){
+    if(!nudgeOn()) return;
+    var body=NUDGE_LINES[Math.floor(Math.random()*NUDGE_LINES.length)];
+    return P.schedule({ notifications:[{
+      id:8801,
+      title:(S && S.name) ? S.name : 'Honey',
+      body: body,
+      schedule:{ on:{ hour:hour, minute:slot.m }, allowWhileIdle:true, repeats:true },
+      smallIcon:'ic_stat_icon_config_sample'
+    }]});
+  }).catch(function(){});
+}
+function nudgeToggle(){
+  var P=nudgePlugin();
+  if(!P){ toast("A daily hello works in the app on your phone."); return; }
+  if(nudgeOn()){
+    SETTINGS.nudgeOn=false; saveSettings();
+    nudgeSchedule(); nudgeRender();
+    toast("Alright \u2014 I'll wait for you to come to me.");
+    return;
+  }
+  P.requestPermissions().then(function(r){
+    var ok = !r || r.display==='granted' || r.display===undefined;
+    if(!ok){ toast("Your phone said no to notifications. You can turn them on in Settings."); return; }
+    SETTINGS.nudgeOn=true; saveSettings();
+    nudgeSchedule(); nudgeRender();
+    toast("Lovely \u2014 I'll say hello at "+nudgeSlot().lbl+".");
+  }).catch(function(){ toast("Couldn't ask your phone about notifications."); });
+}
+function nudgeSetWhen(id){
+  SETTINGS.nudgeWhen=id; saveSettings();
+  nudgeSchedule(); nudgeRender();
+  if(nudgeOn()) toast("I'll say hello at "+nudgeSlot().lbl+".");
+}
+function nudgeRender(){
+  var row=document.getElementById('nudgeRow'); if(!row) return;
+  if(!nudgePlugin()){ row.style.display='none'; return; }
+  row.style.display='block';
+  var cb=document.getElementById('nudgeBox'); if(cb) cb.checked=nudgeOn();
+  var times=document.getElementById('nudgeTimes');
+  if(times){
+    times.style.display = nudgeOn() ? 'flex' : 'none';
+    times.innerHTML = NUDGE_TIMES.map(function(t){
+      var on = (SETTINGS.nudgeWhen||'morning')===t.id;
+      return '<button class="ms-btn'+(on?' sel':'')+'" onclick="nudgeSetWhen(\''+t.id+'\')">'+t.nm+'</button>';
+    }).join('');
+  }
+  var hint=document.getElementById('nudgeHint');
+  if(hint) hint.textContent = nudgeOn()
+    ? "One hello a day, at "+nudgeSlot().lbl+". Never more than that."
+    : "Let me say hello once a day \u2014 just a hello, nothing to do.";
+}
+/* If they've already been in today, she keeps quiet. Re-armed each time
+   they open the app, so tomorrow's is fresh and today's is skipped. */
+function nudgeSeenToday(){
+  if(!nudgeOn()) return;
+  var P=nudgePlugin(); if(!P) return;
+  var slot=nudgeSlot(), now=new Date();
+  var todayAt=new Date(now.getFullYear(),now.getMonth(),now.getDate(), nudgeSafeHour(slot.h), slot.m, 0, 0);
+  if(now < todayAt){
+    // they came before today's hello — push it to tomorrow
+    P.cancel({ notifications:[{id:8801}] }).catch(function(){}).then(function(){
+      var t=new Date(todayAt.getTime()+86400000);
+      var body=NUDGE_LINES[Math.floor(Math.random()*NUDGE_LINES.length)];
+      return P.schedule({ notifications:[{
+        id:8801, title:(S&&S.name)?S.name:'Honey', body:body,
+        schedule:{ at:t, allowWhileIdle:true }
+      }]});
+    }).then(function(){
+      // and put the daily repeat back after that one
+      setTimeout(nudgeSchedule, 1200);
+    }).catch(function(){});
+  }
+}
+
+/* ══════════ "HOW MUCH HAVE I GOT?" ═══════════════════════════════════════
+   The money screen already works out what's left in your pocket. This lets you
+   just ask, which is the only reason anybody would bother entering the numbers.
+   Nothing leaves the phone — it's their own two figures and their own spending. */
+function moneyPocket(){
+  var m=null;
+  try{ m=hmData(); }catch(e){ return null; }
+  if(!m) return null;
+  var income=+(m.income||0), bills=+(m.bills||0);
+  if(!income && !bills && !(m.spends||[]).length) return null;   // nothing set up yet
+  var spent=(m.spends||[]).reduce(function(a,x){ return a+(+x.amt||0); },0);
+  var now=new Date();
+  var daysInMonth=new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  return {
+    income:income, bills:bills, spent:spent,
+    pocket: income - bills - spent,
+    daysLeft: Math.max(0, daysInMonth - now.getDate())
+  };
+}
+function _money(n){
+  var v=Math.abs(n);
+  return (n<0?'-$':'$') + v.toFixed(2).replace(/\.00$/,'');
+}
+/* Does this sound like a money question? */
+function isMoneyQuestion(l){
+  return /(how much (have i got|do i have|is left|can i spend|money)|what'?s? (my|the) (balance|budget|money)|money left|left (in )?(my )?(pocket|budget|this month)|in my pocket|can i afford|am i over budget|how'?s? my (money|budget|spending)|how am i doing (on|with) money)/i.test(l||'');
+}
+function moneyAnswer(){
+  var p=moneyPocket();
+  themTyping(function(){
+    if(!p){
+      pushThem(vibeColor("I don't know yet \u2014 put in what comes in and what your bills are, and I'll keep track of what's left."));
+      pushAction('\ud83d\udcb0 Open Honey Money', null, false, null, 'openHoneyMoney');
+      return;
+    }
+    var msg;
+    if(p.pocket < 0){
+      msg = "You're "+_money(Math.abs(p.pocket))+" over for the month. Not a scolding \u2014 just so you know where you stand.";
+    } else if(p.daysLeft > 0){
+      var perDay=p.pocket/p.daysLeft;
+      msg = "You've got "+_money(p.pocket)+" in your pocket, with "+p.daysLeft+
+            (p.daysLeft===1?" day":" days")+" to go \u2014 about "+_money(perDay)+" a day if you spread it out.";
+    } else {
+      msg = "You've got "+_money(p.pocket)+" in your pocket to finish out the month.";
+    }
+    pushThem(vibeColor(msg));
+    setTimeout(function(){
+      themTyping(function(){
+        pushAction('\ud83d\udcb0 Open Honey Money', null, false, null, 'openHoneyMoney');
+      });
+    }, 500);
+  });
+}
+
 /* ══════════ KEEPING THE PHONE'S CALENDAR IN STEP ═════════════════════════
    Turn it on once and anything you tell Honey lands on your real calendar too —
    which means it reaches your Google calendar, your watch, whoever you share
@@ -19812,6 +20001,7 @@ try{ buildCards(); }catch(e){}
 try{ if('speechSynthesis'in window) speechSynthesis.getVoices(); }catch(e){}
 try{ showHome(); }catch(e){ bootFallback(); }
 try{ setTimeout(iapBoot, 800); }catch(e){}   /* ask the store what they own */
+  try{ setTimeout(nudgeSeenToday, 1500); }catch(e){}
 try{ if(/plant=/.test(location.hash)) setTimeout(rangerCheckIncomingShare, 400); }catch(e){}
 try{ refreshMicPermissionUI(); }catch(e){}
 
