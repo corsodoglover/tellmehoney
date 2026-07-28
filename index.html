@@ -2413,7 +2413,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v144 · Just the joke</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v146 · Library & black text</div>
   </div>
 </section>
 
@@ -7601,7 +7601,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v144";
+window.HONEY_BUILD = "v146";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -7706,7 +7706,7 @@ function verseFileOffer(body, ref){
   box.style.cssText='max-width:96%;background:transparent;border:1px solid var(--line);padding:11px 12px;';
   box.innerHTML='<div style="font-size:11.5px;color:var(--muted);margin:0 2px 7px">Keep it under\u2026</div>'+
     '<div style="display:flex;flex-wrap:wrap;gap:6px">'+chips+'</div>'+
-    '<button class="home-half" style="width:100%;margin-top:8px;font-size:12.5px;color:var(--muted)" '+
+    '<button class="home-half" style="width:100%;margin-top:8px;font-size:12.5px;color:#3a2c08" '+
       'onclick="verseFileSkip(this)">Not this time</button>';
   var msgs=document.getElementById('msgs');
   if(msgs){ msgs.appendChild(box); try{ scrollMsgs(); }catch(e){} }
@@ -10783,7 +10783,7 @@ function renderPrayers(){
     '<input id="vcNameInput" placeholder="Granddad\u2019s Verses" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid var(--line);border-radius:10px;padding:11px;color:#3a2c08;font-size:15px;margin:6px 0 10px">'+
     '<div style="display:flex;gap:7px">'+
       '<button class="home-half" style="flex:1" onclick="vcConfirmAdd()">Make the box</button>'+
-      '<button class="home-half" style="flex:1;color:var(--muted)" onclick="vcCancelAdd()">Never mind</button>'+
+      '<button class="home-half" style="flex:1;color:#3a2c08" onclick="vcCancelAdd()">Never mind</button>'+
     '</div></div>';
   box.innerHTML=html;
 }
@@ -12281,6 +12281,12 @@ function aiJokeAbout(topic){
         var words=(jj.s||'').split(/\s+/).length;
         setTimeout(function(){
           if(S.pendingPunch && S.pendingPunch.s===jj.s){ try{ revealPunch(true); }catch(e){} }
+          /* Make sure the heart has the WHOLE joke to work with. A made-up one
+             should save and share exactly like a recorded one — these are often
+             the funniest and people will want to send them on. */
+          S.lastJoke=jj;
+          S.lastShareable={ text:(jj.s?jj.s+'\n':'')+(jj.p||''), kind:'joke' };
+          try{ updateThumbs && updateThumbs(); }catch(e){}
         }, Math.min(9000, Math.max(2600, words*420)));
       }, 500);
     })
@@ -19278,7 +19284,7 @@ function stageRender(){
       '<button class="home-half" style="flex:1" onclick="openPlantCamera()">📷 Another angle</button>'+
       '<button class="home-half" style="flex:1" onclick="openPlantLibrary()">🖼️ From my phone</button></div>':'')+
     '<button style="width:100%;margin-top:9px;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:14px;font-size:15px;font-weight:700;cursor:pointer" onclick="stageIdentify()">🔍 Name this plant</button>'+
-    '<button class="home-half" style="width:100%;margin-top:7px;color:var(--muted)" onclick="stageClear()">Start over</button>'+
+    '<button class="home-half" style="width:100%;margin-top:7px;color:#3a2c08" onclick="stageClear()">Start over</button>'+
   '</div>';
 }
 function stageRemove(i){ _stage.splice(i,1); stageRender(); }
@@ -19991,7 +19997,7 @@ function openMyYardPlant(id){
         '<button class="home-half" style="width:100%;margin-top:12px" onclick="yardEditOpen(\''+id+'\')">✎ Edit this plant</button>'+
         foodButtons+
         '<button class="home-half" style="width:100%;margin-top:7px" onclick="rangerShareMine(\''+id+'\')">↗ Share with a friend</button>'+
-        '<button class="home-half" style="width:100%;margin-top:7px;color:var(--muted)" onclick="rangerYardRemove(\''+id+'\')">🗑️ Remove this plant</button>'+
+        '<button class="home-half" style="width:100%;margin-top:7px;color:#3a2c08" onclick="rangerYardRemove(\''+id+'\')">🗑️ Remove this plant</button>'+
       '</div></div>';
 }
 function yardSetEdible(id, isEdible){
@@ -20015,7 +20021,7 @@ function yardEditOpen(id){
       '<label style="font-size:11px;color:var(--muted)">Your notes</label>'+
       '<textarea id="ydNote" rows="5" placeholder="How you use it, where it grows…" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;line-height:1.5;margin:4px 0 14px">'+esc(e.note||'')+'</textarea>'+
       '<button style="width:100%;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:13px;font-size:15px;font-weight:700;cursor:pointer" onclick="yardEditSave(\''+id+'\')">Save my changes</button>'+
-      '<button class="home-half" style="width:100%;margin-top:7px;color:var(--muted)" onclick="openMyYardPlant(\''+id+'\')">Never mind</button>'+
+      '<button class="home-half" style="width:100%;margin-top:7px;color:#3a2c08" onclick="openMyYardPlant(\''+id+'\')">Never mind</button>'+
     '</div>';
 }
 function yardEditSave(id){
@@ -20228,7 +20234,7 @@ function openCookingList(){
   if(html){
     html+='<div style="display:flex;gap:6px;margin-top:14px">'+
       '<button class="home-half" style="flex:1" onclick="openFoodThought()">🍲 Find recipes</button>'+
-      '<button class="home-half" style="flex:1;color:var(--muted)" onclick="rangerCookClear()">Clear the list</button></div>';
+      '<button class="home-half" style="flex:1;color:#3a2c08" onclick="rangerCookClear()">Clear the list</button></div>';
   }
   b.innerHTML = html || '<div style="text-align:center;color:var(--muted);padding:30px">🧺 Nothing here yet. Identify a plant and tap "Cooking list."</div>';
   go('cookingList');
@@ -20415,7 +20421,11 @@ function ftOwnAddPhoto(){
 /* Two choices rather than straight to the camera — half the time the picture
    of the dish is already on their phone. */
 function ftOwnPhotoFrom(where){
-  var opts={ source:(where==='camera'?'camera':'photos'), saveToGallery:false };
+  /* The working calls elsewhere use 'library', not 'photos' — that's why this
+     one kept opening the camera whichever button you pressed. */
+  var opts={ source:(where==='camera'?'camera':'library'),
+             title:(where==='camera'?'Take a picture':'Pick a picture'),
+             saveToGallery:false };
   honeyTakePhoto(opts).then(function(dataUrl){
     if(!dataUrl) return;
     _ftOwnImg=dataUrl;
@@ -20797,7 +20807,7 @@ function ftCardHTML(c, i){
       '<textarea placeholder="Your notes — what you changed, who liked it" oninput="ftNote('+i+',this.value)" style="width:100%;margin-top:9px;min-height:44px;background:#FFFDF9;border:1px solid var(--line);border-radius:10px;color:#3a2c08;font-size:11.5px;padding:8px;resize:vertical">'+esc(c.note||'')+'</textarea>'+
       kindPicker+
       ing+
-      '<button class="home-half" style="width:100%;margin-top:7px;color:var(--muted)" onclick="ftRemoveCard('+i+')">Remove this card</button>'+
+      '<button class="home-half" style="width:100%;margin-top:7px;color:#3a2c08" onclick="ftRemoveCard('+i+')">Remove this card</button>'+
     '</div></div>';
 }
 /* ── PLAN IT FOR SUPPER — puts a recipe on the calendar at 6pm ──
@@ -20920,7 +20930,7 @@ function ftWeekPick(dayIndex){
         (c.image?'<img src="'+c.image+'" alt="">':'<span class="fw-noimg">🍽️</span>')+
         '<span>'+esc(c.title)+'</span></button>';
     }).join('')+
-    '<button class="home-half" style="width:100%;margin-top:8px;color:var(--muted)" onclick="ftRenderWeek()">Never mind</button></div>';
+    '<button class="home-half" style="width:100%;margin-top:8px;color:#3a2c08" onclick="ftRenderWeek()">Never mind</button></div>';
   box.innerHTML=html;
 }
 function ftWeekAssign(cardIndex){
