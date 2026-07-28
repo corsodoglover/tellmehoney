@@ -2403,7 +2403,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v138 · Picture first, buttons last</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v139 · White boxes, Sofia</div>
   </div>
 </section>
 
@@ -7591,7 +7591,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v138";
+window.HONEY_BUILD = "v139";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -10764,7 +10764,7 @@ function renderPrayers(){
   html+='</div>';
   html+='<div id="vcNameBox" style="display:none;margin-top:10px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:12px">'+
     '<label class="rec-label">Name it \u2014 Granddad\u2019s Verses, Bedtime Prayers, anything</label>'+
-    '<input id="vcNameInput" placeholder="Granddad\u2019s Verses" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;padding:11px;color:var(--ink);font-size:15px;margin:6px 0 10px">'+
+    '<input id="vcNameInput" placeholder="Granddad\u2019s Verses" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid var(--line);border-radius:10px;padding:11px;color:#3a2c08;font-size:15px;margin:6px 0 10px">'+
     '<div style="display:flex;gap:7px">'+
       '<button class="home-half" style="flex:1" onclick="vcConfirmAdd()">Make the box</button>'+
       '<button class="home-half" style="flex:1;color:var(--muted)" onclick="vcCancelAdd()">Never mind</button>'+
@@ -14278,7 +14278,7 @@ var VOICE_CHARACTERS={
    already IS the character. Added to fill the women's side alongside the OpenAI voices. */
 var EL_VOICES={
   marlee: { nm:"Marlee", em:"🌷", voiceId:"aTxZrSrp47xsP6Ot4Kgd" },
-  lina:   { nm:"Sofia",  em:"🌹", voiceId:"oWjuL7HSoaEJRMDMP3HD" }
+  lina:   { nm:"Sofia",  em:"🌹", voiceId:"pTX8uGyVgHCWLj6IkcbC" }
 };
 function isElVoice(v){ return !!(EL_VOICES && EL_VOICES[v]); }
 function voiceCharacter(v){ return VOICE_CHARACTERS[v] || null; }
@@ -19807,11 +19807,11 @@ function rangerYardForm(encName,encPhoto){
     /* show the picture they took, so they can see it's coming with them */
     (photo ? '<img src="'+photo+'" style="width:100%;border-radius:13px;display:block;margin:0 0 12px">' : '')+
     '<label style="font-size:11px;color:var(--muted)">Plant name</label>'+
-    '<input id="myYardName" value="'+name.replace(/"/g,'&quot;')+'" placeholder="What is it?" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:var(--ink);font-size:14px;margin:4px 0 12px">'+
+    '<input id="myYardName" value="'+name.replace(/"/g,'&quot;')+'" placeholder="What is it?" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 12px">'+
     '<label style="font-size:11px;color:var(--muted)">Your notes</label>'+
-    '<textarea id="myYardNote" rows="3" placeholder="How you use it, where it grows…" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:var(--ink);font-size:14px;margin:4px 0 12px"></textarea>'+
+    '<textarea id="myYardNote" rows="3" placeholder="How you use it, where it grows…" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 12px"></textarea>'+
     '<label style="font-size:11px;color:var(--muted)">In season for you</label>'+
-    '<input id="myYardSeason" placeholder="e.g. Spring–summer" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:var(--ink);font-size:14px;margin:4px 0 14px">'+
+    '<input id="myYardSeason" placeholder="e.g. Spring–summer" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 14px">'+
     '<label style="display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink);margin-bottom:14px;cursor:pointer"><input type="checkbox" id="myYardShare" style="width:18px;height:18px;accent-color:var(--gold)"> Share a copy with Sally (helps Ranger grow)</label>'+
     '<button style="width:100%;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:13px;font-size:15px;font-weight:700;cursor:pointer" onclick="rangerYardSave()">🌱 Save to My Yard</button>'+
   '</div>';
@@ -19919,11 +19919,11 @@ function yardEditOpen(id){
     '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px">'+
       '<p style="font-size:15px;font-weight:600;margin:0 0 12px">✎ Edit your plant</p>'+
       '<label style="font-size:11px;color:var(--muted)">Plant name</label>'+
-      '<input id="ydName" value="'+String(e.name||'').replace(/"/g,'&quot;')+'" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:var(--ink);font-size:14px;margin:4px 0 12px">'+
+      '<input id="ydName" value="'+String(e.name||'').replace(/"/g,'&quot;')+'" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 12px">'+
       '<label style="font-size:11px;color:var(--muted)">In season for you</label>'+
-      '<input id="ydSeason" value="'+String(e.season||'').replace(/"/g,'&quot;')+'" placeholder="e.g. Spring–summer" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:var(--ink);font-size:14px;margin:4px 0 12px">'+
+      '<input id="ydSeason" value="'+String(e.season||'').replace(/"/g,'&quot;')+'" placeholder="e.g. Spring–summer" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 12px">'+
       '<label style="font-size:11px;color:var(--muted)">Your notes</label>'+
-      '<textarea id="ydNote" rows="5" placeholder="How you use it, where it grows…" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:var(--ink);font-size:14px;line-height:1.5;margin:4px 0 14px">'+esc(e.note||'')+'</textarea>'+
+      '<textarea id="ydNote" rows="5" placeholder="How you use it, where it grows…" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;line-height:1.5;margin:4px 0 14px">'+esc(e.note||'')+'</textarea>'+
       '<button style="width:100%;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:13px;font-size:15px;font-weight:700;cursor:pointer" onclick="yardEditSave(\''+id+'\')">Save my changes</button>'+
       '<button class="home-half" style="width:100%;margin-top:7px;color:var(--muted)" onclick="openMyYardPlant(\''+id+'\')">Never mind</button>'+
     '</div>';
@@ -20663,7 +20663,7 @@ function ftCardHTML(c, i){
       }).join('')+'</div>'
     : '';
   var kind=ftKindOf(c);
-  var kindPicker='<select onchange="ftSetKind('+i+',this.value)" style="width:100%;margin-top:8px;background:rgba(0,0,0,.18);border:1px solid var(--line);border-radius:9px;color:var(--muted);font-size:11.5px;padding:7px">'+
+  var kindPicker='<select onchange="ftSetKind('+i+',this.value)" style="width:100%;margin-top:8px;background:#FFFDF9;border:1px solid var(--line);border-radius:9px;color:#3a2c08;font-size:11.5px;padding:7px;font-weight:600">'+
     FT_KINDS.map(function(k){ return '<option value="'+k.id+'"'+(k.id===kind?' selected':'')+'>'+k.em+' '+esc(k.nm)+'</option>'; }).join('')+
   '</select>';
   return '<div class="ft-card">'+
@@ -20675,7 +20675,7 @@ function ftCardHTML(c, i){
         : '<button onclick="ftOpenOwn('+i+')" style="background:none;border:none;padding:0;font-size:11.5px;color:var(--gold);cursor:pointer">open the recipe \u2197</button>')+
       (c.mine ? '<div style="font-size:10.5px;color:var(--gold);opacity:.75;margin-top:2px">\u270e one of yours</div>' : '')+
       diets+nut+
-      '<textarea placeholder="Your notes — what you changed, who liked it" oninput="ftNote('+i+',this.value)" style="width:100%;margin-top:9px;min-height:44px;background:rgba(0,0,0,.18);border:1px solid var(--line);border-radius:10px;color:var(--ink);font-size:11.5px;padding:8px;resize:vertical">'+esc(c.note||'')+'</textarea>'+
+      '<textarea placeholder="Your notes — what you changed, who liked it" oninput="ftNote('+i+',this.value)" style="width:100%;margin-top:9px;min-height:44px;background:#FFFDF9;border:1px solid var(--line);border-radius:10px;color:#3a2c08;font-size:11.5px;padding:8px;resize:vertical">'+esc(c.note||'')+'</textarea>'+
       kindPicker+
       ing+
       '<button class="home-half" style="width:100%;margin-top:7px;color:var(--muted)" onclick="ftRemoveCard('+i+')">Remove this card</button>'+
