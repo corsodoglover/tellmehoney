@@ -331,8 +331,11 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .pl-rm{position:absolute;top:2px;right:2px;width:18px;height:18px;border:none;border-radius:6px;
   background:rgba(0,0,0,.55);color:#fff;font-size:10px;line-height:1;cursor:pointer;padding:0;}
 .pl-name{border-top:1px solid var(--line);}
+.pl-find{flex:0 0 auto;background:#3a2c08;color:#FFFDF9;border:none;font-size:12.5px;
+  font-weight:700;padding:12px 15px;cursor:pointer;border-radius:0 0 17px 0;}
+.pl-find:active{opacity:.8;}
 .pl-name input{width:100%;background:#FFFDF9;border:none;color:#3a2c08;font-size:13px;
-  font-weight:600;padding:12px 13px;border-radius:0 0 17px 17px;}
+  font-weight:600;padding:12px 13px;border-radius:0 0 0 17px;flex:1;min-width:0;}
 .pl-name input::placeholder{color:#9a8b6a;font-weight:500;}
 .pl-tabs{display:flex;border-top:1px solid var(--line);}
 .pl-tab{flex:1;background:#FFFDF9;border:none;color:#3a2c08;
@@ -1916,9 +1919,11 @@ textarea{resize:none;line-height:1.4;}
       </div>
       <!-- If they already have a name in mind, take it. It gives My Yard
            something to start from, and tells us what they were expecting. -->
-      <div class="pl-name">
-        <input id="plantGuessName" placeholder="Know what it is? Type or paste the name"
-               oninput="plantGuessSave(this.value)">
+      <div class="pl-name" style="display:flex;align-items:center">
+        <input id="plantGuessName" placeholder="Know the name? Type it and look it up"
+               oninput="plantGuessSave(this.value)"
+               onkeydown="if(event.key==='Enter'){plantLookUpByName();}">
+        <button class="pl-find" onclick="plantLookUpByName()">Look up</button>
       </div>
     </div>
     <!-- The answer goes directly under the picture. Everything else is small
@@ -2413,7 +2418,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v146 · Library & black text</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v148 · Look it up by name</div>
   </div>
 </section>
 
@@ -6095,12 +6100,18 @@ function tellVerse(cat){
     if(mine.length && Math.random()<0.45){
       var pick=mine[Math.floor(Math.random()*mine.length)];
       _lastVerseCat=cat;
-      _cloneKeepsake=true; setTimeout(function(){ _cloneKeepsake=false; }, 2500);
+      /* No keepsake flag here. That routes speech to the voice clone, and if
+         there isn't one the verse arrives in silence — which is exactly what
+         somebody asking to be read a verse doesn't want. Say it the same way
+         the built-in ones are said. */
+      go('chat');
+      S.lastVerse={ t:pick.t, r:pick.r||'' };
+      S.lastShareable={ text:pick.t+'\n'+(pick.r||''), kind:'verse' };
       themTyping(function(){
-        pushThem(vibeColor('\u201c'+pick.t+'\u201d'));
-        if(pick.r) setTimeout(function(){ themTyping(function(){ pushThem(vibeColor('\u2014 '+pick.r+'  \u00b7 one of yours')); }); }, 450);
-        S.lastShareable={ text:pick.t+'\n'+(pick.r||''), kind:'verse' };
-      });
+        pushThem('\u201C'+pick.t+'\u201D' + (pick.r? '  \u2014 '+pick.r : '') + '  \u00b7 one of yours');
+        pushAction('\ud83d\udd01 Hear it again', null, false, null, function(){ repeatVerse(); });
+        pushAction('\ud83d\udce4 Share this verse', null, false, null, function(){ openLoveShare(pick.t+'\n'+(pick.r||''), 'verse'); });
+      }, 520);
       return;
     }
   }catch(e){}
@@ -7601,7 +7612,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v146";
+window.HONEY_BUILD = "v148";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -19438,6 +19449,39 @@ function rangerShelves(){
 var _plantGuess='';
 function plantGuessSave(v){ _plantGuess=(v||'').trim(); }
 function plantGuessName(){ return _plantGuess||''; }
+
+/* Look a plant up by name, without taking a picture at all. Somebody who
+   already knows it's basil shouldn't have to photograph the basil. */
+function plantLookUpByName(){
+  var q=(document.getElementById('plantGuessName')||{}).value||'';
+  q=q.trim();
+  if(q.length<2){ toast("Type a name first."); return; }
+  var box=document.getElementById('plantHubResult'); if(!box) return;
+  var low=q.toLowerCase();
+
+  // our own book first — it's instant and it's the one we can vouch for
+  var hit=null;
+  try{
+    Object.keys(RANGER_PLANTS).forEach(function(id){
+      if(hit) return;
+      var p=RANGER_PLANTS[id];
+      var names=[p.name].concat(p.also||[]).concat([p.sci||'']);
+      if(names.some(function(n){ return n && n.toLowerCase().indexOf(low)>=0; })) hit=id;
+    });
+  }catch(e){}
+  if(hit){ rangerShowResult(hit); return; }
+
+  // not in the book — say so honestly and offer the photo route
+  box.innerHTML='<div style="background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.3);'+
+    'border-radius:14px;padding:15px;font-size:13px;line-height:1.6">'+
+    '\ud83d\udd0d <b>'+esc(q)+'</b> isn\u2019t in my book yet. '+
+    'Snap a picture of it and I\u2019ll ask Pl@ntNet \u2014 or add it to your yard with the name you know.'+
+    '</div>'+
+    '<div style="display:flex;gap:6px;margin-top:9px">'+
+      '<button class="pl-mini" onclick="openPlantCamera()">\ud83d\udcf7<span>Take a picture</span></button>'+
+      '<button class="pl-mini" onclick="rangerAddToMyYard(\''+esc(q).replace(/'/g,'')+'\',\'\')">\ud83c\udf31<span>Add to my yard</span></button>'+
+    '</div>';
+}
 
 /* The frame at the top of the Ranger screen — what you're identifying should
    be the first thing you see, not something below a wall of buttons. */
