@@ -330,14 +330,18 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   color:#fff;border-radius:6px;padding:1px 5px;}
 .pl-rm{position:absolute;top:2px;right:2px;width:18px;height:18px;border:none;border-radius:6px;
   background:rgba(0,0,0,.55);color:#fff;font-size:10px;line-height:1;cursor:pointer;padding:0;}
+.pl-name{border-top:1px solid var(--line);}
+.pl-name input{width:100%;background:#FFFDF9;border:none;color:#3a2c08;font-size:13px;
+  font-weight:600;padding:12px 13px;border-radius:0 0 17px 17px;}
+.pl-name input::placeholder{color:#9a8b6a;font-weight:500;}
 .pl-tabs{display:flex;border-top:1px solid var(--line);}
-.pl-tab{flex:1;background:rgba(255,255,255,.04);border:none;color:var(--ink);
+.pl-tab{flex:1;background:#FFFDF9;border:none;color:#3a2c08;
   font-size:12.5px;font-weight:700;padding:13px 6px;cursor:pointer;}
 .pl-tab:active{opacity:.65;}
 .pl-tab+.pl-tab{border-left:1px solid var(--line);}
 .pl-mini{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
-  border-radius:12px;padding:9px 4px;font-size:17px;line-height:1;color:var(--ink);cursor:pointer;}
+  gap:3px;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;padding:9px 4px;font-size:17px;line-height:1;color:#3a2c08;cursor:pointer;}
 .pl-mini span{font-size:10px;font-weight:600;opacity:.8;white-space:nowrap;}
 .pl-mini:active{opacity:.65;}
 .pl-go{background:rgba(143,227,192,.14);border-color:rgba(143,227,192,.3);}
@@ -366,8 +370,8 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 #imgLightbox .ilb-btn.sec{background:rgba(255,255,255,.08);color:#e9e6df;border:1px solid rgba(255,255,255,.16);}
 #imgLightbox .ilb-hint{color:#7d8494;font-size:11px;margin-top:12px;text-align:center;line-height:1.5;}
 .stg-organs{display:flex;flex-wrap:wrap;gap:7px;}
-.stg-organ{flex:1 1 30%;min-height:62px;border-radius:13px;background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.10);color:var(--ink);font-size:12px;font-weight:600;
+.stg-organ{flex:1 1 30%;min-height:62px;border-radius:13px;background:#FFFDF9;
+  border:1px solid rgba(120,100,60,.22);color:#3a2c08;font-size:12px;font-weight:700;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;}
 .stg-organ span{font-size:21px;line-height:1;}
 .stg-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:3px;}
@@ -425,8 +429,8 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .yd-pill.on-no{background:rgba(255,207,107,.13);border-color:rgba(255,207,107,.45);color:#ffcf6b;}
 .cook-row{display:flex;align-items:stretch;gap:8px;margin-bottom:9px;}
 .cook-open{flex:1;display:flex;align-items:center;gap:11px;text-align:left;
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-  border-radius:13px;padding:11px 13px;min-height:56px;color:var(--ink);}
+  background:#FFFDF9;border:1px solid rgba(255,255,255,.08);
+  border-radius:13px;padding:11px 13px;min-height:56px;color:#3a2c08;}
 .cook-open .hb-ic{font-size:22px;flex:0 0 auto;}
 .cook-open .hb-tx b{display:block;font-size:14.5px;font-weight:600;line-height:1.25;}
 .cook-open .hb-tx small{display:block;font-size:10.5px;color:var(--muted);margin-top:1px;}
@@ -467,8 +471,8 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .fw-sheet{background:rgba(255,255,255,.04);border:1px solid rgba(231,200,115,.3);border-radius:14px;padding:12px;}
 .fw-sheet-h{font-size:13.5px;font-weight:600;margin-bottom:9px;}
 .fw-opt{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:11px;
-  padding:8px;margin-bottom:6px;min-height:52px;color:var(--ink);}
+  background:#FFFDF9;border:1px solid rgba(255,255,255,.09);border-radius:11px;
+  padding:8px;margin-bottom:6px;min-height:52px;color:#3a2c08;}
 .fw-opt img{width:40px;height:40px;object-fit:cover;border-radius:8px;flex:0 0 auto;}
 .fw-opt .fw-noimg{width:40px;height:40px;border-radius:8px;background:rgba(231,200,115,.14);
   display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
@@ -482,8 +486,8 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .ft-na{font-size:14px;font-weight:700;color:var(--gold);line-height:1.1;}
 .ft-na small{font-size:9px;font-weight:600;margin-left:1px;}
 .ft-nl{font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:.2px;}
-.ft-chip{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-radius:999px;
-  padding:8px 14px;font-size:12.5px;color:var(--ink);min-height:38px;}
+.ft-chip{background:#FFFDF9;border:1px solid rgba(255,255,255,.10);border-radius:999px;
+  padding:8px 14px;font-size:12.5px;color:#3a2c08;min-height:38px;}
 .ft-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);
   border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:9px;margin-bottom:8px;}
 .ft-row img{width:56px;height:56px;object-fit:cover;border-radius:10px;flex:0 0 auto;}
@@ -504,8 +508,8 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .ft-grid .ft-card .home-half{font-size:11.5px;min-height:40px;padding:6px 8px;}
 .mood-wrap{max-width:340px;margin:4px auto 0;}
 .yi-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.yi-name{flex:1;display:flex;align-items:center;gap:11px;text-align:left;background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:11px 13px;min-height:52px;color:var(--ink);}
+.yi-name{flex:1;display:flex;align-items:center;gap:11px;text-align:left;background:#FFFDF9;
+  border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:11px 13px;min-height:52px;color:#3a2c08;}
 .yi-name b{display:block;font-size:14.5px;font-weight:600;line-height:1.25;}
 .yi-name small{display:block;font-size:10.5px;color:var(--muted);font-style:italic;margin-top:1px;}
 .yi-leaf{font-size:21px;flex:0 0 auto;}
@@ -1910,6 +1914,12 @@ textarea{resize:none;line-height:1.4;}
         <button class="pl-tab" onclick="openPlantCamera()">📷 Take a picture</button>
         <button class="pl-tab" onclick="openPlantLibrary()">🖼️ From my phone</button>
       </div>
+      <!-- If they already have a name in mind, take it. It gives My Yard
+           something to start from, and tells us what they were expecting. -->
+      <div class="pl-name">
+        <input id="plantGuessName" placeholder="Know what it is? Type or paste the name"
+               oninput="plantGuessSave(this.value)">
+      </div>
     </div>
     <!-- The answer goes directly under the picture. Everything else is small
          and sits at the bottom — nobody came here for the buttons. -->
@@ -2403,7 +2413,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v140 · One box, clear on tap</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v142 · Name it yourself</div>
   </div>
 </section>
 
@@ -7591,7 +7601,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v140";
+window.HONEY_BUILD = "v142";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -19190,7 +19200,7 @@ function stageAskOrgan(i){
     '<div class="stg-organs">'+RANGER_ORGANS.map(function(o){
         return '<button class="stg-organ" onclick="stageSetOrgan('+i+',\''+o[0]+'\',\''+o[2]+'\')"><span>'+o[1]+'</span>'+o[2]+'</button>';
       }).join('')+'</div>'+
-    '<button class="home-half" style="width:100%;margin-top:9px;color:var(--muted)" onclick="stageSetOrgan('+i+',\'auto\',\'Not sure\')">I\'m not sure — just look</button>'+
+    '<button class="home-half" style="width:100%;margin-top:9px" onclick="stageSetOrgan('+i+',\'auto\',\'Not sure\')">I\'m not sure — just look</button>'+
   '</div>';
 }
 function stageSetOrgan(i, organ, label){
@@ -19363,6 +19373,12 @@ function rangerShelves(){
   try{ if(typeof GARDEN!=='undefined') out.push(['garden', GARDEN]); }catch(e){}
   return out;
 }
+/* What they think it is. Used as the starting name in My Yard, and shown back
+   alongside whatever PlantNet says so they can compare the two. */
+var _plantGuess='';
+function plantGuessSave(v){ _plantGuess=(v||'').trim(); }
+function plantGuessName(){ return _plantGuess||''; }
+
 /* The frame at the top of the Ranger screen — what you're identifying should
    be the first thing you see, not something below a wall of buttons. */
 function plantFrameRender(){
@@ -19754,13 +19770,16 @@ function yardStartFromResult(){
     else if(typeof _rangerLastPhoto!=='undefined') photo=_rangerLastPhoto||'';
   }catch(e){}
   var name = '';
-  try{
-    var t=_lastResults && _lastResults[0];
-    if(t){
-      name = (t.commonNames && t.commonNames[0]) ? t.commonNames[0]
-           : (t.scientificName || '');
-    }
-  }catch(e){}
+  try{ name = plantGuessName(); }catch(e){}
+  if(!name){
+    try{
+      var t=_lastResults && _lastResults[0];
+      if(t){
+        name = (t.commonNames && t.commonNames[0]) ? t.commonNames[0]
+             : (t.scientificName || '');
+      }
+    }catch(e){}
+  }
   rangerAddToMyYard(name, photo);
 }
 
@@ -19803,7 +19822,10 @@ function yardNoteGotIt(){
 }
 function yardOpenPendingForm(){
   try{
-    rangerYardForm(encodeURIComponent(_yardPendName||''), encodeURIComponent(_yardPendPhoto||''));
+    /* The photo is a multi-megabyte data URL — running encodeURIComponent over
+       it either throws or takes long enough to look like a crash. It's already
+       sitting in _yardPendPhoto, so it never needed encoding. */
+    rangerYardForm(encodeURIComponent(_yardPendName||''), '');
   }catch(e){
     try{ toast("Couldn't open that form — try once more."); }catch(_){}
     try{ console.log('yardOpenPendingForm error', e); }catch(_){}
