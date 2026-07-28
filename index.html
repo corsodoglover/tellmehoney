@@ -316,6 +316,32 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   font-size:13px;margin-top:12px;cursor:pointer;text-decoration:underline;}
 .goals-manage-list{display:flex;flex-direction:column;gap:9px;}
 /* ── MOOD TREND ── */
+.pl-row{display:flex;gap:6px;margin-top:18px;}
+.pl-frame{position:relative;background:var(--panel2);border:1px solid var(--line);
+  border-radius:18px;overflow:hidden;margin-bottom:14px;}
+.pl-empty{height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  background:linear-gradient(180deg,rgba(143,227,192,.06),rgba(143,227,192,.02));}
+.pl-leaf{font-size:40px;opacity:.55;}
+.pl-hint{font-size:12.5px;color:var(--muted);text-align:center;padding:0 24px;line-height:1.5;}
+.pl-shots{display:flex;gap:5px;padding:8px;overflow-x:auto;}
+.pl-shot{position:relative;flex:0 0 auto;width:78px;height:78px;border-radius:12px;overflow:hidden;background:#1a1f18;}
+.pl-shot img{width:100%;height:100%;object-fit:cover;display:block;}
+.pl-organ{position:absolute;bottom:3px;left:3px;font-size:8px;background:rgba(0,0,0,.6);
+  color:#fff;border-radius:6px;padding:1px 5px;}
+.pl-rm{position:absolute;top:2px;right:2px;width:18px;height:18px;border:none;border-radius:6px;
+  background:rgba(0,0,0,.55);color:#fff;font-size:10px;line-height:1;cursor:pointer;padding:0;}
+.pl-tabs{display:flex;border-top:1px solid var(--line);}
+.pl-tab{flex:1;background:rgba(255,255,255,.04);border:none;color:var(--ink);
+  font-size:12.5px;font-weight:700;padding:13px 6px;cursor:pointer;}
+.pl-tab:active{opacity:.65;}
+.pl-tab+.pl-tab{border-left:1px solid var(--line);}
+.pl-mini{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;padding:9px 4px;font-size:17px;line-height:1;color:var(--ink);cursor:pointer;}
+.pl-mini span{font-size:10px;font-weight:600;opacity:.8;white-space:nowrap;}
+.pl-mini:active{opacity:.65;}
+.pl-go{background:rgba(143,227,192,.14);border-color:rgba(143,227,192,.3);}
+.pl-dim{opacity:.6;}
 .rimg-tap{cursor:pointer;-webkit-touch-callout:default;}
 .cmp-strip{display:flex;gap:2px;background:#11150f;}
 .cmp-cell{position:relative;flex:1;min-width:0;height:158px;background:#1a1f18;overflow:hidden;}
@@ -736,15 +762,15 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .dj-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .jb-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .jb-tile{background:var(--panel2);border:1px solid var(--line);border-radius:16px;overflow:hidden;
-  display:flex;flex-direction:column;cursor:pointer;min-height:150px;text-align:left;padding:0;}
+  display:flex;flex-direction:column;cursor:pointer;min-height:116px;text-align:left;padding:0;}
 .jb-tile:active{opacity:.85;}
-.jb-cover{width:100%;height:96px;object-fit:cover;display:block;background:var(--panel);}
-.jb-nocover{width:100%;height:96px;display:flex;align-items:center;justify-content:center;
-  font-size:34px;background:var(--panel);opacity:.5;}
-.jb-info{padding:10px 12px;flex:1;display:flex;flex-direction:column;justify-content:center;}
-.jb-name{font-weight:800;font-size:14.5px;color:var(--ink);line-height:1.25;}
+.jb-cover{width:100%;height:74px;object-fit:cover;display:block;background:var(--panel);}
+.jb-nocover{width:100%;height:74px;display:flex;align-items:center;justify-content:center;
+  font-size:27px;background:var(--panel);opacity:.5;}
+.jb-info{padding:8px 11px;flex:1;display:flex;flex-direction:column;justify-content:center;}
+.jb-name{font-weight:800;font-size:13.5px;color:var(--ink);line-height:1.25;}
 .jb-count{font-size:11.5px;color:var(--gold);margin-top:3px;}
-.jb-add{background:var(--panel);border:2px dashed var(--line);border-radius:16px;min-height:150px;
+.jb-add{background:var(--panel);border:2px dashed var(--line);border-radius:16px;min-height:116px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
   cursor:pointer;color:var(--muted);font-weight:700;font-size:14px;}
 .jb-add:active{opacity:.8;}
@@ -1123,7 +1149,11 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .home-half-row{display:flex;gap:12px;}
 .home-half{flex:1;min-height:88px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
   background:rgba(255,255,255,.65);border:1.5px solid rgba(120,100,60,.2);border-radius:16px;
-  padding:11px 8px;cursor:pointer;transition:transform .1s;}
+  padding:11px 8px;cursor:pointer;transition:transform .1s;
+  /* The background here is nearly white, but only .hh-tx was given a dark
+     colour — so any button using this class with plain text inherited the
+     theme's pale text and became invisible on a dark skin. */
+  color:#3a2c08;font-weight:700;}
 .home-half:active{transform:scale(.97);}
 .home-half .hh-ic{display:flex;align-items:center;justify-content:center;height:34px;font-size:28px;line-height:1;}
 .hh-svg{display:block;}
@@ -1869,18 +1899,29 @@ textarea{resize:none;line-height:1.4;}
   <div class="bar"><button class="back" onclick="goBack()">‹</button>
     <h2>🌿 Real Food Ranger</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll" style="padding:16px">
-    <button class="home-big home-buzz" style="width:100%;margin-bottom:14px" onclick="openPlantCamera()">
-      <span class="hb-ic">📷</span><span class="hb-tx"><b>Identify a plant</b><small>Snap it — sent to PlantNet, named by Ranger</small></span></button>
-    <button class="home-half" style="width:100%;margin:-6px 0 14px" onclick="openPlantLibrary()"><span class="hh-ic">🖼️</span><span class="hh-tx">Use a picture from my phone</span></button>
-    <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px">While you're here</div>
-    <div class="home-half-row">
-      <button class="home-half" onclick="openInSeason()"><span class="hh-ic">📅</span><span class="hh-tx">In season now</span></button>
-      <button class="home-half" onclick="openCookingList()"><span class="hh-ic">🧺</span><span class="hh-tx">Cooking list</span></button>
+    <!-- The picture comes first, the way it does in Photos. Two small tabs
+         inside the frame rather than two big slabs pushing everything down. -->
+    <div class="pl-frame" id="plantFrame">
+      <div class="pl-empty" id="plantFrameEmpty">
+        <div class="pl-leaf">🌿</div>
+        <div class="pl-hint">Show me a plant and I’ll tell you what it is</div>
+      </div>
+      <div class="pl-tabs">
+        <button class="pl-tab" onclick="openPlantCamera()">📷 Take a picture</button>
+        <button class="pl-tab" onclick="openPlantLibrary()">🖼️ From my phone</button>
+      </div>
     </div>
-    <button class="home-half" style="width:100%;margin-top:10px" onclick="openMyYard()"><span class="hh-ic">🌱</span><span class="hh-tx">Plants From My Yard</span></button>
-    <button class="home-half" style="width:100%;margin-top:10px" onclick="openYardIndex()"><span class="hh-ic">🌾</span><span class="hh-tx">What's growing in your yard?</span></button>
-    <div id="plantHubResult" style="margin-top:16px"></div>
-    <button class="prof-row" style="margin-top:16px" onclick="openRangerSettings()">⚙️ Where Real Food Ranger shows up</button>
+    <!-- The answer goes directly under the picture. Everything else is small
+         and sits at the bottom — nobody came here for the buttons. -->
+    <div id="plantHubResult" style="margin-top:4px"></div>
+
+    <div class="pl-row">
+      <button class="pl-mini" onclick="openMyYard()">🌱<span>My yard</span></button>
+      <button class="pl-mini" onclick="openYardIndex()">🌾<span>What grows</span></button>
+      <button class="pl-mini" onclick="openInSeason()">📅<span>In season</span></button>
+      <button class="pl-mini" onclick="openCookingList()">🧺<span>Cooking</span></button>
+    </div>
+    <button class="prof-row" style="margin-top:14px;font-size:12.5px;opacity:.75" onclick="openRangerSettings()">⚙️ Where Real Food Ranger shows up</button>
     <p style="font-size:11px;color:var(--muted);margin:14px 2px 0;line-height:1.5">🌿 Never eat a wild plant based on this app alone — always confirm with a trusted local expert first.</p>
   </div>
 </section>
@@ -2362,7 +2403,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v133 · Easy conversation</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v138 · Picture first, buttons last</div>
   </div>
 </section>
 
@@ -7550,7 +7591,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v133";
+window.HONEY_BUILD = "v138";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -10695,24 +10736,21 @@ function renderPrayers(){
   _vcOpen=null;
   try{ var h0=document.getElementById('vcAddingTo'); if(h0) h0.textContent='Saving into: My Verses & Prayers'; }catch(e){}
   var h=prayerHidden(), html="";
-  // built-in prayers
-  html+='<div style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#a08a55;margin:6px 0">Common prayers</div>';
-  PRAYERS.forEach(function(p){
-    var hidden=h.indexOf(p.id)>=0;
-    html+='<div class="chip" style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:'+(hidden?'rgba(0,0,0,.04)':'var(--warm,rgba(246,207,110,.18))')+';border:1px solid var(--line,rgba(200,150,40,.3));border-radius:12px;padding:10px 12px;margin:6px 0;'+(hidden?'opacity:.55':'')+'">';
-    html+='<div style="flex:1"><b>'+esc(p.title)+'</b></div>';
-    if(hidden){
-      html+='<button class="icon-btn icon-restore" title="Keep" onclick="unhidePrayer(\''+p.id+'\')">↩︎</button>';
-    } else {
-      html+='<button class="icon-btn icon-play" title="Play" onclick="sayBuiltinPrayer(\''+p.id+'\')">▶︎</button>';
-      html+='<button class="icon-btn icon-del" title="Remove" onclick="hidePrayer(\''+p.id+'\')">🗑</button>';
-    }
-    html+='</div>';
-  });
+  /* The common prayers used to run down the top of the screen before you got
+     to your own. Now they're a box like any other — open it if you want them,
+     ignore it if you don't. */
   // ── THEIR OWN, IN NAMED BOXES — same tiles as the journals ──
   var colls=verseColls();
   html+='<div style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#a08a55;margin:16px 0 8px">Your own</div>';
   html+='<div class="jb-grid">';
+  // the starter box, unless they've set every one aside
+  var _kept=PRAYERS.filter(function(p){ return h.indexOf(p.id)<0; });
+  if(_kept.length){
+    html+='<button class="jb-tile" onclick="openStarterPrayers()">'+
+      '<div class="jb-nocover">\ud83d\udcd6</div>'+
+      '<div class="jb-info"><div class="jb-name">Common prayers</div>'+
+      '<div class="jb-count">'+_kept.length+' to start you off</div></div></button>';
+  }
   colls.forEach(function(c){
     var items=versesIn(c.id);
     var n=items.length;
@@ -10733,6 +10771,52 @@ function renderPrayers(){
     '</div></div>';
   box.innerHTML=html;
 }
+/* Share a kept verse or prayer — as a video if they recorded it, as words if not. */
+function shareVerseAny(id){
+  var p=userPrayers().filter(function(x){ return x.id===id; })[0];
+  if(!p){ toast("Couldn't find that one."); return; }
+  if(p.hasAudio){ shareVerseVideo(id); return; }
+  var txt=(p.title? p.title+'\n\n' : '') + (p.text||'') + '\n\n\ud83c\udf6f tellmehoneyapp.com';
+  if(navigator.share){
+    navigator.share({ title:p.title||'A verse', text:txt }).catch(function(){});
+  } else {
+    try{ navigator.clipboard.writeText(txt); toast("Copied \u2014 paste it wherever you like."); }
+    catch(e){ toast("Couldn't share that one."); }
+  }
+}
+
+/* The four we ship with, in their own box. Set any aside and it's gone from
+   the tile count; set them all aside and the box disappears entirely. */
+function openStarterPrayers(){
+  var box=document.getElementById("prayerList"); if(!box) return;
+  _vcOpen=null;
+  var h=prayerHidden();
+  var html='<button class="home-half" style="margin-bottom:12px" onclick="renderPrayers()">\u2039 All boxes</button>'+
+    '<div style="font-size:19px;font-weight:700;margin:0 2px 4px">Common prayers</div>'+
+    '<p class="rec-hint" style="margin:0 0 12px">A few to start you off. Set aside any you don\u2019t want \u2014 you can always bring them back.</p>';
+  PRAYERS.forEach(function(p){
+    var hidden=h.indexOf(p.id)>=0;
+    html+='<div class="chip" style="display:flex;align-items:center;gap:8px;background:'+(hidden?'rgba(0,0,0,.04)':'var(--warm,rgba(246,207,110,.18))')+';border:1px solid var(--line,rgba(200,150,40,.3));border-radius:12px;padding:10px 12px;margin:6px 0;'+(hidden?'opacity:.55':'')+'">';
+    html+='<div style="flex:1"><b>'+esc(p.title)+'</b></div>';
+    if(hidden){
+      html+='<button class="icon-btn icon-restore" title="Bring it back" onclick="unhidePrayer(\''+p.id+'\');openStarterPrayers()">\u21a9\ufe0e</button>';
+    } else {
+      html+='<button class="icon-btn icon-play" title="Play" onclick="sayBuiltinPrayer(\''+p.id+'\')">\u25b6\ufe0e</button>';
+      html+='<button class="icon-btn" title="Share it" onclick="shareBuiltinPrayer(\''+p.id+'\')">\u2197</button>';
+      html+='<button class="icon-btn icon-del" title="Set aside" onclick="hidePrayer(\''+p.id+'\');openStarterPrayers()">\ud83d\uddd1</button>';
+    }
+    html+='</div>';
+  });
+  box.innerHTML=html;
+}
+function shareBuiltinPrayer(id){
+  var p=PRAYERS.filter(function(x){ return x.id===id; })[0];
+  if(!p) return;
+  var txt=p.title+'\n\n'+(p.text||'')+'\n\n\ud83c\udf6f tellmehoneyapp.com';
+  if(navigator.share) navigator.share({ title:p.title, text:txt }).catch(function(){});
+  else { try{ navigator.clipboard.writeText(txt); toast("Copied."); }catch(e){} }
+}
+
 /* ── one box, opened ── */
 var _vcOpen=null;
 function openVerseColl(id){
@@ -10758,7 +10842,9 @@ function openVerseColl(id){
     html+='<div class="chip" style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--warm,rgba(246,207,110,.18));border:1px solid var(--line,rgba(200,150,40,.3));border-radius:12px;padding:10px 12px;margin:6px 0">';
     html+='<div style="flex:1"><b>'+esc(p.title||"Untitled")+'</b>'+(p.hasAudio?' <span style="font-size:11px;color:#a08a55">\ud83c\udfa4 your voice</span>':'')+'</div>';
     html+='<button class="icon-btn icon-play" title="Play" onclick="playSavedPrayer(\''+p.id+'\')">\u25b6\ufe0e</button>';
-    if(p.hasAudio) html+='<button class="icon-btn" title="Share as a video" onclick="shareVerseVideo(\''+p.id+'\')">\u2197</button>';
+    /* Share on every one. A recording goes as a little video; words go as
+       words. Somebody who kept a verse usually kept it FOR somebody. */
+    html+='<button class="icon-btn" title="Share it" onclick="shareVerseAny(\''+p.id+'\')">\u2197</button>';
     html+='<button class="icon-btn" title="Move" onclick="vcMove(\''+p.id+'\')">\u21c4</button>';
     html+='<button class="icon-btn icon-del" title="Delete" onclick="removeUserPrayer(\''+p.id+'\')">\ud83d\uddd1</button>';
     html+='</div>';
@@ -18938,7 +19024,8 @@ function rangerInSeasonNow(p){var m=(new Date()).getMonth()+1;return p.months&&p
 function rangerAddDinner(id,btn){var a=rangerDinnerArr();if(a.indexOf(id)<0){a.push(id);saveSettings();}if(btn){btn.innerHTML='✓ On tonight\u2019s menu';btn.disabled=true;btn.style.opacity=.85;}}
 function rangerAddCook(id,btn){var a=rangerCookArr();if(a.indexOf(id)<0){a.push(id);saveSettings();}if(btn){btn.textContent='✓ On your list';btn.disabled=true;}}
 
-function openPlantHub(){ var b=document.getElementById('plantHubResult'); if(b)b.innerHTML=''; go('plantHub'); }
+function openPlantHub(){
+  try{ setTimeout(plantFrameRender,60); }catch(e){} var b=document.getElementById('plantHubResult'); if(b)b.innerHTML=''; go('plantHub'); }
 /* "That's not it" — offered under every result. The photos are still staged, so
    adding an angle and trying again costs one tap, not a fresh start. Also shows
    the runner-up guesses, since PlantNet's second answer is often the right one. */
@@ -18958,12 +19045,15 @@ function rangerRetryPanel(){
       (shots? 'Your '+shots+' picture'+(shots===1?'':'s')+' '+(shots===1?'is':'are')+' still here. Add a leaf or a flower and I\'ll look again.' : 'Add another picture and I\'ll look again.')+
     '</p>'+
     (others.length? '<div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.4px;margin:0 0 4px;text-transform:uppercase">Or did you mean</div>'+others.join('') : '')+
+    /* Four full-width slabs was a wall. One row of small ones reads as a
+       toolbar, which is what it is. */
     '<div style="display:flex;gap:6px;margin-top:9px">'+
-      '<button class="home-half" style="flex:1" onclick="openPlantCamera()">📷 Add a picture</button>'+
-      '<button class="home-half" style="flex:1" onclick="openPlantLibrary()">🖼️ From my phone</button>'+
+      '<button class="pl-mini" onclick="openPlantCamera()">📷<span>Camera</span></button>'+
+      '<button class="pl-mini" onclick="openPlantLibrary()">🖼️<span>Photos</span></button>'+
+      (shots? '<button class="pl-mini pl-go" onclick="stageIdentify()">🔍<span>Look again</span></button>' : '')+
+      (shots? '<button class="pl-mini pl-dim" onclick="stageClear()">✕<span>Start over</span></button>' : '')+
     '</div>'+
-    (shots? '<button class="home-half" style="width:100%;margin-top:6px" onclick="stageIdentify()">🔍 Look again</button>'+
-            '<button class="home-half" style="width:100%;margin-top:6px;color:var(--muted)" onclick="stageClear()">Start over</button>' : '')+
+    (false? '' : '')+
   '</div>';
 }
 /* Pick one of PlantNet's runner-up guesses instead. */
@@ -19259,6 +19349,35 @@ function rangerShelves(){
   try{ if(typeof GARDEN!=='undefined') out.push(['garden', GARDEN]); }catch(e){}
   return out;
 }
+/* The frame at the top of the Ranger screen — what you're identifying should
+   be the first thing you see, not something below a wall of buttons. */
+function plantFrameRender(){
+  var f=document.getElementById('plantFrame'); if(!f) return;
+  var empty=document.getElementById('plantFrameEmpty');
+  var strip=document.getElementById('plantFrameShots');
+  var shots=[];
+  try{ shots=(typeof _stage!=='undefined' && _stage) ? _stage : []; }catch(e){}
+  if(!shots.length){
+    if(strip && strip.parentNode) strip.parentNode.removeChild(strip);
+    if(empty) empty.style.display='flex';
+    return;
+  }
+  if(empty) empty.style.display='none';
+  if(!strip){
+    strip=document.createElement('div');
+    strip.id='plantFrameShots'; strip.className='pl-shots';
+    var tabs=f.querySelector('.pl-tabs');
+    if(tabs) f.insertBefore(strip, tabs); else f.appendChild(strip);
+  }
+  strip.innerHTML=shots.map(function(sh,i){
+    return '<div class="pl-shot">'+
+      '<img src="'+sh.data+'" alt="">'+
+      (sh.label? '<span class="pl-organ">'+esc(sh.label)+'</span>' : '')+
+      '<button class="pl-rm" onclick="stageRemove('+i+');plantFrameRender();">\u2715</button>'+
+    '</div>';
+  }).join('');
+}
+
 /* ══════════ KEEPING THE PICTURES THAT HELP ═══════════════════════════════
    Colour photographs, not drawings — a real user (my mother) was clear about
    that, and she's the one this is for. PlantNet supplies them, and somebody can
@@ -19703,14 +19822,41 @@ function rangerYardSave(){
   var note=(document.getElementById('myYardNote')||{}).value||'';
   var season=(document.getElementById('myYardSeason')||{}).value||'';
   var share=(document.getElementById('myYardShare')||{}).checked;
-  var entry={id:'y'+Date.now(),name:name.trim(),note:note.trim(),season:season.trim(),photo:(_yardPendPhoto||''),added:Date.now(),mine:true,nutrients:{},recipes:[]};
+
+  /* Carry across everything we already know — the picture they took, the
+     Latin name, and PlantNet's own photographs. Before this the entry arrived
+     bare and they had to type it all again. */
+  var sci='', pics=[];
+  try{
+    var t=_lastResults && _lastResults[0];
+    if(t){
+      sci=t.scientificName||'';
+      var refs=Array.isArray(t.refImages)?t.refImages:[];
+      pics=refs.filter(function(x){ return x&&x.url; }).slice(0,3).map(function(x){
+        return { url:x.url, credit:x.credit||'', organ:x.organ||'', ts:Date.now() };
+      });
+      if(!pics.length && t.refImage) pics=[{url:t.refImage, credit:t.refCredit||'', ts:Date.now()}];
+    }
+  }catch(e){}
+  var photo=_yardPendPhoto||'';
+  if(!photo){
+    try{ if(typeof _stage!=='undefined' && _stage.length && _stage[0].data) photo=_stage[0].data; }catch(e){}
+  }
+
+  var entry={id:'y'+Date.now(),name:name.trim(),note:note.trim(),season:season.trim(),
+    photo:photo, sci:sci, pics:pics,
+    added:Date.now(),mine:true,nutrients:{},recipes:[]};
   rangerMyYardArr().push(entry);
   if(share){ rangerDraftsArr().push({name:entry.name,sci:'(shared by a user)',status:'user-shared',source:'My Yard share',savedAt:Date.now(),edible:null,verified:false,fromUser:true,nutrients:{},note:entry.note}); }
   saveSettings();
   _yardPendName=""; _yardPendPhoto="";
-  toast("🌱 Added to your yard.");
-  go('myYard');
-  openMyYardPlant(entry.id);
+  // make sure it actually landed before saying so
+  var landed=false;
+  try{ landed=rangerMyYardArr().some(function(x){ return x.id===entry.id; }); }catch(e){}
+  if(!landed){ toast("That didn't save \u2014 try once more?"); return; }
+  toast("\ud83c\udf31 Added to your yard.");
+  try{ go('myYard'); openMyYardPlant(entry.id); }
+  catch(e){ try{ openMyYard(); }catch(e2){} }
 }
 function openMyYardPlant(id){
   var e=rangerYardFind(id); if(!e){ openMyYard(); return; }
