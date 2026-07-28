@@ -1957,7 +1957,7 @@ textarea{resize:none;line-height:1.4;}
   <div class="bar"><button class="back" onclick="goBack()">‹</button>
     <h2>🍲 Food for Thought</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll" style="padding:16px">
-    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.5">Ideas worth cooking. Search something, or start from what's already growing at your place.</p>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.5">Ideas worth cooking. Search something, or start from what's in season or already in your fridge.</p>
     <div style="display:flex;gap:8px;margin-bottom:10px">
       <input id="ftSearch" placeholder="A food, or a dish…" style="flex:1;min-height:48px;padding:10px 13px;border-radius:13px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--ink);font-size:15px" onkeydown="if(event.key==='Enter')ftSearch()">
       <button class="home-half" style="flex:0 0 auto;min-width:64px" onclick="ftSearch()">Find</button>
@@ -2403,7 +2403,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v139 · White boxes, Sofia</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v140 · One box, clear on tap</div>
   </div>
 </section>
 
@@ -7591,7 +7591,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v139";
+window.HONEY_BUILD = "v140";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -18236,6 +18236,20 @@ function resetIdle(){ stopIdle(); S.idleStage=0;
 function stopIdle(){ idleTimers.forEach(clearTimeout); idleTimers=[]; stopJokeSpark(); }
 /* how often she volunteers jokes unprompted */
 function jokesAllowedAuto(){ return S.jokeFreq!=='off' && S.jokeFreq!=='ask'; }
+/* Any box that arrives with something already in it selects that text when
+   you tap it, so typing replaces it. Nobody should have to backspace through
+   a suggestion before they can write their own. */
+document.addEventListener('focusin', function(e){
+  var el=e.target;
+  if(!el || !el.tagName) return;
+  var t=el.tagName.toLowerCase();
+  if(t!=='input' && t!=='textarea') return;
+  if(el.type==='checkbox' || el.type==='radio' || el.type==='file') return;
+  if(!el.value || !el.value.trim()) return;
+  if(el.dataset.noAutoSelect) return;
+  setTimeout(function(){ try{ el.select(); }catch(err){} }, 20);
+}, true);
+
 /* ══════════ SOMETHING TO SAY IN THE QUIET ════════════════════════════════
    She used to fill a gap with "want a joke?" every time, which turns her into
    a vending machine. These are the things a friend says when the conversation
@@ -20293,16 +20307,19 @@ function ftOwnOpen(prefill){
       '<label class="rec-label">What\u2019s it called?</label>'+
       '<div class="rec-field"><input id="ftOwnTitle" placeholder="Mama\u2019s chicken and rice" value="'+esc(p.title||'')+'"></div>'+
 
-      '<label class="rec-label">What goes in it</label>'+
-      '<div class="rec-field"><textarea id="ftOwnIng" rows="5" placeholder="One per line, or paste it in any old how">'+esc((p.ingredients||[]).join('\n'))+'</textarea></div>'+
-
-      '<label class="rec-label">How to make it</label>'+
-      '<div class="rec-field"><textarea id="ftOwnSteps" rows="5" placeholder="Step by step, or however you like to write it">'+esc(p.steps||'')+'</textarea></div>'+
+      /* One box, not two. People paste a whole recipe in one go — asking them
+         to split it themselves is work they came here to avoid. */
+      '<label class="rec-label">What goes in it, and how it\u2019s made</label>'+
+      '<div class="rec-field"><textarea id="ftOwnIng" rows="9" placeholder="Paste the whole thing here \u2014 ingredients, method, any old how. I\u2019ll sort it out.">'+
+        esc(((p.ingredients||[]).join('\n')+(p.steps? '\n\n'+p.steps : '')).trim())+'</textarea></div>'+
 
       '<div id="ftOwnPhotoWrap" style="margin:4px 0 10px">'+
         (p.image? '<img id="ftOwnPhoto" src="'+p.image+'" style="width:100%;border-radius:13px;display:block">' : '<img id="ftOwnPhoto" style="display:none;width:100%;border-radius:13px">')+
       '</div>'+
-      '<button class="home-half" style="width:100%;margin-bottom:10px" onclick="ftOwnAddPhoto()">\ud83d\uddbc\ufe0f Add a picture of the dish</button>'+
+      '<div style="display:flex;gap:6px;margin-bottom:10px">'+
+        '<button class="pl-mini" onclick="ftOwnPhotoFrom(\'camera\')">\ud83d\udcf7<span>Take a picture</span></button>'+
+        '<button class="pl-mini" onclick="ftOwnPhotoFrom(\'library\')">\ud83d\uddbc\ufe0f<span>Add a picture</span></button>'+
+      '</div>'+
 
       '<button class="rec-save" onclick="ftOwnSave()">Keep this recipe</button>'+
     '</div>';
@@ -20319,10 +20336,36 @@ function ftOwnAddPhoto(){
     if(img){ img.src=dataUrl; img.style.display='block'; }
   }).catch(function(){});
 }
+/* Two choices rather than straight to the camera — half the time the picture
+   of the dish is already on their phone. */
+function ftOwnPhotoFrom(where){
+  var opts={ source:(where==='camera'?'camera':'photos'), saveToGallery:false };
+  honeyTakePhoto(opts).then(function(dataUrl){
+    if(!dataUrl) return;
+    _ftOwnImg=dataUrl;
+    var img=document.getElementById('ftOwnPhoto');
+    if(img){ img.src=dataUrl; img.style.display='block'; }
+  }).catch(function(){});
+}
+
 function ftOwnSave(){
   var t=((document.getElementById('ftOwnTitle')||{}).value||'').trim();
-  var ing=((document.getElementById('ftOwnIng')||{}).value||'').trim();
-  var st=((document.getElementById('ftOwnSteps')||{}).value||'').trim();
+  var whole=((document.getElementById('ftOwnIng')||{}).value||'').trim();
+  /* One box in, two fields out. Lines that start with an amount are
+     ingredients; the rest is the method. */
+  var ing='', st='';
+  try{
+    var lines=whole.split('\n');
+    var ingLines=[], stepLines=[];
+    var amt=/^\s*(\d|\u00bd|\u00bc|\u00be|a |an |one |two |three |half |pinch|dash)/i;
+    lines.forEach(function(L){
+      var t=L.trim(); if(!t) return;
+      if(amt.test(t) && t.length<90 && stepLines.length===0) ingLines.push(t);
+      else stepLines.push(t);
+    });
+    ing=ingLines.join('\n'); st=stepLines.join('\n');
+    if(!ing && !st) st=whole;
+  }catch(e){ st=whole; }
   if(!t){ toast("Give it a name first."); return; }
   var arr=ftCardsArr();
   var rec={
