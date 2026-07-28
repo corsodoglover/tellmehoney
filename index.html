@@ -2413,7 +2413,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v142 · Name it yourself</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v144 · Just the joke</div>
   </div>
 </section>
 
@@ -7601,7 +7601,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v142";
+window.HONEY_BUILD = "v144";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -8781,6 +8781,12 @@ function handleJokeRequest(t, l){
          "goat" as something else, they get an egg joke and think she ignored them. */
       var asked = jokeTopicWords(l)[0];
       if(asked && asked.length>=3 && !jokeTopicMatch(l)){
+        /* Nothing in the bank about it — but if her brain's switched on she can
+           write one. Saying "I haven't got a lizard joke" when she's perfectly
+           capable of making one up is the app being unhelpful on purpose. */
+        if(typeof aiJokeAbout==='function' && typeof aiAvailable==='function' && aiAvailable()){
+          aiJokeAbout(asked); return;
+        }
         themTyping(function(){
           pushThemText(vibeColor("I don't have a "+asked+" joke in me \u2014 did I hear that right? Say it again, or just ask for a joke and I'll pick a good one."));
         });
@@ -12233,6 +12239,54 @@ function funnelSend(){
     ])));
   });
   try{ earnHoney("I shared a joke"); }catch(e){}
+}
+
+/* Make one up about whatever they asked for. Same two-beat shape as the
+   recorded ones, so it lands the same way. */
+function aiJokeAbout(topic){
+  var a=null; try{ a=aiCfg(); }catch(e){}
+  if(!a || !a.key){
+    themTyping(function(){
+      pushThemText(vibeColor("I haven't got a "+topic+" joke, and my joke-writing part is switched off. You can turn it on in Profile."));
+    });
+    return;
+  }
+  /* No announcement. She either has a joke or she writes one — either way the
+     person asked for a joke, not for a status report on her joke bank. */
+  var body={
+    model:"gpt-4o-mini", max_tokens:120, temperature:1.0,
+    messages:[{ role:"user", content:
+      "Write one clean, warm, family-friendly joke about "+topic+". "+
+      "Groan-worthy puns are perfect. Nothing rude, nothing political, nothing about death or illness. "+
+      "Reply with ONLY this JSON and nothing else: {\"s\":\"the setup\",\"p\":\"the punchline\"}" }]
+  };
+  var ctrl=(typeof AbortController!=="undefined")?new AbortController():null;
+  var timer=ctrl?setTimeout(function(){ try{ctrl.abort();}catch(e){} },15000):null;
+  fetch("https://api.openai.com/v1/chat/completions",{
+    method:"POST",
+    headers:{ "Authorization":"Bearer "+a.key, "Content-Type":"application/json" },
+    body:JSON.stringify(body), signal: ctrl?ctrl.signal:undefined
+  }).then(function(r){ if(timer) clearTimeout(timer); return r.json(); })
+    .then(function(j){
+      var txt=j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;
+      var o=null;
+      try{ o=JSON.parse((txt||'').replace(/```json|```/g,'').trim()); }catch(e){}
+      if(!o || !o.p){
+        themTyping(function(){ pushThemText(vibeColor("Ask me again in a second \u2014 that one got away from me.")); });
+        return;
+      }
+      setTimeout(function(){
+        var jj={s:o.s||('About '+topic+'\u2026'), p:o.p, ai:true};
+        pushJoke(jj);
+        var words=(jj.s||'').split(/\s+/).length;
+        setTimeout(function(){
+          if(S.pendingPunch && S.pendingPunch.s===jj.s){ try{ revealPunch(true); }catch(e){} }
+        }, Math.min(9000, Math.max(2600, words*420)));
+      }, 500);
+    })
+    .catch(function(){
+      themTyping(function(){ pushThemText(vibeColor("Couldn't reach my joke-writing part just now. Try again in a moment?")); });
+    });
 }
 
 /* Tell one of their own jokes all the way through.
