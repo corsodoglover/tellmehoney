@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+*.zip
+ios/App/Pods/
+ios/App/App/public/
+android/app/build/
+android/.gradle/
+.env
