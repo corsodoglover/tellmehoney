@@ -6,3 +6,7 @@ ios/App/App/public/
 android/app/build/
 android/.gradle/
 .env
+old _build_scripts/
+old*.html
+onapple*.html
+*.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
