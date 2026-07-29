@@ -2039,8 +2039,7 @@ textarea{resize:none;line-height:1.4;}
   <div class="bar"><button class="back" onclick="openPlantHub()">‹</button>
     <h2>🌾 What's in your yard</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll" style="padding:16px">
-    <p style="font-size:13px;color:var(--muted);margin:0 0 4px;line-height:1.5">These grow in yards all over America. Tap a letter to open or close it, tap a plant to read about it, and tap the bar underneath if it's growing at your place.</p>
-    <p id="yiCount" style="font-size:12px;color:var(--gold);font-weight:600;margin:0 0 14px"></p>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 4px;line-height:1.5">These grow in yards all over America. Tap the bar under a plant if it's growing at your place and it moves to the top. Tap a letter to fold it away.</p>
     <div id="yiList"></div>
     <p style="font-size:11px;color:var(--muted);margin:14px 2px 0;line-height:1.5">🌿 Never eat a wild plant based on this app alone — always confirm with a trusted local expert first.</p>
   </div>
@@ -2442,7 +2441,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="openRoster()">👥 My Friends</button>
     <button class="prof-row" onclick="openHoneyMoney()">💰 Honey Money</button>
     <button class="prof-row" onclick="openInsights()">🍯 Your Honey Pot</button>
-    <button class="prof-row" id="editRow" onclick="if(loadedOrFirst())editAgent(S.agentId)">✏️ Edit Honey</button>
+    <button class="prof-row" id="editRow" onclick="if(loadedOrFirst())editAgent(S.agentId,'profile')">✏️ Edit Honey</button>
     <button class="prof-row" onclick="if(loadedOrFirst())openVoicePicker()">🎚️ Voice &amp; speech</button>
     <button class="prof-row" onclick="openTiers()" id="planRow">🍯 Your Honey Plan</button>
     <button class="prof-row" onclick="openThemePicker()" id="themeRow">🎨 App color theme: Honey</button>
@@ -2728,7 +2727,7 @@ textarea{resize:none;line-height:1.4;}
 
 <!-- BUILDER -->
 <section class="screen" id="builder">
-  <div class="bar"><button class="back" onclick="go(&#39;welcome&#39;)">‹</button>
+  <div class="bar"><button class="back" onclick="builderBack()">‹</button>
     <h2>Build Your Honey</h2></div>
   <div class="b-body scroll">
     <div class="b-eyebrow" id="builderEyebrow">Step one</div>
@@ -2802,7 +2801,7 @@ textarea{resize:none;line-height:1.4;}
   </div>
   <div class="friend-switch" id="friendSwitch"></div>
   <div class="friend-ping" id="friendPing"></div>
-  <button class="setup-banner" id="setupBanner" style="display:none" onclick="editAgent(S.agentId)">✨ Tap to set up your Honey — give her a name &amp; a face</button>
+  <button class="setup-banner" id="setupBanner" style="display:none" onclick="editAgent(S.agentId,'chat')">✨ Tap to set up your Honey — give her a name &amp; a face</button>
 
   <div class="self" id="selfTile" onclick="toggleViewMenu(event)">
     <button class="gear">⚙︎</button>
@@ -6981,6 +6980,26 @@ document.getElementById('photoInput').addEventListener('change',function(e){
 });
 
 /* ════ BRING TO LIFE ════ */
+/* Go back to whichever screen sent us here. Returning to chat re-enters it so
+   the header picks up the new name and face, with skipGreet so the
+   conversation carries on instead of starting over. Anything unknown falls to
+   showHome() - never go('welcome') on its own, which paints the empty clouds. */
+function editReturnTo(){
+  var dest=_editReturn; _editReturn=null;
+  if(dest==='chat' && S.agentId){ S.skipGreet=true; S.returning=true; enterChat(); return; }
+  if(dest==='roster'){ openRoster(); return; }
+  if(dest && document.getElementById(dest)){ go(dest); return; }
+  if(S.agentId && S.alive){ S.skipGreet=true; S.returning=true; enterChat(); return; }
+  showHome();
+}
+
+/* Backing out of the builder. Nothing is saved either way; this only decides
+   where you land. */
+function builderBack(){
+  if(S.editing){ S.editing=false; editReturnTo(); return; }
+  showHome();
+}
+
 function bringToLife(){
   S.name=document.getElementById('nameInput').value.trim();
   S.age=document.getElementById('ageInput').value.trim();
@@ -6995,7 +7014,7 @@ function bringToLife(){
     var sib=document.getElementById('setupInviteBtn'); if(sib&&sib.parentElement) sib.parentElement.style.display='none';
     persist();
     toast(esc(S.name||'Honey')+' updated.');
-    openRoster();
+    editReturnTo();
     return;
   }
   S.transcript=[]; S.returning=false;  // brand-new conversation
@@ -7170,7 +7189,7 @@ function showSetupInvite(){
   var m=document.getElementById('msgs'); if(!m)return;
   if(document.getElementById('setupInviteBtn')) return; // don't double-add
   var wrap=document.createElement('div'); wrap.className='setup-invite';
-  wrap.innerHTML='<button id="setupInviteBtn" class="setup-invite-btn" onclick="editAgent(S.agentId)">✨ Change your Honey</button>';
+  wrap.innerHTML='<button id="setupInviteBtn" class="setup-invite-btn" onclick="editAgent(S.agentId,\'chat\')">✨ Change your Honey</button>';
   m.appendChild(wrap);
   m.scrollTop=m.scrollHeight;
 }
@@ -8632,7 +8651,27 @@ function jokeCollDelete(id){
   if(id==='mine') return;
   SETTINGS.jokeColls=jokeColls().filter(function(c){ return c.id!==id; });
   (S.myJokes||[]).forEach(function(j){ if(j.coll===id) j.coll='mine'; });
+  /* the picker remembers the last box used - don't leave it pointing at a
+     box that no longer exists, or the dropdown reopens on a ghost */
+  if(SETTINGS.lastJokeColl===id) SETTINGS.lastJokeColl='mine';
   saveSettings(); persist();
+}
+
+/* Wired to the "Delete box" button. Nothing was calling jokeCollDelete before,
+   which is why a category could be made but never unmade: emptying it only
+   hid its heading, while the box itself stayed in the dropdown for good. */
+function jcDeleteBox(id){
+  var c=jokeColls().find(function(x){ return x.id===id; });
+  if(!c) return;
+  var n=(S.myJokes||[]).filter(function(j){ return (j.coll||'mine')===id; }).length;
+  var msg = n
+    ? 'Delete the box \u201c'+c.name+'\u201d?\n\nThe '+n+(n===1?' joke':' jokes')+' inside will move to My Jokes \u2014 nothing is lost.'
+    : 'Delete the empty box \u201c'+c.name+'\u201d?';
+  if(!confirm(msg)) return;
+  jokeCollDelete(id);
+  renderMyJokes();                                    /* refills the picker */
+  try{ renderMyJokesScreen(); }catch(e){}
+  toast('\u201c'+c.name+'\u201d deleted.');
 }
 function jokesIn(collId){
   return (S.myJokes||[]).filter(function(j){ return (j.coll||'mine')===collId; });
@@ -12439,20 +12478,39 @@ function renderMyJokes(){
   var list=document.getElementById('recList'); list.innerHTML='';
   var head=document.getElementById('recListHead');
   var mine=S.myJokes||[];
-  if(!mine.length){ head.style.display='none'; return; }
+  var colls=jokeColls();
+  var madeBoxes=colls.filter(function(c){ return c.id!=='mine'; }).length;
+  /* Show the list if there are jokes OR boxes. A box with nothing in it still
+     exists, still sits in the picker, and this is the only place it can be
+     got rid of - so it can't be allowed to vanish. */
+  if(!mine.length && !madeBoxes){ head.style.display='none'; return; }
   head.style.display='block';
   document.getElementById('recCount').textContent='('+mine.length+')';
 
   // grouped into the boxes they made, same idea as the journals
-  jokeColls().forEach(function(c){
+  colls.forEach(function(c){
     var inBox=[];
     mine.forEach(function(j,idx){ if((j.coll||'mine')===c.id) inBox.push({j:j,idx:idx}); });
-    if(!inBox.length) return;
+    if(!inBox.length && c.id==='mine') return;   /* the built-in box hides when empty */
     var h=document.createElement('div');
     h.className='rec-list-head';
-    h.style.cssText='margin-top:14px;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold)';
-    h.textContent=c.name+'  ('+inBox.length+')';
+    h.style.cssText='display:flex;align-items:center;justify-content:space-between;'+
+      'gap:8px;margin-top:14px;font-size:11px;letter-spacing:.5px;'+
+      'text-transform:uppercase;color:var(--gold)';
+    h.innerHTML='<span>'+esc(c.name)+'  ('+inBox.length+')</span>'+
+      (c.id==='mine' ? '' :
+       '<button class="jcdel" style="background:none;border:0;color:var(--muted);'+
+       'font-size:10.5px;letter-spacing:.3px;padding:4px 2px;cursor:pointer">\ud83d\uddd1\ufe0f Delete box</button>');
+    if(c.id!=='mine'){
+      h.querySelector('.jcdel').onclick=function(){ jcDeleteBox(c.id); };
+    }
     list.appendChild(h);
+    if(!inBox.length){
+      var e=document.createElement('div');
+      e.style.cssText='font-size:11.5px;color:var(--muted);font-style:italic;margin:4px 0 2px';
+      e.textContent='Empty. Still offered when you save a joke.';
+      list.appendChild(e);
+    }
     inBox.slice().reverse().forEach(function(o){
       var j=o.j;
       var d=document.createElement('div'); d.className='rec-jcard';
@@ -13208,7 +13266,7 @@ function fromViewMenuSwitch(e){ if(e)e.stopPropagation(); document.getElementByI
   buildFriendSwitch(); document.getElementById('friendSwitch').classList.add('on'); }
 function fromViewMenuRoster(){ document.getElementById('viewMenu').classList.remove('on'); endCall(); openRoster(); }
 function fromViewMenuAdd(){ document.getElementById('viewMenu').classList.remove('on'); newAgentFlow(false); }
-function fromViewMenuEdit(){ document.getElementById('viewMenu').classList.remove('on'); if(loadedOrFirst()) editAgent(S.agentId); }
+function fromViewMenuEdit(){ document.getElementById('viewMenu').classList.remove('on'); if(loadedOrFirst()) editAgent(S.agentId,'chat'); }
 function setView(v,silent){
   S.selfView=v;
   document.querySelectorAll('.vm-item[data-v]').forEach(b=>b.classList.toggle('sel',b.dataset.v===v));
@@ -19011,10 +19069,15 @@ function newAgentFlow(asSelf){
 }
 
 /* ════ EDIT AN EXISTING FRIEND ════ */
-function editAgent(id){
+/* Where "Change Honey" was opened from, so finishing or backing out returns
+   there instead of dumping somebody on a screen they didn't ask for. */
+var _editReturn=null;
+
+function editAgent(id, from){
   var a=getAgent(id); if(!a)return;
   applyAgent(a);          // load everything into S
   S.editing=true; S.returning=false;
+  _editReturn = from || null;
   // prefill builder fields — but if name is still the default "Honey", leave it BLANK
   // so the placeholder shows and the user doesn't have to delete "Honey" first (age already works this way).
   document.getElementById('nameInput').value=(a.name && a.name!=='Honey') ? a.name : '';
@@ -19110,7 +19173,7 @@ function openCardMenu(btn,a){
     ((a.photo||a.avatar||a.noFace)?'<button data-act="nopic">🍯 Remove picture</button>':'')+
     (a.isSelf?'':'<button data-act="trash" class="danger">🗑️ Move to Trash</button>');
   menu.querySelector('[data-act="call"]').onclick=()=>{ closeCardMenu(); callAgent(a.id); };
-  menu.querySelector('[data-act="edit"]').onclick=()=>{ closeCardMenu(); editAgent(a.id); };
+  menu.querySelector('[data-act="edit"]').onclick=()=>{ closeCardMenu(); editAgent(a.id,'roster'); };
   var np=menu.querySelector('[data-act="nopic"]');
   if(np) np.onclick=()=>{ closeCardMenu(); removeAgentPicture(a.id); };
   var tb=menu.querySelector('[data-act="trash"]');
@@ -20452,6 +20515,9 @@ function rangerYardForm(encName,encPhoto){
   // Park the photo here instead of inside the Save button's onclick. A phone photo
   // is a multi-megabyte data URL — putting that in an HTML attribute breaks the tap.
   try{ _yardPendPhoto = decodeURIComponent(encPhoto||'') || _yardPendPhoto || ''; }catch(e){}
+  /* This was reading a bare `photo` that nothing declares, so the whole form
+     threw a ReferenceError and never drew. Read the parked one. */
+  var photo = _yardPendPhoto || '';
   
   var box=document.getElementById('plantHubResult');
   box.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px">'+
@@ -20737,12 +20803,26 @@ function openMyYard(){
 function openInSeason(){
   var now=new Date().getMonth()+1;
   var MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
-  document.getElementById('seasonMonth').textContent=MN[now-1];
-  var ready=Object.keys(RANGER_PLANTS).filter(function(id){return RANGER_PLANTS[id].edible!==false && RANGER_PLANTS[id].months.indexOf(now)>=0;});
-  var b=document.getElementById('seasonList');
-  b.innerHTML = ready.length? ready.map(function(id){var p=RANGER_PLANTS[id];return '<button class="home-big" style="display:flex;width:100%;text-align:left;margin-bottom:9px" onclick="openPlantHub();setTimeout(function(){rangerShowResult(\''+id+'\')},50)"><span class="hb-ic">'+p.leaf+'</span><span class="hb-tx"><b>'+p.name+'</b><small>🌿 ready now — '+p.season+'</small></span></button>';}).join('') : '<div style="text-align:center;color:var(--muted);padding:30px">🌱 Quiet season right now. Check back as the months turn.</div>';
+  var el=document.getElementById('seasonMonth'); if(el) el.textContent=MN[now-1];
+  inSeasonRefresh();
   go('inSeason');
 }
+
+/* Same tiles as the yard, so a plant looks like itself wherever you meet it. */
+function inSeasonRefresh(){
+  var now=new Date().getMonth()+1;
+  var b=document.getElementById('seasonList'); if(!b) return;
+  var BOOK=yardBook();
+  var ready=Object.keys(BOOK).filter(function(id){
+    var p=BOOK[id];
+    return p.edible!==false && Array.isArray(p.months) && p.months.indexOf(now)>=0;
+  }).sort(function(x,y){ return BOOK[x].name.localeCompare(BOOK[y].name); });
+
+  b.innerHTML = ready.length
+    ? '<div class="yg-grid">'+ready.map(function(id){ return yardTileHTML(id,'inSeason'); }).join('')+'</div>'
+    : '<div style="text-align:center;color:var(--muted);padding:30px">\ud83c\udf31 Quiet season right now. Check back as the months turn.</div>';
+}
+
 function openCookingList(){
   var b=document.getElementById('cookList'); var list=rangerCookArr();
   var html='';
@@ -20953,6 +21033,9 @@ function ftOwnOpen(prefill){
 
       '<div id="ftOwnPhotoWrap" style="margin:4px 0 10px">'+
         (p.image? '<img id="ftOwnPhoto" src="'+p.image+'" style="width:100%;border-radius:13px;display:block">' : '<img id="ftOwnPhoto" style="display:none;width:100%;border-radius:13px">')+
+        '<button id="ftOwnPhotoRm" onclick="ftOwnPhotoClear()" style="display:'+(p.image?'block':'none')+
+          ';width:100%;margin-top:6px;background:none;border:0;color:var(--muted);'+
+          'font-size:11.5px;padding:7px;cursor:pointer">\ud83d\uddd1\ufe0f Remove this picture</button>'+
       '</div>'+
       '<div style="display:flex;gap:6px;margin-bottom:10px">'+
         '<button class="pl-mini" onclick="ftOwnPhotoFrom(\'camera\')">\ud83d\udcf7<span>Take a picture</span></button>'+
@@ -20962,16 +21045,40 @@ function ftOwnOpen(prefill){
       '<button class="rec-save" onclick="ftOwnSave()">Keep this recipe</button>'+
     '</div>';
   document.body.appendChild(d);
-  if(p.image){ _ftOwnImg=p.image; }
+  _ftOwnImg = p.image || '';
+  _ftOwnImgCleared = false;
 }
 var _ftOwnImg='';
+var _ftOwnImgCleared=false;   /* they took the picture off on purpose */
+
+/* Setting, showing and clearing the dish photo all go through here, so the
+   picture on screen, the Remove button and the value that gets saved can
+   never drift apart. */
+function ftOwnPhotoSet(dataUrl){
+  _ftOwnImg = dataUrl || '';
+  _ftOwnImgCleared = !dataUrl;
+  var img=document.getElementById('ftOwnPhoto');
+  var rm=document.getElementById('ftOwnPhotoRm');
+  if(img){
+    if(dataUrl){ img.src=dataUrl; img.style.display='block'; }
+    else { img.removeAttribute('src'); img.style.display='none'; }
+  }
+  if(rm) rm.style.display = dataUrl ? 'block' : 'none';
+}
+
+/* Losing the picture must never mean losing the typing. This only touches the
+   photo - the title and the recipe text stay exactly where they are. */
+function ftOwnPhotoClear(){
+  if(!_ftOwnImg) return;
+  ftOwnPhotoSet('');
+  toast('Picture removed \u2014 your recipe is still here.');
+}
+
 function ftOwnClose(){ var d=document.getElementById('ftOwnBox'); if(d) d.remove(); }
 function ftOwnAddPhoto(){
   honeyTakePhoto({ source:'prompt', saveToGallery:false }).then(function(dataUrl){
     if(!dataUrl) return;
-    _ftOwnImg=dataUrl;
-    var img=document.getElementById('ftOwnPhoto');
-    if(img){ img.src=dataUrl; img.style.display='block'; }
+    ftOwnPhotoSet(dataUrl);
   }).catch(function(){});
 }
 /* Two choices rather than straight to the camera — half the time the picture
@@ -20984,9 +21091,7 @@ function ftOwnPhotoFrom(where){
              saveToGallery:false };
   honeyTakePhoto(opts).then(function(dataUrl){
     if(!dataUrl) return;
-    _ftOwnImg=dataUrl;
-    var img=document.getElementById('ftOwnPhoto');
-    if(img){ img.src=dataUrl; img.style.display='block'; }
+    ftOwnPhotoSet(dataUrl);
   }).catch(function(){});
 }
 
@@ -21023,14 +21128,16 @@ function ftOwnSave(){
   };
   // editing one replaces it in place, rather than leaving two copies behind
   if(typeof _ftEditIndex==='number' && _ftEditIndex>=0 && arr[_ftEditIndex]){
-    if(!rec.image) rec.image=arr[_ftEditIndex].image||'';
+    /* Keep the old picture on an edit UNLESS they deliberately removed it -
+       otherwise Remove would look like it worked and then undo itself. */
+    if(!rec.image && !_ftOwnImgCleared) rec.image=arr[_ftEditIndex].image||'';
     arr[_ftEditIndex]=rec;
     _ftEditIndex=-1;
   } else {
     arr.unshift(rec);
   }
   SETTINGS.foodCards=arr; saveSettings();
-  _ftOwnImg='';
+  _ftOwnImg=''; _ftOwnImgCleared=false;
   ftOwnClose();
   try{ ftRenderCards(); }catch(e){}
   toast("\ud83c\udf72 Kept \u2014 it\u2019s yours now.");
@@ -21932,14 +22039,14 @@ function yardShortSci(p){
   return String(p.sci||'').split(' · ')[0].split(' & ')[0].trim();
 }
 
-function yardTileHTML(id){
+function yardTileHTML(id, from){
   var p=yardPlant(id), on=yardHas(id);
   var leaf=(p.leaf||'\ud83c\udf3f');
   var pic = p.img
     ? '<img class="yg-pic" src="'+p.img+'" alt="" loading="lazy" data-leaf="'+leaf+'" onerror="yardImgFail(this)">'
     : '<div class="yg-emoji">'+leaf+'</div>';
   return '<div class="yg-tile'+(on?' on':'')+'" id="ygTile_'+id+'">'+
-    '<button class="yg-open" onclick="yardOpenTile(\''+id+'\')">'+
+    '<button class="yg-open" onclick="yardOpenTile(\''+id+'\',\''+(from||'yardIndex')+'\')">'+
       pic+
       '<div class="yg-txt"><b>'+yardShortName(p)+'</b><small>'+yardShortSci(p)+'</small></div>'+
     '</button>'+
@@ -21952,14 +22059,20 @@ function yardTileHTML(id){
    thirty tiles above it, "scroll to the bottom" is a long way to send somebody
    and a longer way back. Back returns to the exact spot they left. */
 var _yardScroll = 0;
+var _yardReturn = 'yardIndex';   /* the screen the plant was opened from */
 
 function yardIndexScroller(){
   var sc=document.getElementById('yardIndex');
   return sc ? sc.querySelector('.scroll') : null;
 }
 
-function yardOpenTile(id){
-  try{ var sc=yardIndexScroller(); if(sc) _yardScroll=sc.scrollTop; }catch(e){}
+function yardOpenTile(id, from){
+  _yardReturn = from || 'yardIndex';
+  try{
+    var sc=document.getElementById(_yardReturn);
+    sc = sc ? sc.querySelector('.scroll') : null;
+    if(sc) _yardScroll=sc.scrollTop;
+  }catch(e){}
   yardShow(id);
   go('yardPlant');
   try{
@@ -21969,9 +22082,14 @@ function yardOpenTile(id){
 }
 
 function yardBackToIndex(){
-  go('yardIndex');
-  try{ var sc=yardIndexScroller(); if(sc) sc.scrollTop=_yardScroll; }catch(e){}
-  try{ openYardIndexRefresh(); }catch(e){}
+  var back=_yardReturn||'yardIndex';
+  go(back);
+  try{
+    var sc=document.getElementById(back);
+    sc = sc ? sc.querySelector('.scroll') : null;
+    if(sc) sc.scrollTop=_yardScroll;
+  }catch(e){}
+  try{ if(back==='yardIndex') openYardIndexRefresh(); else inSeasonRefresh(); }catch(e){}
 }
 
 function yardTileToggle(id){
@@ -21986,6 +22104,14 @@ function yardTileToggle(id){
     if(btn){ btn.classList.toggle('on', on); btn.textContent = on?'\u2713 In my yard':'+ My yard'; }
   }
   renderYardCount();
+  /* it just changed shelf - redraw, holding the scroll so nothing jumps */
+  try{
+    if(document.getElementById('yardIndex').classList.contains('on')){
+      var sc=yardIndexScroller(), y=sc?sc.scrollTop:0;
+      openYardIndex();
+      if(sc) sc.scrollTop=y;
+    }
+  }catch(e){}
 }
 
 function openYardIndex(){
@@ -21996,23 +22122,39 @@ function openYardIndex(){
   var keys=Object.keys(BOOK).sort(function(a,b){
     return BOOK[a].name.localeCompare(BOOK[b].name);
   });
+
+  /* Yours first. Anything ticked lifts out of the alphabet and pins to the top,
+     so a person who's marked six plants sees their six without scrolling - and
+     can fold the letters away entirely without losing access to them. */
+  var mine=[], rest=[];
+  keys.forEach(function(id){ (yardHas(id)?mine:rest).push(id); });
+
   var buckets={};
   YARD_SHELVES.forEach(function(r){ buckets[r.join('')]=[]; });
-  keys.forEach(function(id){ buckets[yardShelfOf(BOOK[id].name)].push(id); });
+  rest.forEach(function(id){ buckets[yardShelfOf(BOOK[id].name)].push(id); });
 
-  box.innerHTML=YARD_SHELVES.map(function(r){
-    var k=r.join(''), list=buckets[k], shut=yardShelfShut(k);
+  function shelf(key, title, list, emptyMsg){
+    var shut=yardShelfShut(key);
     var count=list.length ? (list.length+(list.length===1?' plant':' plants')) : '';
-    return '<div class="yg-shelf'+(shut?' shut':'')+'" id="ygShelf_'+k+'">'+
-      '<div class="yg-head" onclick="yardShelfToggle(\''+k+'\')">'+
-        '<span><b>'+r[0]+' \u2013 '+r[1]+'</b><span class="yg-n">'+count+'</span></span>'+
+    return '<div class="yg-shelf'+(shut?' shut':'')+'" id="ygShelf_'+key+'">'+
+      '<div class="yg-head" onclick="yardShelfToggle(\''+key+'\')">'+
+        '<span><b>'+title+'</b><span class="yg-n">'+count+'</span></span>'+
         '<span class="yg-tri">\u25be</span>'+
       '</div>'+
       (list.length
-        ? '<div class="yg-grid">'+list.map(yardTileHTML).join('')+'</div>'
-        : '<div class="yg-empty">Nothing on this shelf yet.</div>')+
+        ? '<div class="yg-grid">'+list.map(function(id){ return yardTileHTML(id,'yardIndex'); }).join('')+'</div>'
+        : '<div class="yg-empty">'+emptyMsg+'</div>')+
     '</div>';
+  }
+
+  var html = mine.length
+    ? shelf('MINE', '\ud83c\udf3f Growing at your place', mine, '')
+    : '';
+  html += YARD_SHELVES.map(function(r){
+    return shelf(r.join(''), r[0]+' \u2013 '+r[1], buckets[r.join('')], 'Nothing on this shelf yet.');
   }).join('');
+
+  box.innerHTML=html;
   renderYardCount();
 }
 
