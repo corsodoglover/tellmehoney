@@ -2418,7 +2418,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v148 · Look it up by name</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v149 · Right list, right box</div>
   </div>
 </section>
 
@@ -7612,7 +7612,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v148";
+window.HONEY_BUILD = "v149";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -8581,6 +8581,8 @@ function jokesIn(collId){
   return (S.myJokes||[]).filter(function(j){ return (j.coll||'mine')===collId; });
 }
 /* "Tell me one of Granddad's jokes" */
+/* Only match a box when the whole word is there. "cat" was matching "Kathy",
+   so asking for a cat joke fetched Aunt Kathy's. */
 function findJokeCollByWords(l){
   var words=jokeTopicWords(l);
   if(!words.length) return null;
@@ -8588,7 +8590,14 @@ function findJokeCollByWords(l){
   jokeColls().forEach(function(c){
     var nm=(c.name||'').toLowerCase().replace(/['\u2018\u2019]/g,'');
     var score=0;
-    words.forEach(function(w){ if(nm.indexOf(w.replace(/['\u2018\u2019]/g,''))>=0) score+=3; });
+    words.forEach(function(w){
+      var ww=w.replace(/['\u2018\u2019]/g,'');
+      if(ww.length<3) return;
+      /* Whole words only. "cat" sits inside "Cathy", so a substring match sent
+         every cat joke request to Aunt Cathy's box. */
+      var re=new RegExp('(^|[^a-z])'+ww.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'([^a-z]|$)','i');
+      if(re.test(nm)) score+=3;
+    });
     if(score>bestScore){ bestScore=score; best=c; }
   });
   return bestScore>=3 ? best : null;
@@ -9540,7 +9549,17 @@ function doShopping(t){
 function showShopping(){
   /* Same idea as the calendar — a count and a button, not the whole list read
      out loud. Forty items recited into a chat is nobody's idea of help. */
-  var list=getList(SETTINGS.lastList||"shopping")||getList("shopping");
+  /* This used to read whichever list they last had open, so asking about the
+     shopping list got the Christmas one. If they name a list, use that one;
+     otherwise shopping is what "my list" means. */
+  var list=null;
+  try{
+    var said=(S.lastUserLine||'').toLowerCase();
+    (SETTINGS.lists||[]).forEach(function(L){
+      if(!list && L.name && said.indexOf(L.name.toLowerCase())>=0) list=L;
+    });
+  }catch(e){}
+  if(!list) list=getList("shopping")||getList(SETTINGS.lastList||"shopping");
   var items=(list.items||[]).filter(function(x){ return !x.done; });
   themTyping(function(){
     if(!items.length){
