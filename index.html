@@ -5271,6 +5271,20 @@ function useVoiceClone(){
    shows it from then on, for everybody using this phone. The library fills
    itself from real use. Our drawing and our words stay on top; PlantNet only
    supplies the "what does it look like" half. */
+/* The store filled up before there was a confidence gate, so some plants are
+   carrying pictures of other plants. A bad one can't be told from a good one
+   after the fact, so clear it once and let it refill from confident matches. */
+var REFPHOTO_GEN = 2;
+(function refPhotoCleanOnce(){
+  try{
+    if(SETTINGS.refPhotoGen !== REFPHOTO_GEN){
+      SETTINGS.refPhotos = {};
+      SETTINGS.refPhotoGen = REFPHOTO_GEN;
+      saveSettings();
+    }
+  }catch(e){}
+})();
+
 function refPhotoStore(){
   if(!SETTINGS.refPhotos || typeof SETTINGS.refPhotos!=='object') SETTINGS.refPhotos={};
   return SETTINGS.refPhotos;
@@ -19913,8 +19927,12 @@ function stageIdentify(){
     if(!top){ rangerUnknownPlant(); return; }
     var hit=rangerFindPlant(top);
     if(!hit){ rangerUnknownPlant(top); return; }
-    // keep PlantNet's photo of this species so the card has one from now on
-    if(_lastRefImg) refPhotoRemember(hit.id, _lastRefImg, _lastRefCredit);
+    /* Keep PlantNet's photo of this species - but only on a confident match.
+       A weak guess used to be written into the plant's permanent record, which
+       is how Pink Sorrel ended up wearing another plant's photographs: one
+       thirty-odd percent shrug and the wrong picture was filed under it for good. */
+    var _sc = (top && typeof top.score==='number') ? top.score : 0;
+    if(_lastRefImg && _sc >= 55) refPhotoRemember(hit.id, _lastRefImg, _lastRefCredit);
     if(hit.shelf==='book') rangerShowResult(hit.id);
     else rangerShowShelfPlant(hit.id, hit.shelf, top);
   }).catch(function(err){
@@ -20172,7 +20190,7 @@ function plantNameButtons(typed, sci){
   var ssci=String(sci||'').replace(/'/g,'');
   return '<div style="display:flex;gap:6px;margin-top:9px">'+
     '<button class="pl-mini" onclick="openPlantCamera()">\ud83d\udcf7<span>Take a picture</span></button>'+
-    '<button class="pl-mini" onclick="rangerAddToMyYard(\''+esc(safe)+'\',\''+esc(ssci)+'\')">'+
+    '<button class="pl-mini" onclick="rangerAddToMyYard(\''+esc(safe)+'\',\'\',\''+esc(ssci)+'\')">'+
     '\ud83c\udf31<span>Add to my yard</span></button>'+
   '</div>';
 }
@@ -20611,9 +20629,16 @@ function bookYardToggle(id){
    pasted into an onclick. Names with apostrophes (Cat's Ear) and huge photo data
    URLs both broke the inline version — the button just silently did nothing. */
 var _yardPendName="", _yardPendPhoto="";
-function rangerAddToMyYard(name,photo){
+var _yardPendSci='';
+function rangerAddToMyYard(name,photo,sci){
   _yardPendName = name||"";
-  _yardPendPhoto = photo||"";
+  /* A data URL is a photo. Anything else arriving here is a name - and a name in
+     the photo slot is what broke the typed-name route: "Add to my yard" after a
+     name lookup handed the binomial in as the picture. */
+  var p = photo||"";
+  if(p && p.indexOf('data:')!==0 && p.indexOf('http')!==0){ sci = sci || p; p=''; }
+  _yardPendPhoto = p;
+  _yardPendSci = sci||"";
   if(!SETTINGS.rangerYardNoteSeen){
     var box=document.getElementById('plantHubResult');
     box.innerHTML='<div style="background:rgba(143,227,192,.08);border:1px solid rgba(143,227,192,.3);border-radius:16px;padding:18px">'+
@@ -20675,11 +20700,15 @@ function rangerYardSave(){
   /* Carry across everything we already know — the picture they took, the
      Latin name, and PlantNet's own photographs. Before this the entry arrived
      bare and they had to type it all again. */
-  var sci='', pics=[];
+  var sci='', fam='', gen='', pics=[];
   try{
     var t=_lastResults && _lastResults[0];
     if(t){
       sci=t.scientificName||'';
+      /* The proxy already sends family and genus back. Keeping only the species
+         threw away two thirds of what we were told. */
+      fam=t.family||'';
+      gen=t.genus||'';
       var refs=Array.isArray(t.refImages)?t.refImages:[];
       pics=refs.filter(function(x){ return x&&x.url; }).slice(0,3).map(function(x){
         return { url:x.url, credit:x.credit||'', organ:x.organ||'', ts:Date.now() };
@@ -20687,17 +20716,23 @@ function rangerYardSave(){
       if(!pics.length && t.refImage) pics=[{url:t.refImage, credit:t.refCredit||'', ts:Date.now()}];
     }
   }catch(e){}
+  if(!sci) sci = _yardPendSci || '';    /* typed-name route has no _lastResults */
   var photo=_yardPendPhoto||'';
   if(!photo){
     try{ if(typeof _stage!=='undefined' && _stage.length && _stage[0].data) photo=_stage[0].data; }catch(e){}
   }
 
   var entry={id:'y'+Date.now(),name:name.trim(),note:note.trim(),season:season.trim(),
-    photo:photo, sci:sci, pics:pics,
+    photo:photo, sci:sci, family:fam, genus:gen, pics:pics,
     added:Date.now(),mine:true,nutrients:{},recipes:[]};
   rangerMyYardArr().push(entry);
   if(share){ rangerDraftsArr().push({name:entry.name,sci:'(shared by a user)',status:'user-shared',source:'My Yard share',savedAt:Date.now(),edible:null,verified:false,fromUser:true,nutrients:{},note:entry.note}); }
   saveSettings();
+  /* The plant is saved and its picture came with it - and the shot is in the
+     phone's own photo library too. Leaving the staging tray full meant the next
+     identification silently inherited the last one's pictures. */
+  try{ _stage=[]; _yardPendPhoto=''; _yardPendName=''; _yardPendSci='';
+       if(typeof stageRender==='function') stageRender(); }catch(e){}
   _yardPendName=""; _yardPendPhoto="";
   // make sure it actually landed before saying so
   var landed=false;
@@ -20707,6 +20742,39 @@ function rangerYardSave(){
   try{ go('myYard'); openMyYardPlant(entry.id); }
   catch(e){ try{ openMyYard(); }catch(e2){} }
 }
+/* Photographs adopted from PlantNet when the plant was added, shown with the
+   names of the people who took them - the condition they are shared on, and it
+   costs one line. */
+/* Species in italics, then family - the same shape the book cards use, so a
+   plant somebody added reads like one of ours. Genus is kept in the record and
+   only shown when there's no species name to show instead. */
+function myYardLatinHTML(e){
+  if(!e) return '';
+  var main = e.sci || e.genus || '';
+  if(!main) return '';
+  var line = '<i>'+esc(main)+'</i>';
+  if(e.family) line += ' \u00b7 '+esc(e.family);
+  return '<p style="font-size:12.5px;color:var(--muted);margin:2px 0 0">'+line+'</p>';
+}
+
+function myYardPicsHTML(e){
+  var pics=(e && Array.isArray(e.pics)) ? e.pics.filter(function(p){ return p&&p.url; }) : [];
+  if(!pics.length) return '';
+  return '<div style="margin:11px 0 0">'+
+    '<div style="font-size:9.5px;color:var(--muted);font-weight:600;letter-spacing:.4px;'+
+    'text-transform:uppercase;margin-bottom:5px">What this species looks like</div>'+
+    '<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:3px">'+
+    pics.map(function(p){
+      return '<div style="flex:0 0 auto;width:104px">'+
+        '<img src="'+p.url+'" loading="lazy" alt="" '+
+        'style="width:104px;height:78px;object-fit:cover;border-radius:9px;display:block">'+
+        (p.credit?'<div style="font-size:8.5px;color:var(--muted);line-height:1.3;margin-top:3px">'+
+          esc(p.credit)+'</div>':'')+
+      '</div>';
+    }).join('')+
+    '</div></div>';
+}
+
 function openMyYardPlant(id){
   var e=rangerYardFind(id); if(!e){ openMyYard(); return; }
   if(!e.nutrients) e.nutrients={}; if(!e.recipes) e.recipes=[];
@@ -20743,6 +20811,8 @@ function openMyYardPlant(id){
       '<div style="padding:15px">'+
         toggle+
         '<p style="font-size:18px;font-weight:600;margin:0">'+esc(e.name)+'</p>'+
+        myYardLatinHTML(e)+
+        myYardPicsHTML(e)+
         (e.season?'<p style="font-size:11px;color:#8fe3c0;margin:3px 0 0">🗓️ '+esc(e.season)+'</p>':'')+
         foodBits+
         (e.note?'<p style="font-size:12.5px;color:var(--muted);line-height:1.5;margin:13px 0 0">'+esc(e.note)+'</p>':'')+
@@ -20901,34 +20971,61 @@ function rangerMyYardCard(e){
       '<p style="font-size:10px;color:var(--muted);font-style:italic;margin:10px 0 0">Added by you — tap to open</p>'+
     '</div></div>';
 }
+/* A plant somebody added themselves. Same frame as the book tiles - the photo
+   fills a 3:2 crop instead of floating in a wide beige box with dead space
+   either side, which is what portrait phone photos did to the old rows. */
+function myYardTileHTML(e){
+  var nm=esc(e.name||'My plant');
+  /* Tile shows the one name, same as the book tiles. Everything else waits
+     until they tap it. */
+  var sub=e.sci ? esc(e.sci) : (e.season ? esc(e.season) : 'Added by you');
+  var pic = e.photo
+    ? '<img class="yg-pic" src="'+e.photo+'" alt="" loading="lazy" data-leaf="\ud83c\udf31" onerror="yardImgFail(this)">'
+    : '<div class="yg-emoji">\ud83c\udf31</div>';
+  return '<div class="yg-tile">'+
+    '<button class="yg-open" onclick="openMyYardPlant(\''+e.id+'\')">'+
+      pic+
+      '<div class="yg-txt"><b>'+nm+'</b><small>'+sub+'</small></div>'+
+    '</button>'+
+  '</div>';
+}
+
 function openMyYard(){
-  var b=document.getElementById('myYardList'); var arr=rangerMyYardArr();
+  var b=document.getElementById('myYardList'); if(!b) return;
+  var arr=rangerMyYardArr();
+  var BOOK=yardBook();
   var html='';
-  // book plants the person marked as growing at their place
-  var bk=yardHave().filter(function(k){ return k.indexOf('bk:')===0; })
-                   .map(function(k){ return k.slice(3); })
-                   .filter(function(id){ return !!RANGER_PLANTS[id]; });
-  if(bk.length){
-    html+='<div style="font-size:11px;color:#8fe3c0;font-weight:700;letter-spacing:.4px;margin:2px 2px 8px;text-transform:uppercase">🌿 From the book, growing at your place</div>';
-    html+=bk.map(function(id){
-      var p=RANGER_PLANTS[id];
-      return '<button class="home-big" style="display:flex;width:100%;text-align:left;margin-bottom:9px" onclick="openPlantHub();setTimeout(function(){rangerShowResult(\''+id+'\')},50)">'+
-        '<span class="hb-ic">'+p.leaf+'</span><span class="hb-tx"><b>'+p.name+'</b><small>'+p.season+'</small></span></button>';
-    }).join('');
+
+  function head(txt, colour){
+    return '<div style="font-size:11px;color:'+colour+';font-weight:700;'+
+      'letter-spacing:.4px;margin:16px 2px 9px;text-transform:uppercase">'+txt+'</div>';
   }
-  // their own finds, split into edible and not — two shelves in one yard
+
+  /* book plants they've said grow at their place - either spelling */
+  var bk=Object.keys(BOOK).filter(function(id){ return yardHas(id); });
+  bk.sort(function(x,y){ return BOOK[x].name.localeCompare(BOOK[y].name); });
+  if(bk.length){
+    html+=head('\ud83c\udf3f From the book, growing at your place','#8fe3c0');
+    html+='<div class="yg-grid">'+
+      bk.map(function(id){ return yardTileHTML(id,'myYard'); }).join('')+'</div>';
+  }
+
+  /* their own finds, split into edible and not - two shelves in one yard */
   var mine=arr.slice().reverse();
   var food=mine.filter(function(e){ return e.edible!==false; });
   var notFood=mine.filter(function(e){ return e.edible===false; });
   if(food.length){
-    if(bk.length) html+='<div style="font-size:11px;color:#8fe3c0;font-weight:700;letter-spacing:.4px;margin:16px 2px 8px;text-transform:uppercase">🌱 Your own finds</div>';
-    html+=food.map(rangerMyYardCard).join('');
+    html+=head('\ud83c\udf31 Your own finds','#8fe3c0');
+    html+='<div class="yg-grid">'+food.map(myYardTileHTML).join('')+'</div>';
   }
   if(notFood.length){
-    html+='<div style="font-size:11px;color:#ffcf6b;font-weight:700;letter-spacing:.4px;margin:18px 2px 8px;text-transform:uppercase">🚫 Not edible — good to know anyway</div>';
-    html+=notFood.map(rangerMyYardCard).join('');
+    html+=head('\ud83d\udeab Not for eating \u2014 good to know anyway','#ffcf6b');
+    html+='<div class="yg-grid">'+notFood.map(myYardTileHTML).join('')+'</div>';
   }
-  b.innerHTML = html || '<div style="text-align:center;color:var(--muted);padding:34px">🌱 Your yard is empty so far. Identify a plant and tap "This grows in my yard" — or add one of your own.</div>';
+
+  b.innerHTML = html || '<div style="text-align:center;color:var(--muted);padding:34px">'+
+    '\ud83c\udf31 Your yard is empty so far. Identify a plant and tap "This grows in my yard" '+
+    '\u2014 or add one of your own.</div>';
   go('myYard');
 }
 function openInSeason(){
@@ -22099,7 +22196,15 @@ function yardSourceHTML(p){
 }
 
 function yardHave(){ if(!Array.isArray(SETTINGS.rangerHave)) SETTINGS.rangerHave=[]; return SETTINGS.rangerHave; }
-function yardHas(id){ return yardHave().indexOf(id)>=0; }
+/* Two controls used to write this fact two different ways: the grid tile wrote
+   "e19" while the button on the plant card wrote "bk:e19", and My Yard only
+   read the prefixed sort. So ticking a plant on the grid put it in your yard
+   everywhere except the screen called My Yard, and the two buttons disagreed
+   with each other about whether you'd added it. Accept both spellings. */
+function yardHas(id){
+  var a=yardHave();
+  return a.indexOf(id)>=0 || a.indexOf('bk:'+id)>=0;
+}
 function yardToggle(id, el){
   var a=yardHave(), i=a.indexOf(id);
   if(i>=0) a.splice(i,1); else a.push(id);
@@ -22287,12 +22392,20 @@ function yardBackToIndex(){
     sc = sc ? sc.querySelector('.scroll') : null;
     if(sc) sc.scrollTop=_yardScroll;
   }catch(e){}
-  try{ if(back==='yardIndex') openYardIndexRefresh(); else inSeasonRefresh(); }catch(e){}
+  try{
+    if(back==='yardIndex') openYardIndexRefresh();
+    else if(back==='myYard') openMyYard();
+    else if(back==='inSeason') inSeasonRefresh();
+  }catch(e){}
 }
 
 function yardTileToggle(id){
-  var a=yardHave(), i=a.indexOf(id);
-  if(i>=0) a.splice(i,1); else a.push(id);
+  var a=yardHave();
+  var on=yardHas(id);
+  /* write the prefixed form the rest of the app reads, and when taking it off,
+     clear both spellings so an old bare entry can't leave it half-ticked */
+  a=a.filter(function(k){ return k!==id && k!=='bk:'+id; });
+  if(!on) a.push('bk:'+id);
   SETTINGS.rangerHave=a; saveSettings();
   var on=a.indexOf(id)>=0;
   var t=document.getElementById('ygTile_'+id);
@@ -22302,14 +22415,13 @@ function yardTileToggle(id){
     if(btn){ btn.classList.toggle('on', on); btn.textContent = on?'\u2713 In my yard':'+ My yard'; }
   }
   renderYardCount();
-  /* it just changed shelf - redraw, holding the scroll so nothing jumps */
-  try{
-    if(document.getElementById('yardIndex').classList.contains('on')){
-      var sc=yardIndexScroller(), y=sc?sc.scrollTop:0;
-      openYardIndex();
-      if(sc) sc.scrollTop=y;
-    }
-  }catch(e){}
+  /* DON'T redraw here. Ticking a plant lifts it into the "Growing at your
+     place" shelf at the top, which reflowed the whole grid under the person's
+     finger: every tile after it shifted along by one, so the square they had
+     just tapped now held a different plant, un-ticked, and it looked as though
+     the tap had failed. Tapping again made it worse.
+     A checklist should let you tick several things and then look up. The
+     shelves reorganise next time the screen opens. */
 }
 
 function openYardIndex(){
