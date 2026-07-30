@@ -1990,7 +1990,8 @@ textarea{resize:none;line-height:1.4;}
   <div class="bar"><button class="back" onclick="openPlantHub()">‹</button>
     <h2>📅 In season now</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll" style="padding:16px">
-    <p style="font-size:13px;color:var(--muted);margin:0 0 14px">Ready to forage around <b id="seasonMonth" style="color:var(--gold)"></b>, based on the Carolina Lowcountry.</p>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 4px">Ready to forage around <b id="seasonMonth" style="color:var(--gold)"></b><span id="seasonWhere"></span>.</p>
+    <p id="seasonNote" style="font-size:11.5px;color:var(--muted);margin:0 0 14px;line-height:1.5"></p>
     <div id="seasonList"></div>
   </div>
 </section>
@@ -9332,7 +9333,9 @@ function doWeather(orig){
   themTyping(()=>pushThem(vibeColor("Let me peek outside for you…")));
   if(!('geolocation'in navigator)){ weatherFallback("your browser won't share location"); return; }
   navigator.geolocation.getCurrentPosition(
-    pos=>fetchWeather(pos.coords.latitude,pos.coords.longitude),
+    pos=>{ /* keep it, don't throw it away - the season list wants it too */
+           try{ honeyGeoSave(pos.coords.latitude,pos.coords.longitude); }catch(e){}
+           fetchWeather(pos.coords.latitude,pos.coords.longitude); },
     ()=>weatherFallback("you didn't allow location"),
     {timeout:9000,maximumAge:600000}
   );
@@ -19394,7 +19397,8 @@ function bootFallback(){
 
 <!--RANGER-->
 /* ═══ RANGER_PLANTS — built from Sally's "Deep South & Divine" backyard field guide ═══
-   months: 1–12 the plant is at its foraging best in the Carolina Lowcountry.
+   months: 1–12 the plant is at its foraging best at the base latitude below
+     (seasonShift() moves this to wherever the person actually is).
    edible:true shows the green "✓ edible" flow. edible:false routes to a "known, not eaten" card.
    Every safety line is quoted/condensed from the book's own NOTE for that plant. */
 var RANGER_ALL_NUTRIENTS=["Vit A","Vit C","B Vits","Vit E","Vit K","Fiber","Calcium","Iron","Omega-3","Antioxidants"];
@@ -19615,7 +19619,58 @@ function rangerCookArr(){ if(!Array.isArray(SETTINGS.rangerCook))SETTINGS.ranger
 function rangerDinnerArr(){ if(!Array.isArray(SETTINGS.rangerDinner))SETTINGS.rangerDinner=[]; return SETTINGS.rangerDinner; }
 function rangerDraftsArr(){ if(!Array.isArray(SETTINGS.rangerDrafts))SETTINGS.rangerDrafts=[]; return SETTINGS.rangerDrafts; }
 function rangerMyYardArr(){ if(!Array.isArray(SETTINGS.rangerMyYard))SETTINGS.rangerMyYard=[]; return SETTINGS.rangerMyYard; }
-function rangerInSeasonNow(p){var m=(new Date()).getMonth()+1;return p.months&&p.months.indexOf(m)>=0;}
+/* ══════════ WHERE YOU ARE ══════════════════════════════════════════════
+   Stored once and used for two things: shifting the in-season list to your own
+   latitude, and telling PlantNet which regional flora to identify against.
+   Asked for quietly. If it's refused, everything still works - the timings are
+   just a general average rather than your own garden. */
+function honeyGeo(){
+  var la=Number(SETTINGS.geoLat), lo=Number(SETTINGS.geoLon);
+  if(isFinite(la) && isFinite(lo) && (la!==0 || lo!==0)) return { lat:la, lon:lo };
+  return null;
+}
+function honeyGeoSave(lat, lon){
+  lat=Number(lat); lon=Number(lon);
+  if(!isFinite(lat) || !isFinite(lon)) return;
+  SETTINGS.geoLat=lat; SETTINGS.geoLon=lon; SETTINGS.geoAt=Date.now();
+  saveSettings();
+}
+function honeyGeoAsk(then){
+  var have=honeyGeo();
+  if(have){ if(then) then(have); return; }
+  if(!('geolocation' in navigator)){ if(then) then(null); return; }
+  try{
+    navigator.geolocation.getCurrentPosition(
+      function(pos){
+        honeyGeoSave(pos.coords.latitude, pos.coords.longitude);
+        if(then) then(honeyGeo());
+      },
+      function(){ if(then) then(null); },
+      { timeout:8000, maximumAge:3600000 }
+    );
+  }catch(e){ if(then) then(null); }
+}
+
+/* ══════════ SEASON, WHERE YOU LIVE ═════════════════════════════════════
+   The months in the book were written down in one place. Hopkins' bioclimatic
+   law is the old rule for moving them: spring runs roughly four days later for
+   every degree of latitude you travel north, and autumn arrives earlier the
+   same way. Rough - but a great deal closer than pretending a Vermont July and
+   a Florida July are the same month. Capped at two months, because past that
+   the rule stops being useful and starts being fiction. */
+var SEASON_BASE_LAT = 33.8;
+
+function seasonShift(){
+  var g=honeyGeo(); if(!g) return 0;
+  var days=(g.lat - SEASON_BASE_LAT) * 4;
+  return Math.max(-2, Math.min(2, Math.round(days/30)));
+}
+function seasonMonthNow(){
+  var m=(new Date()).getMonth()+1 - seasonShift();
+  return ((m - 1 + 24) % 12) + 1;
+}
+
+function rangerInSeasonNow(p){var m=seasonMonthNow();return p.months&&p.months.indexOf(m)>=0;}
 function rangerAddDinner(id,btn){var a=rangerDinnerArr();if(a.indexOf(id)<0){a.push(id);saveSettings();}if(btn){btn.innerHTML='✓ On tonight\u2019s menu';btn.disabled=true;btn.style.opacity=.85;}}
 function rangerAddCook(id,btn){var a=rangerCookArr();if(a.indexOf(id)<0){a.push(id);saveSettings();}if(btn){btn.textContent='✓ On your list';btn.disabled=true;}}
 
@@ -19818,6 +19873,11 @@ function stageIdentify(){
     images:_stage.map(function(it){ return { data:it.data, organ:(it.organ&&it.organ!=='auto')?it.organ:'auto' }; }),
     image:_stage[0].data
   };
+  /* The proxy picks a regional flora from this - a much smaller haystack than
+     the whole world's 73,000 species, which is what turns a 3% guess into a
+     real answer. Left off entirely if we don't know where they are. */
+  var _g=honeyGeo();
+  if(_g){ payload.lat=_g.lat; payload.lon=_g.lon; }
   fetch(PLANT_ID_URL,{
     method:'POST',
     headers:{ 'apikey':PREMIUM_VOICE_KEY, 'Content-Type':'application/json' },
@@ -19959,17 +20019,26 @@ function plantLookUpByName(){
   var box=document.getElementById('plantHubResult'); if(!box) return;
   var low=q.toLowerCase();
 
-  // our own book first - it's instant and it's the one we can vouch for
+  /* Our own book first - instant, and the one we can vouch for.
+     This used to read RANGER_PLANTS only, which missed every BACKYARD plant -
+     so typing "Portulaca oleracea" said it wasn't in the book when Purslane
+     has been sitting there all along. yardBook() is both books. It also read
+     p.also, a field that doesn't exist; the alternates live in p.alt. */
   var hit=null;
   try{
-    Object.keys(RANGER_PLANTS).forEach(function(id){
+    var BOOK=yardBook();
+    Object.keys(BOOK).forEach(function(id){
       if(hit) return;
-      var p=RANGER_PLANTS[id];
-      var names=[p.name].concat(p.also||[]).concat([p.sci||'']);
+      var p=BOOK[id];
+      var names=[p.name].concat(p.alt||[]).concat([p.sci||'']);
       if(names.some(function(n){ return n && n.toLowerCase().indexOf(low)>=0; })) hit=id;
     });
   }catch(e){}
-  if(hit){ rangerShowResult(hit); return; }
+  if(hit){
+    /* BACKYARD plants show on the yard card, Ranger plants on the Ranger card */
+    if(typeof BACKYARD!=='undefined' && BACKYARD[hit]) { yardOpenTile(hit,'plantHub'); return; }
+    rangerShowResult(hit); return;
+  }
 
   /* Not in the book - so go and look it up properly. A typed name should never
      need a photo. GBIF is the world's plant name register: free, no key, and
@@ -20007,6 +20076,54 @@ function plantLookUpByName(){
 /* A found name tells you WHAT it is. It does not tell you it's safe to eat -
    only the book plants have been cross-checked for that, and saying so plainly
    matters more here than anywhere else in the app. */
+/* PICTURES FOR A TYPED NAME.
+   PlantNet's reference photos need the Edge Function to ask for them. GBIF
+   needs nothing - no key, no proxy - and it holds photographs for most plants
+   anybody will type. Two hops: match the name to a taxon, then pull that
+   taxon's pictures. Every one is credited, because the people who took them
+   put them there on those terms.
+   If any of it fails the card just stays as it was. Nothing breaks. */
+function plantNamePhotos(sci){
+  var row=document.getElementById('pnPhotos');
+  if(!row || !sci) return;
+  fetch('https://api.gbif.org/v1/species/match?name='+encodeURIComponent(sci))
+    .then(function(r){ return r.json(); })
+    .then(function(m){
+      var key=m && (m.usageKey||m.acceptedUsageKey);
+      if(!key) throw new Error('no taxon');
+      return fetch('https://api.gbif.org/v1/occurrence/search?taxonKey='+key+
+                   '&mediaType=StillImage&limit=20');
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      var pics=[];
+      ((j&&j.results)||[]).forEach(function(o){
+        ((o&&o.media)||[]).forEach(function(md){
+          if(md && md.identifier && pics.length<12){
+            pics.push({ url:md.identifier,
+                        who:(md.rightsHolder||md.creator||o.recordedBy||'') });
+          }
+        });
+      });
+      if(!pics.length){ row.innerHTML=''; return; }
+      row.innerHTML =
+        '<div style="font-size:9.5px;color:var(--muted);font-weight:600;letter-spacing:.4px;'+
+        'text-transform:uppercase;margin:2px 0 6px">Pictures of this plant</div>'+
+        '<div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch">'+
+        pics.map(function(p){
+          return '<img src="'+p.url+'" loading="lazy" alt="" '+
+                 'onerror="this.style.display=\'none\'" '+
+                 'title="'+esc(p.who)+'" '+
+                 'style="height:96px;width:96px;object-fit:cover;border-radius:11px;flex:0 0 auto">';
+        }).join('')+
+        '</div>'+
+        '<p style="font-size:9.5px;color:var(--muted);margin:5px 2px 0;line-height:1.4">'+
+        'Photographs from GBIF contributors. Compare carefully \u2014 a picture that '+
+        'looks close is not an identification.</p>';
+    })
+    .catch(function(){ row.innerHTML=''; });
+}
+
 function plantNameShow(typed, sci, fam, common){
   var box=document.getElementById('plantHubResult'); if(!box) return;
   var also = common.length ? '<div style="font-size:12.5px;color:var(--muted);margin-top:5px">'+
@@ -20020,12 +20137,14 @@ function plantNameShow(typed, sci, fam, common){
       '<div style="font-size:13.5px;font-style:italic;margin-top:3px">'+esc(sci)+'</div>'+
       famLine + also +
     '</div>'+
+    '<div id="pnPhotos" style="margin:10px 0 0"></div>'+
     '<div style="background:rgba(231,200,115,.10);border:1px solid rgba(231,200,115,.32);'+
     'border-radius:14px;padding:13px;margin-top:9px;font-size:12.5px;line-height:1.6">'+
       '\ud83c\udf3f That\u2019s the name. This one isn\u2019t in my book yet, so I haven\u2019t '+
       'checked it for eating \u2014 snap a picture and I\u2019ll have a proper look.'+
     '</div>'+
     plantNameButtons(typed, sci);
+  plantNamePhotos(sci);
 }
 
 function plantNameNoMatch(typed){
@@ -20278,8 +20397,20 @@ function rangerImageStrip(p, badges, plantId){
   var pid = plantId || p.__id || '';
   var refImg='', credit='';
   try{
-    refImg = refPhotoFor(pid) || (typeof _lastRefImg!=='undefined' ? _lastRefImg : '') || '';
-    credit = refPhotoCredit(pid) || (typeof _lastRefCredit!=='undefined' ? _lastRefCredit : '') || '';
+    /* A reference photo belongs to ONE plant. This used to fall back to
+       _lastRefImg - the photo from whatever was identified last - so after
+       looking up purslane, every card without its own stored photo showed
+       purslane's picture, credited to PlantNet and looking authoritative.
+       In a book about eating things, a confident wrong photograph is the worst
+       thing on the page. So: only this plant's photo, or none.
+       The bare identification result has no book id yet, and there the last
+       photo IS the right one, so that single case still uses it. */
+    refImg = refPhotoFor(pid);
+    credit = refPhotoCredit(pid);
+    if(!refImg && !pid){
+      refImg = (typeof _lastRefImg!=='undefined' ? _lastRefImg : '') || '';
+      credit = (typeof _lastRefCredit!=='undefined' ? _lastRefCredit : '') || '';
+    }
   }catch(e){}
   // a photo of our own is only a fallback now
   var ourPhoto = rangerPhotoPath(draw);
@@ -20801,16 +20932,62 @@ function openMyYard(){
   go('myYard');
 }
 function openInSeason(){
-  var now=new Date().getMonth()+1;
-  var MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
-  var el=document.getElementById('seasonMonth'); if(el) el.textContent=MN[now-1];
-  inSeasonRefresh();
   go('inSeason');
+  seasonPaint();
+  /* No prompt on arrival. On iOS the system asks once and once only - if it's
+     refused there is no second chance from inside the app, ever. So the person
+     taps a button that says what it's for, and the system prompt lands when
+     they're already expecting it. */
+}
+
+function seasonUseLocation(){
+  var note=document.getElementById('seasonNote');
+  if(note) note.textContent='Just a moment\u2026';
+  honeyGeoAsk(function(g){
+    seasonPaint();
+    if(!g){
+      var n=document.getElementById('seasonNote');
+      if(n) n.textContent='No location \u2014 that\u2019s fine. These stay a general '+
+        'average. You can turn it on later in your phone\u2019s Settings.';
+    }
+  });
+}
+
+function seasonPaint(){
+  var MN=["January","February","March","April","May","June","July","August",
+          "September","October","November","December"];
+  var cal=(new Date()).getMonth()+1;
+  var el=document.getElementById('seasonMonth');
+  if(el) el.textContent=MN[cal-1];
+
+  var sh=seasonShift(), g=honeyGeo();
+  var where=document.getElementById('seasonWhere');
+  if(where) where.textContent = g ? ', where you are' : '';
+
+  var note=document.getElementById('seasonNote');
+  if(note){
+    if(!g){
+      note.innerHTML='These are a general average. Tell me roughly where you are '+
+        'and I\u2019ll move them to your own latitude \u2014 things ripen weeks apart '+
+        'north to south.'+
+        '<button onclick="seasonUseLocation()" style="display:block;width:100%;'+
+        'margin:9px 0 0;background:rgba(140,170,120,.14);border:1px solid rgba(140,170,120,.34);'+
+        'border-radius:12px;padding:12px;color:var(--ink);font-size:13px;'+
+        'font-weight:600;cursor:pointer">\ud83d\udccd Use my location</button>';
+    } else if(sh===0){
+      note.textContent='Timed for your latitude.';
+    } else {
+      var n=Math.abs(sh);
+      note.textContent='Running about '+n+(n===1?' month ':' months ')+
+        (sh>0?'behind':'ahead of')+' the average, for your latitude.';
+    }
+  }
+  inSeasonRefresh();
 }
 
 /* Same tiles as the yard, so a plant looks like itself wherever you meet it. */
 function inSeasonRefresh(){
-  var now=new Date().getMonth()+1;
+  var now=seasonMonthNow();
   var b=document.getElementById('seasonList'); if(!b) return;
   var BOOK=yardBook();
   var ready=Object.keys(BOOK).filter(function(id){
@@ -22039,11 +22216,32 @@ function yardShortSci(p){
   return String(p.sci||'').split(' · ')[0].split(' & ')[0].trim();
 }
 
+/* A tile is a recognition job, so it wants the colour photograph first. The
+   drawing is the better teacher on the full card, where there's room for its
+   detail inset - but at 113 by 75 pixels, fine monochrome line-work turns to
+   grey fuzz and throws away colour, which is one of the first things anybody
+   uses to know a plant. So: photo, then drawing, then the emoji. */
+function yardTileImgFail(img){
+  try{
+    if((img.getAttribute('data-stage')||'')==='photo'){
+      var d=img.getAttribute('data-draw')||'';
+      if(d){ img.setAttribute('data-stage','draw'); img.src=d; return; }
+    }
+  }catch(e){}
+  yardImgFail(img);
+}
+
 function yardTileHTML(id, from){
   var p=yardPlant(id), on=yardHas(id);
   var leaf=(p.leaf||'\ud83c\udf3f');
-  var pic = p.img
-    ? '<img class="yg-pic" src="'+p.img+'" alt="" loading="lazy" data-leaf="'+leaf+'" onerror="yardImgFail(this)">'
+  var draw=p.img||'';
+  var shot='';
+  try{ shot = draw ? rangerPhotoPath(draw) : ''; }catch(e){}
+  var first = shot || draw;
+  var pic = first
+    ? '<img class="yg-pic" src="'+first+'" alt="" loading="lazy" '+
+      'data-stage="'+(shot?'photo':'draw')+'" data-draw="'+draw+'" data-leaf="'+leaf+'" '+
+      'onerror="yardTileImgFail(this)">'
     : '<div class="yg-emoji">'+leaf+'</div>';
   return '<div class="yg-tile'+(on?' on':'')+'" id="ygTile_'+id+'">'+
     '<button class="yg-open" onclick="yardOpenTile(\''+id+'\',\''+(from||'yardIndex')+'\')">'+
