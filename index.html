@@ -706,9 +706,13 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   color:var(--muted);padding:6px 4px;cursor:pointer;opacity:.7;}
 .loved-row .lj-trash:active{opacity:1;color:#c0392b;}
 /* leave room for the tab bar on dashboard screens */
-.phone.tabs-on #insights .insights-body,
-.phone.tabs-on #prompts .insights-body,
-.phone.tabs-on #profile .insights-body{padding-bottom:calc(86px + var(--safe-b));}
+.phone/* The tab bar is about 86px tall and floats over the content. This clearance
+   was only being given to three screens by name - insights, prompts, profile -
+   so on every other screen the last 56px of the page sat underneath it: the
+   "+ My yard" bar on the bottom row of tiles was there, but under the tabs,
+   which is why it took a hard scroll and a lucky finger to hit. Give the
+   clearance to every screen, so a screen added later can't inherit the bug. */
+.phone.tabs-on .insights-body{padding-bottom:calc(86px + var(--safe-b));}
 .roster-empty{color:var(--muted);font-size:14.5px;text-align:center;margin-top:40px;line-height:1.6;}
 .roster-empty b{color:var(--gold);}
 .agent-card{display:flex;align-items:center;gap:13px;background:var(--panel);
@@ -20614,10 +20618,12 @@ function yardStartFromResult(){
 /* ── Book plants the person says grow at their place ──
    Stored in the same rangerHave list with a "bk:" prefix, so Backyard-50 checks
    and book plants coexist without either pretending to be the other. */
-function bookInYard(id){ return yardHave().indexOf('bk:'+id)>=0; }
+function bookInYard(id){ return yardHas(id); }   /* either spelling, same as the tile */
 function bookYardToggle(id){
-  var a=yardHave(), k='bk:'+id, i=a.indexOf(k);
-  if(i>=0){ a.splice(i,1); } else { a.push(k); }
+  /* Same write the grid tile makes, so the two controls can never disagree. */
+  var on=yardHas(id);
+  var a=yardHave().filter(function(k){ return k!==id && k!=='bk:'+id; });
+  if(!on) a.push('bk:'+id);
   SETTINGS.rangerHave=a; saveSettings();
   var btn=document.getElementById('bkYard_'+id);
   if(btn) btn.textContent = bookInYard(id) ? '✓ Growing at my place' : '🌱 This grows in my yard';
