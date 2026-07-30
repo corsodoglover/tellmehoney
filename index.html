@@ -2013,7 +2013,7 @@ textarea{resize:none;line-height:1.4;}
   <div class="bar"><button class="back" onclick="openPlantHub()">‹</button>
     <h2>🌱 Plants From My Yard</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll" style="padding:16px">
-    <p style="font-size:12px;color:var(--muted);margin:0 0 14px;line-height:1.5">Your own finds — your knowledge, your kitchen. These are yours alone, kept separate from my vetted book.</p>
+    <p style="font-size:12px;color:var(--muted);margin:0 0 14px;line-height:1.5">Your own finds — your knowledge, your kitchen, your home.</p>
     <div id="myYardList"></div>
   </div>
 </section>
@@ -20723,13 +20723,19 @@ function rangerYardSave(){
     }
   }catch(e){}
   if(!sci) sci = _yardPendSci || '';    /* typed-name route has no _lastResults */
-  var photo=_yardPendPhoto||'';
-  if(!photo){
-    try{ if(typeof _stage!=='undefined' && _stage.length && _stage[0].data) photo=_stage[0].data; }catch(e){}
-  }
+  /* Every picture they took, not just the first. Somebody photographs a leaf AND
+     a flower AND the bark - throwing two of them away was losing the work. */
+  var shots=[];
+  try{
+    if(typeof _stage!=='undefined' && _stage.length){
+      shots=_stage.map(function(x){ return x && x.data; }).filter(Boolean);
+    }
+  }catch(e){}
+  var photo=_yardPendPhoto || shots[0] || '';
+  if(photo && shots.indexOf(photo)<0) shots.unshift(photo);
 
   var entry={id:'y'+Date.now(),name:name.trim(),note:note.trim(),season:season.trim(),
-    photo:photo, sci:sci, family:fam, genus:gen, pics:pics,
+    photo:photo, photos:shots, sci:sci, family:fam, genus:gen, pics:pics,
     added:Date.now(),mine:true,nutrients:{},recipes:[]};
   rangerMyYardArr().push(entry);
   if(share){ rangerDraftsArr().push({name:entry.name,sci:'(shared by a user)',status:'user-shared',source:'My Yard share',savedAt:Date.now(),edible:null,verified:false,fromUser:true,nutrients:{},note:entry.note}); }
@@ -20761,6 +20767,52 @@ function myYardLatinHTML(e){
   var line = '<i>'+esc(main)+'</i>';
   if(e.family) line += ' \u00b7 '+esc(e.family);
   return '<p style="font-size:12.5px;color:var(--muted);margin:2px 0 0">'+line+'</p>';
+}
+
+/* Every photograph they took of this plant, side by side, with a + to add
+   another. One picture was never the point - somebody shoots the leaf, then the
+   flower, then the bark, and all three belong on the card. */
+function myYardPhotoBoxHTML(e){
+  var all = (e && Array.isArray(e.photos) && e.photos.length) ? e.photos.slice()
+          : (e && e.photo ? [e.photo] : []);
+  var add = '<button onclick="myYardAddPhoto(\''+e.id+'\')" '+
+    'style="flex:0 0 auto;width:96px;height:130px;border-radius:12px;'+
+    'border:1px dashed rgba(58,44,8,.30);background:rgba(58,44,8,.04);'+
+    'color:var(--muted);font-size:12px;font-weight:700;cursor:pointer">'+
+    '+<br>add<br>photo</button>';
+  if(!all.length){
+    return '<div style="padding:14px;display:flex;gap:8px">'+add+'</div>';
+  }
+  return '<div style="display:flex;gap:8px;overflow-x:auto;padding:12px;'+
+    '-webkit-overflow-scrolling:touch">'+
+    all.map(function(u,ix){
+      return '<img src="'+u+'" alt="" loading="lazy" '+
+        'onclick="myYardBigPhoto(\''+e.id+'\','+ix+')" '+
+        'style="flex:0 0 auto;height:130px;border-radius:12px;object-fit:cover;'+
+        'width:96px;cursor:pointer">';
+    }).join('')+add+
+    '</div>';
+}
+
+/* Add another picture to a plant already in the yard. */
+function myYardAddPhoto(id){
+  var e=rangerYardFind(id); if(!e) return;
+  honeyTakePhoto({ source:'prompt', saveToGallery:true }).then(function(dataUrl){
+    if(!dataUrl) return;
+    if(!Array.isArray(e.photos)) e.photos = e.photo ? [e.photo] : [];
+    e.photos.push(dataUrl);
+    if(!e.photo) e.photo=dataUrl;
+    SETTINGS.rangerMyYard=rangerMyYardArr(); saveSettings(); persist();
+    openMyYardPlant(id);
+    toast('Picture added.');
+  }).catch(function(){});
+}
+
+function myYardBigPhoto(id, ix){
+  var e=rangerYardFind(id); if(!e) return;
+  var all=(Array.isArray(e.photos)&&e.photos.length)?e.photos:(e.photo?[e.photo]:[]);
+  var u=all[ix]; if(!u) return;
+  try{ openPlantImage(u, e.name||'', ''); }catch(err){}
 }
 
 function myYardPicsHTML(e){
@@ -20811,9 +20863,9 @@ function openMyYardPlant(id){
   var notFoodNote = notFood ?
     '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:11px;padding:10px 12px;margin:13px 0 0;font-size:11.5px;color:var(--muted);line-height:1.5">🚫 You\'ve marked this one <b>not edible</b> — it\'s here as a record of your yard, not as food.</div>' : '';
 
-  box.innerHTML='<button class="home-half" style="margin-bottom:12px" onclick="openMyYard()">‹ My Yard</button>'+
+  box.innerHTML=
     '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden">'+
-      (e.photo?'<div class="rimg-tap" onclick="openPlantImage(\''+'\',\'\',\'\')" style="height:140px;background:#f4f1e8;display:flex;align-items:center;justify-content:center;position:relative"><img src="'+e.photo+'" style="max-height:130px;max-width:92%;object-fit:contain"><div style="position:absolute;top:8px;left:8px;background:rgba(143,227,192,.9);color:#0c2018;font-size:10px;font-weight:700;padding:4px 9px;border-radius:14px">🌱 Your add</div></div>':'<div style="height:64px;background:linear-gradient(135deg,#1d3a2a,#11231a);display:flex;align-items:center;justify-content:center;position:relative"><div style="font-size:28px">🌱</div><div style="position:absolute;top:8px;left:8px;background:rgba(143,227,192,.9);color:#0c2018;font-size:10px;font-weight:700;padding:4px 9px;border-radius:14px">🌱 Your add</div></div>')+
+      myYardPhotoBoxHTML(e)+
       '<div style="padding:15px">'+
         toggle+
         '<p style="font-size:18px;font-weight:600;margin:0">'+esc(e.name)+'</p>'+
@@ -20840,7 +20892,7 @@ function yardSetEdible(id, isEdible){
 function yardEditOpen(id){
   var e=rangerYardFind(id); if(!e) return;
   var box=document.getElementById('myYardList');
-  box.innerHTML='<button class="home-half" style="margin-bottom:12px" onclick="openMyYardPlant(\''+id+'\')">‹ Back</button>'+
+  box.innerHTML=
     '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px">'+
       '<p style="font-size:15px;font-weight:600;margin:0 0 12px">✎ Edit your plant</p>'+
       '<label style="font-size:11px;color:var(--muted)">Plant name</label>'+
@@ -20940,13 +20992,27 @@ function rangerRecipeSearch(name, cb){
     cb(out);
   }).catch(function(){ cb([]); });
 }
+/* The name somebody types for their own plant is not a search term. Strip it
+   back to the words that will actually match a recipe. */
+function myYardCookQuery(name){
+  var n=String(name||'').replace(/\([^)]*\)/g,' ')      /* drop bracketed asides */
+                        .replace(/[^A-Za-z\s'-]/g,' ')
+                        .replace(/\s+/g,' ').trim();
+  var words=n.split(' ').filter(Boolean);
+  return words.slice(0,2).join(' ') || n;
+}
+
 function rangerYardFindRecipes(id){
   var e=rangerYardFind(id); if(!e)return;
   if(!SETTINGS.rangerYardCookNoteSeen){
     SETTINGS.rangerYardCookNoteSeen=true; saveSettings();
     alert("These recipe ideas come from the web for your own plant — they're yours to look over and decide on, same as the plant itself.");
   }
-  rangerRecipeSearch(e.name, function(list){
+  /* Search the plain name. "American sycamore (front bed, maybe)" finds nothing;
+     "sycamore" finds something. Take the first couple of words, drop anything in
+     brackets, and let them see and change it. */
+  var q = myYardCookQuery(e.name);
+  rangerRecipeSearch(q, function(list){
     openMyYardPlant(id);
     var box=document.getElementById('myYardList');
     var wrap=document.createElement('div');
@@ -21011,7 +21077,7 @@ function openMyYard(){
   var bk=Object.keys(BOOK).filter(function(id){ return yardHas(id); });
   bk.sort(function(x,y){ return BOOK[x].name.localeCompare(BOOK[y].name); });
   if(bk.length){
-    html+=head('\ud83c\udf3f From the book, growing at your place','#8fe3c0');
+    html+=head('\ud83c\udf3f Growing at your place','#8fe3c0');
     html+='<div class="yg-grid">'+
       bk.map(function(id){ return yardTileHTML(id,'myYard'); }).join('')+'</div>';
   }
@@ -21190,9 +21256,19 @@ function rangerShareBook(id){
 }
 function rangerShareMine(pid){
   var e=rangerYardFind(pid); if(!e) return;
-  var link=rangerShareBase()+'#plant='+rangerB64({t:'mine',n:e.name,no:e.note,se:e.season,nu:e.nutrients||{}});
+  var link=rangerShareBase()+'#plant='+rangerB64({t:'mine',n:e.name,sc:e.sci||'',fa:e.family||'',no:e.note,se:e.season,nu:e.nutrients||{}});
   var nutList=Object.keys(e.nutrients||{});
-  var text='🌱 '+e.name+' — I found this in my yard!\n'+(e.season?'In season: '+e.season+'\n':'')+(e.note?'\n'+e.note+'\n':'')+(nutList.length?'\nGood for: '+nutList.join(', ')+'\n':'')+'\n🌱 A neighbor\u2019s own backyard find — their own knowledge, not verified by the app.\n\nFound with Tell Me Honey: '+link;
+  /* A keepsake somebody sends their sister should carry the whole name. The
+     binomial and the family were being saved and left out of the share. */
+  var latin = e.sci || e.genus || '';
+  if(latin && e.family) latin += ' · ' + e.family;
+  var text='🌱 '+e.name+' — I found this in my yard!\n'
+    +(latin?latin+'\n':'')
+    +(e.season?'In season: '+e.season+'\n':'')
+    +(e.note?'\n'+e.note+'\n':'')
+    +(nutList.length?'\nGood for: '+nutList.join(', ')+'\n':'')
+    +'\n🌱 A neighbor\u2019s own backyard find — their own knowledge, not verified by the app.'
+    +'\n\nFound with Tell Me Honey: '+link;
   rangerDoShare(e.name, text, e.photo||'');
 }
 /* Share with a picture when we can — a plant share with no plant in it is a sad thing.
