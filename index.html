@@ -181,6 +181,34 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .scroll::-webkit-scrollbar{width:0;}
 
+/* ══ PRINTING RECIPE CARDS ══
+   Somebody wants these on paper - for the kitchen drawer, or gathered into a
+   book for church. The print sheet is plain black on white because that's what
+   a printer and a pair of reading glasses both want, and each card is kept
+   whole rather than split across a page fold. */
+#printSheet{display:none;}
+@media print{
+  html,body{background:#fff !important;}
+  body *{visibility:hidden !important;}
+  #printSheet, #printSheet *{visibility:visible !important;}
+  #printSheet{display:block !important;position:absolute;left:0;top:0;width:100%;
+    background:#fff;color:#000;padding:0;margin:0;}
+  .rc-card{break-inside:avoid;page-break-inside:avoid;border:1px solid #bbb;
+    border-radius:10px;padding:16px 18px;margin:0 0 14px;background:#fff;}
+  .rc-title{font-family:Georgia,serif;font-size:19px;font-weight:700;margin:0 0 2px;color:#000;}
+  .rc-sub{font-size:11px;color:#555;margin:0 0 10px;font-style:italic;}
+  .rc-h{font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:#000;
+    font-weight:700;margin:12px 0 5px;border-bottom:1px solid #ddd;padding-bottom:3px;}
+  .rc-list{margin:0;padding-left:18px;font-size:12.5px;line-height:1.7;color:#000;}
+  .rc-steps{font-size:12.5px;line-height:1.7;color:#000;white-space:pre-wrap;margin:0;}
+  .rc-img{max-width:150px;max-height:110px;object-fit:cover;border-radius:6px;
+    float:right;margin:0 0 8px 12px;}
+  .rc-foot{font-size:9.5px;color:#777;margin-top:12px;border-top:1px solid #eee;padding-top:6px;}
+  .rc-cover{text-align:center;padding:40px 20px 26px;break-after:page;page-break-after:always;}
+  .rc-cover h1{font-family:Georgia,serif;font-size:30px;margin:0 0 6px;color:#000;}
+  .rc-cover p{font-size:13px;color:#555;margin:0;}
+}
+
 /* ── WELCOME ── */
 #welcome{align-items:center;justify-content:center;padding:32px;text-align:center;
   background:radial-gradient(120% 80% at 50% 0%,#16131f 0%,#07080d 60%);}
@@ -2018,6 +2046,8 @@ textarea{resize:none;line-height:1.4;}
   </div>
 </section>
 
+<div id="printSheet"></div>
+
 <section class="screen" id="foodThought">
   <div class="bar"><button class="back" onclick="goBack()">‹</button>
     <h2>🍲 Food for Thought</h2><span style="width:40px"></span></div>
@@ -2035,6 +2065,7 @@ textarea{resize:none;line-height:1.4;}
     <div class="goals-sub" style="margin-bottom:10px">Tap a day to put one of your cards on it. Planned meals show up in your calendar too.</div>
     <div id="ftWeek"></div>
     <div class="goals-head" style="margin-top:22px">📔 My recipe cards</div>
+    <button class="home-half" style="width:100%;margin:0 0 12px" onclick="ftPrintOpen()">🖨️ Print recipe cards</button>
     <div id="ftCards"></div>
     <p style="font-size:11px;color:var(--muted);margin:16px 2px 0;line-height:1.5">🍲 Recipe ideas come from the web — yours to look over and decide on, same as always.</p>
   </div>
@@ -19693,6 +19724,9 @@ function rangerAddDinner(id,btn){var a=rangerDinnerArr();if(a.indexOf(id)<0){a.p
 function rangerAddCook(id,btn){var a=rangerCookArr();if(a.indexOf(id)<0){a.push(id);saveSettings();}if(btn){btn.textContent='✓ On your list';btn.disabled=true;}}
 
 function openPlantHub(){
+  /* Clear what was typed last time. Coming back to "French lavender" still
+     sitting in the box makes it look as though the app is stuck. */
+  try{ var _pn=document.getElementById('plantGuessName'); if(_pn) _pn.value=''; }catch(e){}
   try{ setTimeout(plantFrameRender,60); }catch(e){} var b=document.getElementById('plantHubResult'); if(b)b.innerHTML=''; go('plantHub'); }
 /* "That's not it" — offered under every result. The photos are still staged, so
    adding an angle and trying again costs one tap, not a fresh start. Also shows
@@ -20775,6 +20809,15 @@ function myYardLatinHTML(e){
 function myYardPhotoBoxHTML(e){
   var all = (e && Array.isArray(e.photos) && e.photos.length) ? e.photos.slice()
           : (e && e.photo ? [e.photo] : []);
+  /* Nobody who confirms "yes, that's the one" should then be asked for a
+     photograph before their card has anything on it. If they haven't taken one,
+     borrow the reference pictures that came with the identification - credited,
+     and clearly not theirs. */
+  var borrowed = false;
+  if(!all.length && e && Array.isArray(e.pics) && e.pics.length){
+    all = e.pics.map(function(p){ return p && p.url; }).filter(Boolean);
+    borrowed = true;
+  }
   var add = '<button onclick="myYardAddPhoto(\''+e.id+'\')" '+
     'style="flex:0 0 auto;width:96px;height:130px;border-radius:12px;'+
     'border:1px dashed rgba(58,44,8,.30);background:rgba(58,44,8,.04);'+
@@ -20783,7 +20826,11 @@ function myYardPhotoBoxHTML(e){
   if(!all.length){
     return '<div style="padding:14px;display:flex;gap:8px">'+add+'</div>';
   }
-  return '<div style="display:flex;gap:8px;overflow-x:auto;padding:12px;'+
+  var note = borrowed
+    ? '<p style="font-size:9.5px;color:var(--muted);margin:0 12px 8px;line-height:1.4">'+
+      'Pictures of this species, not yours \u2014 take your own with \uff0b and they\u2019ll lead.</p>'
+    : '';
+  return note+'<div style="display:flex;gap:8px;overflow-x:auto;padding:0 12px 12px;'+
     '-webkit-overflow-scrolling:touch">'+
     all.map(function(u,ix){
       return '<img src="'+u+'" alt="" loading="lazy" '+
@@ -20835,6 +20882,10 @@ function myYardPicsHTML(e){
 
 function openMyYardPlant(id){
   var e=rangerYardFind(id); if(!e){ openMyYard(); return; }
+  /* This writes into #myYardList - which is fine when you're already looking at
+     My Yard, and does nothing visible when you're not. Tapping a plant on the
+     cooking list filled a screen nobody was on. Go there first. */
+  try{ go('myYard'); }catch(err){}
   if(!e.nutrients) e.nutrients={}; if(!e.recipes) e.recipes=[];
   var box=document.getElementById('myYardList');
   var notFood = (e.edible === false);
@@ -20880,7 +20931,14 @@ function openMyYardPlant(id){
         '<button class="home-half" style="width:100%;margin-top:7px" onclick="rangerShareMine(\''+id+'\')">↗ Share with a friend</button>'+
         '<button class="home-half" style="width:100%;margin-top:7px;color:#3a2c08" onclick="rangerYardRemove(\''+id+'\')">🗑️ Remove this plant</button>'+
       '</div></div>';
+
+  try{
+    var sc=document.getElementById('myYard');
+    sc = sc ? sc.querySelector('.scroll') : null;
+    if(sc) sc.scrollTop=0;
+  }catch(err){}
 }
+
 function yardSetEdible(id, isEdible){
   var e=rangerYardFind(id); if(!e) return;
   e.edible = !!isEdible;
@@ -21012,13 +21070,15 @@ function rangerYardFindRecipes(id){
      "sycamore" finds something. Take the first couple of words, drop anything in
      brackets, and let them see and change it. */
   var q = myYardCookQuery(e.name);
+  toast('Looking for recipes with '+q+'\u2026');
   rangerRecipeSearch(q, function(list){
     openMyYardPlant(id);
     var box=document.getElementById('myYardList');
     var wrap=document.createElement('div');
     if(list&&list.length){
-      wrap.style.cssText='margin-top:12px';
-      wrap.innerHTML='<div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.4px;margin:0 0 8px;text-transform:uppercase">🍳 More recipe ideas</div>'+
+      wrap.style.cssText='margin-top:14px;background:rgba(140,170,120,.12);'+
+        'border:1px solid rgba(140,170,120,.34);border-radius:14px;padding:12px 13px';
+      wrap.innerHTML='<div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.4px;margin:0 0 8px;text-transform:uppercase">🍳 Recipes with '+esc(q)+'</div>'+
         list.map(function(r){
           return '<a href="'+(r.url||'#')+'" target="_blank" rel="noopener" style="display:flex;gap:10px;align-items:center;text-decoration:none;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px;margin-bottom:8px">'+
             (r.image?'<img src="'+r.image+'" style="width:52px;height:52px;object-fit:cover;border-radius:9px;flex:0 0 auto">':'<div style="width:52px;height:52px;border-radius:9px;background:rgba(231,200,115,.15);display:flex;align-items:center;justify-content:center;flex:0 0 auto">🍽️</div>')+
@@ -21030,6 +21090,9 @@ function rangerYardFindRecipes(id){
       wrap.textContent='🍳 No recipe ideas came back for that one just now — your plant is saved and ready to try again later.';
     }
     box.appendChild(wrap);
+    /* They arrive at the foot of a long card, where nobody looks. Take them
+       to it, or it reads as nothing having happened. */
+    try{ setTimeout(function(){ wrap.scrollIntoView({behavior:'smooth',block:'center'}); }, 80); }catch(e){}
   });
 }
 function rangerYardRemove(id){ var a=rangerMyYardArr(); var i=a.findIndex(function(x){return x.id===id;}); if(i>=0){ a.splice(i,1); saveSettings(); } openMyYard(); }
@@ -21733,6 +21796,105 @@ function ftCardsOn(shelf){
   return ftCardsArr().filter(function(c){ return shelf==='mine' ? !!c.mine : !c.mine; });
 }
 
+/* ══════════ PRINTING RECIPE CARDS ══════════════════════════════════════
+   Tick the ones you want and print. iOS's own print sheet also offers "Save to
+   Files", so the same button makes a PDF - which is how somebody ends up with a
+   little book for church without needing us to build one.
+   Photographs are optional, because a colour photo on every card is a lot of
+   somebody's ink. */
+var _ftPrintPics = true;
+
+function ftPrintOpen(){
+  var arr=ftCardsArr();
+  if(!arr.length){ toast("No recipe cards kept yet."); return; }
+  var d=document.createElement('div');
+  d.id='ftPrintBox';
+  d.style.cssText='position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);'+
+    'display:flex;align-items:flex-end;justify-content:center';
+  d.innerHTML=
+    '<div style="background:var(--panel);width:100%;max-width:520px;max-height:88%;'+
+      'border-radius:20px 20px 0 0;padding:18px 16px calc(18px + var(--safe-b));'+
+      'display:flex;flex-direction:column">'+
+      '<p style="font-size:17px;font-weight:700;margin:0 0 3px">\ud83d\udda8\ufe0f Print recipe cards</p>'+
+      '<p style="font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.5">'+
+        'Tick the ones you want. On the next screen you can print them, or choose '+
+        '\u201cSave to Files\u201d to keep them as one document.</p>'+
+      '<div style="display:flex;gap:8px;margin-bottom:10px">'+
+        '<button class="home-half" style="flex:1" onclick="ftPrintAll(true)">Select all</button>'+
+        '<button class="home-half" style="flex:1" onclick="ftPrintAll(false)">Clear</button>'+
+      '</div>'+
+      '<label style="display:flex;align-items:center;gap:9px;font-size:13px;margin:0 2px 10px">'+
+        '<input type="checkbox" id="ftPrintPics" '+(_ftPrintPics?'checked':'')+
+        ' onchange="_ftPrintPics=this.checked" style="width:20px;height:20px">'+
+        'Include photographs</label>'+
+      '<div id="ftPrintList" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch">'+
+        arr.map(function(c,i){
+          return '<label style="display:flex;align-items:center;gap:11px;padding:11px 4px;'+
+            'border-bottom:1px solid rgba(255,255,255,.07);font-size:14px">'+
+            '<input type="checkbox" class="ftPrintPick" value="'+i+'" '+
+            'style="width:22px;height:22px;flex:0 0 auto">'+
+            '<span style="flex:1;min-width:0">'+esc(c.title||'Recipe')+'</span></label>';
+        }).join('')+
+      '</div>'+
+      '<div style="display:flex;gap:8px;margin-top:12px">'+
+        '<button class="home-half" style="flex:1" onclick="ftPrintClose()">Not now</button>'+
+        '<button class="home-half" style="flex:1;background:rgba(140,170,120,.20)" '+
+          'onclick="ftPrintGo()">\ud83d\udda8\ufe0f Print these</button>'+
+      '</div>'+
+    '</div>';
+  document.body.appendChild(d);
+}
+
+function ftPrintClose(){ var d=document.getElementById('ftPrintBox'); if(d) d.remove(); }
+
+function ftPrintAll(on){
+  Array.prototype.forEach.call(document.querySelectorAll('.ftPrintPick'),
+    function(b){ b.checked=!!on; });
+}
+
+function ftPrintGo(){
+  var picked=[];
+  Array.prototype.forEach.call(document.querySelectorAll('.ftPrintPick'), function(b){
+    if(b.checked) picked.push(parseInt(b.value,10));
+  });
+  if(!picked.length){ toast("Tick at least one card."); return; }
+  var arr=ftCardsArr();
+  var sheet=document.getElementById('printSheet');
+  if(!sheet){ toast("Couldn't open the printer."); return; }
+
+  var who=(S && S.userName) ? S.userName : '';
+  var when=new Date().toLocaleDateString();
+  var cover = picked.length>1
+    ? '<div class="rc-cover"><h1>Recipe Cards</h1><p>'+
+      (who?esc(who)+' \u00b7 ':'')+picked.length+' recipes \u00b7 '+esc(when)+'</p></div>'
+    : '';
+
+  sheet.innerHTML = cover + picked.map(function(ix){
+    var c=arr[ix]; if(!c) return '';
+    var img = (_ftPrintPics && c.image)
+      ? '<img class="rc-img" src="'+c.image+'" alt="">' : '';
+    var ing = (c.ingredients && c.ingredients.length)
+      ? '<div class="rc-h">Ingredients</div><ul class="rc-list">'+
+        c.ingredients.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul>'
+      : '';
+    var steps = c.steps
+      ? '<div class="rc-h">Method</div><p class="rc-steps">'+esc(c.steps)+'</p>' : '';
+    return '<div class="rc-card">'+img+
+      '<p class="rc-title">'+esc(c.title||'Recipe')+'</p>'+
+      '<p class="rc-sub">'+(c.mine?'From my own kitchen':'Kept from the web')+'</p>'+
+      ing + steps +
+      '<p class="rc-foot">Tell Me Honey'+(who?' \u00b7 '+esc(who):'')+'</p>'+
+    '</div>';
+  }).join('');
+
+  ftPrintClose();
+  /* Let the sheet paint before the print dialog grabs the page. */
+  setTimeout(function(){
+    try{ window.print(); }
+    catch(e){ toast("This phone wouldn\u2019t open the printer."); }
+  }, 220);
+}
+
 function ftRenderCards(){
   var box=document.getElementById('ftCards'); if(!box)return;
   var arr=ftCardsArr();
@@ -21891,6 +22053,23 @@ function ftMealsOn(d){
       return isMeal && r.when>=start && r.when<end;
     });
 }
+/* Open a kept recipe card from anywhere - the week planner, the cooking list,
+   a plant's recipe row. Scrolls it into view rather than leaving somebody to
+   hunt for what just changed. */
+function ftOpenCard(ix){
+  var arr=ftCardsArr();
+  if(!(ix>=0) || !arr[ix]){ toast("That card isn't here any more."); return; }
+  try{ go('foodThought'); }catch(e){}
+  try{ _ftShelf = arr[ix].mine ? 'mine' : 'web'; }catch(e){}
+  try{ ftRenderCards(); }catch(e){}
+  setTimeout(function(){
+    try{
+      var box=document.getElementById('ftCards');
+      if(box) box.scrollIntoView({behavior:'smooth', block:'start'});
+    }catch(e){}
+  }, 60);
+}
+
 function ftRenderWeek(){
   var box=document.getElementById('ftWeek'); if(!box)return;
   var DOW=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -21911,11 +22090,24 @@ function ftRenderWeek(){
           })[0];
           if(card && card.image) pic=card.image;
         }catch(e){}
-        return '<div class="fw-meal">'+
+        /* Tapping a planned meal opens the recipe. Somebody looking at Tuesday
+           wants to know whether they've got everything in, and standing there
+           unable to open it is the moment the app feels like a poster. */
+        var ci=-1;
+        try{ ci=ftCardsArr().findIndex(function(c){
+          return (c.title||'').toLowerCase()===nm.toLowerCase(); }); }catch(e){}
+        var openable = ci>=0;
+        return '<div class="fw-meal"'+(openable?' style="cursor:pointer"':'')+'>'+
+          (openable?'<button style="all:unset;display:flex;align-items:center;gap:9px;flex:1;min-width:0;cursor:pointer" onclick="ftOpenCard('+ci+')">':'<span style="display:flex;align-items:center;gap:9px;flex:1;min-width:0">')+
           (pic ? '<img class="fw-pic" src="'+pic+'" alt="">' : '<span class="fw-pic fw-nopic">🍲</span>')+
           '<span class="fw-nm">'+esc(nm)+'</span>'+
+          (openable?'</button>':'</span>')+
           '<button class="fw-x" onclick="ftWeekClear('+o.idx+')" aria-label="Take off">✕</button></div>';
       }).join('');
+      /* Three recipes on a Sunday is a normal thing to want. The + used to
+         disappear the moment one meal was on the day, so a day could only ever
+         hold one. Keep it there. */
+      inner += '<button class="fw-add" onclick="ftWeekPick('+i+')">＋ plan something else</button>';
     } else {
       inner='<button class="fw-add" onclick="ftWeekPick('+i+')">＋ plan something</button>';
     }
