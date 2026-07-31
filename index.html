@@ -733,13 +733,15 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .loved-row .lj-trash{flex:0 0 auto;font-size:15px;line-height:1;background:none;border:none;
   color:var(--muted);padding:6px 4px;cursor:pointer;opacity:.7;}
 .loved-row .lj-trash:active{opacity:1;color:#c0392b;}
-/* leave room for the tab bar on dashboard screens */
-.phone/* The tab bar is about 86px tall and floats over the content. This clearance
+/* The tab bar is about 86px tall and floats over the content. This clearance
    was only being given to three screens by name - insights, prompts, profile -
    so on every other screen the last 56px of the page sat underneath it: the
    "+ My yard" bar on the bottom row of tiles was there, but under the tabs,
-   which is why it took a hard scroll and a lucky finger to hit. Give the
-   clearance to every screen, so a screen added later can't inherit the bug. */
+   and the build stamp at the foot of Profile was invisible. Give the clearance
+   to every screen, so a screen added later can't inherit the bug.
+   (An earlier edit left a stray ".phone" in front of this comment, which turned
+   the whole thing into ".phone .phone.tabs-on" - a descendant selector that
+   matches nothing. The rule was there and doing precisely nothing.) */
 .phone.tabs-on .insights-body{padding-bottom:calc(86px + var(--safe-b));}
 .roster-empty{color:var(--muted);font-size:14.5px;text-align:center;margin-top:40px;line-height:1.6;}
 .roster-empty b{color:var(--gold);}
@@ -2096,6 +2098,20 @@ textarea{resize:none;line-height:1.4;}
   <div class="insights-body scroll" style="padding:16px">
     <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.5">Real Food Ranger always lives here in My Sweet Life. You can also add a quick way in — pick what works for you.</p>
     <div id="rangerSettingsList"></div>
+
+    <div style="margin-top:26px;border-top:1px solid var(--line);padding-top:18px">
+      <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.4px;
+        text-transform:uppercase;margin-bottom:6px">Plant pictures</div>
+      <p style="font-size:12.5px;color:var(--muted);margin:0 0 12px;line-height:1.55">
+        Every plant you identify at 55% or better keeps its Pl@ntNet photograph here.
+        Clear them and go round again to build a set you're happy with — then export
+        it so it can ship with the app.</p>
+      <button class="home-half" style="width:100%" onclick="refPhotoExport()">
+        📤 Export my picture set</button>
+      <button class="home-half" style="width:100%;margin-top:8px;color:var(--muted)"
+        onclick="refPhotoClearAll()">🗑️ Clear them and start again</button>
+      <div id="refPhotoOut"></div>
+    </div>
   </div>
 </section>
 <!-- ════════ END REAL FOOD RANGER SCREENS ════════ -->
@@ -2506,7 +2522,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v150 · Five months of puzzles</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v151 · 31 July · free week talks · punchline always lands · no repeated replies · stories read aloud · calendar goes to the calendar</div>
   </div>
 </section>
 
@@ -5137,6 +5153,27 @@ function applyTierLocks(){
     if(tierAtLeast('quart') || isOwner())
       { var b=document.getElementById('premiumVoiceBox'); b.classList.remove('tier-locked'); var o=b.querySelector('.tier-lock-note'); if(o)o.remove(); }
     else lockBox('premiumVoiceBox','Premium voices','quart');
+
+  /* Voice cloning is a Gallon feature, and the box was sitting wide open on
+     every tier - consent tickable, Record button live, and nothing behind it.
+     Somebody on Pint could tap through the whole thing and only find out at
+     the end. Lock it the same way the premium voices are locked.
+     Note this is only the CLONING. Recording your own verses and prayers in
+     your real voice uses the phone's microphone, costs nothing, and stays
+     free for everybody. */
+  if(tierAtLeast('gallon') || isOwner()){
+    var yv=document.getElementById('yourVoiceBox');
+    if(yv){ yv.classList.remove('tier-locked');
+            var yo=yv.querySelector('.tier-lock-note'); if(yo) yo.remove(); }
+  } else {
+    lockBox('yourVoiceBox','Your Voice','gallon');
+    /* and make sure the controls themselves can't be reached */
+    try{
+      var cc=document.getElementById('cloneConsent');
+      if(cc){ cc.checked=false; cc.disabled=true; }
+      var cr=document.getElementById('cloneRecBtn'); if(cr) cr.disabled=true;
+    }catch(e){}
+  }
   }
   // premium video zone: gently dim + invite a top-up when today's video credits are used up.
   // Never blocks the free scenes/share above — only this one box dims.
@@ -5320,6 +5357,63 @@ var REFPHOTO_GEN = 2;
     }
   }catch(e){}
 })();
+
+/* BUILDING A PICTURE SET.
+   The book ships with drawings and a dozen photographs. Pl@ntNet's own reference
+   photos are better than either on a small tile - they're real plants in real
+   light. These two let somebody go round the book, identify each plant properly,
+   and end up with a set worth shipping.
+   Everything Pl@ntNet returns is cc-by-sa, so the photographer's credit travels
+   with the picture and must keep showing wherever it's used. */
+function refPhotoClearAll(){
+  var n=0;
+  try{ n=Object.keys(refPhotoStore()||{}).length; }catch(e){}
+  if(!n){ toast("Nothing stored yet."); return; }
+  if(!confirm('Clear all '+n+' stored plant photographs?\n\nYour own photos and everything '+
+              'in My Yard are untouched \u2014 this is only the Pl@ntNet pictures.')) return;
+  SETTINGS.refPhotos={};
+  saveSettings();
+  var o=document.getElementById('refPhotoOut'); if(o) o.innerHTML='';
+  toast('Cleared. Identify a plant to start the set again.');
+}
+
+function refPhotoExport(){
+  var store={};
+  try{ store=refPhotoStore()||{}; }catch(e){}
+  var keys=Object.keys(store);
+  var out=document.getElementById('refPhotoOut'); if(!out) return;
+  if(!keys.length){
+    out.innerHTML='<p style="font-size:12.5px;color:var(--muted);margin:12px 2px 0">'+
+      'Nothing stored yet. Identify a plant and its picture is kept here.</p>';
+    return;
+  }
+  var lines=keys.map(function(k){
+    var v=store[k]||{};
+    return '  '+k+': {url:"'+(v.url||'')+'", credit:"'+
+      String(v.credit||'').replace(/"/g,'\\\\"')+'"},';
+  }).join('\n');
+  var text='var PLANT_PHOTOS={\n'+lines+'\n};';
+  out.innerHTML=
+    '<p style="font-size:12px;color:var(--muted);margin:14px 2px 8px;line-height:1.5">'+
+      keys.length+' picture'+(keys.length===1?'':'s')+' in the set. Send this to yourself '+
+      'and it can be baked into the app.</p>'+
+    '<textarea readonly style="width:100%;height:150px;font-family:ui-monospace,Menlo,monospace;'+
+      'font-size:11px;background:rgba(0,0,0,.25);color:var(--ink);border:1px solid var(--line);'+
+      'border-radius:11px;padding:10px">'+esc(text)+'</textarea>'+
+    '<button class="home-half" style="width:100%;margin-top:8px" '+
+      'onclick="refPhotoSend()">\u2197 Send it to myself</button>';
+  window._refPhotoText=text;
+}
+
+function refPhotoSend(){
+  var t=window._refPhotoText||'';
+  if(!t){ toast("Export it first."); return; }
+  try{
+    if(navigator.share){ navigator.share({title:'Ranger picture set', text:t}); return; }
+  }catch(e){}
+  window.location.href='mailto:'+FUNNEL_EMAIL+'?subject='+
+    encodeURIComponent('Ranger picture set')+'&body='+encodeURIComponent(t);
+}
 
 function refPhotoStore(){
   if(!SETTINGS.refPhotos || typeof SETTINGS.refPhotos!=='object') SETTINGS.refPhotos={};
@@ -6859,7 +6953,7 @@ var GREET={
   Sarcastic:["Oh good, you again. My favorite.","Calling me? Bold. I respect it.","Let me guess — you need cheering up. Shocking."],
   Chill:["Heyyy. No rush, just hangin'. What's up?","Oh nice, you're here. Pull up a chair.","Was just vibing. Glad you called."],
   Hyper:["YOU'RE HERE okay okay okay sit DOWN I have so much.","Finally!! I've been bursting. Ready?","Hi hi hi — what are we doing, what's the move?!"],
-  Wholesome:["Hi, friend. Thank you for coming to see me today.","Aw, there you are. Hope your day's been kind.","Hey you. Genuinely happy to see you."],
+  Wholesome:["Hi, friend. Thank you for coming to see me today.","Hey, there you are. I was hoping you'd call.","Hey you. Genuinely happy to see you."],
   Mysterious:["You came back. Interesting.","I had a feeling you'd call. I usually do.","Ah. Right on time, somehow."]
 };
 var WELCOME_BACK={
@@ -7396,10 +7490,14 @@ function pushThemText(text,noLog){
   resetIdle();
   if(!noLog) logMsg({w:'them',k:'text',t:text});
 }
-function pushThem(text,noLog,noSpeak){  var m=document.createElement('div'); m.className='bub them';
+/* sayInstead: show one thing, speak another. Needed because the recorded clips
+   are fixed audio and can't say a typed-in name - but seeing your own name on
+   the screen is most of the warmth, so the bubble can carry it while the voice
+   plays the line it actually has a recording for. */
+function pushThem(text,noLog,noSpeak,sayInstead){  var m=document.createElement('div'); m.className='bub them';
   m.textContent=text;
   document.getElementById('msgs').appendChild(m); scrollMsgs();
-  if(S.speakerOn && !noSpeak) speak(text);
+  if(S.speakerOn && !noSpeak) speak(sayInstead || text);
   S.lastWasJoke=false;
   S.lastWasQuestion=/\?\s*$/.test(text.trim())||/\?/.test(text);
   updateThumbLabel();
@@ -7420,6 +7518,22 @@ function pushJoke(joke,noLog,dontInterrupt){
   if(S.speakerOn) enqueueSpeak(joke.s);
   S.pendingPunch=joke; S.lastWasJoke=false; S.lastWasQuestion=false;
   if(!noLog) logMsg({w:'them',k:'setup',t:joke.s,p:joke.p,roast:!!joke.roast});
+
+  /* NOBODY IS LEFT HANGING.
+     A three-beat joke already had a timer. A plain setup-and-punchline one had
+     none - so if you didn't tap or answer, the punchline never came and Honey
+     just sat there. Somebody new, who doesn't yet know she's waiting on them,
+     would decide she'd broken.
+     Give a proper beat to guess, longer for a longer setup, then tell it anyway
+     the way a person would. Answering first still cancels this. */
+  if(!joke.r){
+    if(S._autoPunch) clearTimeout(S._autoPunch);
+    var _w=(joke.s||'').split(/\s+/).length;
+    var _wait=Math.min(11000, Math.max(5000, _w*600));
+    S._autoPunch=setTimeout(function(){
+      if(S.pendingPunch===joke) revealPunch(true);
+    }, _wait);
+  }
   // BEAT 2 — the riff line, THEN the lead-in phrase, THEN it WAITS for a tap (ONLY 3-beat jokes with joke.r)
   if(joke.r && S._riffDoneFor !== joke){
     S._riffDoneFor = joke;   // guard: this joke's riff sequence runs ONCE
@@ -7739,7 +7853,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v150";
+window.HONEY_BUILD = "v151";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -8777,7 +8891,7 @@ var HELLO_BACK=[
   "Well, hey there. I was hoping you'd come see me.",
   "Look who it is — come on in, sit down, tell me everything.",
   "Good to see your name pop up. How are you, really?",
-  "Aw, there you are. Hope your day's been kind.",
+  "Oh nice, you're here. Pull up a chair.",
   "Hey you. Genuinely happy to see you.",
   "Hey you. Good to have you back — really.",
   "Hi friend, welcome back. I'm so glad you returned.",
@@ -8799,7 +8913,24 @@ function honeyGreetBack(l){
     if(S.vibe==='Sarcastic') pool=pool.concat(["Look who returned. Missed my charm, huh."]);
   }catch(e){}
   themTyping(function(){
-    pushThem(vibeColor(rand(pool)));
+    var line = vibeColor(noRepeat(pool,'hello'));
+    /* Say their name if we know it. The spoken line stays exactly as recorded,
+       so Honey's own voice still has a clip to play - the name is on the screen,
+       where it's the part that lands. */
+    /* Use their name where it lands naturally and leave it out where it
+       wouldn't. "Well, hey there, Sally." reads like a person; forcing it into
+       "Hi hi hi" gives you "Hi, Sally hi hi", which reads like a machine.
+       Sixty percent of greetings carrying the name beats all of them carrying
+       it badly. */
+    var nm = callName();
+    var shown = line;
+    if(nm){
+      var m2 = line.match(/^((?:Well,? |Aw,? |Oh,? )?(?:hey there|hey you|hello there|hey|hi|hello))([,.!\u2014])/i);
+      if(m2){
+        shown = m2[1] + ', ' + nm + (m2[2]===',' ? '' : m2[2]) + line.slice(m2[0].length);
+      }
+    }
+    pushThem(shown, false, false, line);
     resetIdle();
   });
 }
@@ -9217,7 +9348,7 @@ function userSays(t){
     themTyping(function(){
       pushThem(vibeColor(rand([
         "Good to see your name pop up. How are you, really?",
-        "Aw, there you are. Hope your day's been kind.",
+        "There you are again. Pull up a chair — I'm all yours.",
         "Hey you. Genuinely happy to see you.",
         "Look who it is — come on in, sit down, tell me everything."
       ])));
@@ -9764,13 +9895,25 @@ function aiAvailable(){
 var AI_CHAT_WEEKLY = { pint:0, quart:200, gallon:400, gallonplus:400 };
 var AI_CHAT_DAILY  = { pint:0, quart:40,  gallon:70,  gallonplus:70 };  /* gallonplus was missing → top tier got 0 */
 
+/* THE FREE WEEK HAS TO INCLUDE THE TALKING.
+   The trial already covered AI video and extra friends - but not this, so a new
+   person's first week gave them everything EXCEPT the conversation, which is
+   the thing the app is actually for. They met the matcher, decided she wasn't
+   very clever, and the week ran out without them ever hearing her think.
+   Gallon-level for seven days: about fifty cents of chat per person who tries
+   it, for the best demonstration the app can give. */
+var AI_CHAT_TRIAL_DAY  = 70;
+var AI_CHAT_TRIAL_WEEK = 400;
+
 function aiChatWeeklyCap(){
   if(isOwner()) return 999999;                         // owner/testing: unlimited
+  if(trialActive()) return AI_CHAT_TRIAL_WEEK;         // the free week talks properly
   var t=(SETTINGS.tier||'pint');
   return (AI_CHAT_WEEKLY[t]!=null ? AI_CHAT_WEEKLY[t] : 0);
 }
 function aiChatDailyCap(){
   if(isOwner()) return 999999;
+  if(trialActive()) return AI_CHAT_TRIAL_DAY;
   var t=(SETTINGS.tier||'pint');
   return (AI_CHAT_DAILY[t]!=null ? AI_CHAT_DAILY[t] : 0);
 }
@@ -10844,7 +10987,11 @@ function bedtimeStory(){
     pushThemText(vibeColor("Here's a little story to rest to. Close your eyes if you like. 🌙"));
     pushThemText(vibeColor("“"+s.t+"”"));
     pushThemText(vibeColor(s.x));
-    pushAction("🔊 Read it aloud", null, false, null, function(){ replayClip("story_"+String(idx+1).padStart(2,'0')); });
+    pushAction("🔊 Read it aloud", null, false, null, function(){
+      /* The text was being left off, so when there is no clip for the story
+         there was nothing at all to fall back on and the button did nothing.
+         Every other Read-it-aloud passes its words; this one didn't. */
+      replayClip("story_"+String(idx+1).padStart(2,'0'), s.x); });
   });
 }
 
@@ -11979,13 +12126,25 @@ var COMIC_COST = 50;              // honey per panel after the free one
    time and sometimes not at all. The REAL logo gets stamped on afterwards, so
    every panel carries the same mark in the same corner. */
 var COMIC_SIGNATURE = "warm and inviting";
+/* THE LOOK.
+   The old wording asked for a "warm muted palette", "calm and unhurried" and a
+   "gentle watercolor wash" - which is exactly why every panel came back foggy
+   and rustic. It was doing what it was told.
+   This asks for the opposite: bold outline, flat saturated colour, halftone
+   shading, faces that are actually doing something. Bright reads better at
+   thumbnail size, which is the size that decides whether anybody stops
+   scrolling.
+   The tail is untouched. That's what keeps the generator from lettering the
+   joke into the picture, and it took work to get right. */
 var COMIC_STYLE =
   "a completely wordless picture-only illustration with no writing anywhere in the frame, "+
-  "soft hand-drawn ink linework with gentle watercolor wash, warm muted palette of honey gold, "+
-  "amber, soft rust and warm brown on a pale sky-blue and cream background, generous white space, "+
-  "simple rounded shapes, storybook illustration, calm and unhurried, no crosshatching, no harsh outlines, "+
-  "no text, no words, no letters, no captions, no title, no speech bubbles, no signage, no watermark, "+
-  "single panel, square";
+  "bright cartoon storybook illustration, confident black ink outline, flat saturated colour, "+
+  "halftone dot shading, cheerful palette of cherry red, sky blue, sunshine yellow and fresh "+
+  "grass green, lush detailed background, expressive faces with real feeling, sunny daylight, "+
+  "playful and full of life, no fog, no sepia, no muted tones, no watercolor wash, "+
+  "no crosshatching, "+
+  "no text, no words, no letters, no captions, no title, no speech bubbles, no signage, "+
+  "no watermark, single panel, square";
 
 /* The comic button says what it costs, and greys itself out when they can't
    reach it. Better than letting somebody tap and get told no — and the free
@@ -12051,7 +12210,10 @@ function comicSceneFor(setup, punch, cb){
     }).catch(function(){ cb(fallback); });
   }catch(e){ cb(fallback); }
 }
-function honeyComic(setup, punch, jokeRef){
+/* onDone(blob,name): hand the finished panel back instead of only showing it.
+   The Funny Funnel needs to KEEP the picture so it can travel with the joke.
+   credit: printed under the joke, so somebody's name is on their own comic. */
+function honeyComic(setup, punch, jokeRef, onDone, credit){
   setup=(setup||'').trim(); punch=(punch||'').trim();
   if(!punch){ toast("It needs a punchline first."); return; }
   if(isOffline()){ toast("The comic needs a signal. The picture card still works."); return; }
@@ -12066,6 +12228,7 @@ function honeyComic(setup, punch, jokeRef){
   }
 
   toast(gate.free ? "Drawing your panel\u2026" : "Drawing your panel \u2014 "+COMIC_COST+" honey");
+  _comicDone = onDone || null; _comicCredit = credit || '';
   comicSceneFor(setup, punch, function(scene){
     var prompt = "A warm storybook scene showing " + scene + ", " + COMIC_SIGNATURE + ", " + COMIC_STYLE;
     fetch(AI_MEDIA_URL,{
@@ -12083,6 +12246,7 @@ function honeyComic(setup, punch, jokeRef){
     }).catch(function(){ toast("Couldn't reach the drawing board."); });
   });
 }
+var _comicDone=null, _comicCredit='';
 function _comicPoll(reqId, setup, punch, tries, jokeRef){
   if(tries>40){ toast("That one's taking too long. Try again in a bit."); return; }
   fetch(AI_MEDIA_URL,{method:'POST',headers:{'apikey':PREMIUM_VOICE_KEY,'Content-Type':'application/json'},
@@ -12094,7 +12258,12 @@ function _comicPoll(reqId, setup, punch, tries, jokeRef){
         body:JSON.stringify({mode:'result',kind:'draw',request_id:reqId})})
       .then(function(r){ return r.json(); }).then(function(res){
         var url=_comicUrl(res);
-        if(url) _comicBrand(url, setup, punch, function(branded, blob){ _comicKeep(jokeRef, blob, setup, punch, branded); });
+        if(url) _comicBrand(url, setup, punch, function(branded, blob){
+          /* handed to whoever asked for it - the funnel keeps it, the joke page shows it */
+          if(_comicDone){ var f=_comicDone; _comicDone=null;
+            f(blob, 'honey-comic-'+Date.now()+'.png'); return; }
+          _comicKeep(jokeRef, blob, setup, punch, branded);
+        });
         else toast("The drawing came back empty. Try once more.");
       }).catch(function(){ toast("Couldn't fetch the drawing."); });
       return;
@@ -12410,20 +12579,28 @@ function funnelIsClean(setup, punch, who, where){
 function funnelOpen(){
   var setup=(document.getElementById('recSetup')||{}).value||'';
   var punch=(document.getElementById('recPunch')||{}).value||'';
+  /* The kind of joke is already known from the box they filed it in, so nobody
+     has to answer a dropdown about it. */
   var sel=document.getElementById('recColl');
-  var collName='';
-  try{ var c=jokeColls().find(function(x){ return x.id===(sel&&sel.value); }); collName=c?c.name:''; }catch(e){}
+  try{ var c=jokeColls().find(function(x){ return x.id===(sel&&sel.value); });
+       _funnelCat = c ? c.name : ''; }catch(e){ _funnelCat=''; }
 
   var old=document.getElementById('funnelBox'); if(old) old.remove();
   var d=document.createElement('div');
   d.id='funnelBox';
   d.className='rec-overlay';
   d.style.display='flex';
+  /* THE WHOLE THING ON ONE SHEET.
+     It had grown into a form - setup, punchline, a category dropdown, a name
+     field, a town field - which is a lot of screen for somebody who just wants
+     to send a joke. The joke is already written. All that's actually missing is
+     who to thank. One small box: "Chris in Memphis". */
   d.innerHTML=
     '<div class="rec-sheet">'+
       '<div class="rec-head"><span>\ud83d\ude02 The Funny Funnel</span>'+
         '<button class="rec-x" onclick="funnelClose()">\u2715</button></div>'+
-      '<p class="rec-hint">Got one that always lands? Send it to Sally. The good ones get added for everybody \u2014 and you\u2019ll have made a stranger laugh.</p>'+
+      '<p class="rec-hint">Got one that always lands? Send it to Sally. The good ones get '+
+        'added for everybody \u2014 and you\u2019ll have made a stranger laugh.</p>'+
 
       '<label class="rec-label">Setup</label>'+
       '<div class="rec-field"><textarea id="ffSetup" rows="2" placeholder="Why did the\u2026">'+esc(setup)+'</textarea></div>'+
@@ -12431,25 +12608,23 @@ function funnelOpen(){
       '<label class="rec-label">Punchline</label>'+
       '<div class="rec-field"><textarea id="ffPunch" rows="2" placeholder="Because\u2026">'+esc(punch)+'</textarea></div>'+
 
-      '<label class="rec-label">What kind is it?</label>'+
-      '<div class="rec-field" style="padding:0">'+
-        '<select id="ffCat" style="width:100%;background:transparent;border:none;color:var(--ink);font-size:15px;padding:12px">'+
-          funnelCatOptions(collName)+
-        '</select></div>'+
+      '<label class="rec-label">Who shall we thank?</label>'+
+      '<div class="rec-field"><input id="ffWho" placeholder="Chris in Memphis \u2014 optional" '+
+        'value="'+esc(SETTINGS.funnelWho||'')+'"></div>'+
 
-      '<label class="rec-label">Your first name (so we can thank you)</label>'+
-      '<div class="rec-field"><input id="ffWho" placeholder="Optional" value="'+
-
-      '<label class=\"rec-label\">Where you\u2019re from</label>'+
-      '<div class=\"rec-field\"><input id=\"ffWhere\" placeholder=\"Ohio \u2014 optional\" value=\"'+esc(SETTINGS.funnelWhere||'')+'\"></div>'+esc(funnelWhoDefault())+'"></div>'+
-
-      '<button class="rec-save" onclick="funnelSend()">\u2709\ufe0f Send it in</button>'+
-      '<button class="home-half" style="width:100%;margin-top:8px" onclick="funnelMakeCard()">\ud83d\uddbc\ufe0f Make a picture of it first</button>'+
+      '<button class="home-half" style="width:100%;margin-top:12px" onclick="funnelMakeCard()">'+
+        '\ud83c\udfa8 Draw it first</button>'+
       '<div id="ffPicHere"></div>'+
-      '<p class="rec-hint" style="margin-top:10px;font-size:11px;line-height:1.5">Nothing is sent until you tap. By sending it in you\u2019re happy for us to use it in the app. Keep it clean and kind \u2014 same as Honey.</p>'+
+
+      '<button class="rec-save" style="margin-top:10px" onclick="funnelSend()">\u2709\ufe0f Send it in</button>'+
+
+      '<p class="rec-hint" style="margin-top:10px;font-size:11px;line-height:1.5">Nothing is sent '+
+        'until you tap. By sending it in you\u2019re happy for us to use it in the app and share it. '+
+        'Keep it clean and kind \u2014 same as Honey.</p>'+
     '</div>';
   document.body.appendChild(d);
 }
+var _funnelCat='';
 var _funnelPic=null, _funnelPicName='';
 
 /* Make the picture and KEEP it, so the joke and the picture travel together.
@@ -12460,10 +12635,16 @@ function funnelMakeCard(){
   var pn=((document.getElementById('ffPunch')||{}).value||'').trim();
   if(!pn){ toast("It needs a punchline first."); return; }
   var who=((document.getElementById('ffWho')||{}).value||'').trim();
-  var where=((document.getElementById('ffWhere')||{}).value||'').trim();
-  var credit = who ? ('Sent in by '+who+(where?(' in '+where):'')) : '';
-  jokeCardShare(st, pn, function(blob, name){
-    _funnelPic=blob; _funnelPicName=name||'honey-joke.png';
+  var credit = who ? ('Sent in by '+who) : '';
+
+  /* THE SAME PICTURE THE JOKE PAGE MAKES.
+     This used to call jokeCardShare, which draws words on a plain background -
+     the blue screen with text on it. The one people actually love is the drawn
+     panel from honeyComic, so the funnel makes that instead. Same gate: the
+     first is free, then it costs honey, exactly as on the joke page. */
+  honeyComic(st, pn, null, function(blob, name){
+    if(!blob) return;
+    _funnelPic=blob; _funnelPicName=name||('funnel-'+Date.now()+'.png');
     var host=document.getElementById('ffPicHere');
     if(host){
       host.innerHTML='<div style="margin:10px 0 0">'+
@@ -12530,11 +12711,11 @@ var _funnelPicUrl='';
 function _funnelSendNow(){
   var st=((document.getElementById('ffSetup')||{}).value||'').trim();
   var pn=((document.getElementById('ffPunch')||{}).value||'').trim();
-  var cat=((document.getElementById('ffCat')||{}).value||'').trim();
+  var cat=_funnelCat||'';
   var who=((document.getElementById('ffWho')||{}).value||'').trim();
-  var where=((document.getElementById('ffWhere')||{}).value||'').trim();
-  /* Remembered, so a regular never types their town twice. */
-  if(where){ SETTINGS.funnelWhere=where; saveSettings(); }
+  /* One box now - "Chris in Memphis" - remembered so a regular never retypes it. */
+  if(who){ SETTINGS.funnelWho=who; saveSettings(); }
+  var where='';
   if(!st && !pn){ toast("Write the joke first."); return; }
   if(!pn){ toast("It needs a punchline."); return; }
   /* checked before it leaves the phone, so you never have to read it */
@@ -12549,7 +12730,7 @@ function _funnelSendNow(){
     'CATEGORY:  '+cat+'\n'+
     'FROM:      '+(who||'(anonymous)')+(where?('  \u00b7  '+where):'')+'\n'+
     /* the line that goes under the picture when you post it */
-    'CREDIT:    '+(who ? ('Sent in by '+who+(where?(' in '+where):'')) : 'Sent in anonymously')+'\n'+
+    'CREDIT:    '+(who ? ('Sent in by '+who) : 'Sent in anonymously')+'\n'+
     (_funnelPicUrl ? ('PICTURE:   '+_funnelPicUrl+'\n') : '')+
     'BUILD:     '+(window.HONEY_BUILD||'')+'\n\n'+
     'SETUP:     '+st+'\n'+
@@ -13282,12 +13463,29 @@ function calAutoPush(rem){
    iOS blocks inside an app wrapper, and Calendar isn't a share target anyway.
    Now it writes straight into the calendar through the native plugin.
    Plugin: @capgo/capacitor-calendar (iOS + Android). */
+/* Getting hold of the calendar plugin.
+   Capacitor.Plugins only carries plugins exposed through the old bridge. This
+   one calls registerPlugin('CapacitorCalendar') in its own JS, which does NOT
+   put it there - so C.Plugins.CapacitorCalendar was empty and every "Add to
+   calendar" fell through to the .ics share sheet instead.
+   Capacitor.registerPlugin is available on the global object and builds a
+   working proxy to the native side, so ask for it that way when it's absent. */
+var _calP;
 function calPlugin(){
+  if(_calP !== undefined) return _calP;
+  _calP = null;
   try{
     var C=window.Capacitor;
-    if(!C || !C.Plugins || !C.isNativePlatform || !C.isNativePlatform()) return null;
-    return C.Plugins.CapacitorCalendar || C.Plugins.Calendar || null;
-  }catch(e){ return null; }
+    if(!C || !C.isNativePlatform || !C.isNativePlatform()) return _calP;
+    var P = (C.Plugins && (C.Plugins.CapacitorCalendar || C.Plugins.Calendar)) || null;
+    if(!P && typeof C.registerPlugin==='function'){
+      try{ P = C.registerPlugin('CapacitorCalendar'); }catch(e){}
+    }
+    /* a proxy with none of the methods on it is no use to us */
+    if(P && !(P.createEventWithPrompt || P.createEvent)) P=null;
+    _calP = P || null;
+  }catch(e){ _calP=null; }
+  return _calP;
 }
 /* Apple's own "Add Event" sheet, pre-filled. Needs no read permission, and the
    person sees exactly what's going in before it lands. */
@@ -13368,6 +13566,18 @@ function pushAction(label,href,download,filename,cb){
   logMsg({w:'them',k:'text',t:label});
   resetIdle();
 }
+/* Pick at random, but never the one just used. Saying the same line twice
+   running is the fastest way to sound like a machine. */
+var _lastPick={};
+function noRepeat(arr, key){
+  if(!arr || arr.length<2) return arr && arr[0];
+  var last=_lastPick[key], pick, guard=0;
+  do { pick=arr[Math.floor(Math.random()*arr.length)]; guard++; }
+  while(pick===last && guard<12);
+  _lastPick[key]=pick;
+  return pick;
+}
+
 function replyTo(l){
   if(S.isSelf) return selfReply(l);
   // ── in-chat language helper: "how do you say ___ in spanish?" ──
@@ -13403,13 +13613,35 @@ function replyTo(l){
   /* The old third line — "Noted. You want company or comedy?" — was landing on
      anything unmatched, including plain hellos. A catch-all should keep the
      conversation going, not hand somebody a menu. */
-  var generic=["Mm. Tell me more.",
-    "I'm listening. Go on.",
-    "Tell me more about that.",
-    "I hear you. What else?",
+  /* WHAT SHE SAYS WHEN SHE HASN'T UNDERSTOOD.
+     On the free tier this is most of the conversation, so it carries the weight.
+     Two things were wrong: only six lines, and nothing stopping her using the
+     same one twice running - which is exactly what makes somebody decide
+     there's nobody home.
+     These hand the conversation back rather than judging it. Not "that's good"
+     or "that sounds hard" - she doesn't know that. Curious, warm, and always
+     ending somewhere the person can go. */
+  var generic=[
+    "Oh really? Tell me more about that.",
+    "Now that sounds like something we could get into.",
+    "Go on \u2014 I want to hear the rest.",
+    "Mm. What happened next?",
+    "That's interesting. What made you think of it?",
+    "I'm listening. Keep going.",
+    "And how did that sit with you?",
+    "Say more about that, would you?",
+    "Well now. What else?",
+    "I'd like to hear more of that.",
+    "What's the story behind it?",
+    "Hm. Tell me the rest.",
+    "You've got my attention. Go on.",
+    "And then what?",
+    "What made today the day for that?",
+    "That's worth talking about. What else is on it?",
     "Mm-hmm. And how do you feel about it?",
-    "Keep going, I'm right here."];
-  return vibeColor(rand(generic));
+    "Keep going, I'm right here."
+  ];
+  return vibeColor(noRepeat(generic, 'generic'));
 }
 
 /* ════ SELF / REFLECTIVE MODE ════ */
@@ -16381,10 +16613,18 @@ function shareLovedImage(){
     var meta=shareMeta();
     cv.toBlob(function(blob){
       var file=new File([blob],meta.fname,{type:'image/png'});
-      var text=(loveCurrent?loveCurrent.replace(/\n/g,' — '):'')+'\n\n'+meta.footer;
+      var joke=(loveCurrent?loveCurrent.replace(/\n/g,' — '):'');
+      /* THE JOKE IS ALREADY ON THE PICTURE.
+         Sending it again underneath read as though we'd said it twice. When the
+         picture goes, the words go with it, so the message only carries where it
+         came from. If the picture can't be attached the joke goes back in,
+         because then the words are all there is. */
+      var withPic = meta.footer;
+      var noPic   = (joke?joke+'\n\n':'')+meta.footer;
       if(navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
-        navigator.share({files:[file], text:text, title:meta.title}).then(()=>afterShare()).catch(()=>imgFallback(blob,text,meta.fname));
-      } else imgFallback(blob,text,meta.fname);
+        navigator.share({files:[file], text:withPic, title:meta.title})
+          .then(()=>afterShare()).catch(()=>imgFallback(blob,noPic,meta.fname));
+      } else imgFallback(blob,noPic,meta.fname);
     }, 'image/png');
   });
 }
@@ -17755,12 +17995,18 @@ function renderLearnPhrases(){
   var title=document.getElementById('learnPhraseTitle'); if(title) title.textContent=L.flag+' '+L.nm+' phrases';
   /* Pint gets the first 20 of each language; paid tiers get them all.
      langLocked() had been written but never called, so every tier had the lot. */
-  var locked=0;
+  /* A wall of padlocks reads as stingy and buries the free phrases under a long
+     scroll. But hiding every locked one leaves "53 more" meaning nothing - you
+     can't want what you can't see. So: three as a taste, then the offer. */
+  var TEASE=3;
+  var locked=0, teased=0;
   L.phrases.forEach(function(p,idx){
     var isLocked = !isOwner() && langLocked(idx);
     var row=document.createElement('div'); row.className='learn-row'+(isLocked?' lr-locked':'');
     if(isLocked){
       locked++;
+      if(teased>=TEASE) return;   /* counted, but not drawn */
+      teased++;
       row.innerHTML='<div class="lr-tx"><b>'+esc(p.say)+'</b><small>'+esc(p.en)+'</small></div><button class="lr-say">🔒</button>';
       row.onclick=function(){ go('tiers'); };
     } else {
@@ -17772,8 +18018,14 @@ function renderLearnPhrases(){
   if(locked>0){
     var note=document.createElement('div');
     note.className='learn-locknote';
-    note.innerHTML='🔒 <b>'+locked+' more</b> come with Quart.'+
-      '<button class="home-half" style="width:100%;margin-top:9px" onclick="go(\'tiers\')">See a Quart</button>';
+    /* Gold, not grey. Grey is the colour of a button you can't press, and this
+       is the one button on the screen we most want pressed. */
+    note.innerHTML='🔒 <b>'+locked+' more</b> come with Quart \u2014 in every language.'+
+      '<button style="width:100%;margin-top:10px;'+
+      'background:linear-gradient(180deg,#E7C873,#BE9E57);color:#3A2C12;border:none;'+
+      'border-radius:13px;padding:15px;font-size:15px;font-weight:700;font-family:inherit;'+
+      'cursor:pointer;box-shadow:0 3px 10px rgba(190,158,87,.28)" '+
+      'onclick="go(\'tiers\')">🍯 Unlock them all</button>';
     w.appendChild(note);
   }
 }
@@ -17782,7 +18034,10 @@ function renderLearnFacts(){
   LEARN_FACT_CATS.forEach(cat=>{
     var card=document.createElement('div'); card.className='learn-fact-card';
     card.innerHTML='<div class="lf-h">'+cat.em+' '+cat.nm+'</div>';
-    var btn=document.createElement('button'); btn.className='lr-say'; btn.textContent='🔊 Tell me a '+cat.nm.toLowerCase()+' fact';
+    var btn=document.createElement('button'); btn.className='lr-say'; /* "Tell me a animals fact" - the category names are plural and the article
+       was hardcoded. Singularise, and pick a or an by the sound of it. */
+    var one=cat.nm.toLowerCase().replace(/ies$/,'y').replace(/s$/,'');
+    btn.textContent='🔊 Tell me '+(/^[aeiou]/.test(one)?'an ':'a ')+one+' fact';
     btn.onclick=()=>tellLearnFact(cat.id);
     card.appendChild(btn);
     w.appendChild(card);
@@ -22835,7 +23090,14 @@ function yardShortSci(p){
    uses to know a plant. So: photo, then drawing, then the emoji. */
 function yardTileImgFail(img){
   try{
-    if((img.getAttribute('data-stage')||'')==='photo'){
+    var stage=img.getAttribute('data-stage')||'';
+    /* their Pl@ntNet photo -> our photo -> our drawing -> the emoji */
+    if(stage==='mine'){
+      var sh=img.getAttribute('data-shot')||'';
+      if(sh){ img.setAttribute('data-stage','photo'); img.src=sh; return; }
+      stage='photo';
+    }
+    if(stage==='photo'){
       var d=img.getAttribute('data-draw')||'';
       if(d){ img.setAttribute('data-stage','draw'); img.src=d; return; }
     }
@@ -22849,10 +23111,16 @@ function yardTileHTML(id, from){
   var draw=p.img||'';
   var shot='';
   try{ shot = draw ? rangerPhotoPath(draw) : ''; }catch(e){}
-  var first = shot || draw;
+  /* If THEY have identified this plant, their own Pl@ntNet photograph wins. The
+     shipped drawing was only ever a stand-in until somebody met the real thing.
+     Their picture, then ours, then the drawing, then the emoji. */
+  var mine='';
+  try{ mine = refPhotoFor(id) || ''; }catch(e){}
+  var first = mine || shot || draw;
   var pic = first
     ? '<img class="yg-pic" src="'+first+'" alt="" loading="lazy" '+
-      'data-stage="'+(shot?'photo':'draw')+'" data-draw="'+draw+'" data-leaf="'+leaf+'" '+
+      'data-stage="'+(mine?'mine':(shot?'photo':'draw'))+'" '+
+      'data-shot="'+shot+'" data-draw="'+draw+'" data-leaf="'+leaf+'" '+
       'onerror="yardTileImgFail(this)">'
     : '<div class="yg-emoji">'+leaf+'</div>';
   return '<div class="yg-tile'+(on?' on':'')+'" id="ygTile_'+id+'">'+
