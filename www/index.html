@@ -9484,9 +9484,21 @@ function userSays(t){
   // open goals ("show my goals", "my honey pot goals")
   if(/(show|see|view|open|my)\b.*goals?\b/.test(l) || /honey ?pot/.test(l)){ openInsights(); return; }
   // view what's saved (check BEFORE create so "what's on my calendar" isn't caught as a create)
-  if(/(what('s| is| do i have)?.*(calendar|schedule|reminder|coming up|planned|going on)|my (calendar|schedule|reminders|agenda)|on my (calendar|schedule|plate)|anything (coming up|planned|scheduled)|do i have (any )?(plans|reminders|anything))/.test(l)){ showReminders(); return; }
+  /* Asking WHEN something is, is a lookup - "when is my doctor's appointment",
+     "what time is my appointment". Those were falling straight through, and
+     now that questions can no longer create reminders they'd have hit the
+     catch-all and got nothing at all. */
+  if(/(what('s| is| do i have)?.*(calendar|schedule|reminder|coming up|planned|going on)|my (calendar|schedule|reminders|agenda)|on my (calendar|schedule|plate)|anything (coming up|planned|scheduled)|do i have (any )?(plans|reminders|anything)|when('s| is| do| does| am| are)?\b.*\b(appointment|appt|meeting|doctor|dentist|hair|birthday|due|supposed to)|what time\b.*\b(is|do|does|am)\b)/.test(l)){ showReminders(); return; }
   // create a reminder — broad set of phrasings
-  if(!_blockAdd && /(remind me|reminder|remember to|don'?t let me forget|make sure i|i need to|i have to|i gotta|i should|note to self|set (a |an )?(reminder|alarm|appointment|event|alert)|schedule|book|plan to|add (a |an )?(reminder|event|appointment)?( to)?( my)? calendar|put .* (on|in) (my )?calendar|jot down|wake me|ping me|nudge me|alert me|tell me (later|to)|got to|need a reminder|add to calendar|new (event|appointment|reminder))/.test(l)){ doCalendar(t); return; }
+  /* QUESTIONS ARE NOT REMINDERS.
+     "i should" was in this list, so "what do you think I should have for
+     dinner?" was filed as a task called "have for dinner?" - and "you need to
+     be nicer" went on the shopping list the same way. A sentence that opens
+     with a question word, or ends in a question mark, is asking something.
+     Never a reminder. */
+  var _asking = /\?\s*$/.test(l) ||
+    /^(what|who|where|when|why|how|which|do|does|did|can|could|would|should|is|are|am|was|were)\b/.test(l.trim());
+  if(!_blockAdd && !_asking && /(remind me|reminder|remember to|don'?t let me forget|make sure i|i need to|i have to|i gotta|i should|note to self|set (a |an )?(reminder|alarm|appointment|event|alert)|schedule|book|plan to|add .{0,30}?(to|on) (my )?calendar|add (a |an )?(reminder|event|appointment)( to)?( my)? calendar|put .* (on|in) (my )?calendar|jot down|wake me|ping me|nudge me|alert me|tell me (later|to)|got to|need a reminder|add to calendar|new (event|appointment|reminder))/.test(l)){ doCalendar(t); return; }
   // "how much have I got left?" — answered from their own numbers, nothing sent anywhere
   if(isMoneyQuestion(l)){ moneyAnswer(); return; }
   // "what's for dinner?"
@@ -13587,6 +13599,15 @@ function noRepeat(arr, key){
 }
 
 function replyTo(l){
+  /* iOS turns every apostrophe into a curly one as you type, so "what's it
+     like being a computer" arrived as "what’s…" and matched none of the
+     patterns below - they all use the straight kind. Every question with an
+     apostrophe in it was quietly falling through to the catch-all.
+     Flatten the smart punctuation before any of the matching runs. */
+  l = String(l||'')
+        .replace(/[\u2018\u2019\u02bc]/g, "'")
+        .replace(/[\u201c\u201d]/g, '"')
+        .replace(/[\u2013\u2014]/g, '-');
   if(S.isSelf) return selfReply(l);
   // ── in-chat language helper: "how do you say ___ in spanish?" ──
   var langAsk = l.match(/how (?:do you|to) say (.+?)(?: in (spanish|french|german|italian))?\??$/i)
@@ -13878,6 +13899,11 @@ function chooseSpeechVoice(p){
 function cleanForSpeech(t){
   if(!t)return"";
   var s=String(t);
+  /* A sentence that ends in a colon is pointing at a button underneath it -
+     "Tap to add it to your calendar:" - which reads fine but SOUNDS wrong,
+     because the voice hangs on the colon and then stops. Spoken, it wants a
+     full stop. This is only for the audio; the words on screen keep theirs. */
+  s = s.replace(/:\s*$/, '.');
   // Fix glued capital runs first ("HEre"->"Here") so later caps-based rules and TTS read words, not letters.
   s=s.replace(/\b([A-Z]{2})([a-z]+)/g, function(m, caps, tail){ return caps.charAt(0)+caps.slice(1).toLowerCase()+tail; });
   s=s.replace(/°F/g,' degrees').replace(/°/g,' degrees');
@@ -22557,10 +22583,60 @@ function ftPrintGo(){
   }).join('');
 
   ftPrintClose();
-  /* Let the sheet paint before the print dialog grabs the page. */
+  /* WKWebView - the browser inside the app - has no window.print(). It doesn't
+     error, it simply does nothing, which is why tapping Print appeared to be
+     broken. In the app we hand the cards to the share sheet instead, where
+     iOS's own Print sits next to Save to Files. In a real browser, print
+     directly as before. */
+  var native=false;
+  try{ native = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform()); }catch(e){}
+
+  if(!native){
+    setTimeout(function(){
+      try{ window.print(); }
+      catch(e){ toast("This phone wouldn\u2019t open the printer."); }
+    }, 220);
+    return;
+  }
+
+  /* Wrap the same sheet in a standalone page and send it out as a file.
+     From the share sheet: Print, Save to Files, Mail - all of them work. */
   setTimeout(function(){
-    try{ window.print(); }
-    catch(e){ toast("This phone wouldn\u2019t open the printer."); }
+    try{
+      var css = (document.querySelector('style') ? '' : '');
+      var doc =
+        '<!DOCTYPE html><html><head><meta charset="utf-8">'+
+        '<title>Recipe cards</title><style>'+
+        'body{font-family:Georgia,serif;color:#000;background:#fff;margin:22px;}'+
+        '.rc-card{border:1px solid #bbb;border-radius:10px;padding:16px 18px;'+
+          'margin:0 0 14px;page-break-inside:avoid;break-inside:avoid;}'+
+        '.rc-title{font-size:19px;font-weight:700;margin:0 0 2px;}'+
+        '.rc-sub{font-size:11px;color:#555;margin:0 0 10px;font-style:italic;}'+
+        '.rc-h{font-size:10px;letter-spacing:.7px;text-transform:uppercase;'+
+          'font-weight:700;margin:12px 0 5px;border-bottom:1px solid #ddd;padding-bottom:3px;}'+
+        '.rc-list{margin:0;padding-left:18px;font-size:12.5px;line-height:1.7;}'+
+        '.rc-steps{font-size:12.5px;line-height:1.7;white-space:pre-wrap;margin:0;}'+
+        '.rc-img{max-width:150px;max-height:110px;object-fit:cover;border-radius:6px;'+
+          'float:right;margin:0 0 8px 12px;}'+
+        '.rc-foot{font-size:9.5px;color:#777;margin-top:12px;border-top:1px solid #eee;padding-top:6px;}'+
+        '.rc-cover{text-align:center;padding:40px 20px 26px;}'+
+        '.rc-cover h1{font-size:30px;margin:0 0 6px;}'+
+        '.rc-cover p{font-size:13px;color:#555;margin:0;}'+
+        '</style></head><body>'+ sheet.innerHTML +'</body></html>';
+
+      var blob=new Blob([doc], {type:'text/html'});
+      var file=new File([blob], 'recipe-cards.html', {type:'text/html'});
+      if(navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
+        navigator.share({files:[file], title:'Recipe cards'})
+          .then(function(){ toast('Choose Print, or Save to Files.'); })
+          .catch(function(){});
+        return;
+      }
+      /* no file sharing - open it in a real browser tab, which can print */
+      var url=URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      toast('Opened your cards \u2014 use Share, then Print.');
+    }catch(e){ toast("Couldn't get the cards ready."); }
   }, 220);
 }
 
