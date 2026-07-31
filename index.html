@@ -3089,6 +3089,7 @@ textarea{resize:none;line-height:1.4;}
       <button class="rec-mic" onclick="recDictate(&#39;recPunch&#39;,this)">🎤</button>
     </div>
     <button class="rec-save" onclick="saveMyJoke()">Save joke</button>
+        <div id="jokeSavedHere"></div>
     <button class="home-half" id="comicBtn" style="width:100%;margin-top:8px" onclick="honeyComicFromSheet()">🎨 Draw it as a Honey comic</button>
     <button class="home-half" style="width:100%;margin-top:7px" onclick="jokeCardFromSheet()">🖼️ Make a picture card — always free</button>
     <button class="home-half" style="width:100%;margin-top:7px" onclick="jokeCardTellHoney()">📣 Have Honey tell it</button>
@@ -11806,7 +11807,45 @@ function saveMyJoke(){
   renderMyJokes();
   if(typeof renderMyJokesScreen==='function') renderMyJokesScreen();
   var _cn=(jokeColls().find(function(c){return c.id===_coll;})||{}).name||'your jokes';
-  toast('Saved to '+_cn+'. Say \u201ctell me one of my jokes\u201d anytime.');
+  toast('Saved to '+_cn+'.');
+  /* Saving used to empty both boxes and leave the screen blank, with the joke
+     filed somewhere down the page. People who meant to draw it first lost sight
+     of it entirely. Keep it in front of them, and keep the comic one tap away. */
+  jokeSavedPanel(s, p, S.myJokes.length-1);
+}
+
+/* Shown where the form was, so nothing disappears on you. */
+function jokeSavedPanel(setup, punch, idx){
+  var host=document.getElementById('jokeSavedHere');
+  if(!host) return;
+  var g = (typeof comicCanMake==='function') ? comicCanMake() : {ok:false};
+  var comicLabel = g.ok
+    ? (g.free ? '\ud83c\udfa8 Draw it as a Honey comic \u2014 first one\u2019s free'
+              : '\ud83c\udfa8 Draw it as a Honey comic \u00b7 '+COMIC_COST+' \ud83c\udf6f')
+    : '\ud83c\udfa8 Honey comic \u00b7 '+COMIC_COST+' \ud83c\udf6f \u2014 '+(g.need||0)+' more to go';
+  host.innerHTML =
+    '<div style="background:rgba(140,170,120,.13);border:1px solid rgba(140,170,120,.34);'+
+      'border-radius:15px;padding:14px 15px;margin:12px 0 0">'+
+      '<div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.4px;'+
+        'text-transform:uppercase;margin-bottom:7px">\u2713 Kept</div>'+
+      '<p style="margin:0;font-size:14px;font-weight:600;line-height:1.35">'+esc(setup)+'</p>'+
+      '<p style="margin:3px 0 0;font-size:13.5px;font-style:italic;color:var(--muted);'+
+        'line-height:1.35">'+esc(punch)+'</p>'+
+      '<button class="home-half" style="width:100%;margin-top:11px"'+
+        (g.ok?'':' disabled style="width:100%;margin-top:11px;opacity:.45"')+
+        ' onclick="jokeSavedComic('+idx+')">'+comicLabel+'</button>'+
+      '<button class="home-half" style="width:100%;margin-top:7px;color:var(--muted)" '+
+        'onclick="jokeSavedClear()">Write another</button>'+
+    '</div>';
+}
+function jokeSavedClear(){
+  var h=document.getElementById('jokeSavedHere'); if(h) h.innerHTML='';
+  var a=document.getElementById('recSetup'); if(a) a.focus();
+}
+function jokeSavedComic(idx){
+  var j=(S.myJokes||[])[idx];
+  if(!j){ toast("That one's in your list below."); return; }
+  try{ honeyComic(j.s, j.p); }catch(e){ toast("Couldn't start the drawing."); }
 }
 /* Folding for boxes that contain their own contents — the Photo Suite's paid
    sections are each one box, so we fold what's inside rather than everything
@@ -12230,7 +12269,9 @@ function honeyComicFromSheet(){
    it works with no signal, it's always on-brand, and nothing unexpected can
    come back from a stranger's words. The honeypot and the web address ride
    along, so a shared laugh brings somebody back. */
-function jokeCardShare(setup, punch){
+/* onBlob: hand the finished picture back instead of opening the share sheet.
+   The Funny Funnel needs to KEEP the picture so it can travel with the joke. */
+function jokeCardShare(setup, punch, onBlob, credit){
   setup=(setup||'').trim(); punch=(punch||'').trim();
   if(!punch){ toast("It needs a punchline first."); return; }
 
@@ -12268,10 +12309,22 @@ function jokeCardShare(setup, punch){
   y=_jcWrap(ctx, punch, W/2, y, W-170, Math.round(pSize*1.26));
 
   function finish(){
+    /* Their name, on their card. Somebody who sends a joke in and sees
+       "Sent in by Sarah in Ohio" printed under it isn't a user any more -
+       she's the author of the thing, and that's the whole engine. */
+    if(credit){
+      ctx.save();
+      ctx.textAlign='center';
+      ctx.fillStyle='rgba(58,44,18,.62)';
+      ctx.font='italic 600 32px Georgia, serif';
+      ctx.fillText(credit, W/2, H-92);
+      ctx.restore();
+    }
     honeyMark(ctx, W, H);
     cv.toBlob(function(blob){
       if(!blob){ toast("Couldn't make the picture."); return; }
       var name='honey-joke-'+Date.now()+'.png';
+      if(typeof onBlob==='function'){ onBlob(blob, name); return; }
       var file=new File([blob], name, {type:'image/png'});
       if(navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
         navigator.share({ files:[file], title:'A joke from Tell Me Honey',
@@ -12321,6 +12374,39 @@ function jokeCardFromSheet(){
    straight in after a read-through. Nothing is sent without them tapping. */
 var FUNNEL_EMAIL = "laugh@tellmehoneyapp.com";
 
+/* ══════════ KEEP IT CLEAN ══════════════════════════════════════════════
+   The funnel says "clean and kind, same as Honey" and then accepted anything.
+   Checking here means you never have to read it - and the person is told
+   kindly, before they send, rather than wondering why they never heard back.
+   Add to the list as you meet things; it's a plain array on purpose. */
+var FUNNEL_NOTOK = [
+  "fuck","shit","bitch","bastard","cunt","dick","cock","pussy","tits","whore",
+  "slut","damn","piss","prick","wank","bollock","arse","asshole","jackass",
+  "nigger","faggot","retard","spastic","tranny","kike","spic","chink","wetback",
+  "porn","sex","xxx","nude","boobs","penis","vagina","horny","rape","molest",
+  "kill yourself","kys","suicide"
+];
+
+/* Word-boundary matching, so "Scunthorpe" and "grass" and "assess" are safe.
+   Returns the offending word, or '' when it's fine. */
+function funnelDirtyWord(text){
+  var t=' '+String(text||'').toLowerCase().replace(/[^a-z\s]/g,' ').replace(/\s+/g,' ')+' ';
+  for(var i=0;i<FUNNEL_NOTOK.length;i++){
+    var w=FUNNEL_NOTOK[i];
+    if(t.indexOf(' '+w+' ')>=0) return w;
+    if(w.indexOf(' ')>=0 && t.indexOf(' '+w+' ')>=0) return w;
+  }
+  return '';
+}
+
+function funnelIsClean(setup, punch, who, where){
+  var bad = funnelDirtyWord(setup) || funnelDirtyWord(punch) ||
+            funnelDirtyWord(who)   || funnelDirtyWord(where);
+  if(!bad) return true;
+  toast("Let's keep this one for the porch, not the app \u2014 clean and kind, same as Honey.");
+  return false;
+}
+
 function funnelOpen(){
   var setup=(document.getElementById('recSetup')||{}).value||'';
   var punch=(document.getElementById('recPunch')||{}).value||'';
@@ -12352,18 +12438,65 @@ function funnelOpen(){
         '</select></div>'+
 
       '<label class="rec-label">Your first name (so we can thank you)</label>'+
-      '<div class="rec-field"><input id="ffWho" placeholder="Optional" value="'+esc(funnelWhoDefault())+'"></div>'+
+      '<div class="rec-field"><input id="ffWho" placeholder="Optional" value="'+
+
+      '<label class=\"rec-label\">Where you\u2019re from</label>'+
+      '<div class=\"rec-field\"><input id=\"ffWhere\" placeholder=\"Ohio \u2014 optional\" value=\"'+esc(SETTINGS.funnelWhere||'')+'\"></div>'+esc(funnelWhoDefault())+'"></div>'+
 
       '<button class="rec-save" onclick="funnelSend()">\u2709\ufe0f Send it in</button>'+
       '<button class="home-half" style="width:100%;margin-top:8px" onclick="funnelMakeCard()">\ud83d\uddbc\ufe0f Make a picture of it first</button>'+
+      '<div id="ffPicHere"></div>'+
       '<p class="rec-hint" style="margin-top:10px;font-size:11px;line-height:1.5">Nothing is sent until you tap. By sending it in you\u2019re happy for us to use it in the app. Keep it clean and kind \u2014 same as Honey.</p>'+
     '</div>';
   document.body.appendChild(d);
 }
+var _funnelPic=null, _funnelPicName='';
+
+/* Make the picture and KEEP it, so the joke and the picture travel together.
+   The whole point of letting somebody draw their joke is that you get to see
+   what they saw. */
 function funnelMakeCard(){
   var st=((document.getElementById('ffSetup')||{}).value||'').trim();
   var pn=((document.getElementById('ffPunch')||{}).value||'').trim();
-  jokeCardShare(st, pn);
+  if(!pn){ toast("It needs a punchline first."); return; }
+  var who=((document.getElementById('ffWho')||{}).value||'').trim();
+  var where=((document.getElementById('ffWhere')||{}).value||'').trim();
+  var credit = who ? ('Sent in by '+who+(where?(' in '+where):'')) : '';
+  jokeCardShare(st, pn, function(blob, name){
+    _funnelPic=blob; _funnelPicName=name||'honey-joke.png';
+    var host=document.getElementById('ffPicHere');
+    if(host){
+      host.innerHTML='<div style="margin:10px 0 0">'+
+        '<img src="'+URL.createObjectURL(blob)+'" alt="" '+
+        'style="width:100%;border-radius:14px;display:block">'+
+        '<p style="font-size:11px;color:var(--muted);margin:6px 2px 0;line-height:1.5">'+
+        '\u2713 This goes with your joke when you send it in.</p></div>';
+    }
+    toast("Picture made \u2014 it'll go with your joke.");
+  }, credit);
+}
+
+/* Put the picture somewhere Sally can see it. A mailto can carry text and
+   nothing else, so the picture goes to storage and the email carries its link.
+   If the upload fails for any reason the joke still sends - the words are the
+   part that matters. */
+var FUNNEL_BUCKET_URL = "https://gphzfuhruwlwvitktqjg.supabase.co/storage/v1/object";
+var FUNNEL_BUCKET = "funnel";
+
+function funnelUploadPicture(blob, name){
+  return new Promise(function(resolve){
+    if(!blob){ resolve(''); return; }
+    var path = FUNNEL_BUCKET+'/'+(name||('joke-'+Date.now()+'.png'));
+    fetch(FUNNEL_BUCKET_URL+'/'+path, {
+      method:'POST',
+      headers:{ 'apikey':PREMIUM_VOICE_KEY,
+                'Authorization':'Bearer '+PREMIUM_VOICE_KEY,
+                'Content-Type':'image/png' },
+      body: blob
+    }).then(function(r){
+      resolve(r.ok ? (FUNNEL_BUCKET_URL+'/public/'+path) : '');
+    }).catch(function(){ resolve(''); });
+  });
 }
 function funnelClose(){ var d=document.getElementById('funnelBox'); if(d) d.remove(); }
 function funnelWhoDefault(){
@@ -12379,12 +12512,33 @@ function funnelCatOptions(preferred){
   }).join('');
 }
 function funnelSend(){
+  /* If they drew one, get it somewhere Sally can look at it first. */
+  if(_funnelPic){
+    var pic=_funnelPic, nm=_funnelPicName;
+    _funnelPic=null;
+    toast('Sending your picture\u2026');
+    funnelUploadPicture(pic, nm).then(function(url){
+      _funnelPicUrl=url||'';
+      funnelSend();
+    });
+    return;
+  }
+  return _funnelSendNow();
+}
+var _funnelPicUrl='';
+
+function _funnelSendNow(){
   var st=((document.getElementById('ffSetup')||{}).value||'').trim();
   var pn=((document.getElementById('ffPunch')||{}).value||'').trim();
   var cat=((document.getElementById('ffCat')||{}).value||'').trim();
   var who=((document.getElementById('ffWho')||{}).value||'').trim();
+  var where=((document.getElementById('ffWhere')||{}).value||'').trim();
+  /* Remembered, so a regular never types their town twice. */
+  if(where){ SETTINGS.funnelWhere=where; saveSettings(); }
   if(!st && !pn){ toast("Write the joke first."); return; }
   if(!pn){ toast("It needs a punchline."); return; }
+  /* checked before it leaves the phone, so you never have to read it */
+  if(!funnelIsClean(st, pn, who, where)) return;
 
   /* Arrives ready to paste into the library — same shape the code uses,
      so a good one is a copy away from being in the app. */
@@ -12393,7 +12547,10 @@ function funnelSend(){
     'A joke through the Funny Funnel\n'+
     '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n'+
     'CATEGORY:  '+cat+'\n'+
-    'FROM:      '+(who||'(anonymous)')+'\n'+
+    'FROM:      '+(who||'(anonymous)')+(where?('  \u00b7  '+where):'')+'\n'+
+    /* the line that goes under the picture when you post it */
+    'CREDIT:    '+(who ? ('Sent in by '+who+(where?(' in '+where):'')) : 'Sent in anonymously')+'\n'+
+    (_funnelPicUrl ? ('PICTURE:   '+_funnelPicUrl+'\n') : '')+
     'BUILD:     '+(window.HONEY_BUILD||'')+'\n\n'+
     'SETUP:     '+st+'\n'+
     'PUNCHLINE: '+pn+'\n\n'+
@@ -14262,8 +14419,84 @@ var VIBE_VOICE_DIRECTION={
   Mysterious: "Personality: a storyteller by candlelight. Tone: low, intriguing, a little theatrical. Emotion: playful intrigue, like sharing a delicious secret. Pacing: slow builds and dramatic little pauses."
 };
 function vibeVoiceDirection(){ return VIBE_VOICE_DIRECTION[(typeof S!=='undefined'&&S.vibe)||'Warm'] || VIBE_VOICE_DIRECTION.Warm; }
+/* ══════════ WHAT THE VOICE COSTS YOU ══════════════════════════════════
+   CLONE_DAILY_CAP guards the USER'S own cloned voice. Honey's own voice had no
+   guard at all - and Honey's voice is the one everybody actually hears, so the
+   uncapped path was the default path. A Quart subscriber at $8.99 who talked
+   all day was billed to the ElevenLabs account character by character with
+   nothing to stop it.
+   So: a daily character budget per tier. Generous enough that nobody normal
+   will meet it, low enough that nobody can run up a bill. When it's reached,
+   Honey keeps talking in the phone's own voice for the rest of the day - the
+   same graceful landing the clone cap already uses. Recorded clips are never
+   affected; those cost nothing and play forever. */
+/* A BACKSTOP, NOT A PRODUCT LIMIT.
+   The real limits were already here and deliberate: AI_CHAT_DAILY caps replies
+   at 40 a day on Quart and 70 on Gallon, and CLONE_DAILY_CAP holds live cloning
+   at 70. Those were reasoned about, and this must not undercut them - a person
+   who is allowed 40 replies must be able to hear all 40.
+   What had no ceiling was everything ELSE that gets spoken aloud: long readings,
+   verses with no recording, puzzle lines. This sits above the deliberate caps
+   and only catches the unexpected. Set to roughly 50% more than the chat cap
+   could consume, so it should never fire in normal use. */
+var CLOUD_DAILY_CHARS = { quart:7500, gallon:13000, gallonplus:15000, owner:200000 };
+
+function cloudBudgetToday(){
+  var t = (typeof isOwner==='function' && isOwner()) ? 'owner' : (S.tier||'pint');
+  return CLOUD_DAILY_CHARS[t] || 0;
+}
+function cloudUsedToday(){
+  var d=new Date().toISOString().slice(0,10);
+  var u=SETTINGS.cloudChars;
+  if(!u || u.d!==d){ u={d:d, n:0}; SETTINGS.cloudChars=u; }
+  return u.n;
+}
+function cloudBumpUsed(n){
+  cloudUsedToday();
+  SETTINGS.cloudChars.n += (n||0);
+  saveSettings();
+}
+function cloudOverBudget(n){
+  var cap=cloudBudgetToday();
+  if(!cap) return false;
+  return (cloudUsedToday() + (n||0)) > cap;
+}
+
+/* ONE ANSWER FOR EVERY VOICE.
+   Three different voices can run out in a day - Honey's, a premium one they
+   picked, or a clone of their own - and each used to end differently: two
+   different messages and one that said nothing at all. Whatever they chose,
+   the same thing should happen and the same sentence should explain it.
+   Nothing stops. The phone's own voice carries the rest of the day. */
+function voiceRestingName(){
+  try{
+    if(S.voice==='myclone' && typeof hasClone==='function' && hasClone()) return 'Your voice';
+    if(S.voice && S.voice!=='honey'){
+      var nm = (typeof EL_VOICES!=='undefined' && EL_VOICES[S.voice] && EL_VOICES[S.voice].name)
+             ? EL_VOICES[S.voice].name : '';
+      return nm ? (nm+"'s voice") : 'That voice';
+    }
+  }catch(e){}
+  return "Honey's voice";
+}
+
+function voiceRestFallback(t){
+  var today=new Date().toISOString().slice(0,10);
+  if(SETTINGS._voiceRestTold!==today){
+    SETTINGS._voiceRestTold=today;
+    try{ saveSettings(); }catch(e){}
+    try{ toast(voiceRestingName()+" is having a rest \u2014 back tomorrow. "+
+               "Carrying on in your phone's own voice."); }catch(e){}
+  }
+  try{ if('speechSynthesis' in window) speak(t); }catch(e){}
+}
+
 function cloudSpeak(t){
   t=cleanForSpeech(t); if(!t)return;
+  /* Over the day's budget? Hand over to the phone's own voice. Nobody is cut
+     off mid-sentence and nothing is silently billed. */
+  if(cloudOverBudget(t.length)){ voiceRestFallback(t); return; }
+  cloudBumpUsed(t.length);
   speakQueue++; cloudInFlight++; setTalking(true); if(listening) pauseListening();
   var req;
   if(CLOUD.provider==='elevenlabs'){
@@ -14274,9 +14507,9 @@ function cloudSpeak(t){
     var body={ text:t, speed:clampNum(S.rate||0.85,0.7,1.2) };
     if((S.voice==='myclone') && hasClone() && cloneMaySpeak()){
       if(cloneCapReached()){
-        // gently fall back to Honey's free recorded voice for the rest of the day
+        /* same landing as every other cap - one message, one behaviour */
         cloudInFlight=Math.max(0,cloudInFlight-1); speakQueue=Math.max(0,speakQueue-1); setTalking(false);
-        if('speechSynthesis'in window) speak(t);
+        voiceRestFallback(t);
         return;
       }
       body.voiceId=S.cloneVoiceId;
@@ -20581,7 +20814,7 @@ function rangerShowResult(id){
         '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted)"><span>breezy</span><span>fact</span><span>teach</span><span>nerd</span></div>'+
         '<div class="rte" style="background:rgba(0,0,0,.25);border-radius:9px;padding:9px 11px;margin-top:9px;font-size:12.5px;line-height:1.5">'+p.teach[0]+'</div></div>'+
       '<button class="home-half" style="width:100%;margin-top:11px" id="bkYard_'+id+'" onclick="bookYardToggle(\''+id+'\')">'+(bookInYard(id)?'✓ Growing at my place':'🌱 This grows in my yard')+'</button>'+
-    '<div style="display:flex;gap:6px;margin-top:7px"><button class="home-half" style="flex:1" onclick="rangerAddCook(\''+id+'\',this)">🧺 Cooking list</button><button class="home-half" style="flex:1" onclick="rangerShareBook(\''+id+'\')">↗ Share</button></div>'+
+    '<div style="display:flex;gap:6px;margin-top:7px"><button class="home-half" style="flex:1" onclick="plantFindRecipes(\''+id+'\')">🍳 Find recipes</button><button class="home-half" style="flex:1" onclick="rangerAddCook(\''+id+'\',this)">🧺 Cooking list</button></div>'+'<button class="home-half" style="width:100%;margin-top:7px" onclick="rangerShareBook(\''+id+'\')">↗ Share with a friend</button>'+'<div id="plantRecipes_'+id+'"></div>'+
     (_stage.length? rangerRetryPanel() : '')+
     '</div></div>'+
     '<p style="font-size:11px;color:var(--muted);margin:10px 2px 0;line-height:1.5">'+p.intro+'</p>';
@@ -22210,7 +22443,7 @@ function rangerShowShelfPlant(id, shelf, top){
       yardSourceHTML(p)+
       '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:9px 11px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11px;color:#ffcf6b;line-height:1.45">'+p.safety+'</p></div>'+
       '<button class="home-half" style="width:100%" id="shYard_'+id+'" onclick="shelfYardToggle(\''+id+'\')">'+(yardHas(shelf==='garden'?('gd:'+id):id)?'✓ Growing at my place':'🌱 This grows in my yard')+'</button>'+
-      '<div style="display:flex;gap:6px;margin-top:7px"><button class="home-half" style="flex:1" onclick="rangerAddCook(\''+id+'\',this)">🧺 Cooking list</button></div>'+
+      plantActionSheet(id, p, {yardToggle:false})+'<div id="plantRecipes_'+id+'"></div>'+
       (_stage.length? rangerRetryPanel() : '')+
     '</div></div>';
 }
@@ -22776,6 +23009,66 @@ function yardEatHTML(p){
   return '<p style="margin:10px 0 0;font-size:12.5px;line-height:1.55">'+t+'</p>';
 }
 
+/* ══════════ ONE ACTION SHEET FOR EVERY PLANT ══════════════════════════
+   Four different cards had four different sets of buttons, and the one you
+   reach from "What's in your yard" had none at all - so a plant you'd ticked
+   as growing at your place couldn't be put on the cooking list, while the same
+   plant reached another way could. If it's food, it gets the same choices
+   wherever you meet it. Marked not edible, the food ones drop away and the
+   rest stay, because a plant is still worth keeping a record of. */
+function plantActionSheet(id, p, opts){
+  opts = opts || {};
+  if(!p) return '';
+  var food = (p.edible !== false);
+  var nm = String(p.name||'').replace(/'/g,"\\'");
+  var out = '';
+
+  if(opts.yardToggle !== false){
+    out += '<button class="home-half" style="width:100%;margin-top:11px" id="bkYard_'+id+'" '+
+      'onclick="bookYardToggle(\''+id+'\')">'+
+      (bookInYard(id) ? '\u2713 Growing at my place' : '\ud83c\udf31 This grows in my yard')+'</button>';
+  }
+  if(food){
+    out += '<div style="display:flex;gap:6px;margin-top:7px">'+
+      '<button class="home-half" style="flex:1" onclick="plantFindRecipes(\''+id+'\')">\ud83c\udf73 Find recipes</button>'+
+      '<button class="home-half" style="flex:1" onclick="rangerAddCook(\''+id+'\',this)">\ud83e\uddfa Cooking list</button>'+
+    '</div>';
+  }
+  out += '<button class="home-half" style="width:100%;margin-top:7px" '+
+    'onclick="rangerShareBook(\''+id+'\')">\u2197 Share with a friend</button>';
+  return out;
+}
+
+/* Recipes for a book plant - the same search the yard plants already had. */
+function plantFindRecipes(id){
+  var p=null;
+  try{ p = yardPlant(id) || (typeof RANGER_PLANTS!=='undefined' ? RANGER_PLANTS[id] : null); }catch(e){}
+  if(!p){ toast("Couldn't find that plant."); return; }
+  var q = myYardCookQuery(p.name);
+  toast('Looking for recipes with '+q+'\u2026');
+  rangerRecipeSearch(q, function(list){
+    var box=document.getElementById('plantRecipes_'+id);
+    if(!box){ toast("Open the plant again to see them."); return; }
+    if(!list || !list.length){
+      box.innerHTML='<p style="font-size:12px;color:var(--muted);margin:12px 2px 0">'+
+        'Nothing came back for '+esc(q)+' this time.</p>';
+      return;
+    }
+    box.innerHTML='<div style="margin-top:14px;background:rgba(140,170,120,.12);'+
+      'border:1px solid rgba(140,170,120,.34);border-radius:14px;padding:12px 13px">'+
+      '<div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.4px;'+
+      'margin:0 0 8px;text-transform:uppercase">\ud83c\udf73 Recipes with '+esc(q)+'</div>'+
+      list.map(function(r){
+        return '<a href="'+(r.url||'#')+'" target="_blank" rel="noopener" '+
+          'style="display:flex;gap:10px;align-items:center;text-decoration:none;color:inherit;'+
+          'padding:8px 0;border-top:1px solid rgba(255,255,255,.07)">'+
+          (r.image?'<img src="'+r.image+'" style="width:46px;height:46px;object-fit:cover;border-radius:9px;flex:0 0 auto">':'')+
+          '<span style="font-size:13px;line-height:1.35">'+esc(r.title)+'</span></a>';
+      }).join('')+'</div>';
+    try{ box.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+  });
+}
+
 function yardShow(id){
   var p=yardPlant(id); if(!p)return;
   var card=document.getElementById('ypCard'); if(!card)return;
@@ -22802,7 +23095,9 @@ function yardShow(id){
       yardSourceHTML(p)+
       '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:9px 11px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11px;color:#ffcf6b;line-height:1.45">'+p.safety+'</p></div>'+
       '<button onclick="yardToggle(\''+id+'\');yardShow(\''+id+'\');openYardIndexRefresh()" style="width:100%;background:'+(have?'rgba(255,255,255,.06)':'linear-gradient(180deg,#e7c873,#caa44a)')+';color:'+(have?'var(--muted)':'#1a1405')+';border:'+(have?'1px solid rgba(255,255,255,.12)':'none')+';border-radius:13px;padding:13px;font-size:14.5px;font-weight:700;cursor:pointer">'+(have?'✓ Growing at my place':'＋ This grows at my place')+'</button>'+
-    '</div></div>';
+    '</div></div>'+
+    plantActionSheet(id, p, {yardToggle:false})+
+    '<div id="plantRecipes_'+id+'"></div>';
   card.scrollIntoView({behavior:'smooth',block:'start'});
 }
 /* ── RANGER SETTINGS: where it shows up (chat / home) ── */
