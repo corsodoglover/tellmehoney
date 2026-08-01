@@ -11039,7 +11039,7 @@ var PLANT_FACTS=[
 function funFact(cat, arr){
   var idx=Math.floor(Math.random()*arr.length);
   try{
-    var clip=HONEY_AUDIO_BASE+cat+"_"+String(idx+1).padStart(2,'0')+".mp3";
+    var clip=HONEY_AUDIO_BASE+cat+"_"+String(idx+1).padStart(2,'0')+".m4a";
     clearSpeech();
     new Audio(clip).play().catch(function(){});  // silent if not recorded yet
   }catch(e){}
@@ -14704,7 +14704,13 @@ function playHoneyClip(clipName, done){
     }
   };
 
-  try{ a.src = HONEY_AUDIO_BASE + clipName + ".mp3"; a.load(); }
+  /* .m4a, NOT .mp3. The clips were 128kbps MP3 — music encoding for one
+     voice — and 4,026 of them came to 208MB, which put the Android bundle at
+     236MB against Google's 200MB ceiling. Re-encoded to 64kbps mono AAC they
+     come to 104MB and sound the same. Filenames are otherwise unchanged, so
+     every lookup key in HONEY_AUDIO_MAP still matches. The masters are kept
+     outside the project at ~/Desktop/tellmehoney-originals. */
+  try{ a.src = HONEY_AUDIO_BASE + clipName + ".m4a"; a.load(); }
   catch(e){ clearDog(); finish("threw", true); }
 }
 
