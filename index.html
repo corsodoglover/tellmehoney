@@ -2581,8 +2581,15 @@ textarea{resize:none;line-height:1.4;}
     <button class="rec-save" onclick="tpKeepPhoto()" style="width:100%;background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold);margin-bottom:6px">❤️ Keep in Memories</button>
     <div class="vid-status" id="bgStatus"></div>
 
-    <!-- SHARE YOUR OWN VIDEO (FREE) — no preview, straight to the share sheet -->
-    <div class="cloud-box" id="tpOwnVidBox" style="margin-bottom:14px">
+    <!-- SHARE YOUR OWN VIDEO (FREE) — no preview, straight to the share sheet
+         HIDDEN 1 Aug 2026. Cut because it competes with the phone's own Photos
+         app and loses. The point of the Photo Suite is making something they
+         couldn't make themselves; picking an existing video off the camera roll
+         and sending it is a thing their phone already does better. Entry point
+         hidden rather than deleted — every id below still exists, so
+         tpPickOwnVideo / tpSendOwnVideo and any handler holding a reference
+         stay safe. Remove properly later if it's still dead. -->
+    <div class="cloud-box" id="tpOwnVidBox" style="margin-bottom:14px;display:none">
       <div class="cloud-head foldable" onclick="boxToggle('tpOwnVid','tpOwnVidBox')"><span>🎥 Send a video from your phone</span><span class="fold-tri">▾</span></div>
       <p class="rec-hint" style="margin:6px 0 10px">Pick any video off your phone, add a line, and send it — a joke, a birthday, an announcement. Free, nothing stored.</p>
       <div class="rec-field"><input id="tpOwnVidLine" placeholder="Add a line to send with it — e.g. Happy Birthday!"></div>
@@ -2994,8 +3001,9 @@ textarea{resize:none;line-height:1.4;}
     </div>
     <div class="vid-status" id="vidStatus"></div>
 
-    <div class="cloud-box">
-      <div class="cloud-head"><span>🎥 Send a video from your phone</span></div>
+    <!-- HIDDEN 1 Aug 2026 — second copy of the same cut feature. See note above
+         the tpOwnVidBox block. Ids kept live for onOwnVideoPick. -->
+    <div class="cloud-box" id="ownVidBox" style="display:none">
       <p class="rec-hint" style="margin:6px 0 10px">Pick any video off your phone and send it with your message — a joke, an event, an announcement, anything. Free, straight from your phone, nothing stored.</p>
       <button class="rec-save" onclick="document.getElementById(&#39;ownVidInput&#39;).click()" style="background:var(--panel2);color:var(--gold);border:1.5px solid var(--gold)">🎥 Pick a video &amp; send</button>
       <input type="file" id="ownVidInput" accept="video/*" class="file-hidden" onchange="onOwnVideoPick(event)">
@@ -5457,16 +5465,46 @@ function offlineNote(what){
   return lines[what] || "There's no signal right now. Try again in a bit.";
 }
 
+/* Reopen a connection iOS closed underneath us. Guarded so a burst of failed
+   writes triggers one reopen, not twenty. */
+var _dbReopening=false;
+function dbRevive(retryFn){
+  if(_dbReopening) return;
+  _dbReopening=true;
+  DB_OK=false; DB=null;
+  try{
+    dbOpen(function(){
+      _dbReopening=false;
+      if(DB_OK && typeof retryFn==='function'){ try{ retryFn(); }catch(e){} }
+    });
+  }catch(e){ _dbReopening=false; }
+}
+
 /* One place that actually notices when a write fails. Every store goes through
-   it — settings, roster (which holds journals and friends), insights, history. */
-function _dbPut(value, key){
+   it — settings, roster (which holds journals and friends), insights, history.
+   A dead connection now gets one reopen and one retry before anyone is told
+   anything; only a failure that survives that is worth bothering them about. */
+function _dbPut(value, key, _retried){
+  if(!DB){
+    if(!_retried) dbRevive(function(){ _dbPut(value, key, true); });
+    return;
+  }
   try{
     var tx=DB.transaction("honey","readwrite");
     var req=tx.objectStore("honey").put(value,key);
-    req.onerror=function(){ _saveTrouble(); };
-    tx.onerror=function(){ _saveTrouble(); };
-    tx.onabort=function(){ _saveTrouble(); };
-  }catch(e){ _saveTrouble(); }
+    req.onerror=function(){ _dbPutFailed(req.error, value, key, _retried); };
+    tx.onerror=function(){ _dbPutFailed(tx.error, value, key, _retried); };
+    tx.onabort=function(){ _dbPutFailed(tx.error, value, key, _retried); };
+  }catch(e){ _dbPutFailed(e, value, key, _retried); }
+}
+function _dbPutFailed(err, value, key, retried){
+  var n=(err && err.name) || '';
+  // A closed or stale connection is recoverable — reopen and write it again.
+  if(!retried && (n==='InvalidStateError' || n==='TransactionInactiveError' || n==='UnknownError' || !DB)){
+    dbRevive(function(){ _dbPut(value, key, true); });
+    return;
+  }
+  _saveTrouble(n);
 }
 
 /* Saving used to swallow every error — and the write is asynchronous, so its
@@ -5476,15 +5514,22 @@ function _dbPut(value, key){
    Now a failure says so, once, and points at the backup. */
 var _saveFailedShown=false;
 function saveSettings(){ if(!DB_OK) return; _dbPut(SETTINGS,"settings"); }
-function _saveTrouble(){
+function _saveTrouble(errName){
   if(_saveFailedShown) return;      // say it once, not on every keystroke
   _saveFailedShown=true;
+  /* IT USED TO BLAME LOW SPACE EVERY TIME. It didn't know that — the error
+     name was caught and thrown away. A phone with 700GB free was being told to
+     go free up room, which for an older user means deleting photos to fix
+     something unrelated. Only QuotaExceededError actually means space. */
+  var isSpace = (errName==='QuotaExceededError');
   try{
     toast("\u26a0\ufe0f Your phone wouldn't let me save just now.");
     setTimeout(function(){
       try{
         themTyping(function(){
-          pushThemText(vibeColor("Something's keeping me from saving to this phone \u2014 usually that means it's running low on room. Your things that are already saved are safe. If you can, free up a little space, and use \ud83d\udcbe Back up my Honey in your Profile so nothing gets lost."));
+          pushThemText(vibeColor(isSpace
+            ? "Your phone is running low on room, so I couldn't save just now. Your things that are already saved are safe. Free up a little space, and use \ud83d\udcbe Back up my Honey in your Profile so nothing gets lost."
+            : "Something stopped me saving just now. Your things that are already saved are safe. If it happens again, use \ud83d\udcbe Back up my Honey in your Profile so nothing gets lost."));
         });
       }catch(e){}
     }, 600);
@@ -6773,6 +6818,17 @@ function dbOpen(cb){
       if(!d.objectStoreNames.contains("honey")) d.createObjectStore("honey"); };
     req.onsuccess=e=>{
       DB=e.target.result; DB_OK=true;
+      /* iOS FORCE-CLOSES THIS CONNECTION WHEN THE APP BACKGROUNDS.
+         WKWebView drops IndexedDB connections on suspend. The handle in DB
+         stays non-null but is dead, so every later write threw
+         "InvalidStateError: The database connection is closing" — forever,
+         until the app was force-restarted. Anyone who checked a text
+         mid-conversation silently stopped being able to save. These two
+         handlers notice the close so dbRevive() can open a fresh one. */
+      try{
+        DB.onclose = function(){ DB_OK=false; DB=null; };
+        DB.onversionchange = function(){ try{ DB.close(); }catch(e){} DB_OK=false; DB=null; };
+      }catch(e){}
       // If the safety timeout already let the app proceed, the in-memory data
       // (loaded fresh/blank) hasn't been saved yet. Now that the DB is truly
       // open, reload what was stored so we don't overwrite it, then continue.
@@ -8882,7 +8938,25 @@ function myJokesInChat(){ return SETTINGS.myJokesInChat === true; }
 function isPlainGreeting(l){
   var t=(l||'').trim().replace(/[.!?,]+$/,'');
   return /^(hi|hey|hello|heya|hiya|yo|howdy|hi there|hey there|hello there|good morning|good afternoon|good evening|mornin['g]?|evenin['g]?|hey honey|hi honey|hello honey|hey you|knock knock)$/i.test(t)
-      || /^(hi|hey|hello|howdy|good morning|good afternoon|good evening)\b.{0,18}$/i.test(t);
+      /* THE 18-CHARACTER CAP.
+         This used to read .{0,18}$ — a greeting only counted if eighteen
+         characters or fewer followed it. "Hello, it's such a beautiful
+         morning" has a thirty-one character tail, so it failed the greeting
+         test and dropped to the catch-all, which asked what made her think
+         of it. A greeting was rejected for being too warm. No cap now. */
+      || /^(hi|hey|hello|howdy|hiya|heya|mornin['g]?|good morning|good afternoon|good evening)\b/i.test(t);
+}
+/* PLAIN GOOD SPIRITS.
+   "It's gorgeous outside", "gonna be a great day", "feeling good today" —
+   somebody volunteering that things are fine had no branch anywhere, so it
+   fell to the catch-all and got interrogated: "and how did that sit with
+   you?" Nobody needs their good mood examined. Agree and move on. */
+function isGoodSpirits(l){
+  var t=(l||'').toLowerCase();
+  return /(beautiful|gorgeous|lovely|glorious|perfect|nice) (day|morning|afternoon|evening|out|outside|weather)/.test(t)
+      || /(gonna be|going to be|it's gonna be|its gonna be) a (great|good|lovely|fine) day/.test(t)
+      || /(feeling|feel) (good|great|fine|grand|wonderful|happy)/.test(t)
+      || /(great|good|lovely) (day|morning) (out there|so far)/.test(t);
 }
 function isHowAreYou(l){
   return /(how are you|how are ya|how're you|how you doin|how's it going|hows it going|you doing (ok|alright|good)|you good|what's up|whats up|how have you been|how you been)/i.test(l||'');
@@ -13628,6 +13702,16 @@ function replyTo(l){
       "That sounds heavy. You don't have to carry the funny right now — I'll hold it til you're ready."];
     return vibeColor(rand(r));
   }
+  /* Somebody in good spirits gets agreement, not an interview. These four are
+     NOT YET RECORDED — they need clips before they'll speak aloud. */
+  if(isGoodSpirits(l)){
+    return vibeColor(noRepeat([
+      "It is, isn't it. Days like this don't ask anything of you.",
+      "Good. That's the kind of morning worth saying out loud.",
+      "Then that's settled. Go enjoy it before it gets away.",
+      "I'll take your word for it — no windows in here. Sounds lovely."
+    ], 'goodspirits'));
+  }
   /* "How are you" was caught; "tell me about your day" wasn't - so asking her
      the friendliest question in the language fell to the catch-all and she
      handed the question straight back. Somebody who asks after her deserves an
@@ -13693,21 +13777,26 @@ function replyTo(l){
     "Now that sounds like something we could get into.",
     "Go on \u2014 I want to hear the rest.",
     "Mm. What happened next?",
-    "That's interesting. What made you think of it?",
     "I'm listening. Keep going.",
-    "And how did that sit with you?",
     "Say more about that, would you?",
     "Well now. What else?",
     "I'd like to hear more of that.",
-    "What's the story behind it?",
     "Hm. Tell me the rest.",
     "You've got my attention. Go on.",
     "And then what?",
-    "What made today the day for that?",
-    "That's worth talking about. What else is on it?",
-    "Mm-hmm. And how do you feel about it?",
     "Keep going, I'm right here."
   ];
+  /* SIX LINES BECAME EIGHTEEN, AND THAT IS WHAT WENT WRONG.
+     The pool was padded to stop repetition, but every line added was the same
+     move — a question handing the conversation back. Eighteen different ways
+     of asking "say more" reads as stranger than six repeated ones, because now
+     there's a new probe every time and she never once says anything herself.
+     Cut back to ten. The removed lines were the most interview-like:
+     "what made you think of it", "how did that sit with you", "how do you feel
+     about it", "what's the story behind it", "what made today the day for
+     that", "what else is on it".
+     RULE FOR LATER: this pool is allowed to be small. It is allowed not to
+     cover things. Coverage is what cost her the character. */
   return vibeColor(noRepeat(generic, 'generic'));
 }
 
@@ -19621,12 +19710,10 @@ var CASUAL_ANY=[
   "I like the quiet ones. You don't have to fill it.",
   "If you could be anywhere right now, where would you put yourself?",
   "What are you up to over there?",
-  "I've got nowhere to be, if you fancy a chat.",
   "Anything on your mind, or are we just sitting?",
   "Sitting here's fine by me, for what it's worth.",
   "What did you have for lunch? I'm nosy.",
-  "Somebody ought to write a song about ordinary afternoons.",
-  "Is it a good day out there, or one of the other kind?"
+  "Somebody ought to write a song about ordinary afternoons."
 ];
 var CASUAL_MORNING=[
   "How'd you sleep? Be honest.",
@@ -19648,13 +19735,15 @@ var CASUAL_EVENING=[
   "Long day, or an alright one?",
   "You can put your feet up now, you know."
 ];
-/* One casual line, matched to the time of day. Never offers a joke. */
+/* One casual line. Never offers a joke.
+   TIME-OF-DAY POOLS RETIRED. They were concat'd TWICE, so two thirds of every
+   quiet moment was a time-keyed question — "how'd you sleep", "coffee sorted",
+   "halfway through". Three problems: they assume facts (retired people aren't
+   halfway through anything), they're nearly all questions, and several were
+   written in an accent that isn't Honey's. The arrays stay below so the
+   recorded clips aren't orphaned, but nothing draws from them. */
 function casualLine(){
-  var h=new Date().getHours();
   var pool=CASUAL_ANY.slice();
-  if(h<11)      pool=pool.concat(CASUAL_MORNING, CASUAL_MORNING);
-  else if(h<17) pool=pool.concat(CASUAL_AFTERNOON, CASUAL_AFTERNOON);
-  else          pool=pool.concat(CASUAL_EVENING, CASUAL_EVENING);
   /* don't repeat the last one — nothing kills the illusion faster */
   var pick, tries=0;
   do{ pick=rand(pool); tries++; }while(pick===S._lastCasual && tries<8);
@@ -20155,7 +20244,13 @@ function appChoose(title, options, cb){
 document.addEventListener('visibilitychange',function(){
   if(document.hidden){ try{ speechSynthesis.cancel(); }catch(e){} speakQueue=0;
     stopCloudAudio(); setTalking(false); stopIdle(); }
-  else { if(document.getElementById('chat') && document.getElementById('chat').classList.contains('on')) startIdle(); }
+  else {
+    /* Coming back from the background is exactly when iOS has closed the
+       database. Reopen before anything tries to write, so the first thing
+       they do on return doesn't get thrown away. */
+    if(!DB_OK || !DB){ try{ dbRevive(); }catch(e){} }
+    if(document.getElementById('chat') && document.getElementById('chat').classList.contains('on')) startIdle();
+  }
 });
 window.addEventListener('pagehide',function(){ try{ speechSynthesis.cancel(); }catch(e){} stopIdle(); stopCloudAudio(); });
 
