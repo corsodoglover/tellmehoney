@@ -2531,7 +2531,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v198 · 3 August · recipe kinds fold open with a picture · the cooking list matches everything else · your yard folds into shelves like the index · she can tell you which day the chicken salad is · the mic keeps listening past the first sentence · “need” alone no longer adds to your shopping list</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v208 · 3 August · “did you have a good day?” is a question about her · “cook” no longer asks for a joke · the word brain no longer asks for the forecast · the heart saves what she just said · recipe kinds fold open with a picture · she can tell you which day the chicken salad is · the mic keeps listening past the first sentence · “need” alone no longer adds to your shopping list</div>
   </div>
 </section>
 
@@ -7711,6 +7711,26 @@ function pushThem(text,noLog,noSpeak,sayInstead){  var m=document.createElement(
   if(S.speakerOn && !noSpeak) speak(sayInstead || text);
   S.lastWasJoke=false;
   S.lastWasQuestion=/\?\s*$/.test(text.trim())||/\?/.test(text);
+
+  /* ══════════ THE HEART SAVES WHAT SHE JUST SAID ═══════════════════════════
+     S.lastShareable is only set when she shows a joke, a verse or a recipe
+     card — so anything else she said left it holding whatever came before.
+     Ask "what day am I having the lavender tea?", get a proper answer, tap the
+     heart, and the share sheet offered a joke from twenty minutes earlier.
+
+     This remembers the last thing she actually said, with the time. The heart
+     then takes whichever is more recent: a card if she just showed one, or her
+     own words if she simply answered you.
+
+     Small talk is skipped. "Still listening." is not something anybody wants
+     to send their husband. */
+  try{
+    var _t=String(text||'').trim();
+    var _filler = _t.length<22
+      || /^(still listening|ready when you are|back in the room|i kept your place|go on, i'm here|picking it back up|there now\. carry on|i didn't go anywhere)/i.test(_t);
+    if(!_filler){ S.lastSaid={ text:_t, at:Date.now() }; }
+  }catch(e){}
+
   updateThumbLabel();
   resetIdle();
   if(!noLog) logMsg({w:'them',k:'text',t:text});
@@ -9174,7 +9194,8 @@ function isGoodSpirits(l){
   var t=(l||'').toLowerCase();
   return /(beautiful|gorgeous|lovely|glorious|perfect|nice) (day|morning|afternoon|evening|out|outside|weather)/.test(t)
       || /(gonna be|going to be|it's gonna be|its gonna be) a (great|good|lovely|fine) day/.test(t)
-      || /(feeling|feel) (good|great|fine|grand|wonderful|happy)/.test(t)
+  /* \b: 'fine' was matching inside 'finished' and 'define'. */
+      || /\b(feeling|feel) (good|great|fine|grand|wonderful|happy)\b/.test(t)
       || /(great|good|lovely) (day|morning) (out there|so far)/.test(t);
 }
 /* ══════════ HOW ARE YOU ═══════════════════════════════════════════════════
@@ -9682,12 +9703,16 @@ function userSays(t){
   if(S.askedJokeOrChat){
     S.askedJokeOrChat=false;
     // joke-leaning answers
-    if(/(joke|comedy|funny|laugh|make me|yes|yeah|yep|sure|ok|okay|please|go|hit me|do it|one)/.test(l)){
+  /* \b OR EVERY OTHER WORD ASKS FOR A JOKE. 'ok' sits inside look, book, cook,
+     took and broke; 'go' inside going, ago, goal and good; 'one' inside money,
+     phone, done and alone. "I need to cook" was a joke request. */
+    if(/\b(joke|comedy|funny|laugh|make me|yes|yeah|yep|sure|ok|okay|please|go|hit me|do it|one)\b/.test(l)){
       if(/roast/.test(l)) tellJoke(false,catIdx("roast_master")); else tellJoke(/surprise|random/.test(l));
       return;
     }
     // chat-leaning answers
-    if(/(chat|talk|catch up|company|vent|listen|conversation|company|just talk|hang)/.test(l)){
+  /* \b: 'vent' hid inside 'event' and 'hang' inside 'change'. */
+    if(/\b(chat|talk|catch up|company|vent|listen|conversation|company|just talk|hang)\b/.test(l)){
       themTyping(()=>pushThem(vibeColor(noRepeat([
         "I'd love that. What's on your mind?",
         "Perfect. Tell me — how's your heart today?",
@@ -9763,6 +9788,10 @@ function userSays(t){
   if(isFarewell(l)){ honeyFarewell(l); return; }
   /* "What are you?" is asked far less often but matters more when it is, and
      it must not be swallowed by the how-are-you test above it. */
+  if(isKindWish(l)){
+    themTyping(function(){ pushThem(vibeColor(noRepeat(KIND_WISH_BACK,'kindwish'))); resetIdle(); });
+    return;
+  }
   if(isWhatAreYou(l)){
     themTyping(function(){ pushThem(vibeColor(noRepeat(WHAT_AM_I,'whatami'))); resetIdle(); });
     return;
@@ -9778,7 +9807,8 @@ function userSays(t){
      something else. "another verse" and "another prayer" were being answered
      with a joke, because this rule sat above both of them. */
   if(/(another|again|one more|more|next)/.test(l)
-     && !/(verse|scripture|passage|prayer|story|plant|recipe|photo|picture|song|fact)/.test(l)){
+  /* \b: 'more' was matching inside 'morning', so "good morning" asked for another joke. */
+     && !/\b(verse|scripture|passage|prayer|story|plant|recipe|photo|picture|song|fact)\b/.test(l)){
     tellJoke(); return;
   }
   if(/(roast)/.test(l)){ tellJoke(false,catIdx("roast_master")); return; }
@@ -9823,7 +9853,17 @@ function userSays(t){
     return;
   }
   // ── live features ──
-  if(/(weather|forecast|rain|temperature|how (hot|cold)|umbrella|snow)/.test(l)){ doWeather(t); return; }
+  /* ══════════ \b, OR "BRAIN" ASKS FOR THE FORECAST ═════════════════════════
+     There were no word boundaries here, so "rain" matched inside brain,
+     training, drained, grain, terrain and constrained — any of which turned an
+     ordinary sentence into a weather report. "snow" and "hot" had the same
+     problem inside snowball and shot.
+
+     Also added: sunny, windy, humid, storm, degrees, "do I need a coat", which
+     are how people actually ask. */
+  if(/\b(weather|forecast|rain|raining|rainy|temperature|degrees|umbrella|snow|snowing|sunny|windy|humid|muggy|storm|storming|freezing)\b/.test(l)
+     || /\bhow (hot|cold|warm|windy)\b/.test(l)
+     || /\b(do i need|should i take|need)\b.{0,12}\b(coat|jacket|umbrella|sweater)\b/.test(l)){ doWeather(t); return; }
   // forget a saved contact's number
   var fm=l.match(/(?:forget|delete|remove)\s+([a-z][a-z '.-]{0,30}?)(?:'s)?\s*(?:number|contact)\b/i);
   if(fm){ var fgn=fm[1].trim().replace(/\b\w/g,m=>m.toUpperCase()); themTyping(()=>pushThem(vibeColor(forgetContact(fgn)?("Okay, I forgot "+fgn+"'s number."):("I didn't have a number saved for "+fgn+".")))); return; }
@@ -12614,15 +12654,28 @@ var COMIC_SIGNATURE = "warm and inviting";
    scrolling.
    The tail is untouched. That's what keeps the generator from lettering the
    joke into the picture, and it took work to get right. */
+/* ══════════ WHY THIS SAYS "TEXT" ONLY ONCE ═══════════════════════════════
+   This used to end with nine separate ways of forbidding writing: no text, no
+   words, no letters, no captions, no title, no speech bubbles, no signage, no
+   watermark, plus "completely wordless" at the front. The panel still came
+   back with "A ROKEN DRUM THE BEST GIFT" across the top.
+
+   That is how image models behave. They do not handle negation the way a
+   person does — every mention of "text" or "words" puts that idea into the
+   prompt, and a model that has seen a million captioned storybook pages will
+   happily add one. Nine mentions made it more likely, not less.
+
+   So: one short instruction, once, at the front, and nothing else about
+   writing anywhere. The joke itself is already printed on the card underneath
+   in a font that cannot misspell it, so a picture that adds nothing is exactly
+   what is wanted. If a stray letter still creeps in occasionally, that is the
+   model, not the prompt — there is no wording that guarantees it. */
 var COMIC_STYLE =
-  "a completely wordless picture-only illustration with no writing anywhere in the frame, "+
+  "wordless illustration, "+
   "bright cartoon storybook illustration, confident black ink outline, flat saturated colour, "+
   "halftone dot shading, cheerful palette of cherry red, sky blue, sunshine yellow and fresh "+
   "grass green, lush detailed background, expressive faces with real feeling, sunny daylight, "+
-  "playful and full of life, no fog, no sepia, no muted tones, no watercolor wash, "+
-  "no crosshatching, "+
-  "no text, no words, no letters, no captions, no title, no speech bubbles, no signage, "+
-  "no watermark, single panel, square";
+  "playful and full of life, single panel, square";
 
 /* The comic button says what it costs, and greys itself out when they can't
    reach it. Better than letting somebody tap and get told no — and the free
@@ -12655,14 +12708,52 @@ function comicCanMake(){
    tried to letter "Why did the goat join the choir?" into the picture instead
    of drawing a goat. A prompt must describe a SCENE, never ask a question. */
 function comicSceneLocal(setup, punch){
-  /* Turn the setup into a plain description of a scene. No verb gymnastics —
-     just strip the question and hand the model the subject. */
+  /* ══════════ A SENTENCE BECOMES A TITLE ═══════════════════════════════════
+     This handed the model the joke itself. For the built-in jokes that was
+     survivable, because they are questions — "Why did the denim jacket never
+     retire?" strips down to "the denim jacket never retire", which is rough
+     but reads as a scene.
+
+     Somebody's OWN joke is usually a statement. "A broken drum is the best
+     gift" survives every strip above untouched, so the prompt became
+
+         A warm storybook scene showing a broken drum is the best gift...
+
+     and an image model given a full sentence writes it across the top. That is
+     where "A ROKEN DRUM THE BEST GIFT" came from — not from a missing
+     instruction, but from handing it a caption and asking for a picture.
+
+     So: pull out the THINGS and leave the claim behind. Nouns make scenes;
+     sentences make titles. */
   var t=(setup||punch||'').trim();
   t=t.replace(/[?!.]+\s*$/,'');
   t=t.replace(/^\s*(why|what|how|when|where|who|which)\s+(did|do|does|is|are|was|were|would|will|can|could)\s+/i,'');
   t=t.replace(/^\s*(why|what|how|when|where|who)\s+/i,'');
   t=t.replace(/\s+/g,' ').trim();
-  return t || 'a quiet kitchen table with a cup of tea';
+
+  /* Drop everything from the verb onward — "a broken drum is the best gift"
+     becomes "a broken drum". What is left is a thing that can be drawn. */
+  t=t.replace(/\s+\b(is|are|was|were|has|have|had|will|would|can|could|should|means|makes|gets|becomes|never|always)\b.*$/i,'');
+
+  /* "What do you call a sleeping bull?" leaves "you call a sleeping bull".
+     Take the asking-phrase off the front as well. */
+  t=t.replace(/^\s*(do\s+)?you\s+(call|get|name)\s+/i,'');
+  t=t.replace(/^\s*(call|name)\s+/i,'');
+
+  /* Strip the small words that carry no picture, then keep the first few
+     that do. Pronouns go too — nobody can draw "they". */
+  var drop=['the','a','an','of','to','for','and','but','so','my','your','his',
+            'her','their','our','its','this','that','these','those','best',
+            'worst','most','only','just','very','really','it','you','i','we',
+            'they','he','she','me','him','them','us','like','when','then'];
+  var words=t.split(/\s+/).filter(function(w){
+    return w && drop.indexOf(w.toLowerCase().replace(/[^a-z]/gi,''))<0;
+  });
+  t=words.slice(0,5).join(' ').trim();
+
+  if(!t || t.length<3) return 'a quiet kitchen table with a cup of tea';
+  /* Framed as a thing in a place, so the model draws rather than letters. */
+  return 'a ' + t;
 }
 /* If Honey's brain is available, ask it for something better. Costs a fraction
    of a cent and it writes a proper little scene. */
@@ -12675,7 +12766,11 @@ function comicSceneFor(setup, punch, cb){
     askHoney(
       "Describe ONE simple scene an illustrator could draw, based on this joke's SETUP only. "+
       "Never draw the punchline. Reply with a short phrase describing what is happening \u2014 "+
-      "objects and actions only, under 12 words, no question marks, no names, no text in the scene. "+
+      "objects and actions only, under 12 words, no question marks, no names. "+
+      /* Do not echo the joke's own wording back. Anything quoted here reaches
+         the image model, and a phrase in quotation marks is close to an
+         instruction to write it on the picture. */
+      "Do not quote or repeat any wording from the joke. "+
       "Example: 'a goat in a choir robe beside an upright piano'.\n\n"+
       "Setup: "+setup+"\nPunchline: "+punch
     ).then(function(r){
@@ -14379,7 +14474,21 @@ function selfReply(l){
       "Strip the fear out for a second — what do you actually want? Start there.",
       "If nobody would judge you, which way do you lean? That's usually the answer."], 'self03');
   }
-  if(/(proud|did it|finished|accomplished|won|good day|happy|grateful)/.test(l)){
+  /* ══════════ GOOD NEWS IS NOT SOMETHING TO REFLECT BACK ═══════════════════
+     This tested for "good day" and nothing else, so "I'm having a GREAT day"
+     missed it entirely and dropped to the catch-all — which asked what she
+     would tell a friend who said that. Somebody sharing good news does not
+     want it handed back as a question. They want it met.
+
+     All the ordinary ways people say a day went well are here now. */
+  if(isKindWish(l)){ return noRepeat(KIND_WISH_BACK, 'kindwish'); }
+  /* Belt and braces: a question containing "you" is about her, whatever warm
+     words it happens to carry. */
+  var _aboutHer = /\byou(r|'re| are)?\b/i.test(l) && /\?|^\s*(did|do|are|were|was|have|has|how|what)\b/i.test(l);
+  if(!_aboutHer && (/(proud|did it|finished|accomplished|won|happy|grateful|thankful|blessed)/.test(l)
+     || /\b(good|great|lovely|wonderful|brilliant|fantastic|beautiful|amazing|nice|fine|grand|perfect)\b.{0,12}\b(day|morning|afternoon|evening|week|weekend|time|one)\b/.test(l)
+     || /\b(went|going|turned out)\b.{0,12}\b(well|great|good|brilliant|perfectly)\b/.test(l)
+     || /\b(feeling|feel)\b.{0,10}\b(good|great|happy|wonderful|grand|content|light)\b/.test(l))){
     return noRepeat(["Sit in that for a second — you earned it. Say what you did well.",
       "Good. Don't rush past it. What part are you most proud of?",
       "That's worth marking. Tell yourself the thing you'd want to hear."], 'self04');
@@ -14400,6 +14509,34 @@ function selfReply(l){
     "What would you tell a friend who said exactly that to you?",
     "Want to keep thinking it through, or want me to lighten it with a joke?"], 'self07');
 }
+/* ══════════ A KIND WISH IS NOT NEWS ABOUT YOU ═══════════════════════════════
+   "I hope you're having a good day" is aimed at her. It landed in the
+   good-news branch and came back "Sit in that for a second — you earned it",
+   which is somebody being told to savour a compliment they just paid.
+
+   Anything pointed at her — hope you, you're having, you have a good — gets
+   thanked and returned, and never reaches the branch about your own day. */
+function isKindWish(l){
+  /* "Did you have a good day?" is a question about HER. It carried the words
+     "good day", so the good-news branch grabbed it and told somebody to sit in
+     their achievement for a second — when all they had done was ask after her.
+
+     Any of these pointed at "you" belongs here, not there. */
+  return /\b(did|have|are|were|was)\s+you(r)?\b.{0,20}\b(good|great|nice|lovely|alright|ok|okay|well|decent|quiet|busy|rough|hard|long)\b/i.test(l||'')
+      || /\b(hope|hoping)\b.{0,14}\byou('re| are|r)?\b/i.test(l||'')
+      || /\byou('re| are)\b.{0,12}\b(having|doing)\b.{0,14}\b(good|great|well|lovely|alright|ok|okay)\b/i.test(l||'')
+      || /\bhope you (have|had)\b/i.test(l||'');
+}
+var KIND_WISH_BACK=[
+  "That's kind of you. I am, thank you.",
+  "Thank you \u2014 nobody usually asks.",
+  "I am, now that you're here.",
+  "That's a nice thing to say. Same to you.",
+  "Thank you. It's a good one so far.",
+  "Well aren't you sweet. I am, thank you.",
+  "Better now you've stopped by."
+];
+
 function vibeColor(s){
   if(S.vibe==='Flirty') return s+" 😉";
   if(S.vibe==='Sarcastic') return s+" Obviously.";
@@ -17412,9 +17549,30 @@ function keepVerseFromHeart(txt){
 }
 
 function loveJoke(){
-  var item = S.lastShareable;                 // {text, kind} set whenever Honey shows something
-  var jt = item && item.text ? item.text : currentJokeText();
-  var kind = item && item.kind ? item.kind : 'joke';
+  var item = S.lastShareable;                 // {text, kind} set when Honey shows a card
+  /* Whichever is newer. A card she just showed, or the words she just said —
+     see the note in pushThem. Without the comparison, hearting a plain answer
+     handed you the last joke instead. */
+  var said = S.lastSaid;
+
+  /* Are they the same thing? A joke or a verse also goes through pushThem, so
+     both get set — and in that case the card is the better one to keep,
+     because it carries the kind and shares in the right shape. They only
+     differ when she simply answered a question, and then her answer is what
+     the heart should save. Compared by text rather than by clock, because
+     lastShareable has never carried a timestamp. */
+  function _norm(x){ return String(x||'').toLowerCase().replace(/\s+/g,' ').trim(); }
+  var sameThing = false;
+  try{
+    if(item && item.text && said && said.text){
+      var a=_norm(item.text), b=_norm(said.text);
+      sameThing = a.indexOf(b)>=0 || b.indexOf(a)>=0;
+    }
+  }catch(e){}
+
+  var useSaid = !!(said && said.text) && !sameThing;
+  var jt   = useSaid ? said.text : (item && item.text ? item.text : currentJokeText());
+  var kind = useSaid ? 'note'    : (item && item.kind ? item.kind : 'joke');
   if(!jt){ toast("Nothing to save yet — I'll show you something first."); return; }
   /* A hearted verse goes into their own verse box as well — which is what makes
      it recallable by name later, and how somebody builds a small set they'll
