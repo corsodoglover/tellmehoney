@@ -2522,7 +2522,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v167 · 2 August · seventeen ways to say she is back · the ＋ on a plant picture is big enough to hit · plant pictures from three sources · finds a plant however you word it</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v175 · 3 August · no leftover line waiting overnight · seasons read however you write them · adding to your yard says so · no more getting stuck on a puzzle letter</div>
   </div>
 </section>
 
@@ -18674,12 +18674,41 @@ function pzMatch(cells){
 }
 
 function pzTap(r,c,td){
-  if(td.classList.contains('found')) return;
   pzStartTimer();
+
+  /* ══════════ NOBODY GETS STUCK ═══════════════════════════════════════════
+     This used to open with
+
+         if(td.classList.contains('found')) return;
+
+     and that one line trapped people. Word searches share letters — that is
+     the whole design — so the letter you need is often already part of a word
+     you have found. Tapping it did nothing AND returned before clearing the
+     anchor, so the first letter stayed lit and every further tap was ignored.
+     The only way out was to leave the puzzle.
+
+     Two things now. A found letter can be tapped, because it is a perfectly
+     good part of another word. And tapping the lit letter a second time puts
+     it out — if you pick the wrong one, you can simply pick again, which is
+     what anybody would try first. */
+  if(_pzAnchor && _pzAnchor[0]===r && _pzAnchor[1]===c){
+    td.classList.remove('sel');
+    _pzAnchor=null;
+    pzSay("Alright \u2014 start wherever you like.");
+    return;
+  }
+
   if(!_pzAnchor){ _pzAnchor=[r,c]; td.classList.add('sel'); pzSay("Good \u2014 now tap the last letter."); return; }
   var cells=pzLine(_pzAnchor[0],_pzAnchor[1],r,c);
   pzCell(_pzAnchor[0],_pzAnchor[1]).classList.remove('sel');
-  if(!cells){ _pzAnchor=null; pzSay("Has to be a straight line. Try again."); return; }
+  if(!cells){
+    /* Not a straight line — but rather than leave them with nothing, treat
+       this tap as the new starting letter. It is almost always what they
+       meant, and it saves a second tap. */
+    _pzAnchor=[r,c]; td.classList.add('sel');
+    pzSay("Has to be a straight line \u2014 starting again from here.");
+    return;
+  }
   var w=pzMatch(cells);
   if(w){
     _pzFound[w]=true;
@@ -20358,7 +20387,11 @@ var CASUAL_ANY=[
   "Anything on your mind, or are we just sitting?",
   "Sitting here's fine by me, for what it's worth.",
   "What did you have for lunch? I'm nosy.",
-  "Somebody ought to write a song about ordinary afternoons."
+  /* "Somebody ought to write a song about ordinary afternoons." pulled
+     3 August. The line is fine; the recording is not. casual_14.m4a holds a
+     line that was rewritten long ago, so the screen said one thing and the
+     voice said another. Rather than re-cut twenty-six clips at one in the
+     morning, the text comes out and the stale file simply never plays. */
 ];
 var CASUAL_MORNING=[
   "How'd you sleep? Be honest.",
@@ -20887,8 +20920,28 @@ function appChoose(title, options, cb){
 
 // stop all sound/timers when the tab is hidden or loses focus (no background talking)
 document.addEventListener('visibilitychange',function(){
-  if(document.hidden){ try{ speechSynthesis.cancel(); }catch(e){} speakQueue=0;
-    stopCloudAudio(); setTalking(false); stopIdle(); }
+  if(document.hidden){
+    /* ══════════ NOTHING WAITS IN THE DARK ════════════════════════════════
+       This used to cancel the device voice and the clone and stop there —
+       leaving _spQueue untouched and the recorded-clip player still loaded.
+       So a line queued the moment before you put the phone down would still
+       be sitting there hours later, and the first thing you heard on opening
+       the app was a sentence with nothing on screen to match it.
+
+       That is where "somebody ought to write a song about ordinary
+       afternoons" was coming from: an idle nudge queued the night before,
+       played the next morning over whatever line had since arrived. Not a
+       fallback, not the wrong file — a leftover.
+
+       clearSpeech() empties the queue, bumps the token so anything in flight
+       gives up, and stops the clip player properly. */
+    try{ clearSpeech(); }catch(e){
+      try{ speechSynthesis.cancel(); }catch(e2){}
+      try{ stopCloudAudio(); }catch(e2){}
+    }
+    speakQueue=0;
+    setTalking(false); stopIdle();
+  }
   else {
     /* Coming back from the background is exactly when iOS has closed the
        database. Reopen before anything tries to write, so the first thing
@@ -20897,7 +20950,15 @@ document.addEventListener('visibilitychange',function(){
     if(document.getElementById('chat') && document.getElementById('chat').classList.contains('on')) startIdle();
   }
 });
-window.addEventListener('pagehide',function(){ try{ speechSynthesis.cancel(); }catch(e){} stopIdle(); stopCloudAudio(); });
+/* Same leftover problem as visibilitychange — clear the queue, not just the
+   two voices that happen to be easy to reach. */
+window.addEventListener('pagehide',function(){
+  try{ clearSpeech(); }catch(e){
+    try{ speechSynthesis.cancel(); }catch(e2){}
+    try{ stopCloudAudio(); }catch(e2){}
+  }
+  stopIdle();
+});
 
 /* init */
 function bootFallback(){
@@ -21266,7 +21327,7 @@ function rangerPeekCandidate(i){
            sits above the image, and it stops the tap reaching the picture
            underneath (which opens the big view — worth keeping, just not at
            the same time). */
-        '<button onclick="event.stopPropagation();yardPicOffer(\''+x.url+'\',\''+(x.credit?esc(x.credit).replace(/\'/g,''):'')+'\',\''+(x.organ||'')+'\')" style="position:absolute;bottom:8px;right:6px;width:46px;height:46px;z-index:3;border:none;border-radius:14px;background:rgba(0,0,0,.62);color:#fff;font-size:24px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center" aria-label="Keep this picture" title="Keep this picture">\uff0b</button>'+
+        '<button onclick="event.stopPropagation();this.textContent=\'\\u2713\';this.style.background=\'rgba(92,191,152,.92)\';yardPicOffer(\''+x.url+'\',\''+(x.credit?esc(x.credit).replace(/\'/g,''):'')+'\',\''+(x.organ||'')+'\')" style="position:absolute;bottom:8px;right:6px;width:46px;height:46px;z-index:3;border:none;border-radius:14px;background:rgba(0,0,0,.62);color:#fff;font-size:24px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center" aria-label="Keep this picture" title="Keep this picture">\uff0b</button>'+
       '</div>';
     });
     html+='</div>';
@@ -21556,7 +21617,16 @@ function plantLookUpByName(){
      against Rosemary, went out to GBIF, failed there too, and came back
      telling you to snap a picture — for a plant sitting in the book the whole
      time. People type "wild garlic", "some kind of mint", "the rosemary
-     plant". Now every word of what you typed is tried on its own as well. */
+     plant".
+
+     But loosening it to ANY word was worse: "lemon mint" matched Wood Sorrel,
+     because something in that entry mentions lemon. A near miss dressed up as
+     an answer is worse than no answer at all, because you believe it.
+
+     So the fallback matches on the LAST word only — the noun, which in plant
+     names is nearly always where the plant is: lemon MINT, wild GARLIC,
+     French TARRAGON. And it has to be a whole word, so "mint" cannot be found
+     inside "peppermint-scented". */
   var hit=null;
   try{
     var BOOK=yardBook();
@@ -21574,15 +21644,13 @@ function plantLookUpByName(){
       if(names.some(function(n){ return n && n.toLowerCase().indexOf(low)>=0; })){ hit=id; return; }
     });
     if(!hit && words.length){
+      var noun=words[words.length-1];
+      var rx=new RegExp('(^|[^a-z])'+noun.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'([^a-z]|$)','i');
       Object.keys(BOOK).forEach(function(id){
         if(hit) return;
         var p=BOOK[id];
         var names=[p.name].concat(p.alt||[]).concat([p.sci||'']);
-        if(names.some(function(n){
-             if(!n) return false;
-             var ln=n.toLowerCase();
-             return words.some(function(w){ return ln.indexOf(w)>=0; });
-           })) hit=id;
+        if(names.some(function(n){ return n && rx.test(n); })) hit=id;
       });
     }
   }catch(e){}
@@ -22399,6 +22467,7 @@ function rangerYardSave(){
   if(photo && shots.indexOf(photo)<0) shots.unshift(photo);
 
   var entry={id:'y'+Date.now(),name:name.trim(),note:note.trim(),season:season.trim(),
+    months:seasonToMonths(season),
     photo:photo, photos:shots, sci:sci, family:fam, genus:gen, pics:pics,
     added:Date.now(),mine:true,nutrients:{},recipes:[]};
   rangerMyYardArr().push(entry);
@@ -22690,18 +22759,93 @@ function myYardCookQuery(name){
   return words.slice(0,2).join(' ') || n;
 }
 
+/* ══════════ WHAT TO ASK A RECIPE SITE FOR ═══════════════════════════════
+   People name their plants the way they bought them — Sweet Basil, French
+   Tarragon, Chocolate Mint, Genovese Basil. Recipe sites do not stock any of
+   those. They stock basil, tarragon and mint. So a card labelled the way the
+   nursery labelled it found nothing at all, which is exactly the card you
+   most want recipes from.
+
+   Stripping the first word blindly is worse, though: "lemon balm" would
+   become "balm", and "bay laurel" would become "laurel". So this returns a
+   LIST to try in order, stopping at whichever first comes back with
+   something:
+
+       1. the name as written        — right for lemon balm, sweet potato
+       2. the name minus its variety — turns Sweet Basil into basil
+       3. the last word on its own   — the catch-all
+
+   Nothing is thrown away. The most specific version is tried first and only
+   gives way when it finds nothing. */
+var _COOK_QUALIFIERS = [
+  'sweet','french','italian','greek','thai','common','garden','wild','true',
+  'purple','golden','variegated','curly','flat','flatleaf','broadleaf','broad',
+  'dwarf','creeping','trailing','upright','bush','globe','genovese','holy',
+  'russian','mexican','spanish','english','german','japanese','korean',
+  'chinese','siberian','egyptian','moroccan','red','white','black','giant',
+  'baby','wooly','woolly','silver','blue','dark','light','large','small',
+  'winter','summer','spring'
+];
+
+function plantCookTerms(name, sci){
+  var n=String(name||'').replace(/\([^)]*\)/g,' ')
+                        .replace(/[^A-Za-z\s'-]/g,' ')
+                        .replace(/\s+/g,' ').trim();
+  if(!n) return [];
+  var words=n.split(' ').filter(Boolean);
+  var terms=[];
+  function add(t){
+    t=(t||'').trim();
+    if(t && terms.indexOf(t)<0) terms.push(t);
+  }
+
+  add(words.slice(0,2).join(' '));          // as written
+
+  var kept=words.filter(function(w){
+    return _COOK_QUALIFIERS.indexOf(w.toLowerCase())<0;
+  });
+  if(kept.length) add(kept.slice(0,2).join(' '));   // minus the variety
+
+  add(words[words.length-1]);               // the plain word
+
+  /* The botanical genus is a decent last resort — Mentha finds mint often
+     enough, and it costs nothing to try when everything else has failed. */
+  try{
+    var g=String(sci||'').trim().split(/\s+/)[0];
+    if(g && g.length>2) add(g);
+  }catch(e){}
+
+  return terms;
+}
+
+/* Try each term in turn and hand back the first that returns anything, along
+   with the term that worked — so the heading can say what was actually
+   searched for rather than what was typed. */
+function plantRecipeCascade(terms, done){
+  var i=0;
+  (function next(){
+    if(i>=terms.length){ done([], terms[0]||''); return; }
+    var t=terms[i++];
+    rangerRecipeSearch(t, function(list){
+      if(list && list.length){ done(list, t); return; }
+      next();
+    });
+  })();
+}
+
 function rangerYardFindRecipes(id){
   var e=rangerYardFind(id); if(!e)return;
   if(!SETTINGS.rangerYardCookNoteSeen){
     SETTINGS.rangerYardCookNoteSeen=true; saveSettings();
     alert("These recipe ideas come from the web for your own plant — they're yours to look over and decide on, same as the plant itself.");
   }
-  /* Search the plain name. "American sycamore (front bed, maybe)" finds nothing;
-     "sycamore" finds something. Take the first couple of words, drop anything in
-     brackets, and let them see and change it. */
-  var q = myYardCookQuery(e.name);
+  /* Same cascade as the book cards — see plantCookTerms. Somebody who wrote
+     "Sweet Basil" on their own card should get basil recipes, not nothing. */
+  var terms = plantCookTerms(e.name, e.sci);
+  var q = terms[0] || myYardCookQuery(e.name);
   toast('Looking for recipes with '+q+'\u2026');
-  rangerRecipeSearch(q, function(list){
+  plantRecipeCascade(terms, function(list, used){
+    q = used || q;
     openMyYardPlant(id);
     var box=document.getElementById('myYardList');
     var wrap=document.createElement('div');
@@ -22848,6 +22992,71 @@ function seasonPaint(){
 }
 
 /* Same tiles as the yard, so a plant looks like itself wherever you meet it. */
+/* ══════════ TURNING A TYPED SEASON INTO MONTHS ══════════════════════════
+   The season box on a My Yard card is free text, and people write in it the
+   way they talk: "Summer", "summer–fall", "Spring to Fall", "May-August",
+   "year round". None of that was ever read, so a plant tagged Summer never
+   appeared under In Season — you typed the answer in and nothing looked at it.
+
+   This reads all of those. Ranges work in both directions, so "Spring–Fall"
+   covers March through November and "Fall–Spring" wraps round the new year
+   the way an evergreen actually does. */
+var _SEASON_MONTHS = {
+  spring:[3,4,5], summer:[6,7,8],
+  fall:[9,10,11], autumn:[9,10,11],
+  winter:[12,1,2]
+};
+var _MONTH_NAMES = ['january','february','march','april','may','june','july',
+                    'august','september','october','november','december'];
+
+function seasonToMonths(txt){
+  var t=String(txt||'').toLowerCase().trim();
+  if(!t) return [];
+  /* People say "all seasons", "every season", "all year", "anytime", "always".
+     Only a couple of those were caught, so somebody typing the plainest
+     possible answer got nothing. */
+  if(/year.?round|all year|all seasons?|every season|every month|all the time|any ?time|always|evergreen|perennial/.test(t))
+    return [1,2,3,4,5,6,7,8,9,10,11,12];
+  if(/^(all|every)$/.test(t)) return [1,2,3,4,5,6,7,8,9,10,11,12];
+
+  /* Find the seasons or months named, in the order they appear, so a range
+     can be read off the two ends. */
+  var found=[];
+  var rx=/(spring|summer|autumn|fall|winter|january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec)/g, m;
+  while((m=rx.exec(t))){
+    var w=m[1];
+    var mi=-1;
+    for(var i=0;i<12;i++){ if(_MONTH_NAMES[i].indexOf(w)===0){ mi=i+1; break; } }
+    if(mi>0) found.push({kind:'month', v:mi});
+    else if(_SEASON_MONTHS[w]) found.push({kind:'season', v:w});
+  }
+  if(!found.length) return [];
+
+  var isRange=/[-–—]|\bto\b|\bthrough\b|\buntil\b|\bthru\b/.test(t) && found.length>1;
+
+  function firstOf(f){ return f.kind==='month' ? f.v : _SEASON_MONTHS[f.v][0]; }
+  function lastOf(f){  return f.kind==='month' ? f.v : _SEASON_MONTHS[f.v][2]; }
+
+  if(isRange){
+    var a=firstOf(found[0]), b=lastOf(found[found.length-1]);
+    var out=[], mo=a;
+    for(var n=0;n<12;n++){
+      out.push(mo);
+      if(mo===b) break;
+      mo = mo===12 ? 1 : mo+1;          // wraps, so Fall–Spring works
+    }
+    return out;
+  }
+
+  /* Not a range — just everything that was named. "Summer and fall" too. */
+  var set={};
+  found.forEach(function(f){
+    if(f.kind==='month') set[f.v]=1;
+    else _SEASON_MONTHS[f.v].forEach(function(x){ set[x]=1; });
+  });
+  return Object.keys(set).map(Number).sort(function(x,y){return x-y;});
+}
+
 function inSeasonRefresh(){
   var now=seasonMonthNow();
   var b=document.getElementById('seasonList'); if(!b) return;
@@ -22857,9 +23066,31 @@ function inSeasonRefresh(){
     return p.edible!==false && Array.isArray(p.months) && p.months.indexOf(now)>=0;
   }).sort(function(x,y){ return BOOK[x].name.localeCompare(BOOK[y].name); });
 
-  b.innerHTML = ready.length
-    ? '<div class="yg-grid">'+ready.map(function(id){ return yardTileHTML(id,'inSeason'); }).join('')+'</div>'
-    : '<div style="text-align:center;color:var(--muted);padding:30px">\ud83c\udf31 Quiet season right now. Check back as the months turn.</div>';
+  /* YOUR OWN PLANTS BELONG HERE TOO. This only ever read the book, so somebody
+     who added their own rosemary and wrote "Summer" on it looked for it under
+     In Season, twice, and never found it. Their own plants are the ones they
+     care most about. */
+  var mine=[];
+  try{
+    mine=rangerMyYardArr().filter(function(e){
+      var ms = Array.isArray(e.months) && e.months.length ? e.months : seasonToMonths(e.season);
+      return ms.indexOf(now)>=0;
+    });
+  }catch(e){}
+
+  var html='';
+  if(ready.length){
+    html += '<div class="yg-grid">'+ready.map(function(id){ return yardTileHTML(id,'inSeason'); }).join('')+'</div>';
+  }
+  if(mine.length){
+    html += '<div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.4px;'+
+            'margin:18px 2px 9px;text-transform:uppercase">From your own yard</div>'+
+            '<div class="yg-grid">'+mine.map(function(e){ return myYardTileHTML(e); }).join('')+'</div>';
+  }
+  if(!html){
+    html = '<div style="text-align:center;color:var(--muted);padding:30px">\ud83c\udf31 Quiet season right now. Check back as the months turn.</div>';
+  }
+  b.innerHTML = html;
 }
 
 function openCookingList(){
@@ -24179,6 +24410,36 @@ function yardToggle(id, el){
   SETTINGS.rangerHave=a; saveSettings();
   if(el) el.classList.toggle('on', i<0);
   renderYardCount();
+
+  /* ══════════ SAY SOMETHING ═══════════════════════════════════════════════
+     This saved silently. The plant really was added — you would find it next
+     time you opened the yard — but nothing happened at the moment of the tap,
+     so anybody would tap it again, and again, assuming it was broken. Each of
+     those taps toggled it back off, which is the worst possible outcome: tap
+     twice and you have undone yourself without ever being told.
+
+     A word and a tick. Same as the ＋ on a plant picture. */
+  var added = (i<0);
+  try{
+    var nm='';
+    try{ var BOOK=yardBook(); if(BOOK[id] && BOOK[id].name) nm=BOOK[id].name; }catch(e){}
+    toast(added
+      ? ("\ud83c\udf31 " + (nm ? nm + " added" : "Added") + " to your yard.")
+      : ("Taken off your yard."));
+  }catch(e){}
+  if(el){
+    try{
+      var old=el.textContent;
+      el.textContent = added ? "\u2713 In your yard" : "Added";
+      el.style.transition='background .2s';
+      el.style.background = added ? 'rgba(92,191,152,.9)' : '';
+      el.style.color = added ? '#0c2018' : '';
+      setTimeout(function(){
+        el.style.background=''; el.style.color='';
+        el.textContent = yardHave().indexOf(id)>=0 ? "\u2713 In your yard" : old;
+      }, 1400);
+    }catch(e){}
+  }
 }
 function renderYardCount(){
   var el=document.getElementById('yiCount'); if(!el)return;
@@ -24536,9 +24797,11 @@ function plantFindRecipes(id){
   var p=null;
   try{ p = yardPlant(id) || (typeof RANGER_PLANTS!=='undefined' ? RANGER_PLANTS[id] : null); }catch(e){}
   if(!p){ toast("Couldn't find that plant."); return; }
-  var q = myYardCookQuery(p.name);
+  var terms = plantCookTerms(p.name, p.sci);
+  var q = terms[0] || myYardCookQuery(p.name);
   toast('Looking for recipes with '+q+'\u2026');
-  rangerRecipeSearch(q, function(list){
+  plantRecipeCascade(terms, function(list, used){
+    q = used || q;
     var box=document.getElementById('plantRecipes_'+id);
     if(!box){ toast("Open the plant again to see them."); return; }
     if(!list || !list.length){
@@ -24603,7 +24866,7 @@ function yardShow(id){
       yardEatHTML(p)+
       yardSourceHTML(p)+
       '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:9px 11px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11px;color:#ffcf6b;line-height:1.45">'+p.safety+'</p></div>'+
-      '<button onclick="yardToggle(\''+id+'\');yardShow(\''+id+'\');openYardIndexRefresh()" style="width:100%;background:'+(have?'rgba(255,255,255,.06)':'linear-gradient(180deg,#e7c873,#caa44a)')+';color:'+(have?'var(--muted)':'#1a1405')+';border:'+(have?'1px solid rgba(255,255,255,.12)':'none')+';border-radius:13px;padding:13px;font-size:14.5px;font-weight:700;cursor:pointer">'+(have?'✓ Growing at my place':'＋ This grows at my place')+'</button>'+
+      '<button onclick="yardToggle(\''+id+'\',this);yardShow(\''+id+'\');openYardIndexRefresh()" style="width:100%;background:'+(have?'rgba(255,255,255,.06)':'linear-gradient(180deg,#e7c873,#caa44a)')+';color:'+(have?'var(--muted)':'#1a1405')+';border:'+(have?'1px solid rgba(255,255,255,.12)':'none')+';border-radius:13px;padding:13px;font-size:14.5px;font-weight:700;cursor:pointer">'+(have?'✓ Growing at my place':'＋ This grows at my place')+'</button>'+
     '</div></div>'+
     plantActionSheet(id, p, {yardToggle:false})+
     '<div id="plantRecipes_'+id+'"></div>';
