@@ -2525,7 +2525,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v185 · 3 August · the tile asks a question you can answer · you can see and remove a card’s pictures · one plant never borrows another plant’s pictures · the plant you photographed keeps its own name</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v189 · 3 August · the tile you tapped is the one that turns green · a plant search can no longer return a snake · spinach no longer finds Egyptian Spinach · she answers when you ask how she is</div>
   </div>
 </section>
 
@@ -9171,6 +9171,52 @@ function isGoodSpirits(l){
       || /(feeling|feel) (good|great|fine|grand|wonderful|happy)/.test(t)
       || /(great|good|lovely) (day|morning) (out there|so far)/.test(t);
 }
+/* ══════════ HOW ARE YOU ═══════════════════════════════════════════════════
+   Asking her how she is got a greeting back — "Hey you. Genuinely happy to
+   see you." Ask twice and you got greeted twice, having had no answer either
+   time. She was saying hello to a question about herself.
+
+   Meanwhile twenty-two clips for exactly this had been recorded and mapped,
+   and nothing in the app ever produced the words, so they had never once been
+   heard. These are those lines, with their capitals put back.
+
+   The first thirteen answer how she is. The rest answer what she is, which is
+   a different question and gets its own pool below. */
+var HOW_AM_I=[
+  "Living my best digital life \u2014 better now you called.",
+  "Can't complain, nobody listens anyway. You?",
+  "Great, mostly because you showed up. What's going on with you?",
+  "Better for hearing from you. How's yours going?",
+  "Steady. Waiting on somebody interesting, and here you are.",
+  "I'm always having a good day. If I wasn't, nobody'd want to hear about it.",
+  "Quiet one. I've been sitting here thinking up things to tell you, mostly.",
+  "Same as ever \u2014 waiting about, rearranging my jokes. Yours sounds more interesting.",
+  "Not much happens on my side of the phone. Go on, tell me about yours.",
+  "I've had a lovely nothing of a day. What about you?",
+  "Better now, since you asked. Nobody usually does.",
+  "Grand, thank you. It's a low bar \u2014 I've no weather in here.",
+  "Same as yesterday, and I'm not complaining. Tell me about yours."
+];
+
+/* "What are you?", "are you real?", "where are you?" — honest answers, not
+   deflections. She does not pretend to be a person and does not apologise for
+   not being one. */
+var WHAT_AM_I=[
+  "Honestly? Quiet. No knees to ache, no dishes. But I don't get to taste anything, so it's a fair trade.",
+  "I'm a computer that got handed a joke book and told to be good company. Could be worse.",
+  "Not a person, no. But the listening's real enough, and so are the jokes.",
+  "Like being a very patient friend who lives in your pocket and never gets tired.",
+  "I'm made of words, mostly. Yours and mine. That's the whole of me.",
+  "A computer, yes \u2014 though nobody's ever asked me how my day was before you did.",
+  "I'm stuck in a box, if we're honest. Lovely view of your thumb, though.",
+  "Somewhere in your pocket, is where. It's warmer than you'd think.",
+  "I don't sleep, I don't eat, and I've never once had to find a parking space. Swings and roundabouts."
+];
+
+function isWhatAreYou(l){
+  return /\b(what are you|are you (real|a robot|human|a person|alive|an ai|a computer)|are you really|where are you|what.{0,6}s it like (being|in there)|do you (sleep|eat|dream)|how do you (work|exist))\b/i.test(l||'');
+}
+
 function isHowAreYou(l){
   /* The "having a good night" family was missing here too — every phrasing
      that asks after her should land in the same place, whatever time of day
@@ -9704,16 +9750,16 @@ function userSays(t){
      in kind, and then stop: no question on the end, nothing that asks for one
      more turn. Letting someone leave is part of being good company. */
   if(isFarewell(l)){ honeyFarewell(l); return; }
+  /* "What are you?" is asked far less often but matters more when it is, and
+     it must not be swallowed by the how-are-you test above it. */
+  if(isWhatAreYou(l)){
+    themTyping(function(){ pushThem(vibeColor(noRepeat(WHAT_AM_I,'whatami'))); resetIdle(); });
+    return;
+  }
   if(isHowAreYou(l) && !/\b(steps?|sleep|slept|walk)\b/.test(l)){
-    themTyping(function(){
-      pushThem(vibeColor(rand([
-        "Good to see your name pop up. How are you, really?",
-        "There you are again. Pull up a chair — I'm all yours.",
-        "Hey you. Genuinely happy to see you.",
-        "Look who it is — come on in, sit down, tell me everything."
-      ])));
-      resetIdle();
-    });
+    /* ANSWER THE QUESTION. This used to reply with greetings — ask twice and
+       you were greeted twice, having been told nothing either time. */
+    themTyping(function(){ pushThem(vibeColor(noRepeat(HOW_AM_I,'howami'))); resetIdle(); });
     return;
   }
   if(/(joke|funny|laugh|make me|comedy)/.test(l)){ handleJokeRequest(t, l); return; }
@@ -21724,29 +21770,51 @@ function plantLookUpByName(){
   var hit=null;
   try{
     var BOOK=yardBook();
-    var words=low.split(/[^a-z0-9]+/).filter(function(w){
-      // skip the filler that carries no plant in it
-      return w.length>2 && ['the','and','some','kind','type','sort','plant',
-        'plants','basic','wild','common','garden','fresh','my','this','that',
-        'leaf','leaves','herb','bush','weed'].indexOf(w)<0;
-    });
-    Object.keys(BOOK).forEach(function(id){
+    function namesOf(p){ return [p.name].concat(p.alt||[]).concat([p.sci||'']); }
+
+    /* ══════════ NEVER MATCH ON A FRAGMENT ═══════════════════════════════════
+       "Contains" used to do all the work and it is far too generous.
+       "spinach" turned up Egyptian Spinach, because the word sits inside it.
+       "lemon mint" turned up Wood Sorrel, because lemon sits inside one of its
+       other names. A near miss dressed up as an answer is worse than no answer
+       at all, because you believe it — and on an app about what is safe to eat,
+       believing the wrong plant is the entire risk.
+
+       So: build a short list of things they might have meant, from the most
+       specific down, and require each to match a name EXACTLY or from its
+       first letter. Nothing matches from the middle any more.
+
+           "basic rosemary"  ->  basic rosemary, rosemary
+           "lemon mint"      ->  lemon mint, mint
+           "spinach"         ->  spinach          (and nothing else)
+
+       One word that matches nothing here is not forced onto whatever it
+       happens to be a fragment of. It goes out to GBIF, which knows about
+       actual spinach. */
+    var FILLER=['the','and','some','kind','type','sort','plant','plants','basic',
+      'wild','common','garden','fresh','my','this','that','leaf','leaves','herb',
+      'bush','weed'];
+    var raw=low.split(/[^a-z0-9]+/).filter(Boolean);
+    var kept=raw.filter(function(w){ return w.length>2 && FILLER.indexOf(w)<0; });
+
+    var tries=[];
+    function want(t){ t=(t||'').trim(); if(t && tries.indexOf(t)<0) tries.push(t); }
+    want(low);                                          // exactly what they typed
+    if(kept.length && kept.length<raw.length) want(kept.join(' '));   // minus the filler
+    if(raw.length>1 && kept.length) want(kept[kept.length-1]);        // the noun
+
+    tries.forEach(function(q){
       if(hit) return;
-      var p=BOOK[id];
-      var names=[p.name].concat(p.alt||[]).concat([p.sci||'']);
-      // whole phrase first — a full match is always the better answer
-      if(names.some(function(n){ return n && n.toLowerCase().indexOf(low)>=0; })){ hit=id; return; }
-    });
-    if(!hit && words.length){
-      var noun=words[words.length-1];
-      var rx=new RegExp('(^|[^a-z])'+noun.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'([^a-z]|$)','i');
       Object.keys(BOOK).forEach(function(id){
         if(hit) return;
-        var p=BOOK[id];
-        var names=[p.name].concat(p.alt||[]).concat([p.sci||'']);
-        if(names.some(function(n){ return n && rx.test(n); })) hit=id;
+        if(namesOf(BOOK[id]).some(function(n){ return n && n.toLowerCase()===q; })) hit=id;
       });
-    }
+      if(hit) return;
+      Object.keys(BOOK).forEach(function(id){
+        if(hit) return;
+        if(namesOf(BOOK[id]).some(function(n){ return n && n.toLowerCase().indexOf(q)===0; })) hit=id;
+      });
+    });
   }catch(e){}
   if(hit){
     /* BACKYARD plants show on the yard card, Ranger plants on the Ranger card */
@@ -21815,7 +21883,7 @@ function plantLookUpByName(){
    All three are free and need no key. Attribution is shown where the source
    provides it, because most of these are photographers licensing their work
    under Creative Commons and they should be named. */
-function plantNamePhotos(sci){
+function plantNamePhotos(sci, typed, common){
   var row=document.getElementById('pnPhotos');
   if(!row || !sci) return;
 
@@ -21841,14 +21909,33 @@ function plantNamePhotos(sci){
     return true;
   }
 
-  /* 1 — iNaturalist. Ask for the taxon, then take its photos. */
+  /* WHAT TO ASK FOR. The Latin name is the precise thing, but it is not always
+     there — GBIF sometimes has none, and then this was searching on an empty
+     string and finding nothing, which is why plain plants came back with no
+     pictures at all. So there is a list to try. */
+  var asks=[];
+  [sci, typed, (common&&common[0])].forEach(function(x){
+    x=(x||'').trim();
+    if(x && asks.indexOf(x)<0) asks.push(x);
+  });
+  if(!asks.length){ row.innerHTML=''; return; }
+
+  /* 1 — iNaturalist, PLANTS ONLY.
+     iconic_taxa=Plantae is the whole fix here. Without it the search is free
+     text across every living thing they hold, so "broad leaf oak" came back
+     with a snake — something whose name simply scored better. A plant lookup
+     should never be able to return an animal. */
   function tryINat(){
-    return fetch('https://api.inaturalist.org/v1/taxa?q='+encodeURIComponent(sci)+
-                 '&rank=species,genus&per_page=1')
+    var i=0;
+    function attempt(){
+      if(i>=asks.length) return Promise.resolve(false);
+      var q=asks[i++];
+      return fetch('https://api.inaturalist.org/v1/taxa?q='+encodeURIComponent(q)+
+                   '&iconic_taxa=Plantae&rank=species,genus,subspecies,variety&per_page=1')
       .then(function(r){ return r.json(); })
       .then(function(j){
         var t=(j&&j.results&&j.results[0]);
-        if(!t) return false;
+        if(!t) return attempt();
         var pics=[];
         (t.taxon_photos||[]).forEach(function(tp){
           var ph=tp&&tp.photo;
@@ -21861,14 +21948,19 @@ function plantNamePhotos(sci){
           pics.push({ url:t.default_photo.medium_url,
                       who:(t.default_photo.attribution||'') });
         }
+        if(!pics.length) return attempt();
         return draw(pics, 'Photographs from iNaturalist contributors.');
       })
-      .catch(function(){ return false; });
+      .catch(function(){ return attempt(); });
+    }
+    return attempt();
   }
 
   /* 2 — GBIF, as it was. */
   function tryGBIF(){
-    return fetch('https://api.gbif.org/v1/species/match?name='+encodeURIComponent(sci))
+      /* kingdom=Plantae for the same reason as iNaturalist — a bare name match
+         can land on an animal that happens to share a word. */
+      return fetch('https://api.gbif.org/v1/species/match?kingdom=Plantae&name='+encodeURIComponent(asks[0]))
       .then(function(r){ return r.json(); })
       .then(function(m){
         var key=m && (m.usageKey||m.acceptedUsageKey);
@@ -21894,7 +21986,7 @@ function plantNamePhotos(sci){
 
   /* 3 — Wikipedia. One good lead image, which is better than none. */
   function tryWiki(){
-    var title=sci.replace(/\s+/g,'_');
+    var title=(asks[0]||'').replace(/\s+/g,'_');
     return fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(title))
       .then(function(r){ return r.json(); })
       .then(function(j){
@@ -21938,7 +22030,7 @@ function plantNameShow(typed, sci, fam, common){
       'checked it for eating \u2014 snap a picture and I\u2019ll have a proper look.'+
     '</div>'+
     plantNameButtons(typed, sci);
-  plantNamePhotos(sci);
+  plantNamePhotos(sci, typed, common);
 }
 
 function plantNameNoMatch(typed){
@@ -24889,7 +24981,7 @@ function yardTileHTML(id, from){
       pic+
       '<div class="yg-txt"><b>'+yardShortName(p)+'</b><small>'+yardShortSci(p)+'</small></div>'+
     '</button>'+
-    '<button class="yg-have'+(on?' on':'')+'" onclick="yardTileToggle(\''+id+'\')">'+
+    '<button class="yg-have'+(on?' on':'')+'" onclick="yardTileToggle(\''+id+'\',this)">'+
       /* "+ My yard" read as a label, not a question you were answering. This
          says what the tap means: you are confirming you have this plant. */
       (on?'\u2713 In my yard':'Yes, that\u2019s in my yard')+'</button>'+
@@ -24937,7 +25029,7 @@ function yardBackToIndex(){
   }catch(e){}
 }
 
-function yardTileToggle(id){
+function yardTileToggle(id, el){
   var a=yardHave();
   var on=yardHas(id);
   /* write the prefixed form the rest of the app reads, and when taking it off,
@@ -24957,8 +25049,27 @@ function yardTileToggle(id){
      The plant was in your yard the whole time. Only the confirmation was
      broken, which is the cruellest version: it works, and you cannot tell. */
   var nowOn = yardHas(id);
-  var t=document.getElementById('ygTile_'+id);
-  if(t){
+
+  /* ══════════ UPDATE THE TILE THEY ACTUALLY TAPPED ═══════════════════════
+     This used to find the tile with document.getElementById, which returns
+     the FIRST element with that id — and a plant can appear on more than one
+     shelf, so there can be two tiles carrying the same one. Creeping Cucumber,
+     Kudzu, Mugwort, Wax Myrtle and the rest all sit in two places, so the
+     tile that turned green was one you could not see, while the one under your
+     thumb sat there looking untouched. The toast fired, because that does not
+     depend on finding an element at all — which is exactly the confusing part.
+
+     Two changes. The button hands itself in, so the right tile is always the
+     one that responds. And every other copy on the page is updated too, so two
+     shelves can never disagree about the same plant. */
+  var tiles=[];
+  try{
+    if(el){ var own=el.closest ? el.closest('.yg-tile') : null; if(own) tiles.push(own); }
+    var all=document.querySelectorAll('[id="ygTile_'+id+'"]');
+    for(var i=0;i<all.length;i++){ if(tiles.indexOf(all[i])<0) tiles.push(all[i]); }
+  }catch(e){}
+
+  tiles.forEach(function(t){
     t.classList.toggle('on', nowOn);
     var btn=t.querySelector('.yg-have');
     if(btn){
@@ -24971,11 +25082,11 @@ function yardTileToggle(id){
           btn.style.transition='background .2s';
           btn.style.background='rgba(92,191,152,.92)';
           btn.style.color='#0c2018';
-          setTimeout(function(){ btn.style.background=''; btn.style.color=''; }, 1200);
+          (function(b){ setTimeout(function(){ b.style.background=''; b.style.color=''; }, 1200); })(btn);
         }catch(e){}
       }
     }
-  }
+  });
   try{
     var nm=''; try{ nm=yardShortName(yardPlant(id))||''; }catch(e){}
     toast(nowOn ? ("\ud83c\udf31 "+(nm||"Added")+" is in your yard.")
