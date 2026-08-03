@@ -579,9 +579,12 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .yg-txt small{font-size:9px;color:#6b6152;font-style:italic;line-height:1.2;
   display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;}
-.yg-have{width:100%;min-height:30px;border:0;border-top:1px solid rgba(58,44,8,.12);
+/* Room for "Yes, that's in my yard" — the old "+ My yard" fitted on one line
+   at 30px, and a taller target is better anyway on a tile people tap with a
+   thumb. */
+.yg-have{width:100%;min-height:38px;border:0;border-top:1px solid rgba(58,44,8,.12);
   background:rgba(58,44,8,.05);color:#6b6152;font-size:10.5px;font-weight:700;
-  padding:6px 4px;cursor:pointer;}
+  padding:8px 5px;cursor:pointer;line-height:1.25;}
 .yg-have.on{background:rgba(92,138,82,.20);color:#2f5a28;}
 .yg-empty{font-size:12.5px;color:var(--muted);font-style:italic;padding:0 4px 10px;}
 .yi-name{flex:1;display:flex;align-items:center;gap:11px;text-align:left;background:#FFFDF9;
@@ -2522,7 +2525,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v175 · 3 August · no leftover line waiting overnight · seasons read however you write them · adding to your yard says so · no more getting stuck on a puzzle letter</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v185 · 3 August · the tile asks a question you can answer · you can see and remove a card’s pictures · one plant never borrows another plant’s pictures · the plant you photographed keeps its own name</div>
   </div>
 </section>
 
@@ -9195,6 +9198,58 @@ var HELLO_BACK=[
   "Welcome back. Glad you woke me up, thank you.",
   "Heyyy, welcome back. Right where we left off."
 ];
+/* ══════════ GOODBYES ═══════════════════════════════════════════════════════
+   Every line below is written to CLOSE. No question mark, no "before you go",
+   nothing that asks for one more turn. If somebody is saying goodnight, the
+   kindest thing the app can do is let them go.
+
+   These are not recorded yet, so on Pint they will appear silently until the
+   clips are made. That is the right way round — better quiet than the wrong
+   words, and it is the same rule the rest of the voice system follows. */
+var BYE_BACK=[
+  "Night. Sleep well.",
+  "Goodnight. I'll be here tomorrow.",
+  "Sleep well. Nothing else needs doing tonight.",
+  "Night then. Rest easy.",
+  "Off you go. I'll keep your place.",
+  "Goodnight. It was good talking to you.",
+  "Rest well. See you when you're back.",
+  "Take care. I'm not going anywhere."
+];
+var BYE_DAY=[
+  "See you later, then.",
+  "Off you go. I'll be here.",
+  "Take care of yourself out there.",
+  "Right you are. Come back when you like.",
+  "Bye for now.",
+  "Go on then. I'll keep your place."
+];
+
+function isFarewell(l){
+  var t=(l||'').toLowerCase().trim();
+  if(!t) return false;
+  /* Not a farewell if they're asking something — "are you having a good
+     night?" is a question about her and belongs elsewhere entirely. */
+  if(/\?\s*$/.test(t)) return false;
+  /* Telling a story about a night is not saying goodnight. "I had a good
+     night last night at the show" is somebody opening a conversation, and
+     answering it with "Night. Sleep well." would be a slap. */
+  if(/\b(had|was|were|last night|yesterday|remember)\b/.test(t)) return false;
+  return /\b(good ?night|goodnight|night ?night|nighty ?night|sleep well|sweet dreams|off to bed|going to bed|heading to bed|turning in|calling it a night|see (you|ya)( later| tomorrow| soon)?|talk (to you |2u )?(later|tomorrow)|catch (you|ya) later|bye|goodbye|farewell|i'?m off|gotta go|got to go|have a good (night|evening|one)|hope you have a good (night|evening|day|one))\b/.test(t);
+}
+
+function honeyFarewell(l){
+  var t=(l||'').toLowerCase();
+  var night = /night|bed|sleep|dream|turning in|calling it/.test(t);
+  var pool = night ? BYE_BACK : BYE_DAY;
+  themTyping(function(){
+    pushThem(vibeColor(noRepeat(pool, 'bye')));
+    /* Stop the idle timers. Somebody who has said goodnight should not be
+       nudged three minutes later asking what they're up to. */
+    try{ stopIdle(); }catch(e){}
+  }, 500);
+}
+
 function honeyGreetBack(l){
   var pool = HELLO_BACK.slice();
   // vibe-matched openers, also recorded
@@ -9638,6 +9693,17 @@ function userSays(t){
   }
   // ── HELLO: answer a greeting like a person, not with a menu ──
   if(isPlainGreeting(l)){ honeyGreetBack(l); return; }
+
+  /* ══════════ SAYING GOODNIGHT ═══════════════════════════════════════════
+     "Good night" got "Tell me more about that, would you?" and "I hope you
+     have a good night" got an offer to keep going. Both are the catch-all,
+     which means she never recognised a goodbye at all — the one moment where
+     carrying on is exactly the wrong answer.
+
+     Somebody saying goodnight to a companion app is being kind to it. Answer
+     in kind, and then stop: no question on the end, nothing that asks for one
+     more turn. Letting someone leave is part of being good company. */
+  if(isFarewell(l)){ honeyFarewell(l); return; }
   if(isHowAreYou(l) && !/\b(steps?|sleep|slept|walk)\b/.test(l)){
     themTyping(function(){
       pushThem(vibeColor(rand([
@@ -9787,7 +9853,7 @@ function userSays(t){
      Never a reminder. */
   var _asking = /\?\s*$/.test(l) ||
     /^(what|who|where|when|why|how|which|do|does|did|can|could|would|should|is|are|am|was|were)\b/.test(l.trim());
-  if(!_blockAdd && !_asking && /(remind me|reminder|remember to|don'?t let me forget|make sure i|i need to|i have to|i gotta|i should|note to self|set (a |an )?(reminder|alarm|appointment|event|alert)|schedule|book|plan to|add .{0,30}?(to|on) (my )?calendar|add (a |an )?(reminder|event|appointment)( to)?( my)? calendar|put .* (on|in) (my )?calendar|jot down|wake me|ping me|nudge me|alert me|tell me (later|to)|got to|need a reminder|add to calendar|new (event|appointment|reminder))/.test(l)){ doCalendar(t); return; }
+  if(!_blockAdd && !_asking && /(\bremind me\b|\breminder\b|\bremember to\b|don'?t let me forget|\bmake sure i\b|\bi need to\b|\bi have to\b|\bi gotta\b|\bi should\b|\bnote to self\b|\bset (a |an )?(reminder|alarm|appointment|event|alert)\b|\bschedule (a|an|it|me|us|the)\b|\bon my schedule\b|\bbook (a|an|it|me|us|the)\b|\bplan to\b|\badd .{0,30}?(to|on) (my )?calendar\b|\badd (a |an )?(reminder|event|appointment)( to)?( my)? calendar\b|\bput .* (on|in) (my )?calendar\b|\bjot down\b|\bwake me\b|\bping me\b|\bnudge me\b|\balert me\b|\btell me (later|to)\b|\bneed a reminder\b|\badd to calendar\b|\bnew (event|appointment|reminder)\b)/.test(l)){ doCalendar(t); return; }
   // "how much have I got left?" — answered from their own numbers, nothing sent anywhere
   if(isMoneyQuestion(l)){ moneyAnswer(); return; }
   // "what's for dinner?"
@@ -15233,8 +15299,21 @@ function _spDrain(){
     if(clip){
       try{
         playHoneyClip(clip, function(){
-          // clip missing or blocked -> don't just go silent
-          if(_lastClipFailed){ _speakWithChosenVoice(text, myToken, next); return; }
+          /* A CLIP THAT FAILS TO LOAD STAYS SILENT.
+             This used to hand the line to _speakWithChosenVoice, which on Pint
+             means a device voice — so a file that was missing, or blocked, or
+             simply not copied across after the .m4a switch would come out in a
+             robot voice pretending to be her. That is the one thing the whole
+             voice design exists to prevent.
+
+             A quiet line reads as a hiccup; somebody assumes they weren't heard
+             and says it again. A strange voice on top of her reads as broken.
+             So if her clip will not play, nothing does. */
+          if(_lastClipFailed && (isOwner() || tierAtLeast('quart'))){
+            // Her own clone is still HER, so it may cover the line.
+            CLOUD.provider='elevenlabs';
+            cloudSpeak(text); _spPollCloud(myToken, next); return;
+          }
           next();
         });
         return;
@@ -21606,6 +21685,21 @@ function plantLookUpByName(){
   var box=document.getElementById('plantHubResult'); if(!box) return;
   var low=q.toLowerCase();
 
+  /* ══════════ FORGET THE LAST PHOTOGRAPH ═══════════════════════════════════
+     _lastResults was set whenever PlantNet identified a picture and then never
+     cleared. rangerYardSave reads it for the Latin name, the family, and the
+     reference photographs — so somebody who identified pokeweed from a photo
+     and then simply typed "dill" got a card called dill carrying pokeweed's
+     pictures, pokeweed's binomial and pokeweed's family.
+
+     On an app about what is safe to eat, that is the worst thing in the file.
+     A name lookup is a fresh start: the last identification, the staged
+     photographs and the parked values all go. */
+  try{ _lastResults=[]; }catch(e){}
+  try{ _rangerLastPhoto=''; }catch(e){}
+  try{ _yardPendPics=null; _yardPendPhoto=''; _yardPendSci=''; }catch(e){}
+  try{ if(typeof _stage!=='undefined'){ _stage=[]; if(typeof stageRender==='function') stageRender(); } }catch(e){}
+
   /* Our own book first - instant, and the one we can vouch for.
      This used to read RANGER_PLANTS only, which missed every BACKYARD plant -
      so typing "Portulaca oleracea" said it wasn't in the book when Purslane
@@ -21872,7 +21966,7 @@ function plantNameButtons(typed, sci){
   var ssci=String(sci||'').replace(/'/g,'');
   return '<div style="display:flex;gap:6px;margin-top:9px">'+
     '<button class="pl-mini" onclick="openPlantCamera()">\ud83d\udcf7<span>Take a picture</span></button>'+
-    '<button class="pl-mini" onclick="rangerAddToMyYard(\''+esc(safe)+'\',\'\',\''+esc(ssci)+'\')">'+
+    '<button class="pl-mini" onclick="rangerAddNamedToYard(\''+esc(safe)+'\',\''+esc(ssci)+'\')">'+
     '\ud83c\udf31<span>Add to my yard</span></button>'+
   '</div>';
 }
@@ -22310,13 +22404,17 @@ function rangerUnknownPlant(top){
   // data URL — putting it inside an onclick attribute kills the tap.
   _yardPendName = name || '';
   _yardPendPhoto = photo || '';
+  /* A photograph has just been identified, so whatever was typed into the
+     search box before is out of date. Clearing it stops an old word turning
+     up as the name of a new plant. */
+  try{ _plantGuess=''; }catch(e){}
   box.innerHTML='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden">'+
     (photo?'<div style="height:150px;background:#eef2ee;display:flex;align-items:center;justify-content:center;position:relative"><img src="'+photo+'" style="width:100%;height:150px;object-fit:cover"><div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,.5);color:#fff;font-size:10px;font-weight:600;padding:4px 9px;border-radius:14px">your photo</div></div>':'')+
     '<div style="padding:14px">'+
       '<p style="font-size:16px;font-weight:600;margin:0 0 2px">New to me — '+name+'</p>'+
       (sci?'<p style="font-size:11px;color:var(--muted);font-style:italic;margin:0 0 4px">'+sci+(score?' · '+score+'% match':'')+'</p>':'')+
       '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:10px 12px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11.5px;color:#ffcf6b;line-height:1.5"><b>Not in my book.</b> I can\'t confirm this one, so please don\'t eat it on my word. If YOU know it\'s edible, you can add it to your own yard.</p></div>'+
-      '<button class="home-half" style="width:100%" onclick="yardStartFromResult()">🌱 I know this one — add to My Yard</button>'+
+      '<button class="home-half" style="width:100%" onclick="yardStartFromResult()">🌱 Yes, that’s it — add it to my yard</button>'+
       (_stage.length? rangerRetryPanel() : '')+
     '</div></div>';
 }
@@ -22333,17 +22431,25 @@ function yardStartFromResult(){
     if(typeof _stage!=='undefined' && _stage.length && _stage[0].data) photo=_stage[0].data;
     else if(typeof _rangerLastPhoto!=='undefined') photo=_rangerLastPhoto||'';
   }catch(e){}
+  /* ══════════ WHAT PLANTNET SAW BEATS WHAT YOU ONCE TYPED ═════════════════
+     This asked plantGuessName() first — which returns _plantGuess, the word
+     typed into the search box, possibly hours earlier and about a completely
+     different plant. So somebody who had looked up "lemon mint" in the
+     morning, then photographed pokeweed in the afternoon, got a card called
+     lemon mint with a picture of pokeweed on it.
+
+     A typed guess is a hint for searching. It is not an identification. What
+     came back from the photograph goes first now, and the typed word is only
+     used when there is no result at all to read. */
   var name = '';
-  try{ name = plantGuessName(); }catch(e){}
-  if(!name){
-    try{
-      var t=_lastResults && _lastResults[0];
-      if(t){
-        name = (t.commonNames && t.commonNames[0]) ? t.commonNames[0]
-             : (t.scientificName || '');
-      }
-    }catch(e){}
-  }
+  try{
+    var t=_lastResults && _lastResults[0];
+    if(t){
+      name = (t.commonNames && t.commonNames[0]) ? t.commonNames[0]
+           : (t.scientificName || '');
+    }
+  }catch(e){}
+  if(!name){ try{ name = plantGuessName(); }catch(e){} }
   rangerAddToMyYard(name, photo);
 }
 
@@ -22368,6 +22474,34 @@ function bookYardToggle(id){
    URLs both broke the inline version — the button just silently did nothing. */
 var _yardPendName="", _yardPendPhoto="";
 var _yardPendSci='';
+/* ══════════ THE PICTURES ON SCREEN SHOULD COME WITH YOU ═════════════════
+   "Add to my yard" after a name search passed an empty string where the photo
+   goes — so somebody looked up Rosemary, saw a row of photographs, said yes
+   that's the one, and got a card with nothing on it but a word. The pictures
+   were sitting right there on the same screen.
+
+   This reads whatever plantNamePhotos found, keeps the first as the card
+   picture and the rest alongside it, and hands the Latin name over too. */
+var _yardPendPics = null;
+
+function rangerAddNamedToYard(name, sci){
+  var pics=[];
+  try{
+    var row=document.getElementById('pnPhotos');
+    if(row){
+      var imgs=row.querySelectorAll('img');
+      for(var i=0;i<imgs.length && pics.length<6;i++){
+        var u=imgs[i].getAttribute('src');
+        if(u && imgs[i].style.display!=='none'){
+          pics.push({ url:u, credit:(imgs[i].getAttribute('title')||''), organ:'', ts:Date.now() });
+        }
+      }
+    }
+  }catch(e){}
+  _yardPendPics = pics.length ? pics : null;
+  rangerAddToMyYard(name, (pics[0] && pics[0].url) || '', sci);
+}
+
 function rangerAddToMyYard(name,photo,sci){
   _yardPendName = name||"";
   /* A data URL is a photo. Anything else arriving here is a name - and a name in
@@ -22455,6 +22589,13 @@ function rangerYardSave(){
     }
   }catch(e){}
   if(!sci) sci = _yardPendSci || '';    /* typed-name route has no _lastResults */
+  /* The name-search route has no _lastResults either, so its pictures arrive
+     through _yardPendPics — harvested off the screen the person was looking at
+     when they said yes, that's the one. Without this the card was built with
+     nothing but a word on it. */
+  if(!pics.length && _yardPendPics && _yardPendPics.length){
+    pics = _yardPendPics.slice(0,6);
+  }
   /* Every picture they took, not just the first. Somebody photographs a leaf AND
      a flower AND the bark - throwing two of them away was losing the work. */
   var shots=[];
@@ -22476,7 +22617,7 @@ function rangerYardSave(){
   /* The plant is saved and its picture came with it - and the shot is in the
      phone's own photo library too. Leaving the staging tray full meant the next
      identification silently inherited the last one's pictures. */
-  try{ _stage=[]; _yardPendPhoto=''; _yardPendName=''; _yardPendSci='';
+  try{ _stage=[]; _yardPendPhoto=''; _yardPendName=''; _yardPendSci=''; _yardPendPics=null;
        if(typeof stageRender==='function') stageRender(); }catch(e){}
   _yardPendName=""; _yardPendPhoto="";
   // make sure it actually landed before saying so
@@ -22486,6 +22627,16 @@ function rangerYardSave(){
   toast("\ud83c\udf31 Added to your yard.");
   try{ go('myYard'); openMyYardPlant(entry.id); }
   catch(e){ try{ openMyYard(); }catch(e2){} }
+  /* Draw it once more a moment later. The settings write is asynchronous, so
+     the first render can land before the record has finished saving — which
+     showed as a card with the name on it and nothing else, and the Latin name
+     and pictures only appearing once you left and came back. */
+  setTimeout(function(){
+    try{
+      var still=document.getElementById('myYard');
+      if(still && still.classList.contains('on')) openMyYardPlant(entry.id);
+    }catch(e){}
+  }, 350);
 }
 /* Photographs adopted from PlantNet when the plant was added, shown with the
    names of the people who took them - the condition they are shared on, and it
@@ -22658,6 +22809,7 @@ function yardEditOpen(id){
       '<input id="ydSeason" value="'+String(e.season||'').replace(/"/g,'&quot;')+'" placeholder="e.g. Spring–summer" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 12px">'+
       '<label style="font-size:11px;color:var(--muted)">Your notes</label>'+
       '<textarea id="ydNote" rows="5" placeholder="How you use it, where it grows…" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;line-height:1.5;margin:4px 0 14px">'+esc(e.note||'')+'</textarea>'+
+      yardEditPhotosHTML(e)+
       '<button style="width:100%;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:13px;font-size:15px;font-weight:700;cursor:pointer" onclick="yardEditSave(\''+id+'\')">Save my changes</button>'+
       '<button class="home-half" style="width:100%;margin-top:7px;color:#3a2c08" onclick="openMyYardPlant(\''+id+'\')">Never mind</button>'+
     '</div>';
@@ -22668,11 +22820,81 @@ function yardEditSave(id){
   var se=(document.getElementById('ydSeason')||{}).value;
   var no=(document.getElementById('ydNote')||{}).value;
   if(nm!==undefined) e.name=(nm||'').trim()||e.name;
-  if(se!==undefined) e.season=(se||'').trim();
+  if(se!==undefined){
+    e.season=(se||'').trim();
+    /* RE-READ THE SEASON. The months array is what In Season filters on, and
+       editing changed the words without changing the months — so somebody who
+       corrected "Summer" to "Summer, fall" saw no difference at all and quite
+       reasonably concluded the box did nothing. */
+    try{ e.months = seasonToMonths(e.season); }catch(err){}
+  }
   if(no!==undefined) e.note=(no||'').trim();
   saveSettings();
   openMyYardPlant(id);
-  toast("Saved. 🌱");
+  toast("Saved. \ud83c\udf31");
+}
+
+/* ══════════ REMOVING A PICTURE ═══════════════════════════════════════════
+   The edit screen showed a name, a season and a note and nothing else — so
+   there was no way to take a photograph off a card, and no way even to see
+   that your photographs were still on it. Both of those read as "editing lost
+   my pictures".
+
+   Two sets live on a card: the ones you took (photos) and the reference ones
+   adopted from PlantNet or a name lookup (pics). Either can go. */
+function yardEditPhotosHTML(e){
+  var mine = (Array.isArray(e.photos) && e.photos.length) ? e.photos
+           : (e.photo ? [e.photo] : []);
+  var refs = Array.isArray(e.pics) ? e.pics : [];
+  if(!mine.length && !refs.length) return '';
+
+  function cell(src, onclick, label){
+    return '<div style="position:relative;flex:0 0 auto">'+
+      '<img src="'+src+'" style="width:74px;height:74px;object-fit:cover;border-radius:11px;display:block">'+
+      '<button onclick="'+onclick+'" aria-label="'+label+'" style="position:absolute;top:-6px;right:-6px;width:28px;height:28px;border:none;border-radius:50%;background:rgba(0,0,0,.72);color:#fff;font-size:14px;line-height:1;cursor:pointer">\u2715</button>'+
+    '</div>';
+  }
+
+  var out='';
+  if(mine.length){
+    out += '<label style="font-size:11px;color:var(--muted);display:block;margin-top:12px">Your photographs</label>'+
+           '<div style="display:flex;gap:11px;overflow-x:auto;padding:10px 4px 4px">'+
+           mine.map(function(src,i){
+             return cell(src, "yardEditDropPhoto('"+e.id+"',"+i+")", "Remove this photograph");
+           }).join('')+'</div>';
+  }
+  if(refs.length){
+    out += '<label style="font-size:11px;color:var(--muted);display:block;margin-top:8px">Reference pictures</label>'+
+           '<div style="display:flex;gap:11px;overflow-x:auto;padding:10px 4px 4px">'+
+           refs.map(function(pp,i){
+             return cell(pp.url, "yardEditDropRef('"+e.id+"',"+i+")", "Remove this picture");
+           }).join('')+'</div>';
+  }
+  return out;
+}
+
+function yardEditDropPhoto(id, idx){
+  var e=rangerYardFind(id); if(!e) return;
+  var arr = (Array.isArray(e.photos) && e.photos.length) ? e.photos.slice()
+          : (e.photo ? [e.photo] : []);
+  arr.splice(idx,1);
+  e.photos = arr;
+  e.photo  = arr[0] || (Array.isArray(e.pics) && e.pics[0] ? e.pics[0].url : '');
+  saveSettings();
+  toast("Taken off.");
+  yardEditOpen(id);
+}
+
+function yardEditDropRef(id, idx){
+  var e=rangerYardFind(id); if(!e) return;
+  if(!Array.isArray(e.pics)) return;
+  e.pics.splice(idx,1);
+  if(!(Array.isArray(e.photos) && e.photos.length)){
+    e.photo = (e.pics[0] && e.pics[0].url) || '';
+  }
+  saveSettings();
+  toast("Taken off.");
+  yardEditOpen(id);
 }
 function rangerYardNutrient(id,n){
   var e=rangerYardFind(id); if(!e)return; if(!e.nutrients)e.nutrients={};
@@ -22853,12 +23075,24 @@ function rangerYardFindRecipes(id){
       wrap.style.cssText='margin-top:14px;background:rgba(140,170,120,.12);'+
         'border:1px solid rgba(140,170,120,.34);border-radius:14px;padding:12px 13px';
       wrap.innerHTML='<div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.4px;margin:0 0 8px;text-transform:uppercase">🍳 Recipes with '+esc(q)+'</div>'+
-        list.map(function(r){
-          return '<a href="'+(r.url||'#')+'" target="_blank" rel="noopener" style="display:flex;gap:10px;align-items:center;text-decoration:none;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px;margin-bottom:8px">'+
-            (r.image?'<img src="'+r.image+'" style="width:52px;height:52px;object-fit:cover;border-radius:9px;flex:0 0 auto">':'<div style="width:52px;height:52px;border-radius:9px;background:rgba(231,200,115,.15);display:flex;align-items:center;justify-content:center;flex:0 0 auto">🍽️</div>')+
-            '<span style="font-size:13px;color:var(--ink);line-height:1.3">'+r.title+'</span></a>';
+        /* KEEP, NOT LEAVE. These were plain links, so tapping a recipe walked
+           you out of the app to somebody else's site and nothing was saved.
+           The book cards already had a ＋ that files it with your recipe cards;
+           My Yard cards did not — and those are the plants people care most
+           about. Same treatment now: ＋ keeps it, the name still opens the
+           site if you would rather read it there. */
+        (function(){ _plantRecipes = list; return ''; })()+
+        list.map(function(r,ix){
+          var kept = (typeof ftSaved==='function') && r.url && ftSaved(r.url);
+          return '<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.07)">'+
+            '<a href="'+(r.url||'#')+'" target="_blank" rel="noopener" style="display:flex;gap:10px;align-items:center;text-decoration:none;color:inherit;flex:1;min-width:0">'+
+              (r.image?'<img src="'+r.image+'" style="width:46px;height:46px;object-fit:cover;border-radius:9px;flex:0 0 auto">':'<div style="width:46px;height:46px;border-radius:9px;background:rgba(231,200,115,.15);display:flex;align-items:center;justify-content:center;flex:0 0 auto">\ud83c\udf7d\ufe0f</div>')+
+              '<span style="font-size:13px;color:var(--ink);line-height:1.35">'+esc(r.title)+'</span></a>'+
+            '<button id="pkeep_'+ix+'" onclick="plantKeepRecipe('+ix+')" style="flex:0 0 auto;width:40px;height:40px;border-radius:50%;border:0;background:'+(kept?'rgba(140,170,120,.32)':'rgba(255,255,255,.08)')+';color:var(--ink);font-size:19px;font-weight:700;cursor:pointer">'+
+              (kept?'\u2713':'\uff0b')+'</button>'+
+          '</div>';
         }).join('')+
-        '<p style="font-size:10px;color:var(--muted);font-style:italic;margin:4px 2px 0">Ideas from the web for your own plant — your call, as always.</p>';
+        '<p style="font-size:10.5px;color:var(--muted);margin:8px 2px 0;line-height:1.45">\uff0b keeps it with your recipe cards. Tap the name to read it on their site.</p>';
     } else {
       wrap.style.cssText='background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.28);border-radius:12px;padding:12px;margin-top:11px;font-size:12px;color:var(--gold);line-height:1.5';
       wrap.textContent='🍳 No recipe ideas came back for that one just now — your plant is saved and ready to try again later.';
@@ -23501,7 +23735,23 @@ function ftSearch(term){
   if(inp && term) inp.value=q;
   var box=document.getElementById('ftResults');
   box.innerHTML='<p style="font-size:13px;color:var(--muted);text-align:center;padding:18px">Looking for ideas…</p>';
-  rangerRecipeSearch(q, function(list){
+  /* ══════════ TRY THE SIMPLER WORDING BEFORE GIVING UP ═══════════════════
+     The plant cards already do this — "Sweet Basil" falls back to basil — but
+     the main box did not, so it only ever asked for the exact words typed.
+     People search the way they cook: "sweet basil", "blackened fish", "fresh
+     green beans", "grilled chicken thighs". Recipe sites hold basil, fish,
+     green beans, chicken. One shrug back from an app that had the answer two
+     words away is how somebody decides it does not work.
+
+     The full query still goes first, because the specific answer is the better
+     one when it exists. Only when nothing comes back does it loosen. */
+  var tries = ftSearchTerms(q);
+  ftSearchCascade(tries, function(list, used){
+    if(used && used!==q){
+      /* Say what was actually found, so nobody wonders why the results do
+         not match what they typed. */
+      q = used;
+    }
     if(!list||!list.length){
       box.innerHTML='<div style="background:rgba(231,200,115,.08);border:1px solid rgba(231,200,115,.28);border-radius:12px;padding:13px;font-size:12.5px;color:var(--gold);line-height:1.5">🍲 Nothing came back for that one just now — try another word, or come back in a bit.</div>';
       return;
@@ -23510,6 +23760,50 @@ function ftSearch(term){
       list.map(function(r){ return ftResultHTML(r); }).join('');
   });
 }
+
+/* Words that describe how a thing is cooked or how fresh it is, rather than
+   what it actually is. Dropping them turns "blackened fish" into "fish" and
+   "fresh chopped garlic" into "garlic". */
+var _FT_MODIFIERS = [
+  'sweet','fresh','freshly','raw','wild','organic','free','range','local',
+  'blackened','grilled','roast','roasted','baked','fried','pan','deep','air',
+  'steamed','boiled','poached','braised','smoked','cured','pickled','stuffed',
+  'chopped','sliced','diced','minced','shredded','crushed','ground','whole',
+  'crispy','crunchy','creamy','spicy','hot','mild','easy','quick','simple',
+  'best','homemade','home','made','healthy','low','fat','free','light',
+  'old','fashioned','southern','italian','french','greek','thai','mexican',
+  'baby','young','large','small','jumbo','mini','giant','red','green','white',
+  'black','yellow','purple','golden','brown'
+];
+
+function ftSearchTerms(q){
+  var raw=String(q||'').trim();
+  var out=[];
+  function add(t){ t=(t||'').trim(); if(t && out.indexOf(t)<0) out.push(t); }
+  add(raw);                                    // exactly what they typed
+
+  var words=raw.toLowerCase().replace(/[^a-z0-9\s'-]/g,' ').split(/\s+/).filter(Boolean);
+  if(words.length>1){
+    var kept=words.filter(function(w){ return _FT_MODIFIERS.indexOf(w)<0; });
+    if(kept.length && kept.length<words.length) add(kept.join(' '));   // minus the how
+    add(words[words.length-1]);                                        // the plain noun
+  }
+  return out;
+}
+
+/* Ask for each in turn, stop at the first that returns anything. */
+function ftSearchCascade(terms, done){
+  var i=0;
+  (function next(){
+    if(i>=terms.length){ done([], terms[0]||''); return; }
+    var t=terms[i++];
+    rangerRecipeSearch(t, function(list){
+      if(list && list.length){ done(list, t); return; }
+      next();
+    });
+  })();
+}
+
 function ftResultHTML(r){
   var saved=ftSaved(r.url);
   /* THE APOSTROPHE HAS TO GO. encodeURIComponent deliberately leaves ' alone —
@@ -24596,7 +24890,9 @@ function yardTileHTML(id, from){
       '<div class="yg-txt"><b>'+yardShortName(p)+'</b><small>'+yardShortSci(p)+'</small></div>'+
     '</button>'+
     '<button class="yg-have'+(on?' on':'')+'" onclick="yardTileToggle(\''+id+'\')">'+
-      (on?'\u2713 In my yard':'+ My yard')+'</button>'+
+      /* "+ My yard" read as a label, not a question you were answering. This
+         says what the tap means: you are confirming you have this plant. */
+      (on?'\u2713 In my yard':'Yes, that\u2019s in my yard')+'</button>'+
   '</div>';
 }
 
@@ -24649,13 +24945,42 @@ function yardTileToggle(id){
   a=a.filter(function(k){ return k!==id && k!=='bk:'+id; });
   if(!on) a.push('bk:'+id);
   SETTINGS.rangerHave=a; saveSettings();
-  var on=a.indexOf(id)>=0;
+
+  /* IT SAVED THE PREFIXED KEY AND THEN LOOKED FOR THE BARE ONE.
+         if(!on) a.push('bk:'+id);
+         var on = a.indexOf(id)>=0;      <- never matches
+     So this always came back false, the tile never turned green, the button
+     never changed, and tapping it looked like nothing at all had happened —
+     right up until you left the screen and came back, when the fresh render
+     used yardHas() and knew about both spellings.
+
+     The plant was in your yard the whole time. Only the confirmation was
+     broken, which is the cruellest version: it works, and you cannot tell. */
+  var nowOn = yardHas(id);
   var t=document.getElementById('ygTile_'+id);
   if(t){
-    t.classList.toggle('on', on);
+    t.classList.toggle('on', nowOn);
     var btn=t.querySelector('.yg-have');
-    if(btn){ btn.classList.toggle('on', on); btn.textContent = on?'\u2713 In my yard':'+ My yard'; }
+    if(btn){
+      btn.classList.toggle('on', nowOn);
+      btn.textContent = nowOn?'\u2713 In my yard':'Yes, that\u2019s in my yard';
+      /* A moment of green so the tap is unmistakable, then back to the normal
+         ticked look. Same as the ＋ on a plant picture. */
+      if(nowOn){
+        try{
+          btn.style.transition='background .2s';
+          btn.style.background='rgba(92,191,152,.92)';
+          btn.style.color='#0c2018';
+          setTimeout(function(){ btn.style.background=''; btn.style.color=''; }, 1200);
+        }catch(e){}
+      }
+    }
   }
+  try{
+    var nm=''; try{ nm=yardShortName(yardPlant(id))||''; }catch(e){}
+    toast(nowOn ? ("\ud83c\udf31 "+(nm||"Added")+" is in your yard.")
+                : ((nm||"That")+" taken off your yard."));
+  }catch(e){}
   renderYardCount();
   /* DON'T redraw here. Ticking a plant lifts it into the "Growing at your
      place" shelf at the top, which reflowed the whole grid under the person's
