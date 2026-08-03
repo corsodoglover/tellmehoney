@@ -2522,7 +2522,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v158 · 2 August · puzzles keep your place · Honey reads the puzzle lines · nothing barges in after a story · quieter when she speaks first</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v167 · 2 August · seventeen ways to say she is back · the ＋ on a plant picture is big enough to hit · plant pictures from three sources · finds a plant however you word it</div>
   </div>
 </section>
 
@@ -7448,7 +7448,7 @@ function enterChat(){
     // if she was mid-joke (awaiting a punchline), re-arm it
     var last=S.transcript[S.transcript.length-1];
     if(last && last.k==='setup'){ S.pendingPunch={s:last.t,p:last.p,roast:last.roast}; S.lastJoke=S.pendingPunch; updateThumbLabel(); }
-    themTyping(()=>{ pushThem(vibeColor(rand(["Okay, I'm back — where were we?","Awake again. Pick up right where we left off?","There you are. Still got our thread going."]))); resetIdle(); }, 650);
+    themTyping(()=>{ pushThem(vibeColor(rand(WAKE_LINES))); resetIdle(); }, 650);
     // gentle nudge to personalize — only a couple of times, then leave them be
     if(honeyNeedsSetup()){
       SETTINGS.setupNudges=(SETTINGS.setupNudges||0);
@@ -8154,7 +8154,9 @@ function verseFileOffer(body, ref){
   var suggested=_lastVerseCat || verseCatOf(ref) || verseCatOf(body) || '';
   var cats=[];
   try{ cats=Object.keys(VERSES); }catch(e){ return; }
-  var payload=encodeURIComponent(JSON.stringify({b:body, r:ref}));
+  /* Same apostrophe trap as the recipe save button — encodeURIComponent leaves
+     ' alone, and scripture is full of them. %27 or the chip breaks. */
+  var payload=encodeURIComponent(JSON.stringify({b:body, r:ref})).replace(/'/g,'%27');
   var chips=cats.map(function(c){
     var on=(c===suggested);
     return '<button class="ms-btn'+(on?' sel':'')+'" style="font-size:11.5px" '+
@@ -9167,7 +9169,10 @@ function isGoodSpirits(l){
       || /(great|good|lovely) (day|morning) (out there|so far)/.test(t);
 }
 function isHowAreYou(l){
-  return /(how are you|how are ya|how're you|how you doin|how's it going|hows it going|you doing (ok|alright|good)|you good|what's up|whats up|how have you been|how you been)/i.test(l||'');
+  /* The "having a good night" family was missing here too — every phrasing
+     that asks after her should land in the same place, whatever time of day
+     somebody happens to be asking. */
+  return /(how are you|how are ya|how're you|how you doin|how's it going|hows it going|you doing (ok|alright|good)|you good|what's up|whats up|how have you been|how you been|(are|you) having a (good|nice|bad|rough|long) (day|night|evening|morning|afternoon)|how('s| is| was) your (day|night|evening|morning|afternoon)|hows your (day|night|evening|morning|afternoon)|having a good one|you keeping (ok|alright|well))/i.test(l||'');
 }
 /* Answer a greeting the way a friend would.
    IMPORTANT: every line here is one that's actually RECORDED in Honey's voice,
@@ -10434,6 +10439,7 @@ function renderCalendar(){
         title:(r.title||'').replace(/^🍲\s*/,''),
         ic: isMeal ? "🍲" : "🗓️",
         kind: isMeal ? "meal" : "reminder",
+        url: r.url||'',
         allDay:false
       });
     });
@@ -10470,10 +10476,31 @@ function renderCalendar(){
     var timeStr=it.allDay ? "all day" : d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit', hour12:true});
     var a=document.createElement('a'); a.className='ci-add'; a.textContent='Add';
     a.href=icsDataUri(it.title, d, it.allDay); a.setAttribute('download', makeICSFilename(it.title));
-    (function(t,w,ad){ a.onclick=function(e){ return addToPhoneCalendar(t,w,ad,e); }; })(it.title, it.when, it.allDay);
+    /* stopPropagation matters now that the row itself is tappable — without it
+       a tap on Add would also open the recipe underneath. */
+    (function(t,w,ad){ a.onclick=function(e){
+        if(e && e.stopPropagation) e.stopPropagation();
+        return addToPhoneCalendar(t,w,ad,e);
+      }; })(it.title, it.when, it.allDay);
     el.innerHTML='<div class="ci-ic">'+it.ic+'</div>'+
       '<div class="ci-tx">'+esc(it.title)+'<small>'+(it.kind==="goal"?"goal · ":(it.kind==="meal"?"supper · ":""))+timeStr+'</small></div>';
     el.appendChild(a);
+
+    /* ══════════ A PLANNED SUPPER OPENS THE RECIPE ═══════════════════════
+       The row had no handler at all, so tapping a meal you had planned did
+       nothing. Anything with a saved link opens the recipe; anything older —
+       planned before the link was being stored — opens Food for Thought,
+       which is at least where it came from. */
+    if(it.kind==="meal"){
+      el.style.cursor='pointer';
+      (function(u){
+        el.onclick=function(){
+          if(u){ try{ window.open(u,'_blank','noopener'); return; }catch(e){} }
+          try{ openFoodThought(); }
+          catch(e){ toast("That one was planned before recipes were linked up."); }
+        };
+      })(it.url);
+    }
     box.appendChild(el);
   });
 }
@@ -14035,7 +14062,12 @@ function replyTo(l){
       "Steady. Waiting on somebody interesting, and here you are."
     ], 'howareyou'));
   }
-  if(/(about your day|how (was|is|s) your day|how's your day|hows your day|your day (been|going)|(are|you) having a (good|nice|bad) day|what have you been up to|what you been up to)/.test(l)){
+  /* "day" was the only word here, so "are you having a good night?" fell
+     straight through to the catch-all and got "Tell me the rest." — which
+     reads as though she did not hear the question at all. Somebody asking
+     after her at eleven at night is doing the kindest thing in the app; it
+     should not be the one phrasing that misses. */
+  if(/(about your (day|night|evening|morning|afternoon)|how (was|is|s) your (day|night|evening|morning|afternoon)|how's your (day|night|evening|morning|afternoon)|hows your (day|night|evening|morning|afternoon)|your (day|night|evening|morning|afternoon) (been|going)|(are|you) having a (good|nice|bad|rough|long) (day|night|evening|morning|afternoon)|having a good one|what have you been up to|what you been up to)/.test(l)){
     return vibeColor(noRepeat([
       "I'm always having a good day. If I wasn't, nobody'd want to hear about it.",
       "Quiet one. I've been sitting here thinking up things to tell you, mostly.",
@@ -14973,6 +15005,32 @@ HONEY_AUDIO_MAP["what are you looking forward to tomorrow?"]='dj_prompt_010';
 HONEY_AUDIO_MAP["what's a little thing that made you laugh?"]='dj_prompt_011';
 HONEY_AUDIO_MAP["whats a little thing that made you laugh?"]='dj_prompt_011';
 HONEY_AUDIO_MAP["where did you feel most like yourself today?"]='dj_prompt_012';
+
+
+/* ══════════ MAP FOR THE NEW COMING-BACK LINES ═══════════════════════════
+   Named phrase_wake_* so they sit with the other three in the phrase_
+   family, which plays at 70% — unasked-for speech, kept quiet. */
+HONEY_AUDIO_MAP["still here. go on."]='phrase_wake_02';
+HONEY_AUDIO_MAP["that's better. where'd we get to?"]='phrase_wake_03';
+HONEY_AUDIO_MAP["thats better. whered we get to?"]='phrase_wake_03';
+HONEY_AUDIO_MAP["right \u2014 i'm with you again."]='phrase_wake_04';
+HONEY_AUDIO_MAP["right \u2014 im with you again."]='phrase_wake_04';
+HONEY_AUDIO_MAP["right"]='phrase_wake_04';
+HONEY_AUDIO_MAP["good, you're still about."]='phrase_wake_05';
+HONEY_AUDIO_MAP["good, youre still about."]='phrase_wake_05';
+HONEY_AUDIO_MAP["i didn't go anywhere."]='phrase_wake_06';
+HONEY_AUDIO_MAP["i didnt go anywhere."]='phrase_wake_06';
+HONEY_AUDIO_MAP["picking it back up."]='phrase_wake_07';
+HONEY_AUDIO_MAP["there now. carry on."]='phrase_wake_08';
+HONEY_AUDIO_MAP["still listening."]='phrase_wake_09';
+HONEY_AUDIO_MAP["ready when you are."]='phrase_wake_10';
+HONEY_AUDIO_MAP["i kept your place."]='phrase_wake_11';
+HONEY_AUDIO_MAP["where were we, then?"]='phrase_wake_12';
+HONEY_AUDIO_MAP["back in the room."]='phrase_wake_13';
+HONEY_AUDIO_MAP["go on, i'm here."]='phrase_wake_14';
+HONEY_AUDIO_MAP["go on, im here."]='phrase_wake_14';
+HONEY_AUDIO_MAP["that's us, then. carry on."]='phrase_wake_15';
+HONEY_AUDIO_MAP["thats us, then. carry on."]='phrase_wake_15';
 
 function _honeyNorm(t){ return (t||"").toString().trim().toLowerCase().replace(/\s+/g," "); }
 function honeyClipFor(text){
@@ -20168,15 +20226,45 @@ function startListening(){
          asked for the microphone back. */
       if(audioOn()) setTimeout(reopenMic, 500);
     };
+    /* ══════════ AN ERROR IS NOT THE END OF THE CONVERSATION ═══════════
+       This used to show a message and stop. So the first no-speech — one
+       pause a beat too long between turns — killed hands-free for good, and
+       coming out and back in did not bring it back, because nothing here ever
+       asked for the microphone again.
+
+       Three or four turns is exactly how long it takes to leave one gap.
+
+       Only a genuine permission refusal should end it. Everything else —
+       silence, an abort, a network blip, the mic being briefly grabbed by
+       something else — is worth another go. And in hands-free, silence is not
+       an error at all: it is somebody thinking. It should say nothing and
+       simply keep listening. */
     recog.onerror=ev=>{ listening=false; syncMicUI();
-      if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){
-        toast("To talk to Honey, allow the microphone in your iPhone Settings › Tell Me Honey."); S.ttsOn=false; S.handsFree=false;
-        document.getElementById('hfBtn').classList.remove('on'); updateStatus(); }
-      else if(ev.error==='no-speech'){ toast("Didn't hear anything — tap 🎤 to try again."); }
-      else if(ev.error==='aborted'){ /* normal stop */ }
-      else { toast("Mic hiccup ("+ev.error+"). Tap 🎤 to retry."); } };
+      var err=(ev && ev.error) || '';
+      if(err==='not-allowed'||err==='service-not-allowed'){
+        toast("To talk to Honey, allow the microphone in your iPhone Settings \u203a Tell Me Honey.");
+        S.ttsOn=false; S.handsFree=false;
+        try{ document.getElementById('hfBtn').classList.remove('on'); }catch(e){}
+        updateStatus();
+        return;                       // the only one that really stops us
+      }
+      if(err==='no-speech'){
+        // Hands-free: say nothing, just open again. Otherwise a gentle nudge.
+        if(!S.handsFree) toast("Didn't hear anything \u2014 tap \ud83c\udfa4 to try again.");
+      } else if(err!=='aborted'){
+        if(!S.handsFree) toast("Mic hiccup ("+err+"). Tap \ud83c\udfa4 to retry.");
+      }
+      micPaused=false;                // do not let the flag block the reopen
+      if(audioOn()) setTimeout(reopenMic, 600);
+    };
+    /* onresult sets micPaused so the mic does not reopen while Honey is
+       replying. But in hands-free that flag must not be the thing that ends
+       the conversation — reopenMic() waits for her to finish and then opens,
+       so it is safe to ignore it here. */
     recog.onend=()=>{ listening=false; syncMicUI();
-      if(audioOn() && !micPaused && !recOpen && !speechSynthesis.speaking && speakQueue===0)
+      if(!audioOn() || recOpen) return;
+      if(S.handsFree){ setTimeout(reopenMic, 350); return; }
+      if(!micPaused && !speechSynthesis.speaking && speakQueue===0)
         setTimeout(reopenMic,350); };
     recog.start(); listening=true; syncMicUI();
   }catch(e){ listening=false; syncMicUI(); toast("Couldn't start the mic — tap 🎤 again."); }
@@ -20185,7 +20273,41 @@ function pauseListening(){ micPaused=true; if(recog)try{recog.stop()}catch(e){};
 function stopListening(){ micPaused=true; listening=false; if(recog)try{recog.stop()}catch(e){}; syncMicUI(); }
 
 
-/* ════ IDLE TIMERS + JOKESPARK ════ */
+/* ══════════ COMING BACK TO THE APP ═══════════════════════════════════════
+   There were three of these, and this fires every single time somebody
+   returns — which for most people is many times a day. Three lines on that
+   rotation is not variety, it is a tic. "Awake again. Pick up right where we
+   left off?" started to feel like the only thing she knew how to say.
+
+   These are written short and low on purpose. She is speaking without being
+   asked, and somebody who has just come back to a phone in a quiet room does
+   not want a performance. A few of them are three words. That is fine — the
+   job is to acknowledge, not to announce.
+
+   They also play at 70% (the phrase_ family), because unasked-for speech
+   should be quieter than the kind you went looking for. */
+var WAKE_LINES=[
+  "Okay, I'm back — where were we?",
+  "Awake again. Pick up right where we left off?",
+  "There you are. Still got our thread going.",
+  /* "Back with you." removed 2 August — three words gave the voice no room
+     to shape it, so it landed abrupt and hard however it was recorded. */
+  "Still here. Go on.",
+  "That's better. Where'd we get to?",
+  "Right — I'm with you again.",
+  "Good, you're still about.",
+  "I didn't go anywhere.",
+  "Picking it back up.",
+  "There now. Carry on.",
+  "Still listening.",
+  "Ready when you are.",
+  "I kept your place.",
+  "Where were we, then?",
+  "Back in the room.",
+  "Go on, I'm here.",
+  "That's us, then. Carry on."
+];
+
 var idleTimers=[];
 /* Set when a bedtime story starts. While it is on, resetIdle() does nothing —
    so nothing schedules itself to speak into the quiet afterwards. Cleared the
@@ -20223,7 +20345,10 @@ document.addEventListener('focusin', function(e){
 var CASUAL_ANY=[
   "I was just thinking about how nobody ever thanks a Tuesday.",
   "You know what I like about this? Nothing has to happen.",
-  "Somebody somewhere is having a much stranger day than us.",
+  /* "Somebody somewhere is having a much stranger day than us." removed
+     2 August. It compares your day to a stranger's, which is a cold sort of
+     comfort, and it arrives unasked in a quiet moment. The map key above is
+     left alone — nothing produces that text now, so it simply never fires. */
   "I've been sitting here rearranging my thoughts. They look the same.",
   "Tell me something you noticed today. Anything at all.",
   "What's the best thing that's happened this week?",
@@ -21135,7 +21260,13 @@ function rangerPeekCandidate(i){
         '<img src="'+x.url+'" style="width:100%;height:150px;object-fit:cover;border-radius:11px;display:block;background:#1a1f18" onclick="openPlantImage(\''+x.url+'\',\''+esc(nm).replace(/'/g,'')+'\',\''+(x.credit? esc(x.credit).replace(/'/g,'') : 'reference photo')+'\')">'+
         (x.organ? '<span style="position:absolute;top:5px;left:5px;font-size:9px;background:rgba(0,0,0,.6);color:#fff;border-radius:8px;padding:2px 7px">'+esc(x.organ)+'</span>':'')+
         (x.credit? '<div style="font-size:7.5px;color:#fff;opacity:.7;margin-top:3px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">'+esc(x.credit)+'</div>':'')+
-        '<button onclick="yardPicOffer(\''+x.url+'\',\''+(x.credit?esc(x.credit).replace(/\'/g,''):'')+'\',\''+(x.organ||'')+'\')" style="position:absolute;bottom:16px;right:5px;width:26px;height:26px;border:none;border-radius:9px;background:rgba(0,0,0,.55);color:#fff;font-size:13px;line-height:1;cursor:pointer" title="Keep this picture">\uff0b</button>'+
+        /* THE PLUS WAS 26 PIXELS SQUARE. Apple's own minimum tap target is 44,
+           and this app is built for older hands — so it read as broken when it
+           was only ever too small to hit. It is 46 now, with a z-index so it
+           sits above the image, and it stops the tap reaching the picture
+           underneath (which opens the big view — worth keeping, just not at
+           the same time). */
+        '<button onclick="event.stopPropagation();yardPicOffer(\''+x.url+'\',\''+(x.credit?esc(x.credit).replace(/\'/g,''):'')+'\',\''+(x.organ||'')+'\')" style="position:absolute;bottom:8px;right:6px;width:46px;height:46px;z-index:3;border:none;border-radius:14px;background:rgba(0,0,0,.62);color:#fff;font-size:24px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center" aria-label="Keep this picture" title="Keep this picture">\uff0b</button>'+
       '</div>';
     });
     html+='</div>';
@@ -21418,16 +21549,42 @@ function plantLookUpByName(){
      This used to read RANGER_PLANTS only, which missed every BACKYARD plant -
      so typing "Portulaca oleracea" said it wasn't in the book when Purslane
      has been sitting there all along. yardBook() is both books. It also read
-     p.also, a field that doesn't exist; the alternates live in p.alt. */
+     p.also, a field that doesn't exist; the alternates live in p.alt.
+
+     AND IT USED TO MATCH THE WHOLE PHRASE ONLY. The test was "does this
+     plant's name contain everything you typed", so "basic rosemary" failed
+     against Rosemary, went out to GBIF, failed there too, and came back
+     telling you to snap a picture — for a plant sitting in the book the whole
+     time. People type "wild garlic", "some kind of mint", "the rosemary
+     plant". Now every word of what you typed is tried on its own as well. */
   var hit=null;
   try{
     var BOOK=yardBook();
+    var words=low.split(/[^a-z0-9]+/).filter(function(w){
+      // skip the filler that carries no plant in it
+      return w.length>2 && ['the','and','some','kind','type','sort','plant',
+        'plants','basic','wild','common','garden','fresh','my','this','that',
+        'leaf','leaves','herb','bush','weed'].indexOf(w)<0;
+    });
     Object.keys(BOOK).forEach(function(id){
       if(hit) return;
       var p=BOOK[id];
       var names=[p.name].concat(p.alt||[]).concat([p.sci||'']);
-      if(names.some(function(n){ return n && n.toLowerCase().indexOf(low)>=0; })) hit=id;
+      // whole phrase first — a full match is always the better answer
+      if(names.some(function(n){ return n && n.toLowerCase().indexOf(low)>=0; })){ hit=id; return; }
     });
+    if(!hit && words.length){
+      Object.keys(BOOK).forEach(function(id){
+        if(hit) return;
+        var p=BOOK[id];
+        var names=[p.name].concat(p.alt||[]).concat([p.sci||'']);
+        if(names.some(function(n){
+             if(!n) return false;
+             var ln=n.toLowerCase();
+             return words.some(function(w){ return ln.indexOf(w)>=0; });
+           })) hit=id;
+      });
+    }
   }catch(e){}
   if(hit){
     /* BACKYARD plants show on the yard card, Ranger plants on the Ranger card */
@@ -21478,43 +21635,123 @@ function plantLookUpByName(){
    taxon's pictures. Every one is credited, because the people who took them
    put them there on those terms.
    If any of it fails the card just stays as it was. Nothing breaks. */
+/* ══════════ PICTURES OF A PLANT, FROM THREE PLACES ══════════════════════
+   This used to ask GBIF alone, and GBIF's occurrence media is thin — plenty
+   of species carry no images at all, and the links it does return often fail
+   to load. So a name would come back correctly and then sit there with no
+   picture beside it, which is the one thing you actually want when somebody
+   has told you what a plant is called.
+
+   Three sources now, tried in order, stopping at the first that gives us
+   something:
+
+     1. iNaturalist  — best photographs by a distance, curated by naturalists,
+                       free, no key. Their default_photo is nearly always good.
+     2. GBIF         — the original source. Wide coverage, variable quality.
+     3. Wikipedia    — one good lead image for almost anything with an article.
+
+   All three are free and need no key. Attribution is shown where the source
+   provides it, because most of these are photographers licensing their work
+   under Creative Commons and they should be named. */
 function plantNamePhotos(sci){
   var row=document.getElementById('pnPhotos');
   if(!row || !sci) return;
-  fetch('https://api.gbif.org/v1/species/match?name='+encodeURIComponent(sci))
-    .then(function(r){ return r.json(); })
-    .then(function(m){
-      var key=m && (m.usageKey||m.acceptedUsageKey);
-      if(!key) throw new Error('no taxon');
-      return fetch('https://api.gbif.org/v1/occurrence/search?taxonKey='+key+
-                   '&mediaType=StillImage&limit=20');
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(j){
-      var pics=[];
-      ((j&&j.results)||[]).forEach(function(o){
-        ((o&&o.media)||[]).forEach(function(md){
-          if(md && md.identifier && pics.length<12){
-            pics.push({ url:md.identifier,
-                        who:(md.rightsHolder||md.creator||o.recordedBy||'') });
+
+  row.innerHTML='<div style="font-size:11px;color:var(--muted);padding:8px 2px">'+
+                'Looking for pictures\u2026</div>';
+
+  function draw(pics, sourceLine){
+    if(!pics || !pics.length){ row.innerHTML=''; return false; }
+    row.innerHTML =
+      '<div style="font-size:9.5px;color:var(--muted);font-weight:600;letter-spacing:.4px;'+
+      'text-transform:uppercase;margin:2px 0 6px">Pictures of this plant</div>'+
+      '<div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch">'+
+      pics.map(function(p){
+        return '<img src="'+p.url+'" loading="lazy" alt="" '+
+               'onerror="this.style.display=\'none\'" '+
+               'title="'+esc(p.who||'')+'" '+
+               'style="height:96px;width:96px;object-fit:cover;border-radius:11px;flex:0 0 auto">';
+      }).join('')+
+      '</div>'+
+      '<p style="font-size:9.5px;color:var(--muted);margin:5px 2px 0;line-height:1.4">'+
+      esc(sourceLine)+' Compare carefully \u2014 a picture that '+
+      'looks close is not an identification.</p>';
+    return true;
+  }
+
+  /* 1 — iNaturalist. Ask for the taxon, then take its photos. */
+  function tryINat(){
+    return fetch('https://api.inaturalist.org/v1/taxa?q='+encodeURIComponent(sci)+
+                 '&rank=species,genus&per_page=1')
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        var t=(j&&j.results&&j.results[0]);
+        if(!t) return false;
+        var pics=[];
+        (t.taxon_photos||[]).forEach(function(tp){
+          var ph=tp&&tp.photo;
+          if(ph && (ph.medium_url||ph.url) && pics.length<12){
+            pics.push({ url:(ph.medium_url||ph.url),
+                        who:(ph.attribution||'') });
           }
         });
-      });
-      if(!pics.length){ row.innerHTML=''; return; }
-      row.innerHTML =
-        '<div style="font-size:9.5px;color:var(--muted);font-weight:600;letter-spacing:.4px;'+
-        'text-transform:uppercase;margin:2px 0 6px">Pictures of this plant</div>'+
-        '<div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch">'+
-        pics.map(function(p){
-          return '<img src="'+p.url+'" loading="lazy" alt="" '+
-                 'onerror="this.style.display=\'none\'" '+
-                 'title="'+esc(p.who)+'" '+
-                 'style="height:96px;width:96px;object-fit:cover;border-radius:11px;flex:0 0 auto">';
-        }).join('')+
-        '</div>'+
-        '<p style="font-size:9.5px;color:var(--muted);margin:5px 2px 0;line-height:1.4">'+
-        'Photographs from GBIF contributors. Compare carefully \u2014 a picture that '+
-        'looks close is not an identification.</p>';
+        if(!pics.length && t.default_photo && t.default_photo.medium_url){
+          pics.push({ url:t.default_photo.medium_url,
+                      who:(t.default_photo.attribution||'') });
+        }
+        return draw(pics, 'Photographs from iNaturalist contributors.');
+      })
+      .catch(function(){ return false; });
+  }
+
+  /* 2 — GBIF, as it was. */
+  function tryGBIF(){
+    return fetch('https://api.gbif.org/v1/species/match?name='+encodeURIComponent(sci))
+      .then(function(r){ return r.json(); })
+      .then(function(m){
+        var key=m && (m.usageKey||m.acceptedUsageKey);
+        if(!key) return false;
+        return fetch('https://api.gbif.org/v1/occurrence/search?taxonKey='+key+
+                     '&mediaType=StillImage&limit=20')
+          .then(function(r){ return r.json(); })
+          .then(function(j){
+            var pics=[];
+            ((j&&j.results)||[]).forEach(function(o){
+              ((o&&o.media)||[]).forEach(function(md){
+                if(md && md.identifier && pics.length<12){
+                  pics.push({ url:md.identifier,
+                              who:(md.rightsHolder||md.creator||o.recordedBy||'') });
+                }
+              });
+            });
+            return draw(pics, 'Photographs from GBIF contributors.');
+          });
+      })
+      .catch(function(){ return false; });
+  }
+
+  /* 3 — Wikipedia. One good lead image, which is better than none. */
+  function tryWiki(){
+    var title=sci.replace(/\s+/g,'_');
+    return fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(title))
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        var u=(j&&((j.originalimage&&j.originalimage.source)||(j.thumbnail&&j.thumbnail.source)));
+        if(!u) return false;
+        return draw([{url:u, who:'Wikipedia'}], 'Photograph from Wikipedia.');
+      })
+      .catch(function(){ return false; });
+  }
+
+  tryINat()
+    .then(function(ok){ return ok ? true : tryGBIF(); })
+    .then(function(ok){ return ok ? true : tryWiki(); })
+    .then(function(ok){
+      if(!ok){
+        row.innerHTML='<p style="font-size:11.5px;color:var(--muted);margin:6px 2px;line-height:1.5">'+
+          '\ud83c\udf3f No pictures came back for this one. Snap your own and '+
+          'I\u2019ll keep it with the plant.</p>';
+      }
     })
     .catch(function(){ row.innerHTML=''; });
 }
@@ -21652,22 +21889,76 @@ function yardPicsHTML(e){
 }
 /* Offer to keep a reference photo against one of their plants. */
 function yardPicOffer(url, credit, organ){
+  _pendPic={url:url, credit:credit, organ:organ};
   var arr=(rangerMyYardArr()||[]);
-  if(!arr.length){ toast("Add the plant to My Yard first, then you can keep pictures with it."); return; }
+
+  /* WHAT PLANT ARE WE LOOKING AT? Naming it at the top is the difference
+     between a sheet that explains itself and one somebody backs out of
+     because they cannot tell what it is asking. */
+  var nm='';
+  try{
+    var t=_lastResults && _lastResults[0];
+    if(t) nm=(t.commonNames&&t.commonNames[0]) || t.scientificName || '';
+  }catch(e){}
+
+  /* AN EMPTY YARD USED TO BE A DEAD END. It said "add the plant to My Yard
+     first" and stopped — which is backwards, because saying "yes, that is
+     the one I have" IS how you add it. Now it offers to make the card, using
+     this very picture. */
+  var makeRow =
+    '<button class="home-half" style="width:100%;margin-bottom:10px;text-align:left;'+
+      'background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;font-weight:700" '+
+      'onclick="yardPicMakeNew()">\ud83c\udf31 Yes \u2014 that\u2019s the one I have'+
+      (nm? '<div style="font-weight:500;font-size:12px;opacity:.8;margin-top:2px">Start a card for '+esc(nm)+'</div>':'')+
+    '</button>';
+
   var rows=arr.slice(0,12).map(function(e){
     return '<button class="home-half" style="width:100%;margin-bottom:6px;text-align:left" '+
       'onclick="yardPicPick(\''+e.id+'\')">\ud83c\udf3f '+esc(e.name||'My plant')+'</button>';
   }).join('');
-  _pendPic={url:url, credit:credit, organ:organ};
+
   var old=document.getElementById('picPickBox'); if(old) old.remove();
   var d=document.createElement('div');
   d.id='picPickBox'; d.className='rec-overlay'; d.style.display='flex';
   d.innerHTML='<div class="rec-sheet">'+
-    '<div class="rec-head"><span>\ud83d\udcf7 Keep it with which plant?</span>'+
+    '<div class="rec-head"><span>\ud83d\udcf7 Keep this picture</span>'+
     '<button class="rec-x" onclick="yardPicCancel()">\u2715</button></div>'+
-    '<p class="rec-hint" style="margin:0 0 10px">It\u2019ll be there next time, signal or not.</p>'+
-    rows+'</div>';
+    '<p class="rec-hint" style="margin:0 0 12px">'+
+      (nm? 'A photograph of <b>'+esc(nm)+'</b>. ' : '')+
+      'Start a new card for it, or keep it with a plant you already have.'+
+    '</p>'+
+    makeRow+
+    (rows? '<div style="font-size:11px;color:var(--muted);text-transform:uppercase;'+
+           'letter-spacing:.5px;margin:4px 2px 7px">Or keep it with</div>'+rows : '')+
+    '</div>';
   document.body.appendChild(d);
+}
+
+/* Make a fresh yard card straight from the identification, with this
+   reference photograph as its picture. Everything rangerYardSave already
+   knows how to carry across — the Latin name, the family, PlantNet's other
+   photographs — comes with it. */
+function yardPicMakeNew(){
+  var pic=_pendPic; yardPicCancel();
+  try{ rangerPeekClose(); }catch(e){}
+  var nm='';
+  try{
+    var t=_lastResults && _lastResults[0];
+    if(t) nm=(t.commonNames&&t.commonNames[0]) || t.scientificName || '';
+    if(t) _yardPendSci=t.scientificName||'';
+  }catch(e){}
+  _yardPendName = nm || 'My plant';
+  _yardPendPhoto = (pic && pic.url) || '';
+  /* rangerYardForm parks the photo itself and draws into plantHubResult, so
+     the picture they just chose is sitting there on the form when it opens. */
+  try{
+    if(typeof go==='function') go('plantHub');
+    rangerYardForm(encodeURIComponent(_yardPendName||''),
+                   encodeURIComponent(_yardPendPhoto||''));
+  }catch(e){
+    try{ openMyYard(); }
+    catch(e2){ toast("Couldn\u2019t open your yard just now."); }
+  }
 }
 var _pendPic=null;
 function yardPicCancel(){ var d=document.getElementById('picPickBox'); if(d) d.remove(); _pendPic=null; }
@@ -22990,7 +23281,16 @@ function ftSearch(term){
 }
 function ftResultHTML(r){
   var saved=ftSaved(r.url);
-  var d=encodeURIComponent(JSON.stringify({t:r.title,i:r.image,u:r.url,g:r.ingredients||[],d:r.diets||[],n:r.nutri||[]}));
+  /* THE APOSTROPHE HAS TO GO. encodeURIComponent deliberately leaves ' alone —
+     it is one of the unreserved characters — so a recipe called "Grandma's
+     Chicken Soup" arrived with the quote intact, broke straight out of the
+     single-quoted onclick argument, and threw
+        SyntaxError: Unexpected identifier 's'
+     from a handler that had been assembled around it. Every recipe with an
+     apostrophe in the title did it, and Spoonacular is full of them.
+     %27 is what encodeURIComponent should have produced; decodeURIComponent
+     turns it back on the other side without any change needed there. */
+  var d=encodeURIComponent(JSON.stringify({t:r.title,i:r.image,u:r.url,g:r.ingredients||[],d:r.diets||[],n:r.nutri||[]})).replace(/'/g,'%27');
   return '<div class="ft-row">'+
     (r.image?'<img src="'+r.image+'" alt="">':'<div class="ft-noimg">🍽️</div>')+
     '<div class="ft-mid"><b>'+esc(r.title)+'</b>'+
@@ -23405,7 +23705,12 @@ function ftPlan(i, daysAhead, hour){
     return r.title===title && Math.abs(r.when-d.getTime())<60*60*1000;
   });
   if(dupe){ toast("Already on the calendar for then. 🍯"); return; }
-  var _r3={ title:title, when:d.getTime(), label:_friendlyWhen(d), made:Date.now(), meal:true };
+  /* KEEP THE LINK BACK TO THE RECIPE. Planned meals used to save only a title
+     and a time, so the calendar had nothing to open — tapping a supper you had
+     planned did nothing at all, because the connection to the recipe was never
+     stored in the first place. */
+  var _r3={ title:title, when:d.getTime(), label:_friendlyWhen(d), made:Date.now(), meal:true,
+            url:(c.url||''), img:(c.image||'') };
   SETTINGS.reminders.push(_r3);
   try{ calAutoPush(_r3); }catch(e){}
   saveSettings();
