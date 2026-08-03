@@ -2522,7 +2522,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v151 · 31 July · free week talks · punchline always lands · no repeated replies · stories read aloud · calendar goes to the calendar</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v158 · 2 August · puzzles keep your place · Honey reads the puzzle lines · nothing barges in after a story · quieter when she speaks first</div>
   </div>
 </section>
 
@@ -3060,7 +3060,7 @@ textarea{resize:none;line-height:1.4;}
     <div class="cloud-box" id="yourVoiceBox">
       <div class="cloud-head"><span>🎙️ Your Voice</span></div>
       <p class="rec-hint" style="margin:6px 0 10px">Record a little of your own voice and Honey can speak in it. <b>Speak at least three full sentences, slow and clear, like you’re talking on the telephone</b> — the more she hears, the more it sounds like you. Once it’s made, “Your Voice” appears right next to Honey up top — just tap to switch. <b>Comes with Gallon.</b></p>
-      <p class="rec-hint" style="margin:2px 0 10px;cursor:pointer" onclick="var cb=document.getElementById('cloneConsent'); cb.checked=!cb.checked; cloneConsentToggle(cb);">
+      <p class="rec-hint" style="margin:2px 0 10px;padding-left:14px;cursor:pointer" onclick="var cb=document.getElementById('cloneConsent'); cb.checked=!cb.checked; cloneConsentToggle(cb);">
         <input type="checkbox" id="cloneConsent" onclick="event.stopPropagation()" onchange="cloneConsentToggle(this)" style="transform:scale(1.05);accent-color:var(--gold);vertical-align:middle;margin-right:6px">
         This is my own voice, or I have permission to use theirs. <span style="color:var(--muted)">(Turns on the Record button.)</span>
       </p>
@@ -3148,6 +3148,152 @@ textarea{resize:none;line-height:1.4;}
 </div>
 </div></div>
 <script>
+/* ═══════════════════════════════════════════════════════════
+   SPEECH SYNTHESIS POLYFILL — ANDROID HAS NO speechSynthesis
+
+   Android WebView does not implement the Web Speech API's
+   SpeechSynthesis. Not a bug in this app and not the emulator — it is a
+   Chromium limitation going back a decade. Chrome for Android has it; the
+   WebView a Capacitor app runs inside does not.
+
+   Without this, on Android:
+     · every device voice is dead — auto, cool, smooth, sweet, mellow,
+       drawl, announcer, bright, robotic, giddy, deep
+     · nothing dynamic can be read aloud — weather, journals, lists,
+       calendar, AI replies
+     · only Honey's recorded clips work, because those are audio files
+     · and closeVoicePicker() throws outright, because it calls
+       speechSynthesis.cancel() unguarded
+
+   Rather than rewrite thirty-one call sites, this defines the two globals
+   the rest of the file already expects, backed by @capacitor-community/
+   text-to-speech, which bridges to the phone's own TTS engine.
+
+   On iOS and in desktop browsers the real API exists, so this whole block
+   does nothing at all and behaviour is unchanged. It only fills the hole
+   where the hole is.
+   ═══════════════════════════════════════════════════════════ */
+(function(){
+  if('speechSynthesis' in window && window.SpeechSynthesisUtterance) return;
+
+  /* Same two-step the calendar plugin needed (see the note further down this
+     file). Capacitor.Plugins only carries plugins exposed through the old
+     bridge; this one calls registerPlugin('TextToSpeech') in its own JS, so
+     it may not be there. Capacitor.registerPlugin builds the proxy either
+     way and returns the same object twice if called more than once. */
+  var _P = null;
+  function tts(){
+    if(_P) return _P;
+    try{
+      var C = window.Capacitor; if(!C) return null;
+      if(C.Plugins && C.Plugins.TextToSpeech) _P = C.Plugins.TextToSpeech;
+      if(!_P && typeof C.registerPlugin === 'function'){
+        try{ _P = C.registerPlugin('TextToSpeech'); }catch(e){}
+      }
+    }catch(e){ _P = null; }
+    return _P;
+  }
+
+  var _voices = [], _speaking = false, _pending = 0, _loaded = false;
+
+  function loadVoices(){
+    var P = tts(); if(!P || _loaded) return;
+    try{
+      P.getSupportedVoices().then(function(r){
+        _voices = (r && r.voices) || []; _loaded = true;
+        // Nothing in the app listens for this, but a voice list that fills in
+        // late is exactly what onvoiceschanged exists for. Harmless if unused.
+        try{ if(window.speechSynthesis.onvoiceschanged) window.speechSynthesis.onvoiceschanged(); }catch(e){}
+      }).catch(function(){});
+    }catch(e){}
+  }
+
+  window.SpeechSynthesisUtterance = function(text){
+    this.text    = text==null ? '' : String(text);
+    this.lang    = 'en-US';
+    this.voice   = null;
+    this.rate    = 1;
+    this.pitch   = 1;
+    this.volume  = 1;
+    this.onstart = null;
+    this.onend   = null;
+    this.onerror = null;
+  };
+
+  window.speechSynthesis = {
+    get speaking(){ return _speaking; },
+    get pending(){  return _pending > 0; },
+    get paused(){   return false; },
+    onvoiceschanged: null,
+
+    /* The scoring in chooseSpeechVoice() reads .name, .voiceURI and .lang.
+       The plugin returns objects with those same fields, so every preset
+       hint — "female|zira", "male|david" and the rest — keeps working. */
+    getVoices: function(){ loadVoices(); return _voices; },
+
+    cancel: function(){
+      _pending = 0; _speaking = false;
+      var P = tts(); if(P){ try{ P.stop(); }catch(e){} }
+    },
+    pause:  function(){},
+    resume: function(){},
+
+    speak: function(u){
+      if(!u) return;
+      var P = tts();
+      // No plugin — call onend straight away so the speech chain keeps
+      // moving instead of stalling and leaving Honey quiet for the session.
+      if(!P){ if(u.onend) setTimeout(function(){ try{ u.onend(); }catch(e){} }, 0); return; }
+
+      // The plugin takes a voice INDEX, not an object. Find the one the
+      // picker chose.
+      var vi = -1;
+      if(u.voice){
+        for(var i=0;i<_voices.length;i++){
+          var v=_voices[i];
+          if(v===u.voice ||
+             (v.voiceURI && u.voice.voiceURI && v.voiceURI===u.voice.voiceURI) ||
+             (v.name && u.voice.name && v.name===u.voice.name)){ vi=i; break; }
+        }
+      }
+
+      function clamp(n,lo,hi){ n=Number(n); if(!isFinite(n)) return 1;
+        return n<lo?lo:(n>hi?hi:n); }
+
+      var opts = {
+        text:   String(u.text||''),
+        lang:   (u.voice && u.voice.lang) || u.lang || 'en-US',
+        rate:   clamp(u.rate,  0.1, 2),
+        pitch:  clamp(u.pitch, 0.1, 2),
+        volume: clamp(u.volume===undefined?1:u.volume, 0, 1)
+      };
+      if(vi >= 0) opts.voice = vi;
+
+      _pending++; _speaking = true;
+      if(u.onstart){ try{ u.onstart(); }catch(e){} }
+
+      function finish(err){
+        _speaking = false; _pending = Math.max(0, _pending-1);
+        if(err && u.onerror){ try{ u.onerror(); }catch(e){} return; }
+        if(u.onend){ try{ u.onend(); }catch(e){} }
+      }
+      try{
+        P.speak(opts).then(function(){ finish(false); })
+                     .catch(function(){ finish(true); });
+      }catch(e){ finish(true); }
+    },
+
+    addEventListener:    function(){},
+    removeEventListener: function(){}
+  };
+
+  // Warm the list so the first spoken line already has voices to choose from.
+  if(document.readyState==='loading')
+       document.addEventListener('DOMContentLoaded', loadVoices);
+  else loadVoices();
+  setTimeout(loadVoices, 1200);
+})();
+
 /* ═══════════════════════════════════════════════════════════
    TELL ME HONEY — COMPLETE JOKE LIBRARY
    12 categories × 50 jokes = 600 jokes
@@ -8702,6 +8848,62 @@ function handleHealthRequest(t, l){
 var _vvPot=null;
 try{ _vvPot=new Image(); _vvPot.src='honeypot.png'; }catch(e){}
 
+/* ══════════ THE FINISHED VIDEO WAITS FOR A TAP ═══════════════════════════
+   Holds the built video until somebody presses send. See the long note in
+   rec.onstop for why it cannot be shared the moment it is finished. */
+var _vvReady=null;
+
+function _vvShowSendButton(){
+  var old=document.getElementById('vvSendWrap'); if(old) old.remove();
+  var w=document.createElement('div');
+  w.id='vvSendWrap';
+  w.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:99999;'+
+    'background:#FFFDF9;border-top:2px solid #E2D5B4;padding:16px 18px '+
+    'calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 22px rgba(0,0,0,.16)';
+  w.innerHTML =
+    '<div style="font:600 16px/1.4 Georgia,serif;color:#3A2C12;margin-bottom:10px;text-align:center">'+
+      'Your video is ready \ud83c\udf99\ufe0f</div>'+
+    '<button id="vvSendBtn" style="width:100%;box-sizing:border-box;background:#C89324;'+
+      'color:#fff;border:0;border-radius:14px;padding:16px;font:700 18px/1 -apple-system,'+
+      'BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;cursor:pointer">Send it \u2192</button>'+
+    '<button id="vvSendX" style="width:100%;box-sizing:border-box;background:transparent;'+
+      'color:#8A7A52;border:0;padding:12px 0 2px;font:15px -apple-system,BlinkMacSystemFont,'+
+      '\'Segoe UI\',Roboto,sans-serif;cursor:pointer">Not now</button>';
+  document.body.appendChild(w);
+
+  document.getElementById('vvSendX').onclick=function(){ _vvReady=null; w.remove(); };
+
+  /* This click IS the user gesture share() needs. */
+  document.getElementById('vvSendBtn').onclick=function(){
+    var r=_vvReady; if(!r){ w.remove(); return; }
+    var sent=false;
+    try{
+      if(navigator.canShare && navigator.canShare({files:[r.file]}) && navigator.share){
+        sent=true;
+        navigator.share({ files:[r.file], title:r.title,
+          text:r.title+' \u2014 in my own voice \ud83c\udf6f' })
+        .then(function(){ try{ earnHoney("I shared a verse"); }catch(e){} })
+        .catch(function(err){
+          // A cancelled share sheet is not a failure — say nothing.
+          if(err && err.name==='AbortError') return;
+          _vvDownload(r);
+        });
+      }
+    }catch(e){ sent=false; }
+    if(!sent) _vvDownload(r);
+    _vvReady=null; w.remove();
+  };
+}
+
+function _vvDownload(r){
+  try{
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(r.blob); a.download=r.name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    toast("Saved to your files \ud83c\udf99\ufe0f");
+  }catch(e){ toast("Couldn't send that one."); }
+}
+
 function shareVerseVideo(prayerId){
   var p=userPrayers().find(function(x){ return x.id===prayerId; });
   if(!p){ toast("Couldn't find that one."); return; }
@@ -8783,15 +8985,21 @@ function _buildVerseVideo(p, audioBlob){
       var ext=/mp4/.test(type)?'mp4':'webm';
       var name=(p.title||'verse').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'verse';
       var file=new File([blob], name+'.'+ext, {type:type});
-      if(navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
-        navigator.share({ files:[file], title:p.title||'A verse',
-          text:(p.title||'A verse')+' \u2014 in my own voice \ud83c\udf6f' }).catch(function(){});
-      } else {
-        var a=document.createElement('a');
-        a.href=URL.createObjectURL(blob); a.download=name+'.'+ext;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      }
-      toast("Ready to share \ud83c\udf99\ufe0f");
+
+      /* DO NOT CALL navigator.share() FROM HERE.
+         iOS only allows the share sheet to open within a moment of a real tap,
+         and by the time this fires the recording has played all the way through
+         — twenty or thirty seconds after the button was pressed. share() then
+         throws, the .catch swallowed it silently, and the toast said "Ready to
+         share" anyway. So it looked like it worked and nothing ever happened.
+         Tapping again just built another card and failed the same way.
+
+         The joke card gets away with the old pattern because cv.toBlob finishes
+         in milliseconds, still inside the tap. This one cannot.
+
+         So: hold the finished video, and let a FRESH tap send it. */
+      _vvReady = { file:file, blob:blob, name:name+'.'+ext, title:(p.title||'A verse') };
+      _vvShowSendButton();
     };
 
     var t0=Date.now();
@@ -9326,6 +9534,8 @@ function sendUser(){
   inp.value=''; userSays(t);
 }
 function userSays(t){
+  /* They're awake. Whatever quiet a bedtime story asked for is over. */
+  _quietAfterStory = false;
   pushMe(t); parseAbout(t); tagInsights(t);
   var l=t.toLowerCase();
   // if a punchline is waiting, treat their message as a guess/answer and then reveal
@@ -9576,7 +9786,7 @@ function userSays(t){
   // "how much have I got left?" — answered from their own numbers, nothing sent anywhere
   if(isMoneyQuestion(l)){ moneyAnswer(); return; }
   // "what's for dinner?"
-  if(isFoodQuestion(l)){ foodAnswer(); return; }
+  if(isFoodQuestion(l)){ foodAnswer(l); return; }
   // AI BRAIN — real questions always answered (budget-gated); filler stays scripted
   if(aiShouldAnswer(t)){
     themTyping(function(){
@@ -11074,6 +11284,19 @@ var BEDTIME_STORIES=[
 function bedtimeStory(){
   var idx=Math.floor(Math.random()*BEDTIME_STORIES.length);
   var s=BEDTIME_STORIES[idx];
+
+  /* ══════════ NOTHING BARGES IN AFTER A STORY ═══════════════════════════
+     The idle timer used to keep running straight through, so thirty-five
+     seconds after the last word — with somebody lying in the dark, eyes shut,
+     the whole point of the thing achieved — Honey would pipe up with "You know
+     what I like about this? Nothing has to happen."
+
+     A bedtime story stops the clock. It does not restart until the person does
+     something, which is the only signal that they are still awake and still
+     want company. If they have fallen asleep, the silence is the feature. */
+  try{ stopIdle(); }catch(e){}
+  _quietAfterStory = true;
+
   // play RIGHT NOW on the tap (delayed playback gets autoplay-blocked)
   S.speakerOn=true;
   enqueueSpeak("\u0000CLIP:story_"+String(idx+1).padStart(2,'0')+"\u0001"+s.x);
@@ -13365,22 +13588,109 @@ function nudgeSeenToday(){
 /* "What's for dinner?" should reach the food screen the same way "what's on my
    calendar" reaches the calendar — asking out loud is the point of her. */
 function isFoodQuestion(l){
-  return /(what('s| is) for (dinner|supper|tea|lunch)|what should i (cook|make|have) (for )?(dinner|supper|tonight|tomorrow)|what am i (cooking|having)|dinner ideas?|supper ideas?|meal plan|plan (my|the) meals?|what's? cooking|something to cook|recipe ideas?|find (me )?a recipe)/i.test(l||'');
+  /* The day names were added because "what's for dinner Tuesday" and "what
+     about tomorrow night" are how anybody actually asks, and neither matched
+     before. */
+  return /(what('s| is) for (dinner|supper|tea|lunch)|what should i (cook|make|have) (for )?(dinner|supper|tonight|tomorrow)|what am i (cooking|having)|dinner ideas?|supper ideas?|meal plan|plan (my|the) meals?|what's? cooking|something to cook|recipe ideas?|find (me )?a recipe)/i.test(l||'')
+      || /\b(dinner|supper|lunch|eating|meal)\b.*\b(tonight|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|weekend|this week)\b/i.test(l||'')
+      || /\b(tonight|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|weekend|this week)\b.*\b(dinner|supper|lunch|eating|meal)\b/i.test(l||'');
 }
-function foodAnswer(){
-  var planned=[];
+/* ══════════ WHICH DAY DID THEY ACTUALLY ASK ABOUT? ═══════════════════════
+   foodAnswer() used to gather every meal in the next two days, sort them, and
+   answer with the first one — whatever day the question named. So "what's for
+   dinner tomorrow" got tonight's answer, and "what about Tuesday" fell outside
+   the window entirely and came back "nothing planned". Only "tonight" ever
+   looked right, and only by accident.
+
+   This reads the day out of the question. Tonight, tomorrow, any weekday name,
+   the weekend, or this week. A weekday name means the NEXT one — ask on a
+   Sunday about Tuesday and you mean the Tuesday coming, not the one gone. */
+var _DOWNAMES=['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+
+function foodDayWanted(l){
+  var t=(l||'').toLowerCase();
+  var now=new Date(); now.setHours(0,0,0,0);
+
+  if(/\b(this week|the week|all week|whole week)\b/.test(t))
+    return { kind:'week', from:now.getTime(), to:now.getTime()+7*86400000, label:'this week' };
+
+  if(/\b(tonight|today|this evening)\b/.test(t))
+    return { kind:'day', from:now.getTime(), to:now.getTime()+86400000, label:'tonight' };
+
+  if(/\btomorrow\b/.test(t)){
+    var d=now.getTime()+86400000;
+    return { kind:'day', from:d, to:d+86400000, label:'tomorrow' };
+  }
+
+  if(/\b(weekend|this weekend)\b/.test(t)){
+    // Saturday and Sunday coming up
+    var add=(6-now.getDay()+7)%7; if(add===0) add=0;
+    var sat=now.getTime()+add*86400000;
+    return { kind:'week', from:sat, to:sat+2*86400000, label:'the weekend' };
+  }
+
+  for(var i=0;i<7;i++){
+    if(new RegExp('\\b'+_DOWNAMES[i]+'\\b').test(t)){
+      var diff=(i-now.getDay()+7)%7;
+      if(diff===0) diff=7;                       // "Tuesday" on a Tuesday means next week
+      var day=now.getTime()+diff*86400000;
+      var nm=_DOWNAMES[i].charAt(0).toUpperCase()+_DOWNAMES[i].slice(1);
+      return { kind:'day', from:day, to:day+86400000, label:nm };
+    }
+  }
+  return null;   // no day named — fall back to the old behaviour
+}
+
+function _mealName(r){ return (r.title||'').replace(/^\ud83c\udf72\s*/,''); }
+
+function foodAnswer(l){
+  var want=foodDayWanted(l);
+  var all=[];
   try{
-    var today=new Date(); today.setHours(0,0,0,0);
-    var tom=new Date(today.getTime()+86400000);
-    planned=(SETTINGS.reminders||[]).filter(function(r){
-      return r.meal && r.when>=today.getTime() && r.when<tom.getTime()+86400000;
-    }).sort(function(a,b){ return a.when-b.when; });
+    all=(SETTINGS.reminders||[]).filter(function(r){ return r.meal; })
+        .sort(function(a,b){ return a.when-b.when; });
   }catch(e){}
+
+  var today=new Date(); today.setHours(0,0,0,0);
+  var from = want ? want.from : today.getTime();
+  var to   = want ? want.to   : today.getTime()+2*86400000;
+  var planned=all.filter(function(r){ return r.when>=from && r.when<to; });
+
   themTyping(function(){
-    if(planned.length){
-      var nm=(planned[0].title||'').replace(/^\ud83c\udf72\s*/,'');
-      var when=(new Date(planned[0].when)) < new Date(new Date().setHours(23,59,59)) ? "tonight" : "tomorrow";
+    if(planned.length && want && want.kind==='week'){
+      /* A whole week, read out in order — that's the meal plan, and being able
+         to ask for it out loud is the point of having planned it. */
+      var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      var lines=planned.map(function(r){
+        return days[new Date(r.when).getDay()]+' — '+_mealName(r);
+      });
+      pushThem(vibeColor("Here's "+want.label+":"));
+      setTimeout(function(){ pushThem(vibeColor(lines.join('\n'))); }, 400);
+
+    } else if(planned.length){
+      var nm=_mealName(planned[0]);
+      var when = want ? want.label
+                      : ((new Date(planned[0].when)) < new Date(new Date().setHours(23,59,59))
+                         ? "tonight" : "tomorrow");
       pushThem(vibeColor("You've got "+nm+" planned for "+when+"."));
+
+    } else if(want){
+      /* Nothing that day — but say so about THAT day, and mention the next
+         one that does have something, rather than a blank shrug. */
+      var next=all.filter(function(r){ return r.when>=today.getTime(); })[0];
+      var msg="Nothing down for "+want.label+" yet.";
+      if(next){
+        var days2=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        var nd=new Date(next.when); nd.setHours(0,0,0,0);
+        var lbl = nd.getTime()===today.getTime() ? 'tonight'
+                : nd.getTime()===today.getTime()+86400000 ? 'tomorrow'
+                : days2[nd.getDay()];
+        msg += " You've got "+_mealName(next)+" for "+lbl+", though.";
+      } else {
+        msg += " Want me to find you something?";
+      }
+      pushThem(vibeColor(msg));
+
     } else {
       pushThem(vibeColor(rand([
         "Nothing planned yet. Want me to find you something?",
@@ -13392,7 +13702,7 @@ function foodAnswer(){
       themTyping(function(){
         pushAction('\ud83c\udf72 Open Food for Thought', null, false, null, 'openFoodThought');
       });
-    }, 500);
+    }, 900);
   });
 }
 
@@ -14605,6 +14915,65 @@ HONEY_AUDIO_MAP["bit gray out today. good thing i'm sunny enough for both of us.
 HONEY_AUDIO_MAP["bit gray out today. good thing im sunny enough for both of us."]='wx_bit_gray_out_today_good_thing_im_sunny_enough_for_bo';
 HONEY_AUDIO_MAP["foggy one. take it slow out there, darlin'."]='wx_foggy_one_take_it_slow_out_there_darlin';
 HONEY_AUDIO_MAP["foggy one. take it slow out there, darlin."]='wx_foggy_one_take_it_slow_out_there_darlin';
+
+/* ══════════ KEYS FOR THE 2 AUGUST RE-RECORDS ═════════════════════════════
+   The first four went silent when the pet names came out of the text: the
+   wording changed, the recordings did not, and the lookup stopped matching.
+   The stale darlin' keys above are left alone — nothing produces that text
+   any more, so they simply never fire.
+
+   The last four are the good-spirits replies added 1 August.
+
+   Two keys each: the plain one, and the version with apostrophes stripped,
+   because honeyClipFor falls back to a stripped key on the second attempt.
+   Note the em-dash lines only need the full key — the fallback cuts
+   everything from the dash onward, which would collide with other lines. */
+HONEY_AUDIO_MAP["there you are. pull up a chair — i'm all yours."]='line_there_you_are_pull_up_a_chair_im_all_yours';
+HONEY_AUDIO_MAP["there you are. pull up a chair"]='line_there_you_are_pull_up_a_chair_im_all_yours';
+
+HONEY_AUDIO_MAP["it's cold today. coat and a hot drink, doctor's orders."]='wx_its_cold_today_coat_and_a_hot_drink_doctors_orders';
+HONEY_AUDIO_MAP["its cold today. coat and a hot drink, doctors orders."]='wx_its_cold_today_coat_and_a_hot_drink_doctors_orders';
+
+HONEY_AUDIO_MAP["foggy one. take it slow out there."]='wx_foggy_one_take_it_slow_out_there';
+
+HONEY_AUDIO_MAP["gorgeous out. don't let me keep you — unless you want one more joke."]='wx_gorgeous_out_dont_let_me_keep_you_unless_you_want_one_more_joke';
+HONEY_AUDIO_MAP["gorgeous out. dont let me keep you"]='wx_gorgeous_out_dont_let_me_keep_you_unless_you_want_one_more_joke';
+
+HONEY_AUDIO_MAP["it is, isn't it. days like this don't ask anything of you."]='goodspirits_01';
+HONEY_AUDIO_MAP["it is, isnt it. days like this dont ask anything of you."]='goodspirits_01';
+
+HONEY_AUDIO_MAP["good. that's the kind of morning worth saying out loud."]='goodspirits_02';
+HONEY_AUDIO_MAP["good. thats the kind of morning worth saying out loud."]='goodspirits_02';
+
+HONEY_AUDIO_MAP["then that's settled. go enjoy it before it gets away."]='goodspirits_03';
+HONEY_AUDIO_MAP["then thats settled. go enjoy it before it gets away."]='goodspirits_03';
+
+HONEY_AUDIO_MAP["i'll take your word for it — no windows in here. sounds lovely."]='goodspirits_04';
+HONEY_AUDIO_MAP["ill take your word for it"]='goodspirits_04';
+
+/* ══════════ JOURNAL PROMPTS ══════════════════════════════════════════════
+   These twelve have never had clips. They were on the old recording sheet
+   as dj_prompt_001 to 012 and were never made, and with no map entry the
+   lookup could never have found them anyway. Recorded 2 August at the
+   bedtime-story pace — they are quiet questions, asked at the end of a
+   day, and they should sound like it. */
+HONEY_AUDIO_MAP["what made you smile today?"]='dj_prompt_001';
+HONEY_AUDIO_MAP["who are you grateful for right now \u2014 and why?"]='dj_prompt_002';
+HONEY_AUDIO_MAP["what's something small that went right today?"]='dj_prompt_003';
+HONEY_AUDIO_MAP["whats something small that went right today?"]='dj_prompt_003';
+HONEY_AUDIO_MAP["if today had a title, what would it be?"]='dj_prompt_004';
+HONEY_AUDIO_MAP["what do you want to remember about this day a year from now?"]='dj_prompt_005';
+HONEY_AUDIO_MAP["what's on your heart this evening?"]='dj_prompt_006';
+HONEY_AUDIO_MAP["whats on your heart this evening?"]='dj_prompt_006';
+HONEY_AUDIO_MAP["describe a moment today you'd like to keep."]='dj_prompt_007';
+HONEY_AUDIO_MAP["describe a moment today youd like to keep."]='dj_prompt_007';
+HONEY_AUDIO_MAP["what did you learn about yourself lately?"]='dj_prompt_008';
+HONEY_AUDIO_MAP["who did you talk to today, and how are they?"]='dj_prompt_009';
+HONEY_AUDIO_MAP["what are you looking forward to tomorrow?"]='dj_prompt_010';
+HONEY_AUDIO_MAP["what's a little thing that made you laugh?"]='dj_prompt_011';
+HONEY_AUDIO_MAP["whats a little thing that made you laugh?"]='dj_prompt_011';
+HONEY_AUDIO_MAP["where did you feel most like yourself today?"]='dj_prompt_012';
+
 function _honeyNorm(t){ return (t||"").toString().trim().toLowerCase().replace(/\s+/g," "); }
 function honeyClipFor(text){
   var key=_honeyNorm(typeof cleanForSpeech==="function"?cleanForSpeech(text):text);
@@ -14703,6 +15072,31 @@ function playHoneyClip(clipName, done){
       clearDog();
     }
   };
+
+  /* ══════════ SOME CLIPS COME OUT LOUDER THAN OTHERS ═══════════════════
+     ElevenLabs has no volume setting, so a line that lands hot can only be
+     fixed here, at playback.
+
+     The principle: anything Honey says WITHOUT BEING ASKED should be quieter
+     than something you went looking for. Coming back to the chat and being
+     greeted at full volume is alarming — you did not request it and you may
+     not be alone in the room. Asking for a joke is different; you chose that.
+
+     The puzzle and game lines shout for the same reason — short, affirming,
+     and cut with more energy than a greeting. Turning them down here is
+     instant and costs nothing; re-recording never fixed it, because the
+     loudness is baked into the file. */
+  try{
+    var _lvl = 1.0;
+    if(/^puzzle_line/.test(clipName))      _lvl = 0.62;   // "Joy — the good kind."
+    else if(/^pz_/.test(clipName))         _lvl = 0.62;
+    else if(/^phrase_/.test(clipName))     _lvl = 0.70;   // the wake-up lines live here
+    else if(/^casual_/.test(clipName))     _lvl = 0.70;   // idle nudges, unasked for
+    else if(/^greet_/.test(clipName))      _lvl = 0.78;   // she speaks first, so gently
+    else if(/^dj_prompt/.test(clipName))   _lvl = 0.80;   // quiet questions
+    else if(/^story_/.test(clipName))      _lvl = 0.85;   // bedtime, already soft
+    a.volume = _lvl;
+  }catch(e){}
 
   /* .m4a, NOT .mp3. The clips were 128kbps MP3 — music encoding for one
      voice — and 4,026 of them came to 208MB, which put the Android bundle at
@@ -17923,6 +18317,29 @@ var _pzFound={}, _pzAnchor=null, _pzStart=null, _pzInt=null, _pzElapsed=0, _pzCu
 
 function pzState(){ SETTINGS.puzzle = SETTINGS.puzzle || { day:1, best:{}, doneToday:null }; return SETTINGS.puzzle; }
 
+/* ══════════ HALF-FINISHED PUZZLES ARE KEPT ═══════════════════════════════
+   Progress used to be held in _pzFound and nowhere else, so it survived
+   exactly as long as you stayed on the screen. Step away for a moment and
+   every word you had found was gone.
+
+   Stored against the day number, so it can only ever restore into the puzzle
+   it came from, and cleared when that day is finished or moves on. */
+function pzSaveProgress(){
+  var st=pzState();
+  if(!_pzCur) return;
+  st.partial = { day:_pzCur.day, found:Object.keys(_pzFound), secs:_pzElapsed||0 };
+  try{ saveSettings(); }catch(e){}
+}
+function pzLoadProgress(){
+  var st=pzState();
+  if(!_pzCur || !st.partial || st.partial.day!==_pzCur.day) return null;
+  return st.partial;
+}
+function pzClearProgress(){
+  var st=pzState();
+  if(st.partial){ st.partial=null; try{ saveSettings(); }catch(e){} }
+}
+
 function openMemory(){
   if(!loadedOrFirst()){ newAgentFlow(true); return; }
   go('memory');
@@ -18083,6 +18500,30 @@ function pzRender(replay){
   Object.keys(p.words).forEach(function(w){
     var s=document.createElement('span'); s.className='pz-chip'; s.id='pzchip-'+w; s.textContent=w; wl.appendChild(s);
   });
+
+  /* Put back anything they'd already found. Done last, once the grid and the
+     word chips both exist to mark up. */
+  try{
+    var saved = replay ? null : pzLoadProgress();
+    if(saved && saved.found && saved.found.length){
+      saved.found.forEach(function(w){
+        if(!p.words[w]) return;                       // word isn't in this grid
+        _pzFound[w]=true;
+        var span=p.words[w];
+        var cells=pzLine(span[0][0],span[0][1],span[1][0],span[1][1]);
+        if(cells) cells.forEach(function(cc){ pzCell(cc[0],cc[1]).classList.add('found'); });
+        var chip=document.getElementById('pzchip-'+w); if(chip) chip.classList.add('done');
+      });
+      var n=Object.keys(_pzFound).length;
+      if(n){
+        _pzElapsed = saved.secs||0;
+        document.getElementById('pzTimer').textContent = pzFmt(_pzElapsed);
+        document.getElementById('pzHoney').textContent =
+          "Right where you left off \u2014 " + n + " found, " +
+          (Object.keys(p.words).length - n) + " to go.";
+      }
+    }
+  }catch(e){}
 }
 
 function pzCell(r,c){ return document.getElementById('pzGrid').rows[r].cells[c]; }
@@ -18116,12 +18557,23 @@ var PZ_TAILS = [
 ];
 var _pzTailAt = 0;
 function pzFoundLine(w){
-  /* If the day's own line genuinely names the word, keep it - those are the
-     hand-written ones and they're better than anything generic. */
+  /* USE THE DAY'S OWN LINE. ALWAYS.
+
+     This used to check that the line contained a stem of the word before
+     accepting it — for JOYOUS the stem was "joyo", and the line "Joy — the
+     good kind." does not contain "joyo", so it was thrown away. Nearly every
+     hand-written line failed that test, because not repeating the word
+     verbatim is exactly what makes them good.
+
+     What got used instead was a generated "Joyous — I like that one", which
+     has no recording, so the device voice read it out in the middle of a game
+     Honey was supposed to be playing with you.
+
+     The lines in each day's lines:{} block were written for that word. There
+     is nothing to check. */
   try{
     var own=(_pzCur && _pzCur.lines && _pzCur.lines[w]) || '';
-    var stem=String(w||'').toLowerCase().slice(0, Math.max(4, w.length-3));
-    if(own && stem && own.toLowerCase().indexOf(stem)>=0) return own;
+    if(own) return own;
   }catch(e){}
   var word=String(w||'').toLowerCase();
   word = word.charAt(0).toUpperCase()+word.slice(1);
@@ -18173,6 +18625,12 @@ function pzTap(r,c,td){
   var w=pzMatch(cells);
   if(w){
     _pzFound[w]=true;
+    /* SAVE IT. This used to live only in memory, so stepping out of the puzzle
+       for anything at all — a message, a phone call, the home button — wiped
+       every word you had found and handed you back a blank grid. Somebody who
+       had done four words out of ten and gone to make a cup of tea came back
+       to nothing, and it looked as though it had jumped to a different day. */
+    try{ pzSaveProgress(); }catch(e){}
     cells.forEach(function(cc){ pzCell(cc[0],cc[1]).classList.add('found'); });
     var chip=document.getElementById('pzchip-'+w); if(chip) chip.classList.add('done');
     pzSay(pzFoundLine(w), true);
@@ -18185,6 +18643,7 @@ function pzTap(r,c,td){
 
 function pzWin(){
   if(_pzInt){ clearInterval(_pzInt); _pzInt=null; }
+  try{ pzClearProgress(); }catch(e){}   // finished — nothing left to restore
   var st=pzState(), t=_pzElapsed, p=_pzCur;
   var today=new Date().toISOString().slice(0,10);
   var firstDoneToday = (st.doneToday!==today);
@@ -19644,10 +20103,52 @@ function syncMicUI(){
 
 /* ════ SPEECH RECOGNITION ════ */
 var recog=null, listening=false, micPaused=false, recOpen=false;
+/* ══════════ HANDS-FREE ONLY EVER WORKED ONCE ══════════════════════════════
+   This used to be four lines that gave up quietly:
+
+       if(speechSynthesis.speaking || speakQueue>0) return;
+
+   No retry. So if Honey was still finishing a syllable at the moment the mic
+   was asked to reopen, it simply never reopened, and hands-free was deaf for
+   the rest of the session. Worse — reopenMic() is called from the END of the
+   speech chain, so if her reply had no recorded clip and went silent, the
+   chain never ran and nothing called it at all.
+
+   That is why it "only works the first half" and why it has been like that
+   forever. It is not the microphone and it is not permissions.
+
+   Now it keeps asking. Every 400ms, for up to 25 seconds, until she has
+   actually stopped talking — then it opens. A separate watchdog starts the
+   clock when the person finishes speaking, so the mic comes back whether or
+   not Honey managed to say anything at all. */
+var _micWaitTimer=null, _micWaitUntil=0;
+
+function stopMicWait(){
+  if(_micWaitTimer){ clearTimeout(_micWaitTimer); _micWaitTimer=null; }
+  _micWaitUntil=0;
+}
+
 function reopenMic(){
-  if(!audioOn())return;
-  if(recOpen)return;  // record sheet owns the mic
-  if(speechSynthesis.speaking||speakQueue>0)return; // wait until she's done
+  stopMicWait();
+  if(!audioOn())     return;   // hands-free turned off — stop
+  if(recOpen)        return;   // record sheet owns the mic
+  if(micPaused && !listening){ /* keep going — startListening clears it */ }
+  if(!_micWaitUntil) _micWaitUntil = Date.now() + 25000;
+  _micTry();
+}
+
+function _micTry(){
+  _micWaitTimer=null;
+  if(!audioOn() || recOpen){ stopMicWait(); return; }
+  if(listening){ stopMicWait(); return; }          // already open, nothing to do
+  var busy=false;
+  try{ busy = (window.speechSynthesis && speechSynthesis.speaking) || speakQueue>0; }catch(e){}
+  if(busy){
+    if(Date.now() < _micWaitUntil){ _micWaitTimer=setTimeout(_micTry, 400); return; }
+    // Twenty-five seconds is long enough that something is stuck. Open anyway
+    // rather than leave the person talking to a microphone that isn't on.
+  }
+  stopMicWait();
   startListening();
 }
 function startListening(){
@@ -19659,7 +20160,14 @@ function startListening(){
   micPaused=false;
   try{
     recog=new SR(); recog.lang='en-US'; recog.interimResults=false; recog.continuous=false;
-    recog.onresult=e=>{ var t=e.results[0][0].transcript; stopListening(); if(t&&t.trim())userSays(t.trim()); };
+    recog.onresult=e=>{ var t=e.results[0][0].transcript; stopListening();
+      if(t&&t.trim()) userSays(t.trim());
+      /* Kick off the wait now. reopenMic() holds off while she's talking, and
+         opens as soon as she stops. Without this, a reply that went silent —
+         no recorded clip — meant the speech chain never ran and nothing ever
+         asked for the microphone back. */
+      if(audioOn()) setTimeout(reopenMic, 500);
+    };
     recog.onerror=ev=>{ listening=false; syncMicUI();
       if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){
         toast("To talk to Honey, allow the microphone in your iPhone Settings › Tell Me Honey."); S.ttsOn=false; S.handsFree=false;
@@ -19679,8 +20187,14 @@ function stopListening(){ micPaused=true; listening=false; if(recog)try{recog.st
 
 /* ════ IDLE TIMERS + JOKESPARK ════ */
 var idleTimers=[];
+/* Set when a bedtime story starts. While it is on, resetIdle() does nothing —
+   so nothing schedules itself to speak into the quiet afterwards. Cleared the
+   moment the person types, taps or speaks, because that is the only real
+   signal that they are still awake and still want company. */
+var _quietAfterStory=false;
 function startIdle(){ resetIdle(); }
 function resetIdle(){ stopIdle(); S.idleStage=0;
+  if(_quietAfterStory) return;
   idleTimers.push(setTimeout(()=>idleNudge(1),35000));
   idleTimers.push(setTimeout(()=>idleNudge(2),90000));
   idleTimers.push(setTimeout(()=>idleNudge(3),180000));
