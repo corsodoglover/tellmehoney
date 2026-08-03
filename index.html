@@ -555,13 +555,19 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .yg-tri{flex:0 0 auto;font-size:14px;color:var(--gold);line-height:1;
   transition:transform .18s ease;padding:4px 2px 4px 10px;}
 .yg-shelf.shut .yg-tri{transform:rotate(-90deg);}
-.yg-shelf.shut .yg-grid,.yg-shelf.shut .yg-empty{display:none;}
+/* .ft-grid added so the recipe shelves fold too — they reuse this shelf
+   chrome but hold recipe cards rather than plant tiles. */
+.yg-shelf.shut .yg-grid,.yg-shelf.shut .yg-empty,.yg-shelf.shut .ft-grid{display:none;}
 
 /* Every tile is cut to the same opening, the way a mat is: fixed square for
    the picture, fixed depth for the name, fixed bar at the foot. Long names
    wrap inside their allowance rather than pushing the tile taller, so the
    bars line up across every row whatever the plant is called. */
-.yg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-items:stretch;}
+/* align-items:start, not stretch. With stretch, one name that wraps to two
+   lines made its whole row taller and every other tile in that row padded out
+   to match — which is the white space under the short ones. Each tile is its
+   own height now. */
+.yg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-items:start;}
 .yg-tile{background:#FFFDF9;border:1px solid rgba(58,44,8,.12);border-radius:14px;
   overflow:hidden;display:flex;flex-direction:column;}
 .yg-tile.on{border-color:#5c8a52;box-shadow:0 0 0 2px rgba(92,138,82,.20);}
@@ -2525,7 +2531,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v189 · 3 August · the tile you tapped is the one that turns green · a plant search can no longer return a snake · spinach no longer finds Egyptian Spinach · she answers when you ask how she is</div>
+    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v198 · 3 August · recipe kinds fold open with a picture · the cooking list matches everything else · your yard folds into shelves like the index · she can tell you which day the chicken salad is · the mic keeps listening past the first sentence · “need” alone no longer adds to your shopping list</div>
   </div>
 </section>
 
@@ -7962,7 +7968,7 @@ function thumb(kind){
   if(S.lastWasQuestion){
     if(kind==='q'){ // "I don't know" answer to her question
       pushMe("❓ I don't know");
-      themTyping(()=>pushThem(vibeColor(rand(["No worries — I'll pick for us. Here's one:","All good. Let me decide —","That's okay. I've got you —"]))));
+      themTyping(()=>pushThem(vibeColor(noRepeat(["No worries — I'll pick for us. Here's one:","All good. Let me decide —","That's okay. I've got you —"], 'said01'))));
       setTimeout(()=>tellJoke(),1400);
       return;
     }
@@ -7971,7 +7977,7 @@ function thumb(kind){
     pushMe(y?"Yes 👍":"No 👎");
     themTyping(()=>{
       if(y) tellJoke();
-      else pushThem(vibeColor(rand(["No worries — I'm here whenever.","Cool, we'll just hang then.","Got it. Say the word when you want one."])));
+      else pushThem(vibeColor(noRepeat(["No worries — I'm here whenever.","Cool, we'll just hang then.","Got it. Say the word when you want one."], 'said02')));
     });
     return;
   }
@@ -7979,7 +7985,7 @@ function thumb(kind){
     if(S.lastWasJoke&&S.lastJoke){ pushMe("❓ I don't get it");
       themTyping(()=>pushThem(explain(S.lastJoke))); }
     else { pushMe("❓ I don't know");
-      themTyping(()=>pushThem(vibeColor(rand(["No worries. Want a joke? 👍.","All good — I'll lead. 👍 for a joke.","That's alright. Say the word for a joke."])))); }
+      themTyping(()=>pushThem(vibeColor(noRepeat(["No worries. Want a joke? 👍.","All good — I'll lead. 👍 for a joke.","That's alright. Say the word for a joke."], 'said03')))); }
     return;
   }
   var yes = kind==='up';
@@ -7991,8 +7997,8 @@ function thumb(kind){
       themTyping(()=>pushThem(vibeColor(rand(MISSED_LINES)))); }
     return;
   }
-  if(yes){ toast("👍"); themTyping(()=>pushThem(vibeColor(rand(["Glad we agree.","Right? Knew you'd be on board.","Good. I like you too."])))); }
-  else { toast("👎"); themTyping(()=>pushThem(vibeColor(rand(["Fair enough. Tell me what'd be better.","Okay, noted. I can pivot.","Alright, scratch that."])))); }
+  if(yes){ toast("👍"); themTyping(()=>pushThem(vibeColor(noRepeat(["Glad we agree.","Right? Knew you'd be on board.","Good. I like you too."], 'said04')))); }
+  else { toast("👎"); themTyping(()=>pushThem(vibeColor(noRepeat(["Fair enough. Tell me what'd be better.","Okay, noted. I can pivot.","Alright, scratch that."], 'said05')))); }
 }
 function explain(j){ var c=[
   "Ha — that's a scratch and sniff. Want a better one?",
@@ -9616,7 +9622,7 @@ function tellJoke(surprise,forceCat,noPre,fixedJoke){
       themTyping(()=>{ var j = fixedJoke ? {s:fixedJoke.s, p:fixedJoke.p, ci:fixedJoke.ci} : getJoke(surprise,forceCat);
         j.roast = (forceCat===catIdx("roast_master") && S.vibe!=='Sarcastic');
         var usedPre = false;
-        if(j.mine){ pushThem(vibeColor(rand(["Here's one of yours —","Pulling one from your collection —","This is the one you taught me —"]))); usedPre = true; }
+        if(j.mine){ pushThem(vibeColor(noRepeat(["Here's one of yours —","Pulling one from your collection —","This is the one you taught me —"], 'said06'))); usedPre = true; }
         // The intro line is a nice beat, but every single joke is too much.
         // About half the time she just tells it, which feels more like a person.
         else if(!noPre && Math.random() < 0.5){ pushThem(pre); usedPre = true; }
@@ -9682,12 +9688,12 @@ function userSays(t){
     }
     // chat-leaning answers
     if(/(chat|talk|catch up|company|vent|listen|conversation|company|just talk|hang)/.test(l)){
-      themTyping(()=>pushThem(vibeColor(rand([
+      themTyping(()=>pushThem(vibeColor(noRepeat([
         "I'd love that. What's on your mind?",
         "Perfect. Tell me — how's your heart today?",
         "Let's do it. What do you want to talk about?",
         "Good. I'm all yours — what's going on with you today?"
-      ]))));
+      ], 'said07'))));
       return;
     }
   }
@@ -9726,7 +9732,12 @@ function userSays(t){
   }
   // ── JOURNAL RECALL: "what day did I…", "when did I…", "what date was…" ──
   if(/(what day|what date|which day|when did (i|we)|when was (it|that)|remind me when|do you remember when)/.test(l)){
-    if(journalRecall(t, l)) return;
+    /* Ask which day a dish is on BEFORE the journals are searched. "What day am
+     I having Chinese chicken salad?" is a question about the meal plan, and it
+     used to reach journalRecall, which looked through the journals and said it
+     couldn't find it — while the answer sat in the plan the whole time. */
+  if(isWhenIsMealQuestion(l)){ whenIsMealAnswer(l); return; }
+  if(journalRecall(t, l)) return;
   }
   // ── APPLE HEALTH: "how many steps do I have", "how did I sleep" ──
   if(/\b(how many|how much|what.?s my|whats my|what is my|what are my|did i|how did i|how are my|show me my)\b/.test(l)
@@ -9873,8 +9884,19 @@ function userSays(t){
     // bare "what's on my list" / "show my list" → shopping (the app's default list)
     if(/\bmy list\b|\bthe list\b/.test(l)){ showShopping(); return; }
   }
-  if(!_blockAdd && /((add|put|throw)\b.*(shopping|grocery|groceries|store|household)? ?list|to (my )?(shopping|grocery|groceries|store|household) list|need to (get|buy|pick up|grab)|need (some |more )?|pick up|out of|running low on|grab some|get some|buy some|add .* to the list)\b/.test(l)
-     && /(list|store|grocer|buy|get|pick up|grab|need|out of|running low)/.test(l)
+  /* ══════════ "NEED" ON ITS OWN IS NOT A SHOPPING LIST ═══════════════════
+     This read  need (some |more )?  — and both halves are optional, so it
+     matched a bare "need" anywhere in a sentence. "You need to be a little
+     nicer" went straight onto the shopping list, which is a strange reply to
+     being asked to be kinder.
+
+     The word only means shopping when somebody is talking about themselves
+     and about getting something: I need, we need, need some, need more, need
+     to pick up. "You need to..." is about her, and belongs nowhere near a
+     list. The second test carried the same bare word and has been tightened
+     the same way. */
+  if(!_blockAdd && /((add|put|throw)\b.*(shopping|grocery|groceries|store|household)? ?list|to (my )?(shopping|grocery|groceries|store|household) list|\b(i|we) need to (get|buy|pick up|grab)\b|\bneed to (get|buy|pick up|grab)\b|\b(i|we) need (some|more|a|an)\b|\bneed (some|more)\b|\bpick up\b|\bout of\b|\brunning low on\b|\bgrab some\b|\bget some\b|\bbuy some\b|add .* to the list)/.test(l)
+     && /(list|store|grocer|buy|pick up|grab|out of|running low|\b(i|we) need\b|\bneed (some|more)\b)/.test(l)
      && !/(remind|calendar|schedule|appointment|meeting)/.test(l)){ doShopping(t); return; }
   // broad catch: "add X to notes", "add X to my to-do", "add X to my Christmas list",
   // "add X to my list", bare "add milk", and "add a note about Y"
@@ -13204,11 +13226,11 @@ function _funnelSendNow(){
 
   funnelClose();
   themTyping(function(){
-    pushThem(vibeColor(rand([
+    pushThem(vibeColor(noRepeat([
       "Thank you \u2014 that's going straight to Sally. If it lands, it'll be in here for everybody.",
       "Sent it on. Making a stranger laugh is a fine thing to do with a Tuesday.",
       "Got it, thank you. The good ones make it in."
-    ])));
+    ], 'said08')));
   });
   try{ earnHoney("I shared a joke"); }catch(e){}
 }
@@ -13726,6 +13748,78 @@ function nudgeSeenToday(){
 
 /* "What's for dinner?" should reach the food screen the same way "what's on my
    calendar" reaches the calendar — asking out loud is the point of her. */
+/* ══════════ WHICH DAY IS THE CHICKEN SALAD? ═══════════════════════════════
+   foodAnswer only ever went one way — you gave it a day and it told you the
+   meal. Asked the other way round ("what day am I having Chinese chicken
+   salad?") nothing matched, and the question fell through to journal recall,
+   which quite reasonably said it had looked through the journals and couldn't
+   find it. A perfectly good answer was sitting in the meal plan.
+
+   This spots a question about WHEN a named dish is on, finds it, and says
+   which day. */
+function isWhenIsMealQuestion(l){
+  return /\b(what day|which day|when)\b.{0,30}\b(am i|are we|do i|will i|is)\b.{0,20}\b(having|eating|cooking|making|planned|on the menu|for dinner|for supper)\b/i.test(l||'')
+      || /\b(what day|which day|when)\b.{0,24}\b(is|are)\b.{0,40}\b(planned|on the menu|scheduled)\b/i.test(l||'');
+}
+
+function whenIsMealAnswer(l){
+  var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var today=new Date(); today.setHours(0,0,0,0);
+
+  var all=[];
+  try{
+    all=(SETTINGS.reminders||[]).filter(function(r){ return r.meal; })
+        .sort(function(a,b){ return a.when-b.when; });
+  }catch(e){}
+
+  /* Pull the dish out of the question by removing the question itself, then
+     match on any decent word that survives — "chicken salad" should find
+     "Chinese Chicken Salad" without the wording having to agree. */
+  var q=(l||'').toLowerCase()
+    .replace(/\b(what|which) day\b|\bwhen\b|\bam i\b|\bare we\b|\bdo i\b|\bwill i\b|\bhaving\b|\beating\b|\bcooking\b|\bmaking\b|\bplanned\b|\bscheduled\b|\bon the menu\b|\bfor (dinner|supper|lunch)\b|\bis\b|\bare\b|\bthe\b|\bmy\b|\ba\b|\ban\b/g,' ')
+    .replace(/[^a-z0-9\s'-]/g,' ').replace(/\s+/g,' ').trim();
+  var words=q.split(' ').filter(function(w){ return w.length>2; });
+
+  themTyping(function(){
+    if(!all.length){
+      pushThem(vibeColor("Nothing planned yet at all. Want me to find you something?"));
+      return;
+    }
+    if(!words.length){
+      pushThem(vibeColor("Which one did you mean?"));
+      return;
+    }
+    var best=null, bestScore=0;
+    all.forEach(function(r){
+      var t=(r.title||'').toLowerCase();
+      var score=0;
+      words.forEach(function(w){ if(t.indexOf(w)>=0) score++; });
+      if(score>bestScore){ bestScore=score; best=r; }
+    });
+
+    if(!best){
+      pushThem(vibeColor("That one's not on the plan \u2014 not this week, anyway."));
+      setTimeout(function(){
+        themTyping(function(){
+          pushAction('\ud83c\udf72 Open Food for Thought', null, false, null, 'openFoodThought');
+        });
+      }, 700);
+      return;
+    }
+
+    var nm=(best.title||'').replace(/^\ud83c\udf72\s*/,'');
+    var d=new Date(best.when); d.setHours(0,0,0,0);
+    var diff=Math.round((d.getTime()-today.getTime())/86400000);
+    var when = diff===0 ? 'tonight'
+             : diff===1 ? 'tomorrow'
+             : diff===-1 ? 'yesterday'
+             : diff<0 ? ('last '+days[d.getDay()])
+             : diff<7 ? days[d.getDay()]
+             : days[d.getDay()]+' week';
+    pushThem(vibeColor(nm+" is "+when+"."));
+  });
+}
+
 function isFoodQuestion(l){
   /* The day names were added because "what's for dinner Tuesday" and "what
      about tomorrow night" are how anybody actually asks, and neither matched
@@ -13831,11 +13925,11 @@ function foodAnswer(l){
       pushThem(vibeColor(msg));
 
     } else {
-      pushThem(vibeColor(rand([
+      pushThem(vibeColor(noRepeat([
         "Nothing planned yet. Want me to find you something?",
         "Your week's empty so far \u2014 shall we sort it out?",
         "No plan yet. Let's find something worth cooking."
-      ])));
+      ], 'said09')));
     }
     setTimeout(function(){
       themTyping(function(){
@@ -14255,47 +14349,56 @@ function replyTo(l){
 }
 
 /* ════ SELF / REFLECTIVE MODE ════ */
+/* ══════════ NOT THE SAME LINE TWICE RUNNING ═══════════════════════════════
+   Every branch in here picked with rand(), which has no memory — so with
+   three lines in a pool a back-to-back repeat happens one time in three.
+   "Good. Don't rush past it. What part are you most proud of?" came round
+   twice in a row, and a reflective question asked twice stops sounding
+   reflective and starts sounding like nobody is listening.
+
+   noRepeat() remembers the last line per pool, so the same one cannot come
+   round immediately. Each pool has its own key. */
 function selfReply(l){
   // jokes still available on request (handled upstream); here = reflection
   if(/(sad|down|tired|stressed|anxious|rough|hard day|overwhelmed|lonely|depress|worried|scared|guilt|regret)/.test(l)){
     S.struggles.push(l);
-    return rand([
+    return noRepeat([
       "Okay. Say it plainly to yourself: what's actually underneath this?",
       "You're allowed to feel that. If a friend told you this, what would you tell them?",
       "Name it without softening it. Then we'll look at it together — gently.",
-      "That's heavy. What's one small thing that's yours to control right now?"]);
+      "That's heavy. What's one small thing that's yours to control right now?"], 'self01');
   }
   if(/(how are you|how's it going|you good|what's up)/.test(l)){
-    return rand(["I'm you, so — how are *you*, honestly? No performance.",
+    return noRepeat(["I'm you, so — how are *you*, honestly? No performance.",
       "Depends on how you're doing. Want to check in for real?",
-      "Let's not deflect. How's your head today?"]);
+      "Let's not deflect. How's your head today?"], 'self02');
   }
   if(/(should i|what do i do|don't know what|confused|stuck|decide|decision)/.test(l)){
-    return rand(["Lay out the options like you're advising someone you love. Which one would you tell them to pick?",
+    return noRepeat(["Lay out the options like you're advising someone you love. Which one would you tell them to pick?",
       "What does the version of you a year from now wish you'd done here?",
       "Strip the fear out for a second — what do you actually want? Start there.",
-      "If nobody would judge you, which way do you lean? That's usually the answer."]);
+      "If nobody would judge you, which way do you lean? That's usually the answer."], 'self03');
   }
   if(/(proud|did it|finished|accomplished|won|good day|happy|grateful)/.test(l)){
-    return rand(["Sit in that for a second — you earned it. Say what you did well.",
+    return noRepeat(["Sit in that for a second — you earned it. Say what you did well.",
       "Good. Don't rush past it. What part are you most proud of?",
-      "That's worth marking. Tell yourself the thing you'd want to hear."]);
+      "That's worth marking. Tell yourself the thing you'd want to hear."], 'self04');
   }
   if(/(goal|want to|trying to|dream|plan to|hope to)/.test(l)){
     S.goals.push(l);
-    return rand(["Logged. What's the very next small step — today or tomorrow?",
+    return noRepeat(["Logged. What's the very next small step — today or tomorrow?",
       "Good. Future-you is counting on present-you for one move. What is it?",
-      "Say it out loud as a promise to yourself. I'll hold you to it, kindly."]);
+      "Say it out loud as a promise to yourself. I'll hold you to it, kindly."], 'self05');
   }
   if(/(thank|love you|proud of you)/.test(l)){
-    return rand(["Be that kind to yourself more often.","Noted — now say it to yourself and mean it.","That's the voice to keep around."]);
+    return noRepeat(["Be that kind to yourself more often.","Noted — now say it to yourself and mean it.","That's the voice to keep around."], 'self06');
   }
-  return rand([
+  return noRepeat([
     "Keep going. I'm just here to reflect it back.",
     "Say more. Sometimes hearing yourself is the whole point.",
     "And how do you feel about that, now that you've said it?",
     "What would you tell a friend who said exactly that to you?",
-    "Want to keep thinking it through, or want me to lighten it with a joke?"]);
+    "Want to keep thinking it through, or want me to lighten it with a joke?"], 'self07');
 }
 function vibeColor(s){
   if(S.vibe==='Flirty') return s+" 😉";
@@ -14347,6 +14450,8 @@ function audioOn(){ return S.ttsOn || S.handsFree; }
    Requesting getUserMedia once grants a persistent permission Chrome remembers,
    so SpeechRecognition won't keep re-prompting. We keep the stream alive (muted). */
 var micStream=null, micGranted=false;
+/* Watchdog state for the iOS "started but didn't" failure — see startListening. */
+var _micWatchdog=null, _micLiveConfirmed=false, _micRetried=false;
 function enableMicPermission(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
     setMicEnableUI('denied','Mic not available here');
@@ -20291,7 +20396,16 @@ function toggleMic(){
   if(audioOn()){ // turn audio off entirely
     S.ttsOn=false; S.handsFree=false;
     document.getElementById('hfBtn').classList.remove('on');
+    /* Hard stop, not a polite one. If the session had already died without
+       telling us, recog.stop() does nothing and the button stays lit — which
+       is why turning it off used to need the hands-free dance. abort() and
+       clearing the flags by hand always works. */
+    try{ clearTimeout(_micWatchdog); }catch(e){}
+    try{ if(recog){ recog.onend=null; recog.onerror=null; recog.onresult=null;
+                    recog.abort && recog.abort(); } }catch(e){}
+    recog=null; listening=false; micPaused=false; _micRetried=false;
     stopListening(); speechSynthesis.cancel();
+    syncMicUI();
     toast("Voice off.");
   } else {        // turn mic loop on — start NOW inside the tap (required by mobile browsers)
     S.ttsOn=true; speechSynthesis.cancel(); speakQueue=0; micPaused=false;
@@ -20372,7 +20486,8 @@ function startListening(){
   micPaused=false;
   try{
     recog=new SR(); recog.lang='en-US'; recog.interimResults=false; recog.continuous=false;
-    recog.onresult=e=>{ var t=e.results[0][0].transcript; stopListening();
+    recog.onresult=e=>{ _micRetried=false; clearTimeout(_micWatchdog);
+      var t=e.results[0][0].transcript; stopListening();
       if(t&&t.trim()) userSays(t.trim());
       /* Kick off the wait now. reopenMic() holds off while she's talking, and
          opens as soon as she stops. Without this, a reply that went silent —
@@ -20420,11 +20535,47 @@ function startListening(){
       if(S.handsFree){ setTimeout(reopenMic, 350); return; }
       if(!micPaused && !speechSynthesis.speaking && speakQueue===0)
         setTimeout(reopenMic,350); };
+    /* ══════════ PROVE IT ACTUALLY STARTED ═══════════════════════════════
+       On iOS, recog.start() can return perfectly happily and the session then
+       dies without ever firing onend. Nothing tells the app, so `listening`
+       stays true, the button stays lit red, and every word after the first is
+       spoken into a microphone that is not there. That is precisely what it
+       looks like from the outside: the first sentence goes through, and then
+       nothing, forever, with the light still on.
+
+       onaudiostart is the browser saying it has the microphone. If that has
+       not arrived within a second and a half, the session never really began.
+       Tear it down and try once. If the second attempt is also silent, say so
+       plainly rather than leaving somebody talking to a red dot. */
+    _micLiveConfirmed=false;
+    recog.onstart=function(){ _micLiveConfirmed=true; };
+    recog.onaudiostart=function(){ _micLiveConfirmed=true; };
+
     recog.start(); listening=true; syncMicUI();
-  }catch(e){ listening=false; syncMicUI(); toast("Couldn't start the mic — tap 🎤 again."); }
+
+    clearTimeout(_micWatchdog);
+    _micWatchdog=setTimeout(function(){
+      if(_micLiveConfirmed || !listening) return;
+      try{ if(recog){ recog.onend=null; recog.onerror=null; recog.onresult=null;
+                      recog.abort && recog.abort(); } }catch(e){}
+      recog=null; listening=false; micPaused=false; syncMicUI();
+      if(_micRetried){
+        _micRetried=false;
+        toast("The microphone stopped responding. Tap \ud83c\udfa4 to start it again.");
+        S.ttsOn=false; S.handsFree=false;
+        try{ document.getElementById('hfBtn').classList.remove('on'); }catch(e){}
+        updateStatus(); syncMicUI();
+        return;
+      }
+      _micRetried=true;
+      startListening();
+    }, 1500);
+
+  }catch(e){ listening=false; syncMicUI(); toast("Couldn't start the mic — tap \ud83c\udfa4 again."); }
 }
 function pauseListening(){ micPaused=true; if(recog)try{recog.stop()}catch(e){}; listening=false; syncMicUI(); }
-function stopListening(){ micPaused=true; listening=false; if(recog)try{recog.stop()}catch(e){}; syncMicUI(); }
+function stopListening(){ micPaused=true; listening=false; clearTimeout(_micWatchdog);
+  if(recog)try{recog.stop()}catch(e){}; syncMicUI(); }
 
 
 /* ══════════ COMING BACK TO THE APP ═══════════════════════════════════════
@@ -23236,26 +23387,59 @@ function openMyYard(){
       'letter-spacing:.4px;margin:16px 2px 9px;text-transform:uppercase">'+txt+'</div>';
   }
 
+  /* ══════════ THE SAME SHELVES AS THE INDEX ═══════════════════════════════
+     The browse index folds into lettered shelves you can open and shut, and it
+     works well — a long list stops feeling long. This page was three flat runs
+     of tiles instead, so a yard with forty plants in it was one endless scroll.
+
+     Same shelves here now. Yours from the book first, then your own finds
+     A–E, F–J and so on, each folding away. Anything not for eating keeps its
+     own shelf at the bottom, because that is a warning and should not be
+     buried in the alphabet. */
+  function myShelf(key, title, inner, count, colour){
+    var shut=yardShelfShut('my'+key);
+    return '<div class="yg-shelf'+(shut?' shut':'')+'" id="ygShelf_my'+key+'">'+
+      '<div class="yg-head" onclick="yardShelfToggle(\'my'+key+'\')">'+
+        '<span><b style="color:'+(colour||'#8fe3c0')+'">'+title+'</b>'+
+        '<span class="yg-n">'+(count? count+(count===1?' plant':' plants') : '')+'</span></span>'+
+        '<span class="yg-tri">\u25be</span>'+
+      '</div>'+ inner +
+    '</div>';
+  }
+
   /* book plants they've said grow at their place - either spelling */
   var bk=Object.keys(BOOK).filter(function(id){ return yardHas(id); });
   bk.sort(function(x,y){ return BOOK[x].name.localeCompare(BOOK[y].name); });
   if(bk.length){
-    html+=head('\ud83c\udf3f Growing at your place','#8fe3c0');
-    html+='<div class="yg-grid">'+
-      bk.map(function(id){ return yardTileHTML(id,'myYard'); }).join('')+'</div>';
+    html+=myShelf('BOOK','\ud83c\udf3f Growing at your place',
+      '<div class="yg-grid">'+bk.map(function(id){ return yardTileHTML(id,'myYard'); }).join('')+'</div>',
+      bk.length);
   }
 
-  /* their own finds, split into edible and not - two shelves in one yard */
-  var mine=arr.slice().reverse();
+  /* their own finds, on lettered shelves like the index */
+  var mine=arr.slice();
+  mine.sort(function(x,y){ return String(x.name||'').localeCompare(String(y.name||'')); });
   var food=mine.filter(function(e){ return e.edible!==false; });
   var notFood=mine.filter(function(e){ return e.edible===false; });
+
   if(food.length){
-    html+=head('\ud83c\udf31 Your own finds','#8fe3c0');
-    html+='<div class="yg-grid">'+food.map(myYardTileHTML).join('')+'</div>';
+    var buckets={};
+    YARD_SHELVES.forEach(function(r){ buckets[r.join('')]=[]; });
+    food.forEach(function(e){ buckets[yardShelfOf(e.name||'')].push(e); });
+    html+='<div style="font-size:11px;color:#8fe3c0;font-weight:700;letter-spacing:.4px;'+
+          'margin:18px 2px 9px;text-transform:uppercase">\ud83c\udf31 Your own finds</div>';
+    YARD_SHELVES.forEach(function(r){
+      var k=r.join(''), list=buckets[k];
+      if(!list.length) return;                 // no empty shelves on your own page
+      html+=myShelf(k, r[0]+' \u2013 '+r[1],
+        '<div class="yg-grid">'+list.map(myYardTileHTML).join('')+'</div>', list.length);
+    });
   }
+
   if(notFood.length){
-    html+=head('\ud83d\udeab Not for eating \u2014 good to know anyway','#ffcf6b');
-    html+='<div class="yg-grid">'+notFood.map(myYardTileHTML).join('')+'</div>';
+    html+=myShelf('NOTFOOD','\ud83d\udeab Not for eating \u2014 good to know anyway',
+      '<div class="yg-grid">'+notFood.map(myYardTileHTML).join('')+'</div>',
+      notFood.length, '#ffcf6b');
   }
 
   b.innerHTML = html || '<div style="text-align:center;color:var(--muted);padding:34px">'+
@@ -23425,47 +23609,63 @@ function openCookingList(){
   var book=[], yard=[];
   list.forEach(function(k){ (k.indexOf('my:')===0 ? yard : book).push(k); });
 
-  function row(icon, title, sub, openCall, key){
-    return '<div class="cook-row">'+
-      '<button class="cook-open" onclick="'+openCall+'">'+
-        '<span class="hb-ic">'+icon+'</span>'+
-        '<span class="hb-tx"><b>'+esc(title)+'</b><small>'+sub+'</small></span></button>'+
-      '<button class="cook-x" onclick="rangerCookRemove(\''+key+'\')" aria-label="Take off the list">✕</button>'+
+  /* ══════════ THE SAME TILE AS EVERYWHERE ELSE ═══════════════════════════
+     This page still had its first design: one plant per row, stretched the
+     full width, an emoji where a photograph should be. Three across with the
+     real picture shows nine plants in the space that used to hold three, and
+     it matches every other shelf in the app.
+
+     The ✕ moves onto the tile as a small round button in the corner, the same
+     shape as the one on a card's pictures. */
+  function row(icon, title, sub, openCall, key, pic){
+    var img = pic
+      ? '<img class="yg-pic" src="'+pic+'" alt="" loading="lazy" onerror="yardImgFail(this)">'
+      : '<div class="yg-emoji">'+icon+'</div>';
+    return '<div class="yg-tile" style="position:relative">'+
+      '<button class="yg-open" onclick="'+openCall+'">'+
+        img+
+        '<div class="yg-txt"><b>'+esc(title)+'</b><small>'+esc(sub)+'</small></div>'+
+      '</button>'+
+      '<button onclick="event.stopPropagation();rangerCookRemove(\''+key+'\')" aria-label="Take off the list" style="position:absolute;top:5px;right:5px;width:30px;height:30px;border:none;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:14px;line-height:1;cursor:pointer;z-index:2">\u2715</button>'+
     '</div>';
   }
 
   if(book.length){
+    html+='<div class="yg-grid">';
     html+=book.map(function(id){
       // a cooking-list entry can be a book plant, a Backyard plant, or a garden plant
       if(RANGER_PLANTS[id]){
         var p=RANGER_PLANTS[id];
-        return row(p.leaf, p.name, '🕒 '+(p.fresh||'')+' · tap to open',
-                   "openPlantHub();setTimeout(function(){rangerShowResult('"+id+"')},40)", id);
+        return row(p.leaf, p.name, 'tap to open',
+                   "openPlantHub();setTimeout(function(){rangerShowResult('"+id+"')},40)", id, (typeof rangerPhotoPath==='function' ? rangerPhotoPath(p.img) : '') || p.img || '');
       }
       if(typeof BACKYARD!=='undefined' && BACKYARD[id]){
         var q=BACKYARD[id];
-        return row(q.leaf, q.name, '🕒 '+(q.fresh||'')+' · tap to open',
-                   "openPlantHub();setTimeout(function(){rangerShowShelfPlant('"+id+"','backyard',null)},40)", id);
+        return row(q.leaf, q.name, 'tap to open',
+                   "openPlantHub();setTimeout(function(){rangerShowShelfPlant('"+id+"','backyard',null)},40)", id, (typeof rangerPhotoPath==='function' ? rangerPhotoPath(q.img) : '') || q.img || '');
       }
       if(typeof GARDEN!=='undefined' && GARDEN[id]){
         var g=GARDEN[id];
-        return row(g.leaf, g.name, '🌱 garden · tap to open',
-                   "openPlantHub();setTimeout(function(){rangerShowShelfPlant('"+id+"','garden',null)},40)", id);
+        return row(g.leaf, g.name, 'garden',
+                   "openPlantHub();setTimeout(function(){rangerShowShelfPlant('"+id+"','garden',null)},40)", id, (typeof rangerPhotoPath==='function' ? rangerPhotoPath(g.img) : '') || g.img || '');
       }
       return '';
     }).join('');
+    html+='</div>';
   }
   if(yard.length){
-    html+='<div style="font-size:11px;color:#8fe3c0;font-weight:700;letter-spacing:.4px;margin:14px 2px 8px;text-transform:uppercase">🌱 From My Yard</div>';
+    html+='<div style="font-size:11px;color:#8fe3c0;font-weight:700;letter-spacing:.4px;margin:14px 2px 8px;text-transform:uppercase">\ud83c\udf31 From My Yard</div>';
+    html+='<div class="yg-grid">';
     html+=yard.map(function(key){
       var e=rangerYardFind(key.slice(3)); if(!e) return '';
-      return row('🌱', e.name, 'Your own plant'+(e.season?' · '+e.season:'')+' · tap to open',
-                 "openMyYardPlant('"+e.id+"')", key);
+      return row('\ud83c\udf31', e.name, (e.season||'Your own plant'),
+                 "openMyYardPlant('"+e.id+"')", key, e.photo||'');
     }).join('');
+    html+='</div>';
   }
   if(html){
     html+='<div style="display:flex;gap:6px;margin-top:14px">'+
-      '<button class="home-half" style="flex:1" onclick="openFoodThought()">🍲 Find recipes</button>'+
+      '<button class="home-half" style="flex:1" onclick="openFoodThought()">\ud83c\udf72 Find recipes</button>'+
       '<button class="home-half" style="flex:1;color:#3a2c08" onclick="rangerCookClear()">Clear the list</button></div>';
   }
   b.innerHTML = html || '<div style="text-align:center;color:var(--muted);padding:30px">🧺 Nothing here yet. Identify a plant and tap "Cooking list."</div>';
@@ -24244,17 +24444,47 @@ function ftRenderCards(){
       esc(_ftKind ? ftKindName(_ftKind) : shelfName)+'</div>';
 
   if(!_ftKind){
-    var counts={};
-    list.forEach(function(c){ var k=ftKindOf(c); counts[k]=(counts[k]||0)+1; });
-    var tiles=FT_KINDS.filter(function(k){ return counts[k.id]; }).map(function(k){
-      return '<button class="jb-tile" onclick="ftOpenKind(\''+k.id+'\')">'+
-        '<div class="jb-nocover">'+k.em+'</div>'+
-        '<div class="jb-info"><div class="jb-name">'+esc(k.nm)+'</div>'+
-        '<div class="jb-count">'+counts[k.id]+'</div></div></button>';
+    /* ══════════ FOLDING SHELVES, NOT ANOTHER TAP ═══════════════════════════
+       These were flat tiles with an emoji on them: tap Desserts, get a new
+       screen, tap back, tap Sauces. Four taps to glance at two categories.
+
+       The plant index solved this months ago — a heading you fold open, with
+       the things inside it. Same here now. Every kind is on one screen, opens
+       where it sits, and remembers whether you left it open.
+
+       And the first recipe's own photograph sits in the heading, because a
+       row of grey emoji tells you nothing about what is on the shelf. */
+    var counts={}, firstPic={};
+    list.forEach(function(c){
+      var k=ftKindOf(c);
+      counts[k]=(counts[k]||0)+1;
+      if(!firstPic[k] && c && c.i) firstPic[k]=c.i;
+    });
+
+    var shelves=FT_KINDS.filter(function(k){ return counts[k.id]; }).map(function(k){
+      var key='ft'+k.id;
+      var shut=yardShelfShut(key);
+      var cards=list.filter(function(c){ return ftKindOf(c)===k.id; });
+      var thumb = firstPic[k.id]
+        ? '<img src="'+firstPic[k.id]+'" alt="" loading="lazy" '+
+          'style="width:30px;height:30px;object-fit:cover;border-radius:8px;'+
+          'margin-right:9px;flex:0 0 auto" onerror="this.style.display=\'none\'">'
+        : '<span style="font-size:19px;margin-right:9px">'+k.em+'</span>';
+      return '<div class="yg-shelf'+(shut?' shut':'')+'" id="ygShelf_'+key+'">'+
+        '<div class="yg-head" onclick="yardShelfToggle(\''+key+'\')">'+
+          '<span style="display:flex;align-items:center;min-width:0">'+thumb+
+            '<b>'+esc(k.nm)+'</b><span class="yg-n">'+counts[k.id]+'</span></span>'+
+          '<span class="yg-tri">\u25be</span>'+
+        '</div>'+
+        '<div class="ft-grid">'+
+          cards.map(function(c){ return ftCardHTML(c, arr.indexOf(c)); }).join('')+
+        '</div>'+
+      '</div>';
     }).join('');
+
     box.className='';
-    box.innerHTML=head+(tiles
-      ? '<div class="jb-grid">'+tiles+'</div>'
+    box.innerHTML=head+(shelves
+      ? shelves
       : '<p style="color:var(--muted);font-size:13px;padding:20px 4px">Nothing on this shelf yet.</p>');
     return;
   }
@@ -24981,10 +25211,21 @@ function yardTileHTML(id, from){
       pic+
       '<div class="yg-txt"><b>'+yardShortName(p)+'</b><small>'+yardShortSci(p)+'</small></div>'+
     '</button>'+
-    '<button class="yg-have'+(on?' on':'')+'" onclick="yardTileToggle(\''+id+'\',this)">'+
-      /* "+ My yard" read as a label, not a question you were answering. This
-         says what the tap means: you are confirming you have this plant. */
-      (on?'\u2713 In my yard':'Yes, that\u2019s in my yard')+'</button>'+
+    /* NO BUTTON IN MY YARD. The toggle exists to say "I have this" — inside
+       My Yard that has already been said, and the extra row made these tiles
+       taller than the ones for your own finds sitting right underneath. Two
+       shelves of the same thing at two different heights looks like a mistake,
+       because it is one. */
+    /* ══════════ NO BUTTON ON ANY TILE ═══════════════════════════════════
+       The toggle row made every tile a whole row taller, and with three across
+       a phone that is a lot of the screen given over to a control most people
+       use once per plant and never again. The short card reads better on every
+       screen, so it is the only card now.
+
+       Nothing is lost. A tile that IS in your yard still shows it — .yg-tile.on
+       draws a green border and glow, which is quicker to read across a grid
+       than twelve copies of the same sentence. And ticking a plant now happens
+       on its own page, where there is room to see what you are agreeing to. */
   '</div>';
 }
 
