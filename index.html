@@ -1255,7 +1255,14 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .home-half .hh-tx{font-size:13.5px;font-weight:800;color:#3a2c08;}
 .home-half .hh-net{font-size:10px;color:#a8976a;margin-top:1px;}
 .home-buzz{background:rgba(246,207,110,.28);border-color:rgba(200,150,40,.3);}
-.home-privacy{margin-top:18px;font-size:11.5px;color:#9a8c6a;text-align:center;}
+/* ══════════ THE ONE LINE THAT SHOULD NOT BE SMALL ═══════════════════════
+   "Private. Everything stays on your device." was 11.5px in a muted tan on a
+   pale background — unreadable, and hardcoded so it did not follow the dark
+   themes either. For somebody deciding whether to write anything personal in
+   here at all, this is the most reassuring sentence on the screen. It should
+   look like a promise, not like the small print at the bottom of a contract. */
+.home-privacy{margin-top:18px;font-size:13px;color:var(--muted);text-align:center;
+  font-weight:600;letter-spacing:.1px;line-height:1.45;padding:0 22px;}
 
 /* tab bar */
 .tabbar{position:absolute;left:0;right:0;bottom:0;z-index:8;display:none;
@@ -1822,7 +1829,17 @@ textarea{resize:none;line-height:1.4;}
         </div>
         <button class="home-big home-buzz" onclick="openSweetLife()"><span class="hb-ic">🍯</span><span class="hb-tx"><b>My Sweet Life</b><small>Journal, money, lists &amp; more</small></span></button>
       </div>
-      <div class="home-privacy">Private. Everything stays on your device.</div>
+      <!-- ══════════ REMOVED 3 AUGUST ══════════════════════════════════════
+           This said "Private. Everything stays on your device." It was true
+           when it was written and it is not true now. Photographs go to
+           PlantNet, chat goes to OpenAI, recipe searches go to Spoonacular,
+           accounts and subscriptions go to Supabase, and the voice clips are
+           fetched from a server.
+
+           A promise you cannot keep is worse than no promise, and this is the
+           kind of claim a reviewer reads closely. The Privacy Policy carries
+           the detail; the home screen should not carry a summary that
+           contradicts it. -->
     </div>
   </div>
 
@@ -1952,9 +1969,14 @@ textarea{resize:none;line-height:1.4;}
     <div class="words-list" id="wordsList"></div>
 
     <div class="insights-empty" id="insightsEmpty" style="display:none">
-      Nothing yet today. The more you talk with your friends, the more your hive fills in — privately, only on this device.
+      Nothing yet today. The more you talk with your friends, the more your hive fills in.
     </div>
-    <p class="insights-note">Your words reveal where your attention, energy, and focus are going. This is reflection, not diagnosis — and it never leaves your device.</p>
+    <!-- Was: "...and it never leaves your device." The tallying really is local
+     — tagInsights only counts words and makes no network call — but the
+     chat text itself does go out when Honey gives a real answer, so "your
+     words never leave" was not quite true. This says exactly what is: the
+     working out happens here. -->
+    <p class="insights-note">Your words reveal where your attention, energy, and focus are going. This is reflection, not diagnosis — and the counting is done right here on your phone.</p>
     <button class="fresh-start-btn" onclick="freshStart()">🌱 Start Fresh this week</button>
     <p class="fresh-start-sub">Begins a clean week without erasing your story. Your long-term trend stays — so every comeback shows.</p>
     <button class="full-wipe-link" onclick="confirmFullWipe()">Erase all my history…</button>
@@ -2531,7 +2553,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;opacity:.45;font-size:12px;margin-top:14px;">Build v208 · 3 August · “did you have a good day?” is a question about her · “cook” no longer asks for a joke · the word brain no longer asks for the forecast · the heart saves what she just said · recipe kinds fold open with a picture · she can tell you which day the chicken salad is · the mic keeps listening past the first sentence · “need” alone no longer adds to your shopping list</div>
+    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v215</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">quick ticking is back on the index · the dish leads the dinner line · the heart shares your joke again</div></div>
   </div>
 </section>
 
@@ -7743,6 +7765,11 @@ function pushJoke(joke,noLog,dontInterrupt){
   // During onboarding the joke FOLLOWS her sentence, so we must not tear
   // down the queue — that was silencing both her line and the joke itself.
   if(S.speakerOn && !dontInterrupt) clearSpeech();
+  /* And the same joke object can only ever lay down its setup once, whatever
+     calls in. Belt and braces against the interleave above. */
+  if(S._setupDoneFor===joke) return;
+  S._setupDoneFor=joke;
+
   // BEAT 1 — the setup line
   var s=document.createElement('div'); s.className='bub them joke'; s.textContent=joke.s;
   document.getElementById('msgs').appendChild(s); scrollMsgs();
@@ -8051,8 +8078,14 @@ function pickCategory(surprise,forceCat){
 function getMyJoke(){
   if(!myJokesInChat()) return null;     // they'd rather keep their own jokes separate
   var avail=(S.myJokes||[]).filter(j=>!S.blacklist[j.s]&&!S.served[j.s]);
-  if(!avail.length){ (S.myJokes||[]).forEach(j=>{ if(S.served[j.s])delete S.served[j.s]; });
-    avail=(S.myJokes||[]).filter(j=>!S.blacklist[j.s]); }
+  if(!avail.length){
+    /* With a single joke this reset handed the same one back immediately, so
+       it could arrive twice running. If there is only one and it has just been
+       told, say nothing and let a proper joke have the turn. */
+    if((S.myJokes||[]).length<2) return null;
+    (S.myJokes||[]).forEach(j=>{ if(S.served[j.s])delete S.served[j.s]; });
+    avail=(S.myJokes||[]).filter(j=>!S.blacklist[j.s]);
+  }
   if(!avail.length) return null;
   var j=rand(avail); S.served[j.s]=1; return {s:j.s,p:j.p,mine:true};
 }
@@ -8060,7 +8093,23 @@ function getJoke(surprise,forceCat){
   // mix in the user's own jokes when they have some (not when a specific style is forced),
   // unless they've turned their own jokes off in the Jokes screen.
   var ownOn = (typeof SETTINGS==='undefined' || !SETTINGS.hasOwnProperty('ownJokes')) ? true : (SETTINGS.ownJokes!==false);
-  if(ownOn && forceCat==null && (S.myJokes||[]).length && Math.random()<.45){
+
+  /* ══════════ HOW OFTEN ONE OF YOURS ═══════════════════════════════════════
+     This was a flat 45% however many you had. With thirty of your own that
+     feels like a collection. With ONE it means nearly half of everything she
+     tells you is the same joke — and when it runs out, getMyJoke clears it and
+     offers it straight back, so it can come round twice in a row.
+
+     That is why it starts the moment somebody saves their first joke, and why
+     it started on both builds at once: nothing in the code changed, the
+     collection went from none to one.
+
+     The share now grows with the collection. One joke gets about 8% of turns,
+     five get 27%, and it settles at the old 45% once there are fifteen or
+     more. Yours still turn up — just not instead of everything else. */
+  var _mine=(S.myJokes||[]).length;
+  var _ownShare = _mine ? Math.min(0.45, 0.08 + (_mine-1)*0.026) : 0;
+  if(ownOn && forceCat==null && _mine && Math.random()<_ownShare){
     var mj=getMyJoke(); if(mj) return mj;
   }
   var ci=pickCategory(surprise,forceCat);
@@ -9636,6 +9685,18 @@ function jrShareMemory(id){
 }
 
 function tellJoke(surprise,forceCat,noPre,fixedJoke){
+  /* ══════════ ONE JOKE AT A TIME ═══════════════════════════════════════════
+     There is a 3.6 second gap between the lead-in line and the setup, to let
+     the lead-in finish speaking. If tellJoke is called again inside that gap —
+     a second tap, or two paths both deciding a joke was wanted — the two runs
+     interleave and you get setup, lead-in, setup again, punchline. Exactly one
+     joke, told one and a half times.
+
+     A short lock closes that window. It clears itself, so a genuine second
+     request a moment later still works. */
+  var _now=Date.now();
+  if(S._jokeLock && (_now - S._jokeLock) < 4200) return;
+  S._jokeLock=_now;
   themTyping(()=>{
     var _pool = SETUP_LINES[S.vibe] || SETUP_LINES.Warm;
     var pre = rand(_pool);
@@ -13911,7 +13972,15 @@ function whenIsMealAnswer(l){
              : diff<0 ? ('last '+days[d.getDay()])
              : diff<7 ? days[d.getDay()]
              : days[d.getDay()]+' week';
-    pushThem(vibeColor(nm+" is "+when+"."));
+    /* The answer sets its own card, so the heart keeps THIS rather than
+       whatever was shown before it. That is the honest fix for the problem the
+       heart change was trying to solve — the thing worth keeping says so
+       itself, instead of the heart guessing which was newest. */
+    /* Same shape as the answer above, so a shared card reads the same however
+       the question was asked. */
+    var _line = nm+" is for dinner "+when+".";
+    S.lastShareable = { text:_line, kind:'meal' };
+    pushThem(vibeColor(_line));
   });
 }
 
@@ -14000,7 +14069,14 @@ function foodAnswer(l){
       var when = want ? want.label
                       : ((new Date(planned[0].when)) < new Date(new Date().setHours(23,59,59))
                          ? "tonight" : "tomorrow");
-      pushThem(vibeColor("You've got "+nm+" planned for "+when+"."));
+      /* ══════════ THE DISH GOES FIRST ═══════════════════════════════════
+         This read "You've got Chinese Chicken Salad planned for tonight." Fine
+         to hear, wrong to send — the share card led with "You've got", which
+         means nothing to whoever receives it. The name of the food is the
+         thing; everything else is scaffolding. */
+      var _l = nm+" is for dinner "+when+".";
+      S.lastShareable = { text:_l, kind:'meal' };
+      pushThem(vibeColor(_l));
 
     } else if(want){
       /* Nothing that day — but say so about THAT day, and mention the next
@@ -15479,7 +15555,31 @@ function playHoneyClip(clipName, done){
     var p = a.play();
     if(p && p.then){
       p.then(function(){ clearDog(); if(window.__OBDEBUG) toast("CLIP playing: "+clipName); })
-       .catch(function(err){ clearDog(); finish("BLOCKED "+(err&&err.name||""), true); });
+       .catch(function(err){
+         clearDog();
+         /* ══════════ A REJECTED PROMISE IS NOT A SILENT CLIP ══════════════
+            iOS rejects play() with AbortError whenever a new load request
+            interrupts it — which happens routinely when the next line in the
+            queue sets src while this one is still going. The clip played
+            perfectly; only the promise was cut short.
+
+            Marking that as failed set _lastClipFailed, and the drain then
+            asked the clone to cover the line — so the same words were spoken
+            twice: once from the recording, once from ElevenLabs. One bubble
+            on screen, heard twice. Only ever on Quart and above, because the
+            clone fallback needs that tier, which is why it looked like a
+            phantom.
+
+            If the element has produced any audio at all, it spoke. Say so. */
+         var spokeAnyway = false;
+         try{ spokeAnyway = a.ended || a.currentTime > 0.15; }catch(e){}
+         var name = (err && err.name) || "";
+         if(spokeAnyway || name === "AbortError"){
+           finish("interrupted", false);
+         } else {
+           finish("BLOCKED "+name, true);
+         }
+       });
     } else {
       clearDog();
     }
@@ -17549,30 +17649,22 @@ function keepVerseFromHeart(txt){
 }
 
 function loveJoke(){
+  /* ══════════ REVERTED 3 AUGUST ═══════════════════════════════════════════
+     This briefly preferred "the last thing she said" over the card, so that
+     hearting a plain answer — "Chinese Chicken Salad is tomorrow" — would keep
+     that instead of an old joke.
+
+     It broke jokes, which are the main thing anybody hearts. A joke sets
+     lastShareable, but the lines that follow it — the riff, "Said with love.
+     Mostly.", anything at all — then became the newest thing said, so the
+     heart grabbed those instead and the share sheet held a stray line.
+
+     Back to the card. It is the reliable one, and jokes matter more here than
+     the meal answer did. The right way to solve the original problem is for
+     the meal answer to set its own lastShareable, not for the heart to guess. */
   var item = S.lastShareable;                 // {text, kind} set when Honey shows a card
-  /* Whichever is newer. A card she just showed, or the words she just said —
-     see the note in pushThem. Without the comparison, hearting a plain answer
-     handed you the last joke instead. */
-  var said = S.lastSaid;
-
-  /* Are they the same thing? A joke or a verse also goes through pushThem, so
-     both get set — and in that case the card is the better one to keep,
-     because it carries the kind and shares in the right shape. They only
-     differ when she simply answered a question, and then her answer is what
-     the heart should save. Compared by text rather than by clock, because
-     lastShareable has never carried a timestamp. */
-  function _norm(x){ return String(x||'').toLowerCase().replace(/\s+/g,' ').trim(); }
-  var sameThing = false;
-  try{
-    if(item && item.text && said && said.text){
-      var a=_norm(item.text), b=_norm(said.text);
-      sameThing = a.indexOf(b)>=0 || b.indexOf(a)>=0;
-    }
-  }catch(e){}
-
-  var useSaid = !!(said && said.text) && !sameThing;
-  var jt   = useSaid ? said.text : (item && item.text ? item.text : currentJokeText());
-  var kind = useSaid ? 'note'    : (item && item.kind ? item.kind : 'joke');
+  var jt   = item && item.text ? item.text : currentJokeText();
+  var kind = item && item.kind ? item.kind : 'joke';
   if(!jt){ toast("Nothing to save yet — I'll show you something first."); return; }
   /* A hearted verse goes into their own verse box as well — which is what makes
      it recallable by name later, and how somebody builds a small set they'll
@@ -24433,8 +24525,20 @@ function ftPrintOpen(){
       '<p style="font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.5">'+
         'Tick the ones you want. On the next screen you can print them, or choose '+
         '\u201cSave to Files\u201d to keep them as one document.</p>'+
+      /* ══════════ CHOOSE A KIND FIRST ═══════════════════════════════════
+         Somebody printing for a church recipe book wants the desserts, not
+         everything they have ever kept. This was one long list with a Select
+         all at the top, so making a desserts booklet meant scrolling the lot
+         and ticking by hand.
+
+         Pick a kind, then Select all takes just that kind. Everything already
+         ticked stays ticked when the filter changes, so you can build a
+         mixed batch across two or three kinds without losing your place. */
+      '<div id="ftPrintKinds" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:9px;margin-bottom:4px;-webkit-overflow-scrolling:touch">'+
+        ftPrintKindChips(arr)+
+      '</div>'+
       '<div style="display:flex;gap:8px;margin-bottom:10px">'+
-        '<button class="home-half" style="flex:1" onclick="ftPrintAll(true)">Select all</button>'+
+        '<button class="home-half" style="flex:1" onclick="ftPrintAll(true)">Select all shown</button>'+
         '<button class="home-half" style="flex:1" onclick="ftPrintAll(false)">Clear</button>'+
       '</div>'+
       '<label style="display:flex;align-items:center;gap:9px;font-size:13px;margin:0 2px 10px">'+
@@ -24443,7 +24547,8 @@ function ftPrintOpen(){
         'Include photographs</label>'+
       '<div id="ftPrintList" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch">'+
         arr.map(function(c,i){
-          return '<label style="display:flex;align-items:center;gap:11px;padding:11px 4px;'+
+          return '<label class="ftPrintRow" data-kind="'+esc(ftKindOf(c))+'" '+
+            'style="display:flex;align-items:center;gap:11px;padding:11px 4px;'+
             'border-bottom:1px solid rgba(255,255,255,.07);font-size:14px">'+
             '<input type="checkbox" class="ftPrintPick" value="'+i+'" '+
             'style="width:22px;height:22px;flex:0 0 auto">'+
@@ -24461,10 +24566,60 @@ function ftPrintOpen(){
 
 function ftPrintClose(){ var d=document.getElementById('ftPrintBox'); if(d) d.remove(); }
 
-function ftPrintAll(on){
-  Array.prototype.forEach.call(document.querySelectorAll('.ftPrintPick'),
-    function(b){ b.checked=!!on; });
+/* ══════════ THE KIND FILTER ON THE PRINT SHEET ═══════════════════════════
+   Only kinds that actually have cards get a chip, so nobody taps Sauces and
+   finds an empty list. "Everything" sits first and is where it starts. */
+var _ftPrintKind = 'all';
+
+function ftPrintKindChips(arr){
+  var counts={};
+  arr.forEach(function(c){ var k=ftKindOf(c); counts[k]=(counts[k]||0)+1; });
+  function chip(id, label, n, on){
+    return '<button onclick="ftPrintKind(\''+id+'\')" data-k="'+id+'" '+
+      'style="flex:0 0 auto;border:1px solid '+(on?'var(--gold)':'var(--line)')+';'+
+      'background:'+(on?'rgba(231,200,115,.18)':'transparent')+';color:var(--ink);'+
+      'border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer">'+
+      label+' <span style="opacity:.55">'+n+'</span></button>';
+  }
+  var out=chip('all','Everything',arr.length,_ftPrintKind==='all');
+  FT_KINDS.forEach(function(k){
+    if(!counts[k.id]) return;
+    out+=chip(k.id, k.em+' '+esc(k.nm), counts[k.id], _ftPrintKind===k.id);
+  });
+  return out;
 }
+
+function ftPrintKind(id){
+  _ftPrintKind=id;
+  /* Show and hide rather than redraw, so anything already ticked stays ticked
+     while you move between kinds. Somebody building a mixed booklet should not
+     lose the four desserts they picked when they go to look at the soups. */
+  try{
+    var rows=document.querySelectorAll('#ftPrintList .ftPrintRow');
+    for(var i=0;i<rows.length;i++){
+      var show = (id==='all') || rows[i].getAttribute('data-kind')===id;
+      rows[i].style.display = show ? 'flex' : 'none';
+    }
+    var chips=document.querySelectorAll('#ftPrintKinds button');
+    for(var j=0;j<chips.length;j++){
+      var on = chips[j].getAttribute('data-k')===id;
+      chips[j].style.borderColor = on ? 'var(--gold)' : 'var(--line)';
+      chips[j].style.background  = on ? 'rgba(231,200,115,.18)' : 'transparent';
+    }
+  }catch(e){}
+}
+
+function ftPrintAll(on){
+  /* "Select all shown" — only what the current kind is showing. Ticking every
+     recipe you own when you asked for desserts is not what anybody meant. */
+  var boxes=document.querySelectorAll('#ftPrintList .ftPrintPick');
+  for(var i=0;i<boxes.length;i++){
+    var row=boxes[i].closest ? boxes[i].closest('.ftPrintRow') : null;
+    if(row && row.style.display==='none') continue;
+    boxes[i].checked=!!on;
+  }
+}
+
 
 function ftPrintGo(){
   var picked=[];
@@ -25374,16 +25529,22 @@ function yardTileHTML(id, from){
        taller than the ones for your own finds sitting right underneath. Two
        shelves of the same thing at two different heights looks like a mistake,
        because it is one. */
-    /* ══════════ NO BUTTON ON ANY TILE ═══════════════════════════════════
-       The toggle row made every tile a whole row taller, and with three across
-       a phone that is a lot of the screen given over to a control most people
-       use once per plant and never again. The short card reads better on every
-       screen, so it is the only card now.
+    /* ══════════ THE BUTTON BELONGS ON THE INDEX, AND ONLY THERE ═════════
+       It was taken off every tile because the extra row made them tall. That
+       was right for My Yard and In Season — on those screens you have already
+       said you have the plant, so the button asks a question you have answered.
 
-       Nothing is lost. A tile that IS in your yard still shows it — .yg-tile.on
-       draws a green border and glow, which is quicker to read across a grid
-       than twelve copies of the same sentence. And ticking a plant now happens
-       on its own page, where there is room to see what you are agreeing to. */
+       It was wrong for the index. That screen exists for one job: running down
+       a list of what grows around here and ticking the ones you know. Making
+       somebody open each plant to do that turns a ten-second sweep into ten
+       separate journeys, and the whole point is that the shelves fold away so
+       they never have to look at it again.
+
+       So: back on the index, absent everywhere else. */
+    (from==='yardIndex'
+      ? '<button class="yg-have'+(on?' on':'')+'" onclick="yardTileToggle(\''+id+'\',this)">'+
+          (on?'\u2713 In my yard':'Yes, that\u2019s in my yard')+'</button>'
+      : '')+
   '</div>';
 }
 
