@@ -2553,7 +2553,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v215</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">quick ticking is back on the index · the dish leads the dinner line · the heart shares your joke again</div></div>
+    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v219</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">in season folds into shelves like the rest · the joke style examples play · a kind word gets a thank you and nothing more</div></div>
   </div>
 </section>
 
@@ -9849,6 +9849,10 @@ function userSays(t){
   if(isFarewell(l)){ honeyFarewell(l); return; }
   /* "What are you?" is asked far less often but matters more when it is, and
      it must not be swallowed by the how-are-you test above it. */
+  if(isCompliment(l)){
+    themTyping(function(){ pushThem(vibeColor(noRepeat(COMPLIMENT_BACK,'compliment'))); resetIdle(); });
+    return;
+  }
   if(isKindWish(l)){
     themTyping(function(){ pushThem(vibeColor(noRepeat(KIND_WISH_BACK,'kindwish'))); resetIdle(); });
     return;
@@ -14557,6 +14561,7 @@ function selfReply(l){
      want it handed back as a question. They want it met.
 
      All the ordinary ways people say a day went well are here now. */
+  if(isCompliment(l)){ return noRepeat(COMPLIMENT_BACK, 'compliment'); }
   if(isKindWish(l)){ return noRepeat(KIND_WISH_BACK, 'kindwish'); }
   /* Belt and braces: a question containing "you" is about her, whatever warm
      words it happens to carry. */
@@ -14592,6 +14597,38 @@ function selfReply(l){
 
    Anything pointed at her — hope you, you're having, you have a good — gets
    thanked and returned, and never reaches the branch about your own day. */
+/* ══════════ SOMEBODY SAYING SOMETHING KIND ══════════════════════════════════
+   "You are such a good companion" reached the reflective catch-all and came
+   back offering to keep thinking it through or lighten it with a joke. That is
+   a strange answer to a compliment. She should say thank you and stop.
+
+   Stop is the important half. A kind word does not need a question on the end
+   of it, and answering one with "want a joke?" turns a moment into a
+   transaction. */
+function isCompliment(l){
+  var t=(l||'').toLowerCase().trim();
+  /* A question is never a compliment. "Did you have a good day?" carries both
+     "you" and "good", so without this it was thanked for asking rather than
+     answered. Questions belong to isKindWish, just below. */
+  if(/\?\s*$/.test(t)) return false;
+  if(/^(did|do|does|are|is|was|were|have|has|had|can|could|will|would|how|what|why|when|where|which|who)\b/.test(t)) return false;
+  if(!/\byou('re| are|r)?\b|\bthanks\b|\bthank you\b/.test(t)) return false;
+  return /\byou('re| are| really are)?\b.{0,24}\b(good|great|lovely|wonderful|kind|sweet|funny|clever|smart|helpful|brilliant|amazing|the best|a good (friend|companion|listener))\b/.test(t)
+      || /\b(love|like|enjoy)\b.{0,18}\b(you|talking to you|our (chats|talks))\b/.test(t)
+      || /\b(good|great|lovely|nice) (companion|friend|listener|company)\b/.test(t)
+      || /^\s*(thanks|thank you|thankyou|ty)\b/.test(t)
+      || /\byou (always|really) (help|make|know)\b/.test(t);
+}
+var COMPLIMENT_BACK=[
+  "That's kind of you to say.",
+  "Well now. Thank you.",
+  "Thank you. That means something.",
+  "I'll take that. Thank you.",
+  "That's a nice thing to hear.",
+  "Thank you \u2014 I like our talks too.",
+  "You're kind to say so."
+];
+
 function isKindWish(l){
   /* "Did you have a good day?" is a question about HER. It carried the words
      "good day", so the good-news branch grabbed it and told somebody to sit in
@@ -15461,6 +15498,57 @@ HONEY_AUDIO_MAP["go on, i'm here."]='phrase_wake_14';
 HONEY_AUDIO_MAP["go on, im here."]='phrase_wake_14';
 HONEY_AUDIO_MAP["that's us, then. carry on."]='phrase_wake_15';
 HONEY_AUDIO_MAP["thats us, then. carry on."]='phrase_wake_15';
+
+
+/* ══════════ MAP FOR THE REPLIES WRITTEN 3 AUGUST ═══════════════════════
+   Goodbyes, compliments and kind wishes. Named by what they answer, so
+   anybody reading the folder can tell what a clip is for. */
+HONEY_AUDIO_MAP["that's kind of you. i am, thank you."]='kindwish_01';
+HONEY_AUDIO_MAP["thats kind of you. i am, thank you."]='kindwish_01';
+HONEY_AUDIO_MAP["thank you \u2014 nobody usually asks."]='kindwish_02';
+HONEY_AUDIO_MAP["thank you"]='kindwish_02';
+HONEY_AUDIO_MAP["i am, now that you're here."]='kindwish_03';
+HONEY_AUDIO_MAP["i am, now that youre here."]='kindwish_03';
+HONEY_AUDIO_MAP["that's a nice thing to say. same to you."]='kindwish_04';
+HONEY_AUDIO_MAP["thats a nice thing to say. same to you."]='kindwish_04';
+HONEY_AUDIO_MAP["thank you. it's a good one so far."]='kindwish_05';
+HONEY_AUDIO_MAP["thank you. its a good one so far."]='kindwish_05';
+HONEY_AUDIO_MAP["well aren't you sweet. i am, thank you."]='kindwish_06';
+HONEY_AUDIO_MAP["well arent you sweet. i am, thank you."]='kindwish_06';
+HONEY_AUDIO_MAP["better now you've stopped by."]='kindwish_07';
+HONEY_AUDIO_MAP["better now youve stopped by."]='kindwish_07';
+HONEY_AUDIO_MAP["that's kind of you to say."]='compliment_01';
+HONEY_AUDIO_MAP["thats kind of you to say."]='compliment_01';
+HONEY_AUDIO_MAP["well now. thank you."]='compliment_02';
+HONEY_AUDIO_MAP["thank you. that means something."]='compliment_03';
+HONEY_AUDIO_MAP["i'll take that. thank you."]='compliment_04';
+HONEY_AUDIO_MAP["ill take that. thank you."]='compliment_04';
+HONEY_AUDIO_MAP["that's a nice thing to hear."]='compliment_05';
+HONEY_AUDIO_MAP["thats a nice thing to hear."]='compliment_05';
+HONEY_AUDIO_MAP["thank you \u2014 i like our talks too."]='compliment_06';
+HONEY_AUDIO_MAP["thank you"]='compliment_06';
+HONEY_AUDIO_MAP["you're kind to say so."]='compliment_07';
+HONEY_AUDIO_MAP["youre kind to say so."]='compliment_07';
+HONEY_AUDIO_MAP["night. sleep well."]='bye_01';
+HONEY_AUDIO_MAP["goodnight. i'll be here tomorrow."]='bye_02';
+HONEY_AUDIO_MAP["goodnight. ill be here tomorrow."]='bye_02';
+HONEY_AUDIO_MAP["sleep well. nothing else needs doing tonight."]='bye_03';
+HONEY_AUDIO_MAP["night then. rest easy."]='bye_04';
+HONEY_AUDIO_MAP["off you go. i'll keep your place."]='bye_05';
+HONEY_AUDIO_MAP["off you go. ill keep your place."]='bye_05';
+HONEY_AUDIO_MAP["goodnight. it was good talking to you."]='bye_06';
+HONEY_AUDIO_MAP["rest well. see you when you're back."]='bye_07';
+HONEY_AUDIO_MAP["rest well. see you when youre back."]='bye_07';
+HONEY_AUDIO_MAP["take care. i'm not going anywhere."]='bye_08';
+HONEY_AUDIO_MAP["take care. im not going anywhere."]='bye_08';
+HONEY_AUDIO_MAP["see you later, then."]='byeday_01';
+HONEY_AUDIO_MAP["off you go. i'll be here."]='byeday_02';
+HONEY_AUDIO_MAP["off you go. ill be here."]='byeday_02';
+HONEY_AUDIO_MAP["take care of yourself out there."]='byeday_03';
+HONEY_AUDIO_MAP["right you are. come back when you like."]='byeday_04';
+HONEY_AUDIO_MAP["bye for now."]='byeday_05';
+HONEY_AUDIO_MAP["go on then. i'll keep your place."]='byeday_06';
+HONEY_AUDIO_MAP["go on then. ill keep your place."]='byeday_06';
 
 function _honeyNorm(t){ return (t||"").toString().trim().toLowerCase().replace(/\s+/g," "); }
 function honeyClipFor(text){
@@ -21372,8 +21460,26 @@ function renderStyleVault(){
       var ns=styleSample(i,true); card.querySelector('.samp .s').textContent=ns.s;
       card.querySelector('.samp .p').textContent=ns.p; };
     card.querySelector('.hr').onclick=(e)=>{ e.stopPropagation();
-      var s=card.querySelector('.samp .s').textContent, p=card.querySelector('.samp .p').textContent;
-      speak(s+'. '+p); };
+      /* ══════════ TWO LINES, ASKED FOR SEPARATELY ═══════════════════════════
+         This said speak(s+'. '+p) — the setup and the punchline glued into one
+         string. Nothing is mapped to that combined text, so honeyClipFor found
+         nothing, and on Honey's own voice a missing clip is silence by design.
+         Every example on this screen was mute.
+
+         They are two separate recordings and have to be asked for as two. The
+         queue plays them in order with its own pause between, which is how a
+         joke should land anyway.
+
+         Turning the speaker on as well: somebody who has just tapped "Hear it"
+         has said what they want, and being ignored because a toggle elsewhere
+         is off would be its own small mystery. */
+      var s=card.querySelector('.samp .s').textContent,
+          p=card.querySelector('.samp .p').textContent;
+      S.speakerOn=true;
+      try{ clearSpeech(); }catch(e2){}
+      enqueueSpeak(s);
+      enqueueSpeak(p);
+    };
     wrap.appendChild(card);
   });
 }
@@ -23838,15 +23944,57 @@ function inSeasonRefresh(){
     });
   }catch(e){}
 
+  /* ══════════ LETTERED SHELVES HERE TOO ═══════════════════════════════════
+     This was two flat runs of tiles, so a good month in a full yard was one
+     long scroll with nothing to hold on to. The index and My Yard both fold
+     into A–E, F–J and so on; there is no reason this screen should be the odd
+     one out, and in high summer it is the longest list of the three.
+
+     Same shelves, same fold, same memory of what you left open. Empty letters
+     are skipped — no point showing U–Z when nothing you have starts with one. */
+  function seasonShelf(key, title, inner, count){
+    var shut=yardShelfShut('sn'+key);
+    return '<div class="yg-shelf'+(shut?' shut':'')+'" id="ygShelf_sn'+key+'">'+
+      '<div class="yg-head" onclick="yardShelfToggle(\'sn'+key+'\')">'+
+        '<span><b>'+title+'</b><span class="yg-n">'+count+'</span></span>'+
+        '<span class="yg-tri">\u25be</span>'+
+      '</div>'+ inner +
+    '</div>';
+  }
+
   var html='';
+
   if(ready.length){
-    html += '<div class="yg-grid">'+ready.map(function(id){ return yardTileHTML(id,'inSeason'); }).join('')+'</div>';
-  }
-  if(mine.length){
+    var bk={};
+    YARD_SHELVES.forEach(function(r){ bk[r.join('')]=[]; });
+    ready.forEach(function(id){ bk[yardShelfOf(BOOK[id].name||'')].push(id); });
     html += '<div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.4px;'+
-            'margin:18px 2px 9px;text-transform:uppercase">From your own yard</div>'+
-            '<div class="yg-grid">'+mine.map(function(e){ return myYardTileHTML(e); }).join('')+'</div>';
+            'margin:6px 2px 9px;text-transform:uppercase">\ud83c\udf3f Ready around here</div>';
+    YARD_SHELVES.forEach(function(r){
+      var k=r.join(''), list=bk[k];
+      if(!list.length) return;
+      html += seasonShelf(k, r[0]+' \u2013 '+r[1],
+        '<div class="yg-grid">'+list.map(function(id){ return yardTileHTML(id,'inSeason'); }).join('')+'</div>',
+        list.length);
+    });
   }
+
+  if(mine.length){
+    mine.sort(function(x,y){ return String(x.name||'').localeCompare(String(y.name||'')); });
+    var mb={};
+    YARD_SHELVES.forEach(function(r){ mb[r.join('')]=[]; });
+    mine.forEach(function(e){ mb[yardShelfOf(e.name||'')].push(e); });
+    html += '<div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.4px;'+
+            'margin:18px 2px 9px;text-transform:uppercase">\ud83c\udf31 From your own yard</div>';
+    YARD_SHELVES.forEach(function(r){
+      var k=r.join(''), list=mb[k];
+      if(!list.length) return;
+      html += seasonShelf('my'+k, r[0]+' \u2013 '+r[1],
+        '<div class="yg-grid">'+list.map(function(e){ return myYardTileHTML(e); }).join('')+'</div>',
+        list.length);
+    });
+  }
+
   if(!html){
     html = '<div style="text-align:center;color:var(--muted);padding:30px">\ud83c\udf31 Quiet season right now. Check back as the months turn.</div>';
   }
