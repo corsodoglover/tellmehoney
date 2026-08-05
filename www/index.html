@@ -2577,7 +2577,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v230</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">six friendly avatars instead of twenty-two ghouls · in season folds into shelves · the joke style examples play</div></div>
+    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v231</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">six friendly avatars instead of twenty-two ghouls · in season folds into shelves · the joke style examples play</div></div>
   </div>
 </section>
 
@@ -26249,7 +26249,13 @@ function yardShow(id){
       '<button onclick="yardToggle(\''+id+'\',this);yardShow(\''+id+'\');openYardIndexRefresh()" style="width:100%;background:'+(have?'rgba(255,255,255,.06)':'linear-gradient(180deg,#e7c873,#caa44a)')+';color:'+(have?'var(--muted)':'#1a1405')+';border:'+(have?'1px solid rgba(255,255,255,.12)':'none')+';border-radius:13px;padding:13px;font-size:14.5px;font-weight:700;cursor:pointer">'+(have?'✓ Growing at my place':'＋ This grows at my place')+'</button>'+
     '</div></div>'+
     plantActionSheet(id, p, {yardToggle:false})+
-    '<div id="plantRecipes_'+id+'"></div>';
+    '<div id="plantRecipes_'+id+'"></div>'+
+    /* THE CARD PEOPLE ACTUALLY REACH. The claim panel went onto
+       rangerShowShelfPlant, which draws the card after an identification. But
+       tapping a plant from the index calls yardShow() on the yardPlant screen,
+       which is a different renderer — so the button existed on a card almost
+       nobody opens. It belongs on both. */
+    claimPanel(id, p);
   card.scrollIntoView({behavior:'smooth',block:'start'});
 }
 /* ── RANGER SETTINGS: where it shows up (chat / home) ── */
