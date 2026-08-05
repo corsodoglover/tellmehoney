@@ -2058,7 +2058,15 @@ textarea{resize:none;line-height:1.4;}
     <p style="font-size:13px;color:var(--muted);margin:0 0 4px">Ready to forage around <b id="seasonMonth" style="color:var(--gold)"></b><span id="seasonWhere"></span>.</p>
     <p id="seasonNote" style="font-size:11.5px;color:var(--muted);margin:0 0 14px;line-height:1.5"></p>
     <div id="seasonList"></div>
-  </div>
+      <!-- The standing line belongs on every screen that leads toward eating
+         something, not only the ones that identify it. In Season is the most
+         actionable page in the app — "here is what is ready near you, today"
+         — and it carried no warning at all. My Yard is where somebody is most
+         confident, which is exactly when people stop checking. The cooking
+         list is the point of decision. All three now say the same thing the
+         other three say. -->
+    <p style="font-size:11px;color:var(--muted);margin:14px 2px 0;line-height:1.5">🌿 Never eat a wild plant based on this app alone — always confirm with a trusted local expert first.</p>
+</div>
 </section>
 
 <section class="screen" id="cookingList">
@@ -2067,7 +2075,15 @@ textarea{resize:none;line-height:1.4;}
   <div class="insights-body scroll" style="padding:16px">
     <p style="font-size:13px;color:var(--muted);margin:0 0 14px">Forage now, cook soon — use these while they're fresh.</p>
     <div id="cookList"></div>
-  </div>
+      <!-- The standing line belongs on every screen that leads toward eating
+         something, not only the ones that identify it. In Season is the most
+         actionable page in the app — "here is what is ready near you, today"
+         — and it carried no warning at all. My Yard is where somebody is most
+         confident, which is exactly when people stop checking. The cooking
+         list is the point of decision. All three now say the same thing the
+         other three say. -->
+    <p style="font-size:11px;color:var(--muted);margin:14px 2px 0;line-height:1.5">🌿 Never eat a wild plant based on this app alone — always confirm with a trusted local expert first.</p>
+</div>
 </section>
 
 <section class="screen" id="myYard">
@@ -2076,7 +2092,15 @@ textarea{resize:none;line-height:1.4;}
   <div class="insights-body scroll" style="padding:16px">
     <p style="font-size:12px;color:var(--muted);margin:0 0 14px;line-height:1.5">Your own finds — your knowledge, your kitchen, your home.</p>
     <div id="myYardList"></div>
-  </div>
+      <!-- The standing line belongs on every screen that leads toward eating
+         something, not only the ones that identify it. In Season is the most
+         actionable page in the app — "here is what is ready near you, today"
+         — and it carried no warning at all. My Yard is where somebody is most
+         confident, which is exactly when people stop checking. The cooking
+         list is the point of decision. All three now say the same thing the
+         other three say. -->
+    <p style="font-size:11px;color:var(--muted);margin:14px 2px 0;line-height:1.5">🌿 Never eat a wild plant based on this app alone — always confirm with a trusted local expert first.</p>
+</div>
 </section>
 
 <div id="printSheet"></div>
@@ -2553,7 +2577,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v219</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">in season folds into shelves like the rest · the joke style examples play · a kind word gets a thank you and nothing more</div></div>
+    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v230</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">six friendly avatars instead of twenty-two ghouls · in season folds into shelves · the joke style examples play</div></div>
   </div>
 </section>
 
@@ -7584,7 +7608,17 @@ function avatarFaceHTML(){
 }
 function avatarEmoji(){ if(S.noFace) return '🍯'; return S.avatar || (S.gender==='F'?'👩':S.gender==='M'?'👨':'🧑'); }
 /* preset avatar faces */
-var AVATARS=["😀","😎","🤓","😈","👹","👺","🤖","👻","💀","🧟","🧛","🧙","🧚","🦊","🐱","🐲","👽","🤡","🥸","🧑‍🎤","👸","🤠"];
+/* ══════════ SIX, NOT TWENTY-TWO ═══════════════════════════════════════════
+   The old row ran to twenty-two and included a devil, an ogre, a goblin, a
+   skull, a zombie, a vampire, an alien and a clown. That is a set for a
+   teenager's gaming profile. On a companion app somebody's mother opens in the
+   morning, it read as clutter at best and as odd at worst — and it took up a
+   whole band of the profile screen doing it.
+
+   Six warm ones now. Enough for somebody who does not want to upload a
+   photograph and plenty of older users will not — without the screen looking
+   like a Halloween menu. A photo still overrides any of them. */
+var AVATARS=["😀","😎","🤠","🐱","🦊","🌻"];
 function buildAvatarRow(){
   var row=document.getElementById('avatarRow'); if(!row)return; row.innerHTML='';
   AVATARS.forEach(em=>{
@@ -21609,12 +21643,26 @@ function bootFallback(){
    Every safety line is quoted/condensed from the book's own NOTE for that plant. */
 var RANGER_ALL_NUTRIENTS=["Vit A","Vit C","B Vits","Vit E","Vit K","Fiber","Calcium","Iron","Omega-3","Antioxidants"];
 var RANGER_PLANTS={
-  e4:{name:"Dandelion & Cat's Ear",
-    alt:["Dandelion", "Cat's Ear", "False Dandelion", "Lion's Tooth", "Blowball"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Taraxacum · Hypochaeris · Asteraceae",leaf:"🌼",img:"images/plants/dandelion.jpg",match:96,edible:true,months:[1,2,3,4,10,11,12],season:"Fall–spring (leaves)",fresh:"Use young leaves within a few days — they wilt fast.",
+  /* HAWKSBEARD ADDED 4 AUGUST. Three yellow-flowered Asteraceae that grow in
+     the same lawns and get eaten the same way. Naming it here means somebody
+     who finds hawksbeard and searches for it lands on a card that mentions it,
+     rather than on nothing.
+
+     The safety line now tells all three apart rather than two. src.tier is
+     still "pending" — this card has not been checked against an institutional
+     source, and it now covers a third genus, so it needs doing before launch
+     rather than after. */
+  e4:{name:"Dandelion, Cat's Ear & Hawksbeard",
+    alt:["Dandelion", "Cat's Ear", "Hawksbeard", "Oriental False Hawksbeard",
+         "False Dandelion", "Lion's Tooth", "Blowball"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension · UF/IFAS",
+         what:"Youngia japonica: young leaves eaten cooked or raw; listed non-toxic. Distinguishing marks from NC State.",
+         url:"https://plants.ces.ncsu.edu/plants/youngia-japonica/",
+         checked:20260804},sci:"Taraxacum · Hypochaeris · Youngia · Asteraceae",leaf:"🌼",img:"images/plants/dandelion.jpg",match:96,edible:true,months:[1,2,3,4,10,11,12],season:"Fall–spring (leaves)",fresh:"Use young leaves within a few days — they wilt fast.",
     nutrients:["Vit A","Vit C","Vit E","Vit K","Calcium","Iron","Antioxidants"],
     uses:[["🥗","Salad"],["🍳","Sautéed"],["🥞","In batter"],["🍯","Flower honey"],["☕","Root coffee"]],
-    safety:"Two look-alikes eaten the same way — both edible, but always confirm before eating. Dandelion stems are unbranched; cat's-ear branch once flowering.",
+    safety:"Three look-alikes that grow together and are eaten the same way — all three edible, but always confirm before eating. Dandelion: ONE flower on a smooth hollow stem that never branches, and no leaves on that stem. Cat's-ear: stem branches, leaves noticeably hairy. Hawksbeard: leaves grow ON the flowering stem, it branches into several small flowers about half an inch across, leaves are hairy and give milky sap when torn. Before any of them flower they are all just a flat rosette and much harder to tell apart — wait for the flower stem if you are not sure.",
     intro:"Well now — you found some dandelion! Free greens, and richer than the bagged spinach at the store.",
     teach:["That weed you keep cussing at? It's a free salad. You're welcome.","Pound for pound the leaves beat spinach — about twice the calcium and three times the vitamin A.","Every part's usable: young leaves sautéed like spinach, yellow petals in pancake batter, roots roasted dark and brewed like coffee.","Taraxacum, aster family — same clan as your grocery lettuce. Blanch older leaves 2–3 minutes to tame the bitter; pickle cat's-ear buds like capers. One of the most widely eaten wild greens on earth."]},
   e1:{name:"Japanese Honeysuckle",
@@ -21634,24 +21682,26 @@ var RANGER_PLANTS={
     intro:"Magnolia! Those big petals pickle up like ginger — a little goes a long way.",
     teach:["Those petals? Southern ginger. Pickle a few and see.","The flavor is strong and gingery — a little goes a long way.","Slice young petals thin and pickle them, or candy them for a sweet spice.","Magnolia is one of the oldest flowering plant lines on earth — beetles pollinated it before bees existed. Petals in moderation; confirm a true magnolia first."]},
   e2:{name:"Confederate Rose & Rose of Sharon",
-    alt:["Confederate Rose", "Rose of Sharon", "Althea", "Cotton Rose", "Rose Mallow", "Changeable Rose", "Dixie Rosemallow"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Hibiscus mutabilis & syriacus · Malvaceae",leaf:"🌺",img:"images/plants/confederate-rose.jpg",match:88,edible:true,months:[9,10,11],season:"Late-season bloom",fresh:"Use flowers the day you pick them.",
+    /* Molokhia folded in 4 August. Corchorus olitorius and Hibiscus mutabilis
+   are both Malvaceae — mallow cousins with the same edible young leaves and
+   the same slight thickening in a pot. One card, both searchable. */
+    alt:["Confederate Rose", "Rose of Sharon", "Althea", "Cotton Rose",
+         "Rose Mallow", "Changeable Rose", "Dixie Rosemallow",
+         "Molokhia", "Jute Mallow", "Egyptian Spinach", "Jew's Mallow", "Nalta Jute"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Hibiscus mutabilis · H. syriacus · Corchorus olitorius · Malvaceae",leaf:"🌺",img:"images/plants/confederate-rose.jpg",match:88,edible:true,months:[9,10,11],season:"Late-season bloom",fresh:"Use flowers the day you pick them.",
     nutrients:["Vit C","Antioxidants"],
     uses:[["🍵","Tea"],["🌸","Fresh"],["🥗","Garnish"]],
     safety:"A mallow-family flower — a cousin of common mallow and molokhia, but a different plant. Confirm the species before eating.",
     intro:"Confederate rose — the bloom that opens white and blushes to pink by evening. A gentle mallow you can steep.",
     teach:["The flower that changes color through the day — white to deep pink by dusk.","A hibiscus cousin, so the petals make a mild, pretty tea.","Steep the fresh blooms for a soft floral tea or use them as a garnish.","Hibiscus mutabilis — 'mutabilis' means changeable, for those color-shifting petals. Same mallow family as molokhia and common mallow, but its own plant."]},
-  e3:{name:"Molokhia (Jute Mallow)",
-    alt:["Molokhia", "Jute Mallow", "Egyptian Spinach", "Jew's Mallow", "Nalta Jute"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Corchorus olitorius · Malvaceae",leaf:"🌿",img:"images/plants/molokhia.jpg",match:90,edible:true,months:[6,7,8,9],season:"Warm season",fresh:"Use leaves fresh, or freeze minced like the groceries sell it.",
-    nutrients:["Vit A","Vit C","Vit K","Calcium","Iron","Fiber","Antioxidants"],
-    uses:[["🍲","Stew"],["🥣","Soup"],["🍚","Over rice"]],
-    safety:"This is molokhia's true crown — don't confuse it with the ornamental Confederate Rose Mallow; they're family cousins but different plants.",
-    intro:"Molokhia — the 'food of kings.' Cooked down into a silky green stew over rice, it's a treasure.",
-    teach:["They call it the food of kings — an ancient green cooked into a silky stew.","Loaded with vitamin A, C, K, calcium and iron — a real powerhouse leaf.","Simmer the minced leaves into the classic Egyptian soup and ladle over rice.","Corchorus olitorius — jute mallow, eaten across the Middle East and Africa for millennia. The cooked leaves turn luxuriously silky, which is the whole point."]},
-  e27:{name:"Pink Sorrel",
-    alt:["Pink Sorrel", "Wood Sorrel", "Pink Woodsorrel", "Windowbox Woodsorrel", "Sourgrass"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Oxalis sp. · Oxalidaceae",leaf:"🌷",img:"images/plants/pink-sorrel.jpg",match:92,edible:true,months:[3,4,5,6,7,8],season:"Spring–summer",fresh:"Best eaten fresh — bright and lemony.",
+  /* e3 removed 4 August — Molokhia folded into the Rose Mallow card. */
+  e27:{/* Yellow wood sorrel and pink sorrel are the same genus, look the same,
+   taste the same and are eaten the same way — one card covers both, with
+   the flower colour as the only thing to tell them apart. */
+  name:"Wood & Pink Sorrel",
+    alt:["Wood Sorrel", "Pink Sorrel", "Yellow Woodsorrel", "Pink Woodsorrel",
+         "Windowbox Woodsorrel", "Sourgrass", "Shamrock"], altOK:false,
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Oxalis stricta · O. debilis · Oxalidaceae",leaf:"🌷",img:"images/plants/pink-sorrel.jpg",match:92,edible:true,months:[3,4,5,6,7,8],season:"Spring–summer",fresh:"Best eaten fresh — bright and lemony.",
     nutrients:["Vit C","Antioxidants"],
     uses:[["🥗","Salad"],["🍋","Sour garnish"],["🍵","Tea"]],
     safety:"The sour taste is oxalic acid — delicious in small amounts, but eat in moderation. Large quantities of oxalates aren't good for the kidneys.",
@@ -21667,7 +21717,7 @@ var RANGER_PLANTS={
     teach:["The one wild berry everybody already trusts. Sun-warm off the cane is the best.","Loaded with vitamin C and antioxidants — and free by the fencerow.","Fresh by the handful, or cooked into pie and jam; the leaves make a traditional tea.","Rubus argutus — the leaf tea is an old folk remedy, but tannins can turn a sensitive stomach, so take it with food."]},
   e20:{name:"Muscadine Grape",
     alt:["Muscadine", "Scuppernong", "Southern Fox Grape", "Bullace", "Muscadine Grape"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Vitis rotundifolia · Vitaceae",leaf:"🍇",img:"",match:90,edible:true,months:[8,9,10],season:"Late summer–fall fruit",fresh:"Eat ripe grapes fresh; use leaves spring–summer.",
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Vitis rotundifolia · Vitaceae",leaf:"🍇",img:"images/plants/muscadine-grape.jpg",img:"",match:90,edible:true,months:[8,9,10],season:"Late summer–fall fruit",fresh:"Eat ripe grapes fresh; use leaves spring–summer.",
     nutrients:["Vit C","Antioxidants","Fiber"],
     uses:[["🍇","Fresh"],["🥤","Juice"],["🍃","Stuffed leaves"]],
     safety:"Confirm vines are unsprayed before using leaves or fruit.",
@@ -21675,7 +21725,7 @@ var RANGER_PLANTS={
     teach:["The thick-skinned Southern grape — pop the sweet pulp right out of the skin.","Rich in antioxidants, especially in those famous skins.","Fresh grapes, homemade juice, and young leaves blanched for stuffing (dolmas).","Vitis rotundifolia — a true native grape. Just be sure the vine's unsprayed before you pick leaves or fruit."]},
   e7:{name:"Fig",
     alt:["Fig", "Common Fig", "Brown Turkey Fig", "Celeste Fig", "Edible Fig"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Ficus carica · Moraceae",leaf:"🌿",img:"",match:93,edible:true,months:[7,8,9],season:"Summer into fall",fresh:"Pick only when fully soft and drooping — they don't ripen off the tree.",
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Ficus carica · Moraceae",leaf:"🌿",img:"images/plants/fig.jpg",img:"",match:93,edible:true,months:[7,8,9],season:"Summer into fall",fresh:"Pick only when fully soft and drooping — they don't ripen off the tree.",
     nutrients:["Fiber","Calcium","Antioxidants"],
     uses:[["🍯","Honey-roasted"],["🥫","Jam"],["🧀","With cheese"]],
     safety:"The milky sap from leaves and unripe figs can irritate skin and cause sun-sensitivity — handle with care when harvesting.",
@@ -21683,7 +21733,7 @@ var RANGER_PLANTS={
     teach:["Pick them soft and drooping — a fig won't ripen once it's off the tree.","Sweet, full of fiber, wonderful with cheese or yogurt.","Eat fresh, roast with honey 15 minutes, or simmer into a glossy jam.","Ficus carica — one of the oldest cultivated fruits on earth, in Egyptian tomb art. Even the leaves flavor cream with a coconut-vanilla note; just mind the sap."]},
   e13:{name:"Daylily",
     alt:["Daylily", "Orange Daylily", "Tawny Daylily", "Ditch Lily", "Tiger Daylily"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Hemerocallis fulva · Asphodelaceae",leaf:"🧡",img:"",match:88,edible:true,months:[3,4,5,6],season:"Shoots spring; buds early summer",fresh:"Use shoots and buds the day you pick.",
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Hemerocallis fulva · Asphodelaceae",leaf:"🧡",img:"images/plants/daylily.jpg",img:"",match:88,edible:true,months:[3,4,5,6],season:"Shoots spring; buds early summer",fresh:"Use shoots and buds the day you pick.",
     nutrients:["Vit A","Vit C","Antioxidants"],
     uses:[["🥢","Stir-fry buds"],["🥗","Petals in salad"],["🌱","Spring shoots"]],
     safety:"Eat the true orange Hemerocallis fulva only — never true lilies (Lilium), which are toxic. Introduce a small amount first; some people are sensitive.",
@@ -21755,7 +21805,7 @@ var RANGER_PLANTS={
     teach:["Those little pom-pom flowers make a sweet, honeyish tea.","A gentle, nutritious bloom that pollinators and people both love.","Steep dried blossoms for tea, scatter fresh in salad, or dry and grind into flour.","Trifolium — a nitrogen-fixing legume that feeds the soil too. Lovely in moderation; a big raw bowlful can bloat you, so cook or dry it for quantity."]},
   e23:{name:"Goldenrod",
     alt:["Goldenrod", "Sweet Goldenrod", "Anise-scented Goldenrod", "Blue Mountain Tea", "Woundwort"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Solidago spp. · Asteraceae",leaf:"🌼",img:"",match:86,edible:true,months:[8,9,10],season:"Blooms late summer–fall",fresh:"Use flowers fresh, or dry for 'Liberty Tea.'",
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Solidago spp. · Asteraceae",leaf:"🌼",img:"images/plants/goldenrod.jpg",img:"",match:86,edible:true,months:[8,9,10],season:"Blooms late summer–fall",fresh:"Use flowers fresh, or dry for 'Liberty Tea.'",
     nutrients:["Antioxidants","Vit C"],
     uses:[["🍵","Liberty Tea"],["🌼","Garnish"]],
     safety:"Goldenrod does NOT cause hay fever (that's ragweed nearby). Traditional uses are history; confirm the plant and use flowers in moderation.",
@@ -21770,11 +21820,17 @@ var RANGER_PLANTS={
     intro:"Kudzu — 'the vine that ate the South.' Turns out the whole thing's edible, right down to a grape-jelly flower.",
     teach:["The vine that ate the South — and you can eat it right back.","Young leaves cook like spinach; the purple flowers smell of grape.","Sauté the shoots, make jelly from the flowers, use the root starch to thicken.","Pueraria montana — a nitrogen-fixing legume brought over for erosion control. Eat leaves, shoots, flowers, roots; leave the woody vine, seeds, and pods."]},
   e26:{name:"Dollarweed",
-    alt:["Dollarweed", "Pennywort", "Water Pennywort", "Marsh Pennywort", "Manyflower Marshpennywort"], altOK:false,
+    /* Coinleaf folded in here 4 August. Gotu kola proper is an Asian plant and
+   does not grow in a Carolina yard; what does is dollarweed and its cousin
+   coinleaf, both pennyworts in the carrot family, both in the same wet
+   ground. One card, with the stalk-position tell in the safety line. */
+    alt:["Dollarweed", "Pennywort", "Water Pennywort", "Marsh Pennywort",
+         "Manyflower Marshpennywort", "Coinleaf", "Centella", "Gotu Kola",
+         "Asiatic Pennywort", "Indian Pennywort"], altOK:false,
     src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Hydrocotyle umbellata · Apiaceae",leaf:"🟢",img:"images/plants/dollarweed.jpg",match:87,edible:true,months:[4,5,6,7,8,9,10],season:"Warm season leaves",fresh:"Use the round leaves fresh — they're crisp and mild.",
     nutrients:["Vit C","Antioxidants"],
     uses:[["🥗","Salad"],["🥪","Sandwich green"],["🍵","Tea"]],
-    safety:"Confirm the carrot-family pennywort ID (round scalloped leaf, central stem, white flower). Harvest only from untreated, unsprayed ground — it grows in wet spots.",
+    safety:"Two cousins on one card, both carrot-family pennyworts in the same wet ground, both eaten the same way. Dollarweed: the leaf STALK JOINS IN THE MIDDLE of a round leaf, like a tiny lily pad. Coinleaf: the stalk joins at the EDGE and the leaf is kidney shaped, often toothed. Coinleaf is the American kin of the herb Asia calls gotu kola — true gotu kola (Centella asiatica) does not grow wild here, and coinleaf carries less of what that herb is prized for, so treat it as a good green rather than a medicine. Harvest only from untreated, unsprayed ground.",
     intro:"Dollarweed — that round-leaf lawn 'weed' by the wet spots. Crisp, mild, and a perfectly good salad green.",
     teach:["That round silver-dollar lawn weed? Crisp and mild, like a little salad coin.","A hydrating green with a light, fresh, parsley-ish snap.","Toss the round leaves into salad, tuck into a sandwich, or steep for tea.","Hydrocotyle umbellata — a carrot-family pennywort, cousin to gotu kola. The leaf stem joins in the middle like an umbrella. Only pick from clean, unsprayed ground."]},
   e16:{name:"Creeping Cucumber",
@@ -21787,7 +21843,7 @@ var RANGER_PLANTS={
     teach:["Those tiny watermelon-looking fruits taste like a little cucumber — green ones only.","A fun, crisp nibble with some vitamin C, straight off the vine.","Eat green fruits fresh, sliced in salad, or quick-pickled like tiny gherkins.","Melothria pendula — the single most important rule: GREEN good, BLACK bad. The ripe black fruits are a powerful laxative, so only ever eat the small green ones."]},
   e17:{name:"Mugwort",
     alt:["Mugwort", "Common Wormwood", "Felon Herb", "Chrysanthemum Weed", "Wild Wormwood"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Artemisia vulgaris · Asteraceae",leaf:"🌿",img:"",match:83,edible:true,months:[5,6,7,8,9],season:"Leaves & tops summer–fall",fresh:"Use young leaves fresh, or dry the tops.",
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Artemisia vulgaris · Asteraceae",leaf:"🌿",img:"images/plants/mugwort.jpg",img:"",match:83,edible:true,months:[5,6,7,8,9],season:"Leaves & tops summer–fall",fresh:"Use young leaves fresh, or dry the tops.",
     nutrients:["Antioxidants","Vit A"],
     uses:[["🍚","Rice & mochi"],["🍲","Bitter herb"],["🍵","Tea"]],
     safety:"Use sparingly as a bitter seasoning. Do NOT use during pregnancy. Traditional uses are folklore, not medical advice.",
@@ -21809,14 +21865,18 @@ var RANGER_PLANTS={
     safety:"Ripe BLACK berries only, and cook them — raw berries hold oxalate crystals that irritate the throat. Do the oxalate prep first; start with just 5–10 berries.",
     intro:"Peppervine — a grape cousin that sprawls everywhere. Cook the black berries down (there's a prep step) and it's genuinely useful.",
     teach:["A grape relative that's everywhere yet overlooked — young leaves and black berries both cook up.","Low-calorie leaves rich in vitamin K; berries hold the same compound as elderberry.","Oxalate prep first: boil, smash, strain, chill the juice 24 hrs, pour off the clear top — then jam it or stew the leaves.","Nekemias arborea — the berries carry calcium-oxalate crystals raw, so always cook and prep them. One forager kept to 5–10 berries at a time until she knew how they sat."]},
-  g1:{name:"Gotu Kola",
-    alt:["Gotu Kola", "Asiatic Pennywort", "Indian Pennywort", "Centella", "Brahmi (Centella)"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Centella asiatica · Apiaceae",leaf:"🍃",img:"images/plants/gotu-kola.jpg",match:84,edible:true,months:[4,5,6,7,8,9,10],season:"Warm season leaves",fresh:"Use the round leaves fresh in salads or juice.",
-    nutrients:["Vit C","Antioxidants","B Vits"],
-    uses:[["🥗","Salad"],["🥤","Green juice"],["🍵","Tea"]],
-    safety:"Confirm the carrot-family ID (round scalloped leaf, creeping stem). A close look-alike of dollarweed. Harvest only from clean, unsprayed ground.",
-    intro:"Gotu kola — the little fan-leaf 'herb of longevity.' A gentle green for salads, juice, or tea.",
-    teach:["The round fan-leaf herb long called a plant of longevity and clear thinking.","A mild green with vitamin C and antioxidants, grown across Asia for centuries.","Eat leaves fresh in salad, blend into a green juice, or steep for a grassy tea.","Centella asiatica — a carrot-family creeper and dollarweed's cousin. Prized in Ayurveda and Asian cooking; just confirm the ID and pick from unsprayed ground."]},
+  /* ══════════ FOLDED INTO THE PENNYWORT CARD, 4 AUGUST ═══════════════════
+     True gotu kola is Centella asiatica, and the Flora of the Southeastern
+     United States is plain that it "otherwise has an Old World distribution" —
+     it does not grow wild here. What grows in a Carolina yard is Centella
+     erecta, its American twin, called coinleaf.
+
+     A foraging app should show what is in the yard. So the standalone gotu
+     kola card is gone and coinleaf sits on the pennywort card, where somebody
+     will actually meet it — the two are cousins in the carrot family and grow
+     in the same wet ground. Gotu kola stays searchable, because that is the
+     name people have heard of, and it lands them on the right card. */
+  /* g1 removed 4 August — Coinleaf/Gotu Kola — folded into Dollarweed. */
   /* ── KNOWN, NOT EATEN — routed away from the edible flow ── */
 };
 /* ════════════════ REAL FOOD RANGER — logic ════════════════ */
@@ -22101,6 +22161,9 @@ function stageIdentify(){
     // Keep the staged photos. If the answer's wrong, they can add an angle and
     // try again without starting over — and we hold the other candidates too.
     _lastResults = (j && j.results) ? j.results : [];
+    /* If they came here from a card saying "I have this one", the answer goes
+       to the claim sheet rather than the ordinary result screen. */
+    try{ if(_claimFor && claimFinish(_lastResults)) return; }catch(e){}
     // PlantNet ships reference photos of the species — far better than an emoji
     // when we have no picture of our own for that plant.
     _lastRefImg    = (_lastResults[0] && _lastResults[0].refImage)  ? _lastResults[0].refImage  : '';
@@ -23208,6 +23271,14 @@ function rangerYardSave(){
 
   var entry={id:'y'+Date.now(),name:name.trim(),note:note.trim(),season:season.trim(),
     months:seasonToMonths(season),
+    /* Confirmed by Pl@ntNet, or made on their own say-so. Kept on the entry so
+       the card can say which it is for as long as it exists. */
+    claim:(typeof _claimMark!=='undefined' && _claimMark) ? _claimMark : null,
+    /* Not asked when the card is made. Adding a plant should take one tap and
+       show you the card, not hand you a form — the decision about eating it can
+       be made later, on the card itself, which is where somebody is actually
+       thinking about it. Defaults to edible; the toggle on the card changes it. */
+    edible:true,
     photo:photo, photos:shots, sci:sci, family:fam, genus:gen, pics:pics,
     added:Date.now(),mine:true,nutrients:{},recipes:[]};
   rangerMyYardArr().push(entry);
@@ -23216,6 +23287,7 @@ function rangerYardSave(){
   /* The plant is saved and its picture came with it - and the shot is in the
      phone's own photo library too. Leaving the staging tray full meant the next
      identification silently inherited the last one's pictures. */
+  try{ _claimMark=null; }catch(e){}
   try{ _stage=[]; _yardPendPhoto=''; _yardPendName=''; _yardPendSci=''; _yardPendPics=null;
        if(typeof stageRender==='function') stageRender(); }catch(e){}
   _yardPendName=""; _yardPendPhoto="";
@@ -23716,6 +23788,24 @@ function rangerMyYardCard(e){
 /* A plant somebody added themselves. Same frame as the book tiles - the photo
    fills a 3:2 crop instead of floating in a wide beige box with dead space
    either side, which is what portrait phone photos did to the old rows. */
+/* ══════════ WHICH KIND OF CARD IS THIS ═══════════════════════════════════════
+   A card confirmed by Pl@ntNet and a card somebody made on their own say-so
+   must never look alike. Not on the day — anybody remembers what they just did
+   — but in two years, when they are showing a grandchild and cannot recall
+   whether it was checked. The badge is small and it is permanent. */
+function claimBadge(e){
+  var c = e && e.claim;
+  if(!c) return '';
+  if(c.by==='plantnet'){
+    return '<span style="display:inline-block;background:rgba(92,191,152,.22);color:#2f6b52;'+
+      'font-size:9px;font-weight:700;letter-spacing:.3px;padding:2px 7px;border-radius:999px;'+
+      'margin-top:3px">\u2713 CONFIRMED'+(c.score? ' '+c.score+'%':'')+'</span>';
+  }
+  return '<span style="display:inline-block;background:rgba(160,140,80,.18);color:#7a6a3a;'+
+    'font-size:9px;font-weight:700;letter-spacing:.3px;padding:2px 7px;border-radius:999px;'+
+    'margin-top:3px">YOUR OWN CALL</span>';
+}
+
 function myYardTileHTML(e){
   var nm=esc(e.name||'My plant');
   /* Tile shows the one name, same as the book tiles. Everything else waits
@@ -23727,7 +23817,7 @@ function myYardTileHTML(e){
   return '<div class="yg-tile">'+
     '<button class="yg-open" onclick="openMyYardPlant(\''+e.id+'\')">'+
       pic+
-      '<div class="yg-txt"><b>'+nm+'</b><small>'+sub+'</small></div>'+
+      '<div class="yg-txt"><b>'+nm+'</b><small>'+sub+'</small>'+claimBadge(e)+'</div>'+
     '</button>'+
   '</div>';
 }
@@ -25213,8 +25303,163 @@ function rangerShowShelfPlant(id, shelf, top){
       '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:9px 11px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11px;color:#ffcf6b;line-height:1.45">'+p.safety+'</p></div>'+
       '<button class="home-half" style="width:100%" id="shYard_'+id+'" onclick="shelfYardToggle(\''+id+'\')">'+(yardHas(shelf==='garden'?('gd:'+id):id)?'✓ Growing at my place':'🌱 This grows in my yard')+'</button>'+
       plantActionSheet(id, p, {yardToggle:false})+'<div id="plantRecipes_'+id+'"></div>'+
+      claimPanel(id, p)+
       (_stage.length? rangerRetryPanel() : '')+
     '</div></div>';
+}
+
+/* ══════════ WHAT HAPPENS AFTER THE PHOTOGRAPH ═══════════════════════════════
+   Three outcomes, and the person is told plainly which one they got.
+
+   AGREED     Pl@ntNet is confident AND the species is one this card lists.
+              A card is made, marked confirmed, with the score recorded.
+   UNSURE     It answered, but weakly, or with something else entirely. The
+              card is still offered — on their own say-so, marked as such, and
+              with what Pl@ntNet actually saw shown so they can judge.
+   NOTHING    No answer at all. Same offer, same marking.
+
+   The refusal is never a dead end. Somebody standing in their own yard looking
+   at their own plant knows more than an identifier does, and telling them no
+   would be both wrong and patronising. What the app owes them is honesty about
+   which of the two kinds of card they are holding. */
+function claimFinish(results){
+  var id=_claimFor; _claimFor=null;
+  if(!id) return false;
+  var BOOK=yardBook(); var card=BOOK[id];
+  if(!card) return false;
+
+  var conf = (typeof rangerConfidence==='function') ? rangerConfidence(results) : {level:'unsure',score:0};
+  var matched = claimMatches(card, results);
+  var agreed = matched && (conf.level==='sure' || conf.level==='likely');
+
+  var saw='';
+  try{
+    var t=results && results[0];
+    if(t) saw = (t.commonNames&&t.commonNames[0]) ? t.commonNames[0] : (t.scientificName||'');
+  }catch(e){}
+
+  var old=document.getElementById('claimBox'); if(old) old.remove();
+  var d=document.createElement('div');
+  d.id='claimBox'; d.className='rec-overlay'; d.style.display='flex';
+
+  var head = agreed
+    ? '\u2705 Pl@ntNet agrees'
+    : (saw ? '\ud83e\udd14 Pl@ntNet saw something else' : '\ud83e\udd14 Pl@ntNet couldn\'t tell');
+
+  var body = agreed
+    ? '<p class="rec-hint" style="margin:0 0 12px">It read this as <b>'+esc(saw||card.name)+'</b>'+
+        (conf.score? ' at '+Math.round(conf.score)+'%' : '')+
+        ', which is on this card. Your card will be marked <b>confirmed</b>.</p>'
+    : '<p class="rec-hint" style="margin:0 0 12px">'+
+        (saw ? 'It read this as <b>'+esc(saw)+'</b>'+(conf.score? ' at '+Math.round(conf.score)+'%' : '')+
+               ', which is not on this card. '
+             : 'It couldn\'t make it out \u2014 that happens with a leaf on its own, or poor light. ')+
+        'You can still make the card. It will say it was your own call rather than confirmed, '+
+        'because that is the honest thing for it to say.</p>';
+
+  d.innerHTML='<div class="rec-sheet">'+
+    '<div class="rec-head"><span>'+head+'</span>'+
+      '<button class="rec-x" onclick="claimCancel()">\u2715</button></div>'+
+    body+
+    '<button class="home-half" style="width:100%;margin-bottom:8px;background:'+
+      (agreed?'linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;font-weight:700':'rgba(255,255,255,.07)')+'" '+
+      'onclick="claimMake(\''+id+'\','+(agreed?'true':'false')+','+Math.round(conf.score||0)+')">'+
+      (agreed ? '\ud83c\udf31 Make my confirmed card' : '\ud83c\udf31 Make it my own card anyway')+'</button>'+
+    '<button class="home-half" style="width:100%" onclick="claimCancel()">Not now</button>'+
+  '</div>';
+  document.body.appendChild(d);
+  return true;
+}
+
+function claimCancel(){
+  var b=document.getElementById('claimBox'); if(b) b.remove();
+  _claimFor=null;
+}
+
+function claimMake(id, confirmed, score){
+  claimCancel();
+  var BOOK=yardBook(); var card=BOOK[id]; if(!card) return;
+  var photo='';
+  try{ photo = (_stage.length && _stage[0].data) ? _stage[0].data : (_rangerLastPhoto||''); }catch(e){}
+
+  _yardPendName = card.name || 'My plant';
+  _yardPendPhoto = photo;
+  try{ _yardPendSci = String(card.sci||'').split('\u00b7')[0].trim(); }catch(e){}
+
+  /* Carried onto the entry so the card can show, for as long as it exists,
+     which of the two kinds it is. */
+  _claimMark = confirmed
+    ? { by:'plantnet', score:score||0, at:Date.now(), from:id }
+    : { by:'you', score:0, at:Date.now(), from:id };
+
+  try{
+    if(typeof go==='function') go('plantHub');
+    rangerYardForm(encodeURIComponent(_yardPendName||''), encodeURIComponent(_yardPendPhoto||''));
+  }catch(e){ try{ openMyYard(); }catch(e2){} }
+}
+var _claimMark = null;
+
+/* ══════════ MAKING IT YOUR OWN ══════════════════════════════════════════════
+   This sits at the END of the card, below the safety note, and that placement
+   is the point. The tile tick up on the index is a sweep — running down a list
+   saying "yes, that grows here". This is a commitment, and it should only be
+   offered to somebody who has read what is above it: the lookalikes, the tell,
+   the warning. Somebody tapping through a grid has read none of that.
+
+   What happens next matters more than the button. The book cards are ours and
+   stay ours — nothing a person photographs is ever written into them. What
+   they get is a NEW card of their own, and how it is marked depends on what
+   Pl@ntNet said:
+
+     confirmed   Pl@ntNet agreed, and on a species this card actually lists
+     your own    they made it anyway, on their own say-so
+
+   Both are allowed. Confirmation cannot be forced and it would be dishonest to
+   pretend otherwise — but the two must never look alike, so that months later
+   nobody mistakes their own guess for a verification. */
+function claimPanel(id, p){
+  return '<div style="border-top:1px solid var(--line);margin-top:16px;padding-top:14px">'+
+    '<button class="home-half" style="width:100%;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;font-weight:700" '+
+      'onclick="claimStart(\''+id+'\')">\ud83d\udcf7 I have this one \u2014 let me photograph it</button>'+
+    '<p style="font-size:11px;color:var(--muted);margin:8px 2px 0;line-height:1.5">'+
+      'Take a picture and if Pl@ntNet agrees it becomes your own card, marked confirmed. '+
+      'If it doesn\'t agree you can still make the card yourself \u2014 it will just say so. '+
+      'Confirmation comes from the source and can\'t be forced.'+
+    '</p></div>';
+}
+
+/* Remember which card they were reading when they tapped, so the photograph
+   can be checked against THAT card rather than against whatever the identifier
+   happens to return. */
+var _claimFor = null;
+function claimStart(id){
+  _claimFor = id;
+  try{ openPlantCamera(); }
+  catch(e){ toast("Couldn't open the camera just now."); _claimFor=null; }
+}
+
+/* Does what Pl@ntNet returned match the card they were reading? The merged
+   cards carry several species — Rose of Sharon's holds Hibiscus mutabilis,
+   H. syriacus and Corchorus olitorius, and the dandelion card covers three
+   genera — so any of the names on the card counts, not only the first. */
+function claimMatches(card, results){
+  if(!card || !results || !results.length) return false;
+  var names=[];
+  try{
+    String(card.sci||'').split('\u00b7').forEach(function(x){
+      x=x.trim().toLowerCase();
+      if(x && x.indexOf('aceae')<0) names.push(x);      // skip the family
+    });
+    (card.alt||[]).forEach(function(a){ names.push(String(a).toLowerCase()); });
+    names.push(String(card.name||'').toLowerCase());
+  }catch(e){}
+  var got=String((results[0]&&results[0].scientificName)||'').toLowerCase();
+  var common=((results[0]&&results[0].commonNames)||[]).map(function(c){ return String(c).toLowerCase(); });
+  return names.some(function(n){
+    if(!n) return false;
+    if(got.indexOf(n)>=0 || n.indexOf(got)>=0) return true;
+    return common.some(function(c){ return c.indexOf(n)>=0 || n.indexOf(c)>=0; });
+  });
 }
 function shelfYardToggle(id){
   var key = (typeof GARDEN!=='undefined' && GARDEN[id]) ? ('gd:'+id) : id;
@@ -25404,16 +25649,7 @@ var BACKYARD={
     wow:"This sidewalk-crack \u201cweed\u201d has more omega-3s than any other leafy green ever tested. Gardeners pull it and buy fish oil — the joke writes itself.",
     spot:"A ground-hugging succulent with reddish stems and fat, smooth, paddle-shaped leaves — like a tiny jade plant. Loves heat and bare dirt.",
     eat:"Stems and leaves raw — crunchy, lemony, a little salty. Mexicans cook it as verdolagas with pork."},
-  b6:{name:"Wood Sorrel",sci:"Oxalis stricta · Oxalidaceae",leaf:"💛",img:"images/plants/wood-sorrel.jpg",
-    season:"Spring through fall",fresh:"Same day",
-    nutrients:["Vit C","Vit A","Antioxidants"],
-    uses:[["🥗","Garnish"],["🍋","Wild lemonade"],["🐟","With fish"]],
-    alt:["Yellow Wood Sorrel", "Wood Sorrel", "Sourgrass", "Lemon Clover", "Sheep Sorrel (misapplied)"], altOK:false,
-    src:{tier:"lit", nut:"Published food-composition research on Oxalis species", id:""},
-    safety:"That sour comes from oxalic acid — same as spinach. A garnish and a nibble, not a bowlful, especially if kidneys are a concern.",
-    wow:"Kids in every generation discover this one on their own and name it \u201csour grass.\u201d That lemony zing is real vitamin C — sailors' kin used it against scurvy.",
-    spot:"Looks like clover but isn't — the leaflets are perfect hearts folded down the middle, flowers are yellow with five petals, and the seed pods look like tiny okra.",
-    eat:"Leaves, flowers, and those little pods — a sour sparkle on salads and fish, or steeped into \u201clemonade.\u201d"},
+  /* b6 removed 4 August — Wood Sorrel — merged into the Pink Sorrel card. */
   b7:{name:"Henbit Deadnettle",sci:"Lamium amplexicaule & purpureum · Lamiaceae",leaf:"💜",img:"images/plants/henbit-deadnettle.jpg",
     season:"Early spring",fresh:"Same day",
     nutrients:["Vit C","Iron","Fiber","Antioxidants"],
