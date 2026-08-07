@@ -2605,7 +2605,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v253</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">she stays in the speaker after the microphone has run · hands-free or read-aloud or type · tap a premium voice and actually hear that one · the keyboard stays down when you come into the chat</div></div>
+    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v256</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">one big picture on every plant card · every photograph loads, whatever the camera named it · add a picture from your phone, not just the camera · hands-free or read-aloud or type</div></div>
   </div>
 </section>
 
@@ -8279,7 +8279,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v253";
+window.HONEY_BUILD = "v256";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -22413,7 +22413,7 @@ var RANGER_PLANTS={
     teach:["The one wild berry everybody already trusts. Sun-warm off the cane is the best.","Loaded with vitamin C and antioxidants — and free by the fencerow.","Fresh by the handful, or cooked into pie and jam; the leaves make a traditional tea.","Rubus argutus — the leaf tea is an old folk remedy, but tannins can turn a sensitive stomach, so take it with food."]},
   e20:{name:"Muscadine Grape",
     alt:["Muscadine", "Scuppernong", "Southern Fox Grape", "Bullace", "Muscadine Grape"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Vitis rotundifolia · Vitaceae",leaf:"🍇",img:"images/plants/muscadine-grape.jpg",img:"",match:90,edible:true,months:[8,9,10],season:"Late summer–fall fruit",fresh:"Eat ripe grapes fresh; use leaves spring–summer.",
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Vitis rotundifolia · Vitaceae",leaf:"🍇",img:"images/plants/muscadine-grape.jpg",match:90,edible:true,months:[8,9,10],season:"Late summer–fall fruit",fresh:"Eat ripe grapes fresh; use leaves spring–summer.",
     nutrients:["Vit C","Antioxidants","Fiber"],
     uses:[["🍇","Fresh"],["🥤","Juice"],["🍃","Stuffed leaves"]],
     safety:"Confirm vines are unsprayed before using leaves or fruit.",
@@ -22421,7 +22421,7 @@ var RANGER_PLANTS={
     teach:["The thick-skinned Southern grape — pop the sweet pulp right out of the skin.","Rich in antioxidants, especially in those famous skins.","Fresh grapes, homemade juice, and young leaves blanched for stuffing (dolmas).","Vitis rotundifolia — a true native grape. Just be sure the vine's unsprayed before you pick leaves or fruit."]},
   e7:{name:"Fig",
     alt:["Fig", "Common Fig", "Brown Turkey Fig", "Celeste Fig", "Edible Fig"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Ficus carica · Moraceae",leaf:"🌿",img:"images/plants/fig.jpg",img:"",match:93,edible:true,months:[7,8,9],season:"Summer into fall",fresh:"Pick only when fully soft and drooping — they don't ripen off the tree.",
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Ficus carica · Moraceae",leaf:"🌿",img:"images/plants/fig.jpg",match:93,edible:true,months:[7,8,9],season:"Summer into fall",fresh:"Pick only when fully soft and drooping — they don't ripen off the tree.",
     nutrients:["Fiber","Calcium","Antioxidants"],
     uses:[["🍯","Honey-roasted"],["🥫","Jam"],["🧀","With cheese"]],
     safety:"The milky sap from leaves and unripe figs can irritate skin and cause sun-sensitivity — handle with care when harvesting.",
@@ -22429,7 +22429,7 @@ var RANGER_PLANTS={
     teach:["Pick them soft and drooping — a fig won't ripen once it's off the tree.","Sweet, full of fiber, wonderful with cheese or yogurt.","Eat fresh, roast with honey 15 minutes, or simmer into a glossy jam.","Ficus carica — one of the oldest cultivated fruits on earth, in Egyptian tomb art. Even the leaves flavor cream with a coconut-vanilla note; just mind the sap."]},
   e13:{name:"Daylily",
     alt:["Daylily", "Orange Daylily", "Tawny Daylily", "Ditch Lily", "Tiger Daylily"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Hemerocallis fulva · Asphodelaceae",leaf:"🧡",img:"images/plants/daylily.jpg",img:"",match:88,edible:true,months:[3,4,5,6],season:"Shoots spring; buds early summer",fresh:"Use shoots and buds the day you pick.",
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Hemerocallis fulva · Asphodelaceae",leaf:"🧡",img:"images/plants/daylily.jpg",match:88,edible:true,months:[3,4,5,6],season:"Shoots spring; buds early summer",fresh:"Use shoots and buds the day you pick.",
     nutrients:["Vit A","Vit C","Antioxidants"],
     uses:[["🥢","Stir-fry buds"],["🥗","Petals in salad"],["🌱","Spring shoots"]],
     safety:"Eat the true orange Hemerocallis fulva only — never true lilies (Lilium), which are toxic. Introduce a small amount first; some people are sensitive.",
@@ -22501,7 +22501,7 @@ var RANGER_PLANTS={
     teach:["Those little pom-pom flowers make a sweet, honeyish tea.","A gentle, nutritious bloom that pollinators and people both love.","Steep dried blossoms for tea, scatter fresh in salad, or dry and grind into flour.","Trifolium — a nitrogen-fixing legume that feeds the soil too. Lovely in moderation; a big raw bowlful can bloat you, so cook or dry it for quantity."]},
   e23:{name:"Goldenrod",
     alt:["Goldenrod", "Sweet Goldenrod", "Anise-scented Goldenrod", "Blue Mountain Tea", "Woundwort"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Solidago spp. · Asteraceae",leaf:"🌼",img:"images/plants/goldenrod.jpg",img:"",match:86,edible:true,months:[8,9,10],season:"Blooms late summer–fall",fresh:"Use flowers fresh, or dry for 'Liberty Tea.'",
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Solidago spp. · Asteraceae",leaf:"🌼",img:"images/plants/goldenrod.jpg",match:86,edible:true,months:[8,9,10],season:"Blooms late summer–fall",fresh:"Use flowers fresh, or dry for 'Liberty Tea.'",
     nutrients:["Antioxidants","Vit C"],
     uses:[["🍵","Liberty Tea"],["🌼","Garnish"]],
     safety:"Goldenrod does NOT cause hay fever (that's ragweed nearby). Traditional uses are history; confirm the plant and use flowers in moderation.",
@@ -22539,7 +22539,7 @@ var RANGER_PLANTS={
     teach:["Those tiny watermelon-looking fruits taste like a little cucumber — green ones only.","A fun, crisp nibble with some vitamin C, straight off the vine.","Eat green fruits fresh, sliced in salad, or quick-pickled like tiny gherkins.","Melothria pendula — the single most important rule: GREEN good, BLACK bad. The ripe black fruits are a powerful laxative, so only ever eat the small green ones."]},
   e17:{name:"Mugwort",
     alt:["Mugwort", "Common Wormwood", "Felon Herb", "Chrysanthemum Weed", "Wild Wormwood"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Artemisia vulgaris · Asteraceae",leaf:"🌿",img:"images/plants/mugwort.jpg",img:"",match:83,edible:true,months:[5,6,7,8,9],season:"Leaves & tops summer–fall",fresh:"Use young leaves fresh, or dry the tops.",
+    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Artemisia vulgaris · Asteraceae",leaf:"🌿",img:"images/plants/mugwort.jpg",match:83,edible:true,months:[5,6,7,8,9],season:"Leaves & tops summer–fall",fresh:"Use young leaves fresh, or dry the tops.",
     nutrients:["Antioxidants","Vit A"],
     uses:[["🍚","Rice & mochi"],["🍲","Bitter herb"],["🍵","Tea"]],
     safety:"Use sparingly as a bitter seasoning. Do NOT use during pregnancy. Traditional uses are folklore, not medical advice.",
@@ -23322,8 +23322,13 @@ function plantNameOffline(typed){
 function plantNameButtons(typed, sci){
   var safe=String(typed||'').replace(/'/g,'');
   var ssci=String(sci||'').replace(/'/g,'');
-  return '<div style="display:flex;gap:6px;margin-top:9px">'+
+  /* Every other place in the app offers both — take one now, or use one you
+     already have. This offered only the camera, which quietly assumes the
+     plant is in front of you. Half the time it was in front of you yesterday
+     and the picture is already on the phone. */
+  return '<div style="display:flex;gap:6px;margin-top:9px;flex-wrap:wrap">'+
     '<button class="pl-mini" onclick="openPlantCamera()">\ud83d\udcf7<span>Take a picture</span></button>'+
+    '<button class="pl-mini" onclick="openPlantLibrary()">\ud83d\uddbc\ufe0f<span>From my phone</span></button>'+
     '<button class="pl-mini" onclick="rangerAddNamedToYard(\''+esc(safe)+'\',\''+esc(ssci)+'\')">'+
     '\ud83c\udf31<span>Add to my yard</span></button>'+
   '</div>';
@@ -23598,7 +23603,26 @@ function rangerImageStrip(p, badges, plantId){
              keeps every plant looking the same and keeps the provenance clean —
              each one arrives with an author and a citation. */
   var draw=p.img||'';
+  /* ══════════ THE CARD HAD THE PICTURE, THE PAGE DID NOT ════════════════════
+     The grid shows every photograph correctly and the detail page showed an
+     emoji for all of them — same plants, same folder. The difference is what
+     gets handed in: the grid reads the book entry, while the detail page is
+     sometimes passed a lighter object (a yard entry, an identification result)
+     that carries the name and the species but not the image path.
+
+     So it was never a missing file. It was a missing field on the way through.
+     Go and ask the book directly when the path is not already here. */
   var leaf=p.leaf||'\ud83c\udf3f';
+  if(!draw && plantId){
+    try{
+      var _BK = (typeof yardBook==='function') ? yardBook() : null;
+      var _bp = _BK && _BK[plantId];
+      if(_bp){
+        if(_bp.img) draw = _bp.img;
+        if(!p.leaf && _bp.leaf) leaf = _bp.leaf;
+      }
+    }catch(e){}
+  }
   var nm=(p.name||'').replace(/'/g,"\\'");
   var pid = plantId || p.__id || '';
   var refImg='', credit='';
@@ -23621,26 +23645,137 @@ function rangerImageStrip(p, badges, plantId){
   // a photo of our own is only a fallback now
   var ourPhoto = rangerPhotoPath(draw);
 
-  var drawHalf = draw
-    ? '<div class="rimg-tap" onclick="openPlantImage(\''+draw+'\',\''+nm+'\',\'botanical drawing\')" style="flex:1;height:150px;background:#f4f1e8;display:flex;align-items:center;justify-content:center;position:relative;border-right:1px solid rgba(0,0,0,.08)"><img src="'+draw+'" alt="'+p.name+' drawing" style="max-height:138px;max-width:94%;object-fit:contain" onerror="rimgFallback(this,\''+nm+'\',\''+leaf+'\')"><div style="position:absolute;bottom:6px;left:8px;font-size:9px;color:#9a8f70;font-style:italic">drawing</div></div>'
-    : '<div style="flex:1;height:150px;background:linear-gradient(135deg,#1d3a2a,#11231a);display:flex;align-items:center;justify-content:center"><div style="font-size:40px">'+leaf+'</div></div>';
+  /* ══════════ ONE PICTURE, FILLING THE FRAME ═══════════════════════════════
+     This was split down the middle: our drawing on the left, a reference photo
+     on the right. When there was no drawing the left half showed a leaf emoji
+     on a dark rectangle — so half of every card was a symbol standing in for a
+     picture, and the actual photograph was squeezed into the other half.
 
-  var photoSrc = refImg || ourPhoto;
-  var label = refImg ? 'photo' : 'photo';
-  var creditLine = (refImg && credit)
-    ? '<div style="position:absolute;bottom:6px;right:8px;max-width:62%;font-size:8px;color:#fff;opacity:.85;text-align:right;text-shadow:0 1px 2px rgba(0,0,0,.7);line-height:1.25;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">'+esc(credit)+'</div>'
+     A plant book wants the plant, big enough to recognise in your hand. So it
+     is one image now, full width, and the best one available: our own
+     photograph first, then the reference photo. The emoji only appears when
+     there is genuinely nothing, and even then it says what it is waiting for
+     rather than pretending to be the picture.
+
+     The little + sits on the frame. Most people will never need it — there is
+     already a place to add photos further down the page — but if somebody is
+     standing in their own yard looking at this card, the button is where their
+     eye already is. */
+  /* ══════════ TRY EVERY PICTURE BEFORE GIVING UP ═══════════════════════════
+     The old layout had two independent halves, so a broken path on one side
+     cost you that side only — the other still showed a photograph. Merging
+     them into one frame meant the FIRST candidate got the only chance, and a
+     path pointing at a file that is not there took the whole card down to an
+     emoji. That is a worse failure than the thing it replaced.
+
+     So the frame gets a list, not a single source. If one will not load it
+     quietly tries the next, and the emoji appears only when every real
+     candidate has actually been attempted and failed. */
+  /* ══════════ THE REAL FILES END IN -photo ═════════════════════════════════
+     Every photograph on disk is named canada-lettuce-PHOTO.jpg, and the book
+     entry stores the bare canada-lettuce.jpg. rangerPhotoPath() is what bridges
+     them — which is why the old right-hand half worked while the left half,
+     reading the raw path, showed an emoji for every single plant.
+
+     I had the list the wrong way round: draw first, and draw is the name that
+     never exists. So the frame tried the one file guaranteed to be missing and
+     the fallback did the rest of the damage.
+
+     ourPhoto goes first now. And two real-world wrinkles get their own
+     candidates rather than being treated as missing photos: a couple were
+     saved as .jpeg rather than .jpg, and the muscadine file dropped the
+     "-grape". Both are on disk. Neither needs renaming. */
+  var _cands = [];
+  var _push = function(u){ if(u && _cands.indexOf(u) < 0) _cands.push(u); };
+
+  /* Some cards are filed under one name and photographed under another —
+     the dandelion card covers three plants and the picture on disk is of the
+     hawksbeard. Rather than rename a good photograph to something it isn't,
+     the card points at the file that exists. */
+  var PHOTO_ALIAS = { 'dandelion':'hawksbeard', 'muscadine-grape':'muscadine',
+                      'greenbriar':'green-briar', 'dollarweed':'dollar-weed' };
+
+  var _stem = ourPhoto.replace(/-photo\.[a-z]+$/i, '').replace(/^.*\//, '');
+  var _dir  = ourPhoto.replace(/[^\/]*$/, '');
+
+  /* iOS is case-sensitive: fig-photo.JPG and fig-photo.jpg are two different
+     files, and asking for the wrong case fails silently. Cameras hand back
+     both cases and both spellings of jpeg, so try all of them rather than
+     making somebody rename photographs to suit the code. */
+  var _exts = ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG'];
+  var _names = [_stem];
+  if(PHOTO_ALIAS[_stem]) _names.push(PHOTO_ALIAS[_stem]);
+
+  _names.forEach(function(n){
+    _exts.forEach(function(e){ _push(_dir + n + '-photo' + e); });
+  });
+
+  _push(refImg);
+  _push(draw);
+
+  var mainSrc = _cands[0] || '';
+  var mainCredit = (mainSrc && mainSrc === refImg) ? credit : '';
+  var addBtn = pid
+    ? '<button onclick="event.stopPropagation();plantAddPhoto(\''+pid+'\')" '+
+        'aria-label="Add another picture" '+
+        'style="position:absolute;bottom:8px;right:8px;width:34px;height:34px;border-radius:50%;'+
+        'border:0;background:rgba(20,26,20,.72);color:#fff;font-size:20px;line-height:1;'+
+        'display:flex;align-items:center;justify-content:center;cursor:pointer;'+
+        'backdrop-filter:blur(3px)">+</button>'
     : '';
 
-  var right = photoSrc
-    ? '<div class="rimg-tap" onclick="openPlantImage(\''+photoSrc+'\',\''+nm+'\',\''+(credit? esc(credit).replace(/'/g,"") : 'photo')+'\')" style="flex:1;height:150px;background:#eef2ee;display:flex;align-items:center;justify-content:center;position:relative">'+
-        '<img src="'+photoSrc+'" alt="'+p.name+' photo" style="width:100%;height:150px;object-fit:cover" data-ref="'+(refImg||'')+'" onerror="rimgPhotoFallback(this,\''+nm+'\')">'+
-        '<div class="rphoto-soon" style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#243024,#18201a);flex-direction:column;align-items:center;justify-content:center;color:#7d8a80"><div style="font-size:26px">\ud83d\udcf7</div><div style="font-size:10px;margin-top:4px">photo coming</div></div>'+
-        '<div style="position:absolute;bottom:6px;left:8px;font-size:9px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)">'+label+'</div>'+
-        creditLine+
-      '</div>'
-    : '<div style="flex:1;height:150px;background:linear-gradient(135deg,#243024,#18201a);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#7d8a80"><div style="font-size:26px">\ud83d\udcf7</div><div style="font-size:10px;margin-top:4px">photo coming</div></div>';
+  var creditLine2 = (mainCredit)
+    ? '<div style="position:absolute;bottom:8px;left:10px;max-width:58%;font-size:8.5px;color:#fff;opacity:.85;text-shadow:0 1px 2px rgba(0,0,0,.7);line-height:1.25;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">'+esc(mainCredit)+'</div>'
+    : '';
 
-  return '<div style="display:flex;position:relative">'+drawHalf+right+(badges||'')+'</div>';
+  var body = mainSrc
+    ? '<div class="rimg-tap" onclick="openPlantImage(\''+mainSrc+'\',\''+nm+'\',\''+(mainCredit? esc(mainCredit).replace(/\'/g,"") : 'photo')+'\')" '+
+        'style="width:100%;height:210px;background:#eef2ee;position:relative">'+
+        '<img src="'+mainSrc+'" alt="'+p.name+'" style="width:100%;height:210px;object-fit:cover;display:block" '+
+        'data-list="'+esc(_cands.join('|'))+'" data-i="0" onerror="rimgNextSource(this)">'+
+        '<div class="rphoto-soon" style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#243024,#18201a);flex-direction:column;align-items:center;justify-content:center;color:#7d8a80"><div style="font-size:34px">'+leaf+'</div><div style="font-size:10.5px;margin-top:5px">picture coming</div></div>'+
+        creditLine2 + addBtn +
+      '</div>'
+    : '<div style="width:100%;height:210px;background:linear-gradient(135deg,#243024,#18201a);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#7d8a80;position:relative">'+
+        '<div style="font-size:38px">'+leaf+'</div>'+
+        '<div style="font-size:10.5px;margin-top:5px">no picture yet</div>'+ addBtn +
+      '</div>';
+
+  return '<div style="position:relative">'+body+(badges||'')+'</div>';
+}
+
+/* Walk the candidate list. Each failure advances one place; the placeholder
+   shows only after the last real option has been tried and failed. */
+function rimgNextSource(img){
+  try{
+    var list=(img.getAttribute('data-list')||'').split('|').filter(Boolean);
+    var i=parseInt(img.getAttribute('data-i')||'0',10)+1;
+    if(i < list.length){
+      img.setAttribute('data-i', String(i));
+      img.src = list[i];
+      return;
+    }
+    img.style.display='none';
+    var box=img.parentNode; if(!box) return;
+    var soon=box.querySelector('.rphoto-soon');
+    if(soon) soon.style.display='flex';
+    box.onclick=null; box.classList.remove('rimg-tap');
+  }catch(e){}
+}
+
+/* The + on the frame IS the button at the bottom of the page — the one that
+   says "I have this one, let me photograph it". Same function, same claim
+   flow, so a picture added from the frame still gets checked against Pl@ntNet
+   and still earns its ✓ CONFIRMED or YOUR OWN CALL badge.
+
+   Two doors, one room. If it went somewhere else, a photo added from the top
+   of the card would quietly skip the validation that a photo added from the
+   bottom gets — and nothing on screen would tell you why. */
+function plantAddPhoto(pid){
+  try{
+    if(pid && typeof claimStart==='function'){ claimStart(pid); return; }
+    if(typeof openPlantCamera==='function') openPlantCamera();
+  }catch(e){}
 }
 /* Drawing missing → show the leaf mark rather than a broken image. */
 function rimgFallback(img, nm, leaf){

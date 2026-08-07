@@ -2605,7 +2605,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v256</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">one big picture on every plant card · every photograph loads, whatever the camera named it · add a picture from your phone, not just the camera · hands-free or read-aloud or type</div></div>
+    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v254</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">one big picture on every plant card · five plants got their photograph back · add a picture from your phone, not just the camera · hands-free or read-aloud or type</div></div>
   </div>
 </section>
 
@@ -8279,7 +8279,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v256";
+window.HONEY_BUILD = "v254";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -23603,26 +23603,7 @@ function rangerImageStrip(p, badges, plantId){
              keeps every plant looking the same and keeps the provenance clean —
              each one arrives with an author and a citation. */
   var draw=p.img||'';
-  /* ══════════ THE CARD HAD THE PICTURE, THE PAGE DID NOT ════════════════════
-     The grid shows every photograph correctly and the detail page showed an
-     emoji for all of them — same plants, same folder. The difference is what
-     gets handed in: the grid reads the book entry, while the detail page is
-     sometimes passed a lighter object (a yard entry, an identification result)
-     that carries the name and the species but not the image path.
-
-     So it was never a missing file. It was a missing field on the way through.
-     Go and ask the book directly when the path is not already here. */
   var leaf=p.leaf||'\ud83c\udf3f';
-  if(!draw && plantId){
-    try{
-      var _BK = (typeof yardBook==='function') ? yardBook() : null;
-      var _bp = _BK && _BK[plantId];
-      if(_bp){
-        if(_bp.img) draw = _bp.img;
-        if(!p.leaf && _bp.leaf) leaf = _bp.leaf;
-      }
-    }catch(e){}
-  }
   var nm=(p.name||'').replace(/'/g,"\\'");
   var pid = plantId || p.__id || '';
   var refImg='', credit='';
@@ -23661,59 +23642,7 @@ function rangerImageStrip(p, badges, plantId){
      already a place to add photos further down the page — but if somebody is
      standing in their own yard looking at this card, the button is where their
      eye already is. */
-  /* ══════════ TRY EVERY PICTURE BEFORE GIVING UP ═══════════════════════════
-     The old layout had two independent halves, so a broken path on one side
-     cost you that side only — the other still showed a photograph. Merging
-     them into one frame meant the FIRST candidate got the only chance, and a
-     path pointing at a file that is not there took the whole card down to an
-     emoji. That is a worse failure than the thing it replaced.
-
-     So the frame gets a list, not a single source. If one will not load it
-     quietly tries the next, and the emoji appears only when every real
-     candidate has actually been attempted and failed. */
-  /* ══════════ THE REAL FILES END IN -photo ═════════════════════════════════
-     Every photograph on disk is named canada-lettuce-PHOTO.jpg, and the book
-     entry stores the bare canada-lettuce.jpg. rangerPhotoPath() is what bridges
-     them — which is why the old right-hand half worked while the left half,
-     reading the raw path, showed an emoji for every single plant.
-
-     I had the list the wrong way round: draw first, and draw is the name that
-     never exists. So the frame tried the one file guaranteed to be missing and
-     the fallback did the rest of the damage.
-
-     ourPhoto goes first now. And two real-world wrinkles get their own
-     candidates rather than being treated as missing photos: a couple were
-     saved as .jpeg rather than .jpg, and the muscadine file dropped the
-     "-grape". Both are on disk. Neither needs renaming. */
-  var _cands = [];
-  var _push = function(u){ if(u && _cands.indexOf(u) < 0) _cands.push(u); };
-
-  /* Some cards are filed under one name and photographed under another —
-     the dandelion card covers three plants and the picture on disk is of the
-     hawksbeard. Rather than rename a good photograph to something it isn't,
-     the card points at the file that exists. */
-  var PHOTO_ALIAS = { 'dandelion':'hawksbeard', 'muscadine-grape':'muscadine',
-                      'greenbriar':'green-briar', 'dollarweed':'dollar-weed' };
-
-  var _stem = ourPhoto.replace(/-photo\.[a-z]+$/i, '').replace(/^.*\//, '');
-  var _dir  = ourPhoto.replace(/[^\/]*$/, '');
-
-  /* iOS is case-sensitive: fig-photo.JPG and fig-photo.jpg are two different
-     files, and asking for the wrong case fails silently. Cameras hand back
-     both cases and both spellings of jpeg, so try all of them rather than
-     making somebody rename photographs to suit the code. */
-  var _exts = ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG'];
-  var _names = [_stem];
-  if(PHOTO_ALIAS[_stem]) _names.push(PHOTO_ALIAS[_stem]);
-
-  _names.forEach(function(n){
-    _exts.forEach(function(e){ _push(_dir + n + '-photo' + e); });
-  });
-
-  _push(refImg);
-  _push(draw);
-
-  var mainSrc = _cands[0] || '';
+  var mainSrc = draw || refImg || ourPhoto;
   var mainCredit = (mainSrc && mainSrc === refImg) ? credit : '';
   var addBtn = pid
     ? '<button onclick="event.stopPropagation();plantAddPhoto(\''+pid+'\')" '+
@@ -23732,7 +23661,7 @@ function rangerImageStrip(p, badges, plantId){
     ? '<div class="rimg-tap" onclick="openPlantImage(\''+mainSrc+'\',\''+nm+'\',\''+(mainCredit? esc(mainCredit).replace(/\'/g,"") : 'photo')+'\')" '+
         'style="width:100%;height:210px;background:#eef2ee;position:relative">'+
         '<img src="'+mainSrc+'" alt="'+p.name+'" style="width:100%;height:210px;object-fit:cover;display:block" '+
-        'data-list="'+esc(_cands.join('|'))+'" data-i="0" onerror="rimgNextSource(this)">'+
+        'data-ref="'+(refImg||'')+'" onerror="rimgPhotoFallback(this,\''+nm+'\')">'+
         '<div class="rphoto-soon" style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#243024,#18201a);flex-direction:column;align-items:center;justify-content:center;color:#7d8a80"><div style="font-size:34px">'+leaf+'</div><div style="font-size:10.5px;margin-top:5px">picture coming</div></div>'+
         creditLine2 + addBtn +
       '</div>'
@@ -23742,25 +23671,6 @@ function rangerImageStrip(p, badges, plantId){
       '</div>';
 
   return '<div style="position:relative">'+body+(badges||'')+'</div>';
-}
-
-/* Walk the candidate list. Each failure advances one place; the placeholder
-   shows only after the last real option has been tried and failed. */
-function rimgNextSource(img){
-  try{
-    var list=(img.getAttribute('data-list')||'').split('|').filter(Boolean);
-    var i=parseInt(img.getAttribute('data-i')||'0',10)+1;
-    if(i < list.length){
-      img.setAttribute('data-i', String(i));
-      img.src = list[i];
-      return;
-    }
-    img.style.display='none';
-    var box=img.parentNode; if(!box) return;
-    var soon=box.querySelector('.rphoto-soon');
-    if(soon) soon.style.display='flex';
-    box.onclick=null; box.classList.remove('rimg-tap');
-  }catch(e){}
 }
 
 /* The + on the frame IS the button at the bottom of the page — the one that
