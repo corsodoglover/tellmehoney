@@ -1138,8 +1138,12 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .home-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
   padding:8px 22px 96px;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;}
 .home-top{z-index:3;}
+/* The streak chip and the honey pot sit at 12px from the top, and at 52px the
+   ascender of the T reached straight into them. A little more room above so
+   the two stop touching — the title is the first thing anybody sees and it
+   should not look like it is bumping into the furniture. */
 .home-title{font-family:var(--display);font-size:52px;font-weight:700;color:#3a3220;
-  text-shadow:0 2px 10px rgba(255,255,255,.6);margin:16px 0 4px;text-align:center;}
+  text-shadow:0 2px 10px rgba(255,255,255,.6);margin:46px 0 4px;text-align:center;}
 .home-title em{font-style:italic;color:#7a5c12;}
 .home-top{position:absolute;top:calc(12px + var(--safe-t));left:0;right:0;z-index:3;
   display:flex;justify-content:space-between;align-items:center;padding:0 18px;}
@@ -1483,7 +1487,10 @@ textarea{resize:none;line-height:1.4;}
 @keyframes tb{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
 
 .thumbs{align-self:flex-start;display:flex;gap:9px;margin:-2px 0 2px 4px;animation:fade .3s both;}
-.tbtn{background:rgba(28,30,42,.9);border:1px solid var(--line);width:42px;height:38px;
+/* 44 is Apple's minimum tap target and these were 42x38. On the row people
+   use most, in an app for older hands, that is the wrong place to save four
+   pixels. */
+.tbtn{background:rgba(28,30,42,.9);border:1px solid var(--line);width:44px;height:44px;flex:0 0 44px;
   border-radius:13px;font-size:17px;display:flex;align-items:center;justify-content:center;
   backdrop-filter:blur(6px);}
 .tbtn:active{transform:scale(.9);}
@@ -1499,9 +1506,20 @@ textarea{resize:none;line-height:1.4;}
 .qchip:active{background:var(--gold);color:#1a1405;}
 
 .dock{position:relative;z-index:4;padding:4px 14px calc(12px + var(--safe-b));}
-.thumbsbar{display:flex;align-items:center;gap:9px;padding:0 4px 8px;transition:opacity .25s;}
+.thumbsbar{display:flex;align-items:center;gap:9px;padding:0 4px 8px;transition:opacity .25s;
+  justify-content:flex-start;}
 .thumbsbar.on{opacity:1;}
-.tb-label{font-size:12px;color:#cfd2dd;margin-right:2px;text-shadow:0 1px 4px rgba(0,0,0,.6);}
+/* ══════════ THE BUTTONS MUST NOT MOVE ═══════════════════════════════════════
+   This label changes as the conversation does — "Your call:", "Yes or no?",
+   "Glad it landed" — and with no width set, every change re-flowed the row and
+   shifted all four buttons sideways. You were aiming at a moving target, which
+   is why the ♥ and the mic were hard to hit and why a tap so often landed on
+   the wrong thing.
+
+   Fixed width, truncating if the text is longer. The label is context; the
+   buttons are the point, and they stay exactly where they were last time. */
+.tb-label{font-size:12px;color:#cfd2dd;margin-right:2px;text-shadow:0 1px 4px rgba(0,0,0,.6);
+  flex:0 0 96px;width:96px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .input-row{display:flex;align-items:center;gap:10px;}
 .pill{flex:1;display:flex;align-items:center;background:rgba(28,30,42,.9);
   border:1px solid var(--line);border-radius:30px;padding:5px 6px 5px 16px;backdrop-filter:blur(10px);}
@@ -1509,7 +1527,11 @@ textarea{resize:none;line-height:1.4;}
 #chatInput{color:#ffffff !important;background:transparent !important;-webkit-text-fill-color:#ffffff !important;caret-color:#ffd479;}
 #chatInput::placeholder{color:rgba(255,255,255,.6) !important;-webkit-text-fill-color:rgba(255,255,255,.6) !important;}
 .pill input{background:none;border:none;padding:9px 0;font-size:15.5px;flex:1;}
-.pill .mic{font-size:19px;width:38px;height:38px;border-radius:50%;display:flex;
+.pill /* The mic sits inside the input pill and was 38px — the smallest target on the
+   row people use most, right beside a text field that opens the keyboard if
+   you miss. Missing it is worse than missing anything else on this screen,
+   because the keyboard then covers half of what you were looking at. */
+.mic{font-size:20px;width:44px;height:44px;border-radius:50%;display:flex;flex:0 0 44px;
   align-items:center;justify-content:center;background:var(--panel2);}
 .pill .mic.live{background:var(--red);animation:pulse 1.1s infinite;}
 .pill .mic.armed{background:var(--gold);color:#1a1405;}
@@ -1522,6 +1544,12 @@ textarea{resize:none;line-height:1.4;}
   justify-content:center;font-size:24px;background:rgba(60,64,82,.85);backdrop-filter:blur(8px);}
 .crbtn.end .ico{background:var(--red);}
 .crbtn.hf.on .ico{background:var(--gold);color:#1a1405;}
+/* Actually listening. The pulse used to live on the mic in the type box; that
+   button is gone, so the state it reported moves here, to the only thing that
+   opens the microphone now. Gold means armed and waiting, red-and-pulsing
+   means it can hear you — so a mic that lights up while Honey is talking is
+   visible on the screen instead of being something you have to feel. */
+.crbtn.hf.live .ico{background:var(--red);color:#fff;animation:pulse 1.1s infinite;}
 .crbtn.spk.on .ico{background:var(--gold);color:#1a1405;}
 .crbtn.spk .ico{background:rgba(60,64,82,.85);}
 
@@ -2577,7 +2605,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v235</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">six friendly avatars instead of twenty-two ghouls · in season folds into shelves · the joke style examples play</div></div>
+    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v253</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">she stays in the speaker after the microphone has run · hands-free or read-aloud or type · tap a premium voice and actually hear that one · the keyboard stays down when you come into the chat</div></div>
   </div>
 </section>
 
@@ -2955,7 +2983,6 @@ textarea{resize:none;line-height:1.4;}
     <div class="input-row">
       <div class="pill">
         <input id="chatInput" placeholder="Type here, or tap a button below…" autocomplete="off" onkeydown="if(event.key===&#39;Enter&#39;)sendUser()">
-        <button class="mic" id="micBtn" onclick="toggleMic()">🎤</button>
       </div>
       <button class="send" onclick="sendUser()">➤</button>
     </div>
@@ -7306,6 +7333,16 @@ function go(id){
   // when ENTERING the utility cluster from outside it, remember where we came from
   if(_UTIL_SCREENS.indexOf(id)>=0 && _UTIL_SCREENS.indexOf(_navCur)<0){ _navOrigin=_navCur; }
   if(id!==_navCur){ _navPrev=_navCur; _navCur=id; }
+  /* ══════════ PUT THE KEYBOARD AWAY ON THE WAY IN ═══════════════════════
+     Screens are swapped by toggling a class, not by removing them, so a text
+     field that was focused on the screen you just left is still focused — and
+     iOS keeps its keyboard up for it. Arriving in chat from onboarding, or
+     back from a list, you land behind a wall of letters with the conversation
+     hidden underneath and nothing to tap to dismiss it.
+
+     Nothing here ever wants the keyboard up on arrival. If somebody wants to
+     type, they tap the box. */
+  try{ if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(e){}
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   el.classList.add('on'); el.classList.add('fadein');
   setTimeout(()=>el.classList.remove('fadein'),400);
@@ -7537,6 +7574,19 @@ function enterChat(){
   document.getElementById('selfEmoji').innerHTML=avatarFaceHTML();
   setView(S.selfView,true);
   go('chat');
+  /* ══════════ ARRIVE TO A CONVERSATION, NOT A KEYBOARD ═══════════════════════
+     Nothing here asks for focus, but iOS restores it to the last field that
+     had it — so coming into the chat brought the keyboard up with it, covering
+     the half of the screen you had come to look at. First thing anybody sees
+     of Honey should be Honey, not a keyboard.
+
+     Blurring on arrival puts it away. Tapping the box still brings it back,
+     which is the only time anybody wants it. */
+  try{
+    var ci=document.getElementById('chatInput');
+    if(ci && document.activeElement===ci) ci.blur();
+    if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  }catch(e){}
   buildQuickChips();
   document.getElementById('spkBtn').classList.toggle('on',S.speakerOn);
   updateStatus();
@@ -8229,7 +8279,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v151";
+window.HONEY_BUILD = "v253";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -14859,7 +14909,19 @@ function startCam(){
    When on: she reads replies aloud, and the mic auto-reopens
    after she finishes speaking, for a continuous back-and-forth. */
 var speakQueue=0;       // utterances still queued/speaking
-function audioOn(){ return S.ttsOn || S.handsFree; }
+/* ══════════ ONE WAY IN, ONE WAY OUT ═══════════════════════════════════════
+   There were two listening modes sharing one microphone: the mic button set
+   S.ttsOn, hands-free set S.handsFree, and this returned true for either.
+   Two flags, cleared in different places, both holding the same door open —
+   which is why turning the mic off took the hands-free dance. Whichever flag
+   you cleared, the other one could still be propping it open.
+
+   The mic button is gone. It was never used on purpose anyway: it lit up even
+   when the session had silently died, so tapping it ran the off-branch against
+   a recogniser that was not there and nothing changed. Hands-free is the only
+   way the microphone opens now, and the keyboard's own dictation key covers
+   speaking a single line — the thing everybody already knows how to use. */
+function audioOn(){ return S.handsFree; }
 
 /* ════ ONE-TIME MIC PERMISSION ════
    Requesting getUserMedia once grants a persistent permission Chrome remembers,
@@ -14867,6 +14929,13 @@ function audioOn(){ return S.ttsOn || S.handsFree; }
 var micStream=null, micGranted=false;
 /* Watchdog state for the iOS "started but didn't" failure — see startListening. */
 var _micWatchdog=null, _micLiveConfirmed=false, _micRetried=false;
+/* Set the moment a start is requested, cleared when it succeeds or fails, so
+   a second tap during the permission check cannot open a second session. */
+var _micStarting=false;
+/* Set between catching somebody's words and her starting to answer. While it
+   is true the mic stays shut, because the gap is exactly when the echo used to
+   happen. */
+var _awaitingReply=false;
 function enableMicPermission(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
     setMicEnableUI('denied','Mic not available here');
@@ -15029,12 +15098,124 @@ function honeyPlayer(){
   return _honeyPlayer;
 }
 
+/* ══════════ TWO ELEMENTS, NOT ONE ═══════════════════════════════════════════
+   The clip player is thrown away after every clip on purpose — an iOS <audio>
+   element that has played once keeps hold of the audio session, and clearing
+   src is not always enough to shake it loose. Discarding it is what lets the
+   recogniser take the microphone afterwards.
+
+   But the cloud path was borrowing that SAME element, for the opposite reason:
+   it needs an element that was blessed during a real user tap, because a
+   premium reply arrives from a network callback and a fresh Audio() built in
+   that callback has no playback permission — NotAllowedError, silence.
+
+   So the two paths were fighting. Play a clip, and the blessed element is
+   discarded; the next premium line builds a new one inside a network callback
+   and iOS refuses it. That is why Honey's voice and the premium voices behave
+   identically and both go quiet: Honey's own live answers (the ones with no
+   recording) go through the cloud path too. Same code, same failure.
+
+   They get one element each now. The clip player stays discardable. The cloud
+   player is created and blessed at unlock, kept warm on every tap, and never
+   thrown away — only released, which is enough because it is not the one the
+   recogniser has to wait on most often. */
+var _cloudPlayer = null;
+
+function cloudPlayer(){
+  if(!_cloudPlayer){
+    _cloudPlayer = new Audio();
+    _cloudPlayer.preload = "auto";
+    try{ _cloudPlayer.playsInline = true; }catch(e){}
+  }
+  return _cloudPlayer;
+}
+
+/* ══════════ SAY IT AGAIN, AT THE MOMENT IT STOPS BEING TRUE ═══════════════
+   The speech plugin sets its own audio session category every time it starts —
+   record mode, pointed at the earpiece. So whatever was set at launch holds
+   only until the first time the microphone runs. After that Honey plays into a
+   record-shaped route: faint, in the earpiece, holding a session the next mic
+   open cannot take. One turn, then dead.
+
+   A native method puts it back. This calls it at the moments it is needed:
+   after the recogniser stops, and before anything plays through an element.
+   Fire-and-forget on purpose — a slow bridge call must never delay her voice,
+   and if the plugin is not registered this quietly does nothing rather than
+   throwing inside the speech path. */
+var _AudioSessionPlugin = null;
+function audioSessionPlugin(){
+  if(_AudioSessionPlugin) return _AudioSessionPlugin;
+  try{
+    var C = window.Capacitor; if(!C) return null;
+    _AudioSessionPlugin = (C.Plugins && C.Plugins.AudioSession) || null;
+    if(!_AudioSessionPlugin && typeof C.registerPlugin === 'function'){
+      try{ _AudioSessionPlugin = C.registerPlugin('AudioSession'); }catch(e){}
+    }
+  }catch(e){ return null; }
+  return _AudioSessionPlugin;
+}
+function sessionToSpeaker(){
+  try{
+    var P = audioSessionPlugin();
+    if(P && P.toSpeaker){
+      var r = P.toSpeaker();
+      if(r && r.catch) r.catch(function(){});
+    }
+  }catch(e){}
+}
+
+/* Hand the audio session back to iOS. Pausing is not enough — the element
+   still holds the session and the recogniser's start() then fails silently.
+   Clearing src and calling load() is what actually releases it. */
+function releaseAudioEl(a){
+  try{ a.pause(); }catch(e){}
+  try{ a.removeAttribute('src'); a.load(); }catch(e){}
+}
+
+var SILENT_WAV = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+
+/* ══════════ THE DEVICE VOICE NEEDS A TAP TOO ═══════════════════════════════
+   Only the <audio> element was ever blessed. iOS also holds speechSynthesis
+   shut until it has been spoken to once from inside a real user gesture — and
+   nothing did that on the way in. Turning read-aloud on is a tap, but
+   toggleSpeaker never touched the speech engine, so the first line went
+   nowhere and stayed going nowhere.
+
+   Hands-free DID touch it — it calls speechSynthesis.cancel() inside the tap
+   handler — which is why read-aloud only worked after coming off hands-free.
+   It was never read-aloud that was broken; it was that hands-free happened to
+   open the door on its way past.
+
+   One silent utterance at zero volume, on the first touch anywhere, and the
+   engine is awake for the rest of the session. */
+var _speechPrimed = false;
+function primeSpeech(){
+  if(_speechPrimed) return;
+  try{
+    if(!('speechSynthesis' in window)) { _speechPrimed = true; return; }
+    var u = new SpeechSynthesisUtterance(" ");
+    u.volume = 0; u.rate = 1;
+    speechSynthesis.speak(u);
+    _speechPrimed = true;
+    if(window.__OBDEBUG) toast("device voice primed");
+  }catch(e){}
+}
+
 function unlockAudio(){
+  primeSpeech();
   if(_audioUnlocked) return;
   var a = honeyPlayer();
+  /* Bless the cloud element in the same gesture. It is the one that has to
+     play from a network callback later, when no tap is anywhere near. */
+  try{
+    var c = cloudPlayer();
+    c.src = SILENT_WAV;
+    var cp = c.play();
+    if(cp && cp.catch) cp.catch(function(){});
+  }catch(e){}
   try{
     // a tiny silent wav — enough to earn playback permission
-    a.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+    a.src = SILENT_WAV;
     var p = a.play();
     if(p && p.then){
       p.then(function(){
@@ -15063,11 +15244,23 @@ try{
    Cheap, and it only touches the unlock element — not the queue logic. */
 function keepAudioWarm(){
   if(!_audioUnlocked) { unlockAudio(); return; }
-  var a = honeyPlayer();
-  // Only warm it when the element is idle — never interrupt a clip mid-play.
+  /* ══════════ DON'T WARM INTO AN OPEN MICROPHONE ══════════════════════════
+     This warmed the CLIP element, which is the wrong one twice over. It is
+     the element that gets discarded after every clip, so warming it does not
+     carry; and it is the one the recogniser is waiting on, so a whisper of
+     silence on every single screen tap kept re-taking the audio session out
+     from under an open mic. In hands-free that is a tap-shaped hole in the
+     listening — which is very hard to see and very easy to feel.
+
+     The cloud element is the one that actually needs the permission kept
+     alive, because its audio arrives from the network long after any tap.
+     And nothing is warmed at all while the microphone is open. */
+  if(listening || _micStarting || recOpen) return;
+  var a = cloudPlayer();
+  // Only warm it when the element is idle — never interrupt a line mid-play.
   try{
     if(a.paused && !cloudPlaying){
-      a.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+      a.src = SILENT_WAV;
       var p = a.play();
       if(p && p.catch) p.catch(function(){});
     }
@@ -15738,8 +15931,9 @@ function clearSpeech(){
   _spToken++;
   _spQueue = [];
   _spActive = false;
+  try{ cancelPendingMicOpen(); }catch(e){}
   try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
-  try{ if(_honeyAudioEl){ _honeyAudioEl.onended=null; _honeyAudioEl.onerror=null; _honeyAudioEl.pause(); _honeyAudioEl.currentTime=0; _honeyAudioEl=null; } }catch(e){}
+  try{ if(_honeyAudioEl){ _honeyAudioEl.onended=null; _honeyAudioEl.onerror=null; _honeyAudioEl.oncanplay=null; releaseAudioEl(_honeyAudioEl); _honeyAudioEl=null; } }catch(e){}
   try{ if(typeof cloudAudio!=="undefined" && cloudAudio){ cloudAudio.pause(); cloudAudio=null; } }catch(e){}
   // Also reset the cloud (premium/clone) counters. clearSpeech bumps the speak
   // token, which kills any in-flight _spPollCloud — but if we leave cloudInFlight
@@ -15758,12 +15952,16 @@ function enqueueSpeak(text, onDone){
   // If the speaker is off nothing will ever play — run the callback so
   // callers waiting on "she finished" don't hang forever.
   if(!S.speakerOn){ if(onDone) setTimeout(onDone, 0); return; }
+  /* Something is going to be said. Any microphone opening already counting
+     down was decided before this line existed — drop it. */
+  try{ cancelPendingMicOpen(); }catch(e){}
   // exact-clip sentinel passes through untouched
   if(typeof text==='string' && text.indexOf("\u0000CLIP:")===0){
     _spQueue.push({t:text, done:onDone}); if(!_spActive) _spDrain(); return;
   }
   var clean = cleanForSpeech(text);
-  if(!clean){ if(onDone) setTimeout(onDone, 0); return; }
+  /* Same guard at the door, so an empty line never even reaches the queue. */
+  if(!clean || !String(clean).replace(/[\s\u00a0]+/g,'')){ if(onDone) setTimeout(onDone, 0); return; }
   _spQueue.push({t:clean, done:onDone});
   if(!_spActive) _spDrain();
 }
@@ -15772,11 +15970,33 @@ function enqueueSpeak(text, onDone){
    Always calls done() exactly once — ended, error, or blocked. */
 var _lastClipFailed = false;
 function playHoneyClip(clipName, done){
+  // The mic may have run since the last clip, which means the route is on the
+  // earpiece and this would play into it faintly. Put it back first.
+  sessionToSpeaker();
   var a = honeyPlayer();
   var finished = false;
   _lastClipFailed = false;
   var finish = function(why, failed){
     if(finished) return; finished = true;
+    /* ══════════ HAND THE AUDIO SESSION BACK ═══════════════════════════════
+       Pausing an <audio> element does not release iOS's audio session — the
+       element still holds it, so the recogniser cannot take the microphone
+       afterwards and start() fails silently. That is why the mic died the
+       moment read-aloud was turned on, and stayed dead even after leaving the
+       screen and coming back: nothing ever let go.
+
+       Clearing src and calling load() releases it properly. The clip has
+       finished by this point, so nothing is lost. */
+    try{ a.pause(); a.removeAttribute('src'); a.load(); }catch(e){}
+    /* And throw the element away. _honeyPlayer was one Audio object reused for
+       every clip, and on iOS an element that has played once keeps hold of the
+       audio session category — clearing src is not always enough to shake it.
+       The next clip builds a fresh one, which costs nothing and leaves the
+       session properly free for the recogniser.
+
+       The page has already had a user gesture by this point, so a new element
+       can play without needing the unlock again. */
+    try{ if(a === _honeyPlayer) _honeyPlayer = null; }catch(e){}
     a.onended = null; a.onerror = null; a.oncanplay = null; a.onloadeddata = null;
     _lastClipFailed = !!failed;
     if(window.__OBDEBUG && why) toast("CLIP "+why+": "+clipName);
@@ -15875,12 +16095,16 @@ function playHoneyClip(clipName, done){
 
 function _spDrain(){
   if(_spActive) return;
+  /* She is about to speak, or has just finished. Either way, a microphone
+     opening that was scheduled before this moment is out of date. */
+  try{ cancelPendingMicOpen(); }catch(e){}
   if(!_spQueue.length){
     setTalking(false);
     if(audioOn()) reopenMic();
     return;
   }
   _spActive = true;
+  _awaitingReply = false;      /* she is answering now — the drain owns the reopen */
   var item = _spQueue.shift();
   var text = (item && typeof item==='object') ? item.t : item;
   var onDone = (item && typeof item==='object') ? item.done : null;
@@ -15893,7 +16117,30 @@ function _spDrain(){
     setTimeout(function(){ if(myToken===_spToken) _spDrain(); }, 220);
   };
   setTalking(true);
-  if(listening) pauseListening();
+  /* ══════════ LET GO OF THE MICROPHONE FIRST ═══════════════════════════════
+     stop() on the recogniser is a request, not an instant. If the clip starts
+     playing in the same tick, iOS is handed two claims on the audio session at
+     once and the recogniser dies — which is "she said something and killed
+     it". A short beat between letting go and speaking is all it needs. */
+  if(listening || _micStarting){
+    /* ══════════ GIVE THE SESSION TIME TO CHANGE HANDS ═══════════════════════
+       stop() on the recogniser is a request, and iOS takes a moment to act on
+       it. 260ms was not enough: audio began while the session was still in
+       record mode, and record mode routes sound to the EARPIECE rather than
+       the loudspeaker. That is the faint voice — she was not muted, she was
+       coming out of the little speaker you hold to your ear.
+
+       It is also why the mic lit up while she talked: the recogniser had not
+       actually let go yet.
+
+       700ms is a pause you can hear, but a clear voice at full volume is worth
+       more than an instant one you cannot make out. */
+    pauseListening();
+    _spActive = false;                       // let the drain come round again
+    _spQueue.unshift(item);                  // put this line back at the front
+    setTimeout(function(){ if(!_spActive) _spDrain(); }, 700);
+    return;
+  }
 
   // sentinel: play an EXACT clip file. Format: "\u0000CLIP:clipname" or
   // "\u0000CLIP:clipname\u0001spoken text" (text used if user is on a non-Honey voice)
@@ -16035,7 +16282,25 @@ function speechSafe(t){
     return caps.charAt(0)+caps.slice(1).toLowerCase()+tail;   // HEre -> Here, STill -> Still
   });
 }
+/* Device speech holds the audio session as well. Cancelling it before the mic
+   reopens is the same courtesy the clip player now does. */
+function _spReleaseDevice(){
+  try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+}
+
 function _spSpeakDevice(text, done){
+  /* ══════════ NOTHING IS NOT A SENTENCE ═══════════════════════════════════
+     An empty or whitespace-only string still goes to the speech engine, which
+     builds a zero-length buffer and logs
+
+         AVAudioBuffer.mm:281  mBuffers[0].mDataByteSize (0) should be non-zero
+         Could not parse SSML: Failed to construct ssml for root tag speak
+
+     for every one. Harmless, but it is a wasted synthesis call each time and
+     it fills the log with noise that looks like a fault. */
+  try{
+    if(!text || !String(text).replace(/[\s\u00a0]+/g,'')){ if(done) done(); return; }
+  }catch(e){}
   if(!('speechSynthesis'in window)){ done(); return; }
   var u=new SpeechSynthesisUtterance(speechSafe(text));
   var p=voicePreset(S.voice||"auto");
@@ -16084,18 +16349,32 @@ function playCloudQueue(){
   if(cloudPlaying) return;
   if(!cloudQueue.length){ return; }
   cloudPlaying=true;
+  sessionToSpeaker();   // same reason as the clip path — the mic may have run
   var url=cloudQueue.shift();
-  // Reuse the ONE unlocked audio element. A fresh Audio() here has no iOS
-  // playback permission, so premium/cloud replies that arrive from a network
-  // callback (AI answers, end-of-sequence lines) get blocked with
-  // NotAllowedError and fall silent. The blessed element plays every time.
-  var a = honeyPlayer();
+  // The dedicated cloud element — blessed during a real tap and never
+  // discarded. A fresh Audio() here has no iOS playback permission, so
+  // premium/cloud replies arriving from a network callback (AI answers,
+  // end-of-sequence lines) would be blocked with NotAllowedError and fall
+  // silent. This element plays every time.
+  var a = cloudPlayer();
   cloudAudio = a;
   try{ a.pause(); }catch(e){}
   var done=false;
   var finish=function(ok){
     if(done) return; done=true;
     a.onended=null; a.onerror=null;
+    /* ══════════ HAND THE SESSION BACK HERE TOO ═══════════════════════════
+       The clip player learned this months ago and the cloud player never
+       did: pausing an <audio> element does not release iOS's audio session.
+       The element goes on holding it, the recogniser cannot take the
+       microphone afterwards, and start() fails without saying so.
+
+       Which is exactly the shape of it — the free device voice works
+       because speechSynthesis is a different path entirely, and every
+       voice that plays through an element (Honey's clone, the premium
+       women, the OpenAI voices) leaves the mic dead behind it. Same bug,
+       one missing line. */
+    releaseAudioEl(a);
     try{ URL.revokeObjectURL(url); }catch(e){}
     speakQueue=Math.max(0,speakQueue-1);
     cloudPlaying=false;
@@ -16109,7 +16388,12 @@ function playCloudQueue(){
   var p=a.play();
   if(p && p.catch){ p.catch(function(){ if(window.__OBDEBUG) toast("cloud BLOCKED"); finish(false); }); }
 }
-function stopCloudAudio(){ cloudQueue=[]; cloudPlaying=false; cloudInFlight=0; if(cloudAudio){try{cloudAudio.pause()}catch(e){} cloudAudio=null;} }
+function stopCloudAudio(){
+  cloudQueue=[]; cloudPlaying=false; cloudInFlight=0;
+  /* Stopping has to release the session too, or leaving a screen mid-sentence
+     leaves the microphone locked out with nothing on screen to explain it. */
+  if(cloudAudio){ try{ releaseAudioEl(cloudAudio); }catch(e){} cloudAudio=null; }
+}
 /* Per-vibe speaking direction for premium voices — same voice, different performance.
    Structured like a director's note (personality / tone / emotion / pacing). Rides free on the API call. */
 var VIBE_VOICE_DIRECTION={
@@ -16175,8 +16459,14 @@ function voiceRestingName(){
   try{
     if(S.voice==='myclone' && typeof hasClone==='function' && hasClone()) return 'Your voice';
     if(S.voice && S.voice!=='honey'){
-      var nm = (typeof EL_VOICES!=='undefined' && EL_VOICES[S.voice] && EL_VOICES[S.voice].name)
-             ? EL_VOICES[S.voice].name : '';
+      /* EL_VOICES stores the friendly name as `nm`, not `name`. Reading the
+         wrong key meant Marlee and Sofia were only ever called "That voice"
+         when their daily budget ran out — the one message where naming the
+         voice is the entire point. Fall back to the OpenAI character names
+         too, so all fifteen premium voices can say who they are. */
+      var _elv = (typeof EL_VOICES!=='undefined' && EL_VOICES[S.voice]) ? EL_VOICES[S.voice] : null;
+      var nm = _elv ? (_elv.nm || _elv.name || '')
+             : (typeof voiceFriendlyName==='function' && voiceCharacter(S.voice) ? voiceFriendlyName(S.voice) : '');
       return nm ? (nm+"'s voice") : 'That voice';
     }
   }catch(e){}
@@ -16194,21 +16484,40 @@ function voiceRestFallback(t){
   try{ if('speechSynthesis' in window) speak(t); }catch(e){}
 }
 
-function cloudSpeak(t){
+/* ══════════ SAY IT IN THE VOICE YOU WERE ASKED FOR ═════════════════════════
+   This only ever read S.voice and CLOUD.provider — the voice currently in use
+   in the chat. That is right for a reply, and wrong for a preview, where the
+   whole point is to hear a voice you have NOT chosen yet. So every audition
+   played whichever voice spoke last, and all thirteen premium characters plus
+   the two ElevenLabs women came out sounding identical to each other and to
+   Honey. Not a routing failure — the picker was never asking for anything.
+
+   overrideVoice lets a caller name the voice outright. Nothing global is
+   touched, so a preview cannot leave the chat speaking in the wrong voice
+   afterwards. Thirteen of these are OpenAI and two are ElevenLabs, so the
+   provider is worked out from the voice itself rather than from whatever
+   CLOUD.provider was left holding. */
+function cloudSpeak(t, overrideVoice){
   t=cleanForSpeech(t); if(!t)return;
+  var vv = overrideVoice || S.voice || 'honey';
+  /* Honey, the user's clone and the two ElevenLabs women go through the
+     honey-voice proxy. Everything else is OpenAI. */
+  var prov = overrideVoice
+      ? ((vv==='honey' || vv==='myclone' || isElVoice(vv)) ? 'elevenlabs' : 'openai')
+      : CLOUD.provider;
   /* Over the day's budget? Hand over to the phone's own voice. Nobody is cut
      off mid-sentence and nothing is silently billed. */
   if(cloudOverBudget(t.length)){ voiceRestFallback(t); return; }
   cloudBumpUsed(t.length);
   speakQueue++; cloudInFlight++; setTalking(true); if(listening) pauseListening();
   var req;
-  if(CLOUD.provider==='elevenlabs'){
+  if(prov==='elevenlabs'){
     // Honey's cloned voice — and the USER'S own cloned voice — go through the SECURE PROXY.
     // The ElevenLabs key AND Honey's voice ID live safely on the server, never in the app.
     // When the user has picked "Your Voice", pass their saved clone voiceId so the proxy
     // speaks in THEIR voice instead of Honey's. Guarded by the daily fair-use cap.
     var body={ text:t, speed:clampNum(S.rate||0.85,0.7,1.2) };
-    if((S.voice==='myclone') && hasClone() && cloneMaySpeak()){
+    if((vv==='myclone') && hasClone() && cloneMaySpeak()){
       if(cloneCapReached()){
         /* same landing as every other cap - one message, one behaviour */
         cloudInFlight=Math.max(0,cloudInFlight-1); speakQueue=Math.max(0,speakQueue-1); setTalking(false);
@@ -16217,9 +16526,9 @@ function cloudSpeak(t){
       }
       body.voiceId=S.cloneVoiceId;
       cloneBumpUsed();
-    } else if(isElVoice(S.voice)){
-      // an ElevenLabs premium woman (e.g. Marlee) — speak her fixed library voice
-      body.voiceId=EL_VOICES[S.voice].voiceId;
+    } else if(isElVoice(vv)){
+      // one of the two ElevenLabs women (Marlee, Sofia) — her fixed library voice
+      body.voiceId=EL_VOICES[vv].voiceId;
     }
     req=fetch(HONEY_VOICE_URL,{
       method:"POST",
@@ -16232,7 +16541,8 @@ function cloudSpeak(t){
     req=fetch(PREMIUM_VOICE_URL,{
       method:"POST",
       headers:{ "apikey":PREMIUM_VOICE_KEY, "Content-Type":"application/json" },
-      body:JSON.stringify({ voice:CLOUD.voice||"coral", text:t, instructions:voiceDirection(CLOUD.voice) })
+      body:JSON.stringify({ voice:(overrideVoice?vv:(CLOUD.voice||"coral")), text:t,
+                            instructions:voiceDirection(overrideVoice?vv:CLOUD.voice) })
     });
   }
   req.then(r=>{ if(!r.ok){ return r.text().then(txt=>{
@@ -16252,7 +16562,7 @@ function cloudSpeak(t){
     if(isOwner()) toast("Premium voice error: "+err.message, 7000);
     // NOTE: do NOT flip CLOUD.enabled off here — a single hiccup shouldn't force you to
     // re-enable everything. The setting stays as you left it; only this line falls back.
-    if((S.voice||'honey')!=='honey' && 'speechSynthesis'in window) speak(t);
+    if(vv!=='honey' && 'speechSynthesis'in window) speak(t);
   });
 }
 /* preview a voice without affecting the conversation */
@@ -16266,6 +16576,13 @@ function previewVoice(id){
     // fall through to device voice only if no clip found
   }
   var line=rand(["Hey there — how do I sound?","This is my voice. Like it?","Knock knock. Pretty good, right?","Testing, testing — that's me."]);
+  /* Name the voice. Without this the preview spoke in whatever voice was last
+     used, so every character sounded the same and there was nothing to choose
+     between. clearSpeech() first so a half-finished preview of the previous
+     voice cannot land on top of this one. */
+  if((isElVoice(id) || isCloudVoice(id)) && cloudReady()){
+    S.speakerOn=true; clearSpeech(); cloudSpeak(line, id); return;
+  }
   if(cloudReady()){ S.speakerOn=true; cloudSpeak(line); return; }
   if(!('speechSynthesis'in window))return;
   speechSynthesis.cancel();
@@ -16502,6 +16819,10 @@ function renderCloudVoices(){
       persist && persist(); saveCloud && saveCloud();
       renderCloudVoices();
       if(typeof renderVoiceGrid==='function') renderVoiceGrid();
+      /* Every phone voice plays when you tap it. The premium ones said nothing
+         at all — you picked a name off a grid and had to go back to the chat to
+         find out what you had chosen. They audition now, same as the rest. */
+      try{ previewVoice(v); }catch(e){}
     };
     w.appendChild(b); });
 }
@@ -20884,54 +21205,90 @@ function toggleSpeaker(){
   S.speakerOn=!S.speakerOn;
   document.getElementById('spkBtn').classList.toggle('on',S.speakerOn);
   if(!S.speakerOn){ speechSynthesis.cancel(); speakQueue=0; setTalking(false); toast("Read-aloud off."); }
-  else toast("Read-aloud on.");
+  else {
+    /* Turning it on is a real tap, which is the only moment iOS will let us
+       wake the speech engine and bless the audio elements. Use it. Without
+       this the switch said on and nothing came out until hands-free had been
+       turned on and off again — which was doing the waking by accident. */
+    try{ unlockAudio(); }catch(e){}
+    toast("Read-aloud on.");
+  }
   updateStatus();
 }
 function toggleHandsFree(){
   S.handsFree=!S.handsFree;
   document.getElementById('hfBtn').classList.toggle('on',S.handsFree);
   syncMicUI();
-  if(S.handsFree){ toast("Hands-free on. I'll talk, you talk back."); S.speakerOn=true; document.getElementById('spkBtn').classList.add('on'); speechSynthesis.cancel(); speakQueue=0; micPaused=false; startListening(); }
-  else { toast("Hands-free off."); if(!S.ttsOn){ stopListening(); speechSynthesis.cancel(); } }
-  updateStatus();
-}
-function toggleMic(){
-  if(audioOn()){ // turn audio off entirely
-    S.ttsOn=false; S.handsFree=false;
-    document.getElementById('hfBtn').classList.remove('on');
-    /* Hard stop, not a polite one. If the session had already died without
-       telling us, recog.stop() does nothing and the button stays lit — which
-       is why turning it off used to need the hands-free dance. abort() and
-       clearing the flags by hand always works. */
-    try{ clearTimeout(_micWatchdog); }catch(e){}
-    try{ if(recog){ recog.onend=null; recog.onerror=null; recog.onresult=null;
-                    recog.abort && recog.abort(); } }catch(e){}
-    recog=null; listening=false; micPaused=false; _micRetried=false;
-    stopListening(); speechSynthesis.cancel();
-    syncMicUI();
-    toast("Voice off.");
-  } else {        // turn mic loop on — start NOW inside the tap (required by mobile browsers)
-    S.ttsOn=true; speechSynthesis.cancel(); speakQueue=0; micPaused=false;
-    toast("Mic on — listening. Tap again for voice off.");
-    startListening();
+  if(S.handsFree){
+    toast("Hands-free on. I'll talk, you talk back.");
+    S.speakerOn=true;
+    try{ document.getElementById('spkBtn').classList.add('on'); }catch(e){}
+    try{ speechSynthesis.cancel(); }catch(e){}
+    speakQueue=0; micPaused=false;
+    /* ══════════ GO THROUGH THE FRONT DOOR ═══════════════════════════════════
+       This called startListening() directly, which skips every check — so
+       switching hands-free on while a clip was still playing opened the
+       recogniser straight into a busy audio session and killed it on the spot.
+       That is why turning it on stopped everything working.
+
+       reopenMic waits for her to finish, gives the session a moment to come
+       free, and only then opens. Same door everything else uses. */
+    reopenMic();
   }
-  syncMicUI(); updateStatus();
+  else {
+    toast("Hands-free off.");
+    stopListening(); try{ speechSynthesis.cancel(); }catch(e){}
+  }
+  updateStatus();
 }
 function updateStatus(){
   var parts=[];
   if(S.handsFree) parts.push("hands-free 🎙️");
-  else if(S.ttsOn) parts.push("mic on 🎤");
   parts.push(S.speakerOn?"read-aloud on 🔊":"read-aloud off");
   document.getElementById('ftStatus').textContent='Connected · '+parts.join(' · ');
 }
+/* ══════════ READ-ALOUD TURNING ITSELF ON ═══════════════════════════════════
+   Seventeen places set S.speakerOn = true so their own clip will play — the
+   weather, the forage facts, the bedtime stories, the joke replays. Each is
+   reasonable on its own. Together they mean the switch flips without anybody
+   touching it, and the button on screen does not follow, so it reads as off
+   while she is talking.
+
+   Worse, it caused this: read-aloud comes on by itself, a clip starts, and the
+   mic — which was fine a second ago — is killed by an audio session nobody
+   asked for.
+
+   This keeps the button honest. It cannot stop the flag being set, but it
+   makes the screen tell the truth about it, and it is called wherever the mic
+   state is refreshed. */
+function syncSpeakerUI(){
+  try{
+    var b=document.getElementById('spkBtn');
+    if(b) b.classList.toggle('on', !!S.speakerOn);
+  }catch(e){}
+}
+
 function syncMicUI(){
-  var mic=document.getElementById('micBtn');
-  mic.classList.toggle('armed', audioOn() && !listening);
-  mic.classList.toggle('live', listening);
+  /* The listening state shows on the hands-free button now — it is the only
+     thing that opens the microphone, so it should be the only thing that
+     reports on it. Lit while it is waiting, brighter while it is hearing you. */
+  var hf=document.getElementById('hfBtn');
+  if(hf){
+    hf.classList.toggle('on', !!S.handsFree);
+    hf.classList.toggle('live', listening);
+  }
+  syncSpeakerUI();
 }
 
 /* ════ SPEECH RECOGNITION ════ */
 var recog=null, listening=false, micPaused=false, recOpen=false;
+/* ══════════ WHAT SHE SAID IS NOT WHAT YOU SAID ═══════════════════════════════
+   Stopping the native recogniser resolves its start() promise with whatever it
+   caught — and when we stop it BECAUSE Honey is about to speak, what it caught
+   is often the tail of her last line coming back through the microphone. That
+   went straight into userSays() as if you had typed it, and she answered
+   herself. Set on every deliberate stop, cleared the moment a real turn opens. */
+var _micDiscard=false;
 /* ══════════ HANDS-FREE ONLY EVER WORKED ONCE ══════════════════════════════
    This used to be four lines that gave up quietly:
 
@@ -20952,6 +21309,25 @@ var recog=null, listening=false, micPaused=false, recOpen=false;
    not Honey managed to say anything at all. */
 var _micWaitTimer=null, _micWaitUntil=0;
 
+/* ══════════ THE GAP BETWEEN DECIDING AND OPENING ═══════════════════════════
+   _micTry checks that nothing is speaking, then waits 700ms for the audio
+   session to come free before it actually opens the microphone. Nothing owned
+   that 700ms. If a new line started inside it — and it routinely does, because
+   that is the exact moment her reply lands — the drain's "is the mic open?"
+   check saw listening=false and _micStarting=false, because the mic had not
+   opened YET. So it did not pause anything, she started talking, and 700ms
+   later the recogniser opened straight into her own voice.
+
+   That is the microphone lighting up while she speaks and transcribing her
+   back at you: the app is not hearing itself by accident, it is opening the
+   mic on a decision that stopped being true. The pending open is cancellable
+   now, and everything that starts speech cancels it. */
+var _micOpenTimer=null;
+var _micRecheck=0;
+function cancelPendingMicOpen(){
+  if(_micOpenTimer){ clearTimeout(_micOpenTimer); _micOpenTimer=null; }
+}
+
 function stopMicWait(){
   if(_micWaitTimer){ clearTimeout(_micWaitTimer); _micWaitTimer=null; }
   _micWaitUntil=0;
@@ -20959,6 +21335,15 @@ function stopMicWait(){
 
 function reopenMic(){
   stopMicWait();
+  /* ══════════ NOTHING STAYS STUCK ═══════════════════════════════════════════
+     "Mic gone even coming in and out" means a flag was left set — listening or
+     _micStarting true with no session behind it, so every later attempt fell
+     straight out at the guard and nothing could ever start again.
+
+     Coming back through here is always a fresh start. If a session really is
+     running, the plugin's own stop clears it; if one only exists in these two
+     variables, this clears that. */
+  if(!listening){ _micStarting=false; }
   if(!audioOn())     return;   // hands-free turned off — stop
   if(recOpen)        return;   // record sheet owns the mic
   if(micPaused && !listening){ /* keep going — startListening clears it */ }
@@ -20970,115 +21355,295 @@ function _micTry(){
   _micWaitTimer=null;
   if(!audioOn() || recOpen){ stopMicWait(); return; }
   if(listening){ stopMicWait(); return; }          // already open, nothing to do
+  /* ══════════ SHE IS STILL TALKING ═══════════════════════════════════════
+     This asked speechSynthesis and speakQueue — which between them cover the
+     device voice and the clone, but NOT Honey's own recorded clips. Those go
+     through _spDrain and never touch speakQueue at all.
+
+     So after her first reply the check said "not busy", the recogniser was
+     started while a clip was still playing, and on iOS that fails: the audio
+     session is in playback mode and recognition cannot take the microphone.
+     No error surfaces. The mic simply never opens.
+
+     Which is exactly the shape of it — the first turn works because nothing
+     has played yet, and every turn afterwards collides with her own voice.
+
+     _spActive and the queue length are the real answer. */
   var busy=false;
-  try{ busy = (window.speechSynthesis && speechSynthesis.speaking) || speakQueue>0; }catch(e){}
+  try{
+    busy = _awaitingReply
+        || (window.speechSynthesis && speechSynthesis.speaking)
+        || speakQueue>0
+        || (typeof _spActive!=='undefined' && _spActive)
+        || (typeof _spQueue!=='undefined' && _spQueue.length>0);
+  }catch(e){}
   if(busy){
     if(Date.now() < _micWaitUntil){ _micWaitTimer=setTimeout(_micTry, 400); return; }
     // Twenty-five seconds is long enough that something is stuck. Open anyway
     // rather than leave the person talking to a microphone that isn't on.
   }
   stopMicWait();
-  startListening();
+  /* A breath after the last clip ends. iOS does not release the audio session
+     the instant playback stops, and starting into that gap is the same
+     collision by another name. */
+  /* And the same courtesy the other way. The audio element has just been
+     discarded, but iOS does not free the playback session the instant it goes
+     — opening straight into that gap is the same collision by another name. */
+  cancelPendingMicOpen();
+  _micOpenTimer = setTimeout(function(){
+    _micOpenTimer = null;
+    try{ _spReleaseDevice(); }catch(e){}
+    /* Check again on the way in, not just on the way out. Something may have
+       started speaking during the wait, and opening now would put the
+       recogniser in front of her voice. Go round again instead. */
+    var stillBusy = false;
+    try{
+      stillBusy = (window.speechSynthesis && speechSynthesis.speaking)
+               || speakQueue>0
+               || (typeof _spActive!=='undefined' && _spActive)
+               || (typeof _spQueue!=='undefined' && _spQueue.length>0)
+               || (typeof cloudPlaying!=='undefined' && cloudPlaying);
+    }catch(e){}
+    /* Going round again resets the 25-second budget, so cap it. Six passes is
+       four seconds of her still talking, which is a long line but a real one.
+       After that, open anyway rather than leave somebody talking to a
+       microphone that never came back. */
+    if(stillBusy && _micRecheck < 6){ _micRecheck++; if(audioOn()) reopenMic(); return; }
+    _micRecheck = 0;
+    try{ if(!listening && audioOn() && !recOpen) startListening(); }catch(e){}
+  }, 700);
 }
+/* ══════════ THE MICROPHONE ══════════════════════════════════════════════════
+   This used webkitSpeechRecognition, the browser API. In Safari proper that
+   works. Inside WKWebView — which is what Capacitor runs the app in — it is
+   not reliably supported: the object exists, start() returns without
+   complaint, and then nothing ever comes back. No error, no event, no
+   transcript. Which is exactly what it did: one sentence on the very first
+   tap, silence afterwards, and a button that would not turn off because the
+   code believed a session was running.
+
+   Two watchdogs were written against that and neither could work, because
+   there was nothing to catch. The API was not failing; it was absent.
+
+   So the native recognizer does the job now — Apple's own SFSpeechRecognizer
+   through @capacitor-community/speech-recognition. Same engine the system
+   keyboard uses. It handles a room with a fan in it, survives long sessions,
+   and reports partial results as somebody speaks.
+
+   The browser API is kept as a fallback for the Pages build, where there is no
+   plugin. It still will not work well there, but a browser is for reading
+   rather than talking, and typing is unaffected. */
+function nativeSpeech(){
+  try{
+    var C = window.Capacitor;
+    if(!C || !C.isNativePlatform || !C.isNativePlatform()) return null;
+    var P = (C.Plugins && C.Plugins.SpeechRecognition) ||
+            (C.registerPlugin && C.registerPlugin('SpeechRecognition'));
+    return P || null;
+  }catch(e){ return null; }
+}
+
+/* ══════════ DON'T SECOND-GUESS THE PERMISSION ═════════════════════════════
+   The first version called checkPermissions() and compared the answer against
+   a shape I had assumed — r.speechRecognition === 'granted'. Plugin versions
+   differ, and if that comparison is wrong the code decides permission was
+   refused when it was not: it asks again, fails the same test again, shows the
+   "allow the microphone" message and switches the whole thing off. Asked three
+   times and dead afterwards is exactly what that looks like.
+
+   So it does not ask in advance any more. It calls start(). iOS prompts by
+   itself the first time and never again, and only if start actually fails with
+   a permission error do we say anything. The system is the authority on its
+   own permissions, not my guess about a return value. */
+function micStartNative(P){
+  return P.start({ language:'en-US', maxResults:1, partialResults:true, popup:false });
+}
+
 function startListening(){
+  if(listening || _micStarting) return;
+  var P = nativeSpeech();
+
+  if(P){
+    /* ══════════ ONE SESSION, ONE OWNER ═══════════════════════════════════
+       The first attempt had two things handling the end of a turn: the
+       start() promise, which resolves with the final words, AND a
+       listeningState listener firing on 'stopped'. Both asked for the mic
+       again, so a second session opened while the first was still closing and
+       the recognizer locked — which is why it worked for a minute and then
+       behaved exactly as before.
+
+       The promise is the only owner now. listeningState only updates the
+       button, never restarts anything. And the guard flag is set before the
+       permission check rather than inside it, so a second tap while that is
+       still running cannot slip past. */
+    _micStarting = true;
+    (function(){
+      /* Always clear listeners before adding, so repeated turns cannot stack
+         up handlers that all fire at once. */
+      try{ P.removeAllListeners && P.removeAllListeners(); }catch(e){}
+
+      try{
+        P.addListener('partialResults', function(data){
+          try{
+            var t = data && data.matches && data.matches[0];
+            if(t) showInterim(t);
+          }catch(e){}
+        });
+        P.addListener('listeningState', function(data){
+          /* UI only. Never restarts. */
+          try{
+            if(data && data.status === 'stopped'){ listening=false; syncMicUI(); }
+          }catch(e){}
+        });
+      }catch(e){}
+
+      micPaused=false; _micDiscard=false; _micRecheck=0;
+      listening=true; _micStarting=false; syncMicUI();
+
+      micStartNative(P)
+        .then(function(res){
+          listening=false; _micStarting=false; syncMicUI(); clearInterim();
+          try{ P.removeAllListeners && P.removeAllListeners(); }catch(e){}
+          var t = res && res.matches && res.matches[0];
+          /* ══════════ DON'T REOPEN INTO HER ANSWER ═══════════════════════════
+             This reopened the mic 600ms after catching your words — but she has
+             not started speaking by then. She is still "typing". So the busy
+             check saw nothing playing, opened the microphone, and then she
+             spoke straight into it and the app transcribed her own voice back
+             as if you had said it.
+
+             The speech queue reopens the mic itself when it finishes, which is
+             the only moment that is actually safe. So nothing is scheduled
+             here. The fallback below covers the case where she never speaks at
+             all — a message with no clip and read-aloud off — because then
+             nothing would ever come round to reopen it. */
+          if(_micDiscard){
+            /* We ended this turn ourselves so Honey could speak. Anything in
+               here is her, or a fragment of a turn nobody finished. Drop it. */
+            _micDiscard=false;
+            if(window.__OBDEBUG && t) toast("mic: discarded \""+String(t).slice(0,24)+"\"");
+            return;
+          }
+          if(t && String(t).trim()){
+            _awaitingReply = true;
+            userSays(String(t).trim());
+            setTimeout(function(){
+              if(_awaitingReply){ _awaitingReply=false; if(audioOn()) reopenMic(); }
+            }, 4000);
+          } else {
+            if(audioOn()) setTimeout(reopenMic, 600);
+          }
+        })
+        .catch(function(err){
+          listening=false; _micStarting=false; syncMicUI(); clearInterim();
+          try{ P.removeAllListeners && P.removeAllListeners(); }catch(e){}
+          var msg = (err && err.message) ? err.message : String(err||'');
+          if(/denied|not.?allowed|permission/i.test(msg)){
+            toast("Microphone permission is off. Turn it on in Settings \u203a Tell Me Honey.");
+            S.ttsOn=false; S.handsFree=false; updateStatus();
+            return;
+          }
+          /* Silence, or a turn that caught nothing. Only hands-free tries again. */
+          if(S.handsFree && audioOn()) setTimeout(reopenMic, 800);
+        });
+    })();
+    return;
+  }
+
+  /* ── no plugin: the browser API, for the Pages build ── */
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){ toast("Voice input isn't supported here. Try Chrome or Safari."); S.ttsOn=false; S.handsFree=false; syncMicUI(); updateStatus(); return; }
-  if(listening){ return; }
-  // clear any stale recognizer
+  if(!SR){
+    toast("Talking to Honey works in the app on your phone. Here, type to her.");
+    S.ttsOn=false; S.handsFree=false; syncMicUI(); updateStatus(); return;
+  }
   if(recog){ try{recog.onend=null;recog.onerror=null;recog.onresult=null;recog.abort&&recog.abort();}catch(e){} recog=null; }
   micPaused=false;
   try{
     recog=new SR(); recog.lang='en-US'; recog.interimResults=false; recog.continuous=false;
-    recog.onresult=e=>{ _micRetried=false; clearTimeout(_micWatchdog);
+    recog.onresult=function(e){
       var t=e.results[0][0].transcript; stopListening();
       if(t&&t.trim()) userSays(t.trim());
-      /* Kick off the wait now. reopenMic() holds off while she's talking, and
-         opens as soon as she stops. Without this, a reply that went silent —
-         no recorded clip — meant the speech chain never ran and nothing ever
-         asked for the microphone back. */
       if(audioOn()) setTimeout(reopenMic, 500);
     };
-    /* ══════════ AN ERROR IS NOT THE END OF THE CONVERSATION ═══════════
-       This used to show a message and stop. So the first no-speech — one
-       pause a beat too long between turns — killed hands-free for good, and
-       coming out and back in did not bring it back, because nothing here ever
-       asked for the microphone again.
-
-       Three or four turns is exactly how long it takes to leave one gap.
-
-       Only a genuine permission refusal should end it. Everything else —
-       silence, an abort, a network blip, the mic being briefly grabbed by
-       something else — is worth another go. And in hands-free, silence is not
-       an error at all: it is somebody thinking. It should say nothing and
-       simply keep listening. */
-    recog.onerror=ev=>{ listening=false; syncMicUI();
+    recog.onerror=function(ev){
+      listening=false; syncMicUI();
       var err=(ev && ev.error) || '';
       if(err==='not-allowed'||err==='service-not-allowed'){
-        toast("To talk to Honey, allow the microphone in your iPhone Settings \u203a Tell Me Honey.");
+        toast("To talk to Honey, allow the microphone in Settings.");
         S.ttsOn=false; S.handsFree=false;
         try{ document.getElementById('hfBtn').classList.remove('on'); }catch(e){}
-        updateStatus();
-        return;                       // the only one that really stops us
+        updateStatus(); return;
       }
-      if(err==='no-speech'){
-        // Hands-free: say nothing, just open again. Otherwise a gentle nudge.
-        if(!S.handsFree) toast("Didn't hear anything \u2014 tap \ud83c\udfa4 to try again.");
-      } else if(err!=='aborted'){
-        if(!S.handsFree) toast("Mic hiccup ("+err+"). Tap \ud83c\udfa4 to retry.");
-      }
-      micPaused=false;                // do not let the flag block the reopen
+      micPaused=false;
       if(audioOn()) setTimeout(reopenMic, 600);
     };
-    /* onresult sets micPaused so the mic does not reopen while Honey is
-       replying. But in hands-free that flag must not be the thing that ends
-       the conversation — reopenMic() waits for her to finish and then opens,
-       so it is safe to ignore it here. */
-    recog.onend=()=>{ listening=false; syncMicUI();
+    recog.onend=function(){
+      listening=false; syncMicUI();
       if(!audioOn() || recOpen) return;
       if(S.handsFree){ setTimeout(reopenMic, 350); return; }
-      if(!micPaused && !speechSynthesis.speaking && speakQueue===0)
-        setTimeout(reopenMic,350); };
-    /* ══════════ PROVE IT ACTUALLY STARTED ═══════════════════════════════
-       On iOS, recog.start() can return perfectly happily and the session then
-       dies without ever firing onend. Nothing tells the app, so `listening`
-       stays true, the button stays lit red, and every word after the first is
-       spoken into a microphone that is not there. That is precisely what it
-       looks like from the outside: the first sentence goes through, and then
-       nothing, forever, with the light still on.
-
-       onaudiostart is the browser saying it has the microphone. If that has
-       not arrived within a second and a half, the session never really began.
-       Tear it down and try once. If the second attempt is also silent, say so
-       plainly rather than leaving somebody talking to a red dot. */
-    _micLiveConfirmed=false;
-    recog.onstart=function(){ _micLiveConfirmed=true; };
-    recog.onaudiostart=function(){ _micLiveConfirmed=true; };
-
+      if(!micPaused && !speechSynthesis.speaking && speakQueue===0) setTimeout(reopenMic,350);
+    };
     recog.start(); listening=true; syncMicUI();
-
-    clearTimeout(_micWatchdog);
-    _micWatchdog=setTimeout(function(){
-      if(_micLiveConfirmed || !listening) return;
-      try{ if(recog){ recog.onend=null; recog.onerror=null; recog.onresult=null;
-                      recog.abort && recog.abort(); } }catch(e){}
-      recog=null; listening=false; micPaused=false; syncMicUI();
-      if(_micRetried){
-        _micRetried=false;
-        toast("The microphone stopped responding. Tap \ud83c\udfa4 to start it again.");
-        S.ttsOn=false; S.handsFree=false;
-        try{ document.getElementById('hfBtn').classList.remove('on'); }catch(e){}
-        updateStatus(); syncMicUI();
-        return;
-      }
-      _micRetried=true;
-      startListening();
-    }, 1500);
-
-  }catch(e){ listening=false; syncMicUI(); toast("Couldn't start the mic — tap \ud83c\udfa4 again."); }
+  }catch(e){ listening=false; syncMicUI(); toast("Couldn't start the mic \u2014 tap \ud83c\udfa4 again."); }
 }
-function pauseListening(){ micPaused=true; if(recog)try{recog.stop()}catch(e){}; listening=false; syncMicUI(); }
-function stopListening(){ micPaused=true; listening=false; clearTimeout(_micWatchdog);
-  if(recog)try{recog.stop()}catch(e){}; syncMicUI(); }
+
+
+/* Words appearing as they are spoken. Shown in the input pill so the person
+   can see they are being heard without the keyboard being up. */
+function showInterim(t){
+  try{
+    var el=document.getElementById('chatInput');
+    if(el){ el.value=t; el.setAttribute('data-interim','1'); }
+  }catch(e){}
+}
+function clearInterim(){
+  try{
+    var el=document.getElementById('chatInput');
+    if(el && el.getAttribute('data-interim')){ el.value=''; el.removeAttribute('data-interim'); }
+  }catch(e){}
+}
+
+
+/* ══════════ STAND ASIDE WHILE SHE TALKS ═══════════════════════════════════
+   This only ever told the browser API to stop. The native recogniser was never
+   told anything — so when Honey began speaking, the code marked the mic paused
+   and carried on while the recogniser was still running underneath. Playback
+   took the audio session, the live session died with it, and nothing knew.
+
+   Which is what "I waited too long and she talked and killed it" is: the mic
+   was open, her voice came in over the top, and iOS handed the session to
+   playback. Only one of them can have the microphone.
+
+   So both engines are told now, and the flag is cleared by hand. reopenMic
+   brings it back once she has finished. */
+function pauseListening(){
+  micPaused=true; listening=false; _micStarting=false; _micDiscard=true;
+  sessionToSpeaker();   // the recogniser has just let go — reclaim the speaker
+  try{ cancelPendingMicOpen(); }catch(e){}
+  try{ var P=nativeSpeech(); if(P){ P.stop(); } }catch(e){}
+  try{ if(recog) recog.stop(); }catch(e){}
+  try{ clearInterim(); }catch(e){}
+  syncMicUI();
+}
+/* ══════════ OFF MEANS OFF ═══════════════════════════════════════════════════
+   Turning the mic off used to call recog.stop() on a session that was never
+   really running, so nothing happened and the button stayed lit — which is why
+   it took the hands-free dance to clear it. Both engines are told to stop now,
+   and the flags are cleared by hand regardless of what either says. */
+function stopListening(){
+  micPaused=true; listening=false; _micStarting=false; _micDiscard=true;
+  sessionToSpeaker();
+  try{ cancelPendingMicOpen(); }catch(e){}
+  try{ clearTimeout(_micWatchdog); }catch(e){}
+  var P=nativeSpeech();
+  if(P){
+    try{ P.stop(); }catch(e){}
+    try{ P.removeAllListeners && P.removeAllListeners(); }catch(e){}
+  }
+  if(recog){ try{ recog.stop(); }catch(e){} }
+  try{ clearInterim(); }catch(e){}
+  syncMicUI();
+}
 
 
 /* ══════════ COMING BACK TO THE APP ═══════════════════════════════════════
