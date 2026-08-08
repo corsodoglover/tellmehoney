@@ -2605,7 +2605,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v270</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">all 36 cards now show where they come from · a recipe kept from inside a plant brings its ingredients to your list · the yellow vine by the honeysuckle is jessamine, and it is poison · kudzu is hairy, poison ivy is not · goldenrod never gave anybody hay fever</div></div>
+    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v271</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">the nerdy meter is back on every card · all 36 cards show where they come from · a recipe kept from inside a plant brings its ingredients to your list · the yellow vine by the honeysuckle is jessamine, and it is poison · kudzu is hairy, poison ivy is not</div></div>
   </div>
 </section>
 
@@ -8279,7 +8279,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v270";
+window.HONEY_BUILD = "v271";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -11591,7 +11591,7 @@ function nourishKey(){ return "nour:"+todayKey(); }
 /* Warm, true foraging facts drawn from Sally's own book, "Deep South & Divine:
    A Collection of Gourmet Edibles" — Southeast coastal yard plants, in her voice.
    Each keeps the book's "be 100% sure before you taste" safety spirit. */
-var FORAGE_BOOK = "From “Deep South & Divine: A Collection of Gourmet Edibles” — available on Amazon and at our site.";
+/* FORAGE_BOOK removed — the facts stand on their own without a sales line. */
 var FORAGE_FACTS=[
   "Japanese honeysuckle: pull the stamen through the back of a fresh bloom and there's a bead of sweet nectar — the old childhood “honeysuckle suck.” Eat the flowers only, never the berries.",
   "Japanese honeysuckle flowers steep into a fragrant tea, or pack them in simple syrup overnight for honeysuckle syrup over pancakes. (It's invasive in the South — picking flowers freely does no harm.)",
@@ -11642,7 +11642,11 @@ function forageTidbit(){
   var idx=Math.floor(Math.random()*FORAGE_FACTS.length);
   // play Honey's recorded clip through the proven speech queue (not blocked by autoplay)
   try{ S.speakerOn=true; enqueueSpeak("\u0000CLIP:forage_"+String(idx+1).padStart(2,'0')+"\u0001"+FORAGE_FACTS[idx]); }catch(e){}
-  return FORAGE_FACTS[idx] + "  Always be sure of what you pick — when in doubt, leave it be. " + FORAGE_BOOK;
+  /* The book credit and the Amazon line came off. These facts are good on
+     their own and anybody can look them up — the plant cards carry the real
+     sourcing now, and a fact that ends in a sales line reads like an advert
+     rather than something worth knowing. The safety sentence stays. */
+  return FORAGE_FACTS[idx] + "  Always be sure of what you pick — when in doubt, leave it be.";
 }
 
 /* ── FUN FACT LIBRARIES (animals / science / plants) ──
@@ -22419,7 +22423,11 @@ var RANGER_PLANTS={
     uses:[["\ud83c\udf72","Fil\u00e9 in gumbo"],["\ud83e\uddc2","Ground as a seasoning"],["\ud83c\udf5b","Thickening a stew"],["\ud83c\udf42","Dried for the winter"]],
     safety:"THE LEAVES, NOT THE ROOT \u2014 and this is the one card where the famous part is the part to leave alone. Sassafras root and bark are about 80 percent safrole by oil content, safrole causes liver cancer in animals, and the FDA banned it from food in December 1960 naming sassafras tea by name. So: no root tea, no bark tea, no matter what your grandmother did, and however much of it is growing there. The LEAVES are a different thing chemically \u2014 only traces of safrole, never banned, and sold in every grocery in Louisiana as fil\u00e9. Pick young leaves, dry them, grind them, and you have the real article. Not for pregnancy without asking a doctor first.",
     intro:"Sassafras \u2014 the mitten tree. The leaves ground up are fil\u00e9, the thing that makes gumbo gumbo.",
-    teach:["Three different leaf shapes on the same branch \u2014 a plain oval, a mitten with a thumb, and one with three lobes. Nothing else here does that, so it names itself.","Dry the young leaves, grind them fine, and that is fil\u00e9 \u2014 the same powder they sell in a tin in New Orleans. The Choctaw were doing it first.","Stir fil\u00e9 in OFF the heat, right at the end. Boil it and it goes stringy, which is the one mistake everybody makes once.","Root beer got its flavour and its name from the root of this tree, until 1960. The soda you buy now is either artificial or made from an extract with the safrole taken out.","Sassafras albidum. Crush a leaf and smell it \u2014 that sweet, slightly citrus smell is how you will know it from across the yard next time."]},
+    teach:[
+      "Three different leaf shapes on the same branch \u2014 a plain oval, a mitten with a thumb, and one with three lobes. Nothing else here does that, so it names itself.",
+      "Dry the young leaves, grind them fine, and that is fil\u00e9 \u2014 the same powder they sell in a tin in New Orleans. The Choctaw were doing it first.",
+      "Stir fil\u00e9 in OFF the heat, right at the end. Boil it and it goes stringy, which is the one mistake everybody makes once.",
+      "Root beer got its flavour and its name from the root of this tree, until 1960. The soda you buy now is either artificial or made from an extract with the safrole taken out.  Sassafras albidum. Crush a leaf and smell it \u2014 that sweet, slightly citrus smell is how you will know it from across the yard next time."]},
 
   e28:{name:"Hairy Bittercress",
     alt:["Hairy Bittercress", "Bittercress", "Flick Weed", "Shot Weed", "Land Cress",
@@ -22539,7 +22547,11 @@ var RANGER_PLANTS={
     uses:[["🍵","Tea"],["🌸","Fresh"],["🥗","Garnish"]],
     safety:"PETALS AND YOUNG LEAVES. The petals of both are good \u2014 fresh in a salad, or dried and steeped, which makes a tart pink tea. The young leaves are a pot herb: cooked down soft, the way you would any green, and they thicken a little as they go. Not the woody stems, not the seed pods, not the roots. Both are mallows and neither has a dangerous look-alike in a Southern yard, but confirm you have a hibiscus before you pick \u2014 five petals, a long central column of stamens, and leaves shaped like a broad hand. Take them from a shrub nobody has sprayed; these are garden plants and garden plants get treated.",
     intro:"Confederate rose — the bloom that opens white and blushes to pink by evening. A gentle mallow you can steep.",
-    teach:["The flower that changes color through the day — white to deep pink by dusk.","A hibiscus cousin, so the petals make a mild, pretty tea.","Steep the fresh blooms for a soft floral tea or use them as a garnish.","Hibiscus mutabilis — 'mutabilis' means changeable, for those color-shifting petals. Same mallow family as molokhia and common mallow, but its own plant.","If a recipe calls for MOLOKHIA \u2014 and half the Middle East and North Africa cooks with it \u2014 that is Corchorus olitorius, jute mallow, a cousin in the same family. The young leaves here are used the very same way, cooked down soft and slightly thickening. You will find molokhia in a hundred recipes and Confederate rose leaves in none, so cook them as though the recipe meant these."]},
+    teach:[
+      "The flower that changes color through the day — white to deep pink by dusk.",
+      "A hibiscus cousin, so the petals make a mild, pretty tea.",
+      "Steep the fresh blooms for a soft floral tea or use them as a garnish.",
+      "Hibiscus mutabilis — 'mutabilis' means changeable, for those color-shifting petals. Same mallow family as molokhia and common mallow, but its own plant.  If a recipe calls for MOLOKHIA \u2014 and half the Middle East and North Africa cooks with it \u2014 that is Corchorus olitorius, jute mallow, a cousin in the same family. The young leaves here are used the very same way, cooked down soft and slightly thickening. You will find molokhia in a hundred recipes and Confederate rose leaves in none, so cook them as though the recipe meant these."]},
   /* e3 removed 4 August — Molokhia folded into the Rose Mallow card. */
   e27:{/* Yellow wood sorrel and pink sorrel are the same genus, look the same,
    taste the same and are eaten the same way — one card covers both, with
@@ -22754,7 +22766,11 @@ var RANGER_PLANTS={
     uses:[["\ud83e\udd57","Whole in a salad"],["\ud83e\udd52","Straight off the vine"],["\ud83e\uded9","Pickled like a gherkin"],["\ud83e\uddc0","On a cheese board"]],
     safety:"GREEN ONLY \u2014 NEVER THE BLACK ONES. The little fruits look like miniature watermelons, and while they are light green, speckled and HARD they are good food, tasting of a strong cucumber. Once they darken and soften they become a powerful laxative: Clemson says the black ripe fruit should not be consumed, and NC State calls it a strong laxative that causes diarrhea. One black one is enough to ruin a day. And even the green ones do not agree with everybody \u2014 some people are sensitive to the same effect \u2014 so the first time, eat one or two and wait a day before you eat a handful. Firm and light green with speckles: yes. Soft, dark, or black: leave it on the vine.",
     intro:"Creeping cucumber \u2014 tiny watermelons on a thin vine. Eat them green and hard; leave the black ones alone.",
-    teach:["They look like watermelons the size of a jelly bean, hanging under the leaves where you have to look for them.","Light green, speckled and firm is the eating stage. That is the whole skill of this plant.","Once they go soft and dark, that is the plant telling you it is done with you. Believe it.","The first time, one or two and wait a day. People differ, and this is not a plant to find that out about in bulk.","Melothria pendula. Only a distant cousin of the cucumber in your fridge, despite tasting so much like one."]},
+    teach:[
+      "They look like watermelons the size of a jelly bean, hanging under the leaves where you have to look for them.",
+      "Light green, speckled and firm is the eating stage. That is the whole skill of this plant.",
+      "Once they go soft and dark, that is the plant telling you it is done with you. Believe it.",
+      "The first time, one or two and wait a day. People differ, and this is not a plant to find that out about in bulk.  Melothria pendula. Only a distant cousin of the cucumber in your fridge, despite tasting so much like one."]},
 
   e17:{name:"Mugwort",
     alt:["Mugwort", "Common Wormwood", "Felon Herb", "Chrysanthemum Weed", "Wild Wormwood"], altOK:false,
@@ -24111,7 +24127,28 @@ function rangerShowNotEdible(id,p){
     '</div></div>'+
     '<p style="font-size:11px;color:var(--muted);margin:10px 2px 0;line-height:1.5">'+p.intro+'</p>';
 }
-function rangerTeach(sl,id){var v=+sl.value;sl.parentNode.querySelector('.rnlab').textContent=RANGER_NLAB[v];sl.parentNode.querySelector('.rte').textContent=RANGER_PLANTS[id].teach[v];}
+/* The meter used to read RANGER_PLANTS only, so dragging it on a Backyard
+   card threw and the fact never changed. It looks across every shelf now,
+   the same way the plant index does, and does nothing quietly if a card has
+   no facts written yet rather than breaking the card around it. */
+function rangerTeachFacts(id){
+  try{
+    var shelves = rangerShelves();
+    for(var i=0;i<shelves.length;i++){
+      var book = shelves[i][1];
+      if(book && book[id] && Array.isArray(book[id].teach) && book[id].teach.length) return book[id].teach;
+    }
+  }catch(e){}
+  return null;
+}
+function rangerTeach(sl,id){
+  var facts = rangerTeachFacts(id); if(!facts) return;
+  var v = Math.max(0, Math.min(+sl.value, facts.length-1));
+  var lab = sl.parentNode.querySelector('.rnlab');
+  var box = sl.parentNode.querySelector('.rte');
+  if(lab) lab.textContent = RANGER_NLAB[v] || '';
+  if(box) box.textContent = facts[v];
+}
 
 function rangerUnknownPlant(top){
   var box=document.getElementById('plantHubResult');
@@ -26357,6 +26394,16 @@ function rangerShowShelfPlant(id, shelf, top){
       '<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:2px">'+uses+'</div>'+
       yardEatHTML(p)+
       yardSourceHTML(p)+
+      /* The nerdy meter never drew on these cards, so the backyard plants had
+         no facts at all - the one part of a card people actually play with.
+         Same slider as a Ranger card, drawn only when facts exist, and the
+         max follows the array so a card with five never hides the last one. */
+      ((p.teach && p.teach.length)
+        ? '<div style="background:rgba(255,255,255,.05);border-radius:11px;padding:11px 12px;margin-top:11px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:var(--muted)">\ud83c\udf3f Nerdy meter</span><span class="rnlab" style="font-size:11px;color:var(--gold);font-weight:700">'+RANGER_NLAB[0]+'</span></div>'+
+          '<input type="range" min="0" max="'+(p.teach.length-1)+'" step="1" value="0" style="width:100%;accent-color:var(--gold)" oninput="rangerTeach(this,\''+id+'\')">'+
+          '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted)"><span>breezy</span><span>fact</span><span>teach</span><span>nerd</span></div>'+
+          '<div class="rte" style="background:rgba(0,0,0,.25);border-radius:9px;padding:9px 11px;margin-top:9px;font-size:12.5px;line-height:1.5">'+p.teach[0]+'</div></div>'
+        : '')+
       '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:9px 11px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11px;color:#ffcf6b;line-height:1.45">'+p.safety+'</p></div>'+
       '<button class="home-half" style="width:100%" id="shYard_'+id+'" onclick="shelfYardToggle(\''+id+'\')">'+(yardHas(shelf==='garden'?('gd:'+id):id)?'✓ Growing at my place':'🌱 This grows in my yard')+'</button>'+
       plantActionSheet(id, p, {yardToggle:false})+'<div id="plantRecipes_'+id+'"></div>'+
@@ -26687,6 +26734,12 @@ var BACKYARD={
          url:"https://plants.ces.ncsu.edu/plants/plantago-major/",
          checked:20260808},
     safety:"NOT THE BANANA — DIFFERENT PLANT ENTIRELY. The plantain you fry in slices is a kind of banana and has nothing to do with this one; they only share a name. THIS plantain is the flat rosette in your lawn with strong stringy veins running the length of the leaf — pull one apart slowly and you will see them, like little threads. That is the test, and nothing harmful in a Carolina yard has it. Broadleaf has wide leaves, narrowleaf has long skinny ones; both are food, both taste better young and small. It is also the famous \u201cbee sting leaf\u201d — chew a leaf and press it on a sting or a bite. Grandma knew. THE ONE REAL RISK IS THE GROUND: this is the most walked-on, most mowed, most sprayed plant in America, and it grows exactly where people treat their lawns. Take it from ground you know, not a verge or a ballfield.",
+    teach:[
+      "The bee sting leaf. Chew one and press it on a sting or a bite — grandmothers have done it for as long as anybody can remember.",
+      "It is not the banana. The plantain you fry in slices is a kind of banana and shares nothing with this one but a name.",
+      "Pull a leaf apart slowly and strong stringy veins run the whole length of it, like threads. Nothing harmful in a Carolina yard does that. Broadleaf is wide, narrowleaf is long and skinny, and both are food — best young and small.",
+      "Plantago major. The settlers' boots carried it everywhere they walked, which is why some tribes called it white man's footprint. Its cousin Plantago ovata is where psyllium husk comes from — the fibre in the tub at the pharmacy."],
+    
     wow:"Native peoples called it \u201cwhite man's footprint\u201d — it followed settlers so faithfully it sprouted wherever they walked. And the narrow-leaved cousin's flower buds taste like mushrooms in butter.",
     spot:"Broadleaf: a ground rosette of wide oval leaves with parallel veins that pull like celery strings. Narrowleaf: long ribbed lance leaves and a short dark flower head like a tiny torch.",
     eat:"Young leaves raw or cooked like spinach — older ones get stringy, so cook those. Narrowleaf buds sauté like mushrooms."},
@@ -26701,6 +26754,12 @@ var BACKYARD={
          url:"https://plants.ces.ncsu.edu/plants/stellaria-media/",
          checked:20260808},
     safety:"Check for that one-sided hair line. If the stem's hairy all over or oozes milky sap, it's not our chickweed — walk on by.",
+    teach:[
+      "A mild sweet green that turns up in the cool months, when almost nothing else is growing.",
+      "One line of fine hairs runs down one side of the stem, switching sides at each joint. That single line is how you know it.",
+      "Scarlet pimpernel grows in the same ground and looks much the same before it flowers — but it is toxic, and it has no hair line. If the stem is bare, or hairy all over, or weeps milky sap, it is not chickweed.",
+      "Stellaria media. Five petals, each split so deeply it looks like ten. The flowers open in the morning, stay about twelve hours, and will not open at all on a dull day — and the leaves fold up at night over the new buds."],
+    
     wow:"There's a single line of hairs running up one side of the stem — switching sides at each leaf pair, like a tiny mohawk changing lanes. No lookalike has it.",
     spot:"A soft sprawling mat of small oval leaves with tiny white star flowers — five petals split so deep they look like ten.",
     eat:"The whole tender top — stems, leaves, flowers — raw. Tastes like sweet corn silk."},
@@ -26729,6 +26788,12 @@ var BACKYARD={
          url:"https://hort.extension.wisc.edu/articles/common-purslane-portulaca-oleracea/",
          checked:20260808},
     safety:"Its lookalike, spurge, is flat and milky — snap a stem. Milky sap means put it down; clear juice means supper.",
+    teach:[
+      "A fat little succulent that grows out of sidewalk cracks in the worst of the summer heat, and tastes bright and lemony.",
+      "Snap a stem. Clear juice means supper. Milky white sap means spurge, and spurge is not food.",
+      "Purslane is thick and fleshy all over — paddle leaves, smooth reddish stems lying flat in a mat. Spurge is thin and papery with hairy stems, and its little leaves sit in pairs. They grow side by side, so check every handful, not just the first.",
+      "Portulaca oleracea. It carries more omega-3 than any other leafy green anybody has measured, and in a drought it switches how it breathes — opening its pores at night instead of in the day, so it loses less water. That is why it is still plump when everything around it has given up."],
+    
     wow:"This sidewalk-crack \u201cweed\u201d has more omega-3s than any other leafy green ever tested. Gardeners pull it and buy fish oil — the joke writes itself.",
     spot:"A ground-hugging succulent with reddish stems and fat, smooth, paddle-shaped leaves — like a tiny jade plant. Loves heat and bare dirt.",
     eat:"Stems and leaves raw — crunchy, lemony, a little salty. Mexicans cook it as verdolagas with pork."},
@@ -26744,6 +26809,12 @@ var BACKYARD={
          url:"https://plants.ces.ncsu.edu/plants/lamium-amplexicaule/",
          checked:20260808},
     safety:"Square stem, no strong smell, purple tops — and here's the comfort: these two grow tangled together and both are friendly. One mix-up that costs you nothing.",
+    teach:[
+      "Those purple carpets across the fields in early spring, blooming before the mowers wake up.",
+      "Dead nettle only means it cannot sting. It wears the nettle's costume and none of its temper.",
+      "Henbit and purple deadnettle grow tangled together and both are friendly, so a mix-up costs you nothing. Henbit's upper leaves sit straight on the stem and wrap it like a collar; deadnettle's have little stalks and stack up like a pagoda, blushing purple at the top.",
+      "Lamium amplexicaule — amplexicaule means clasping the stem, for exactly those collar leaves. It is in the mint family but has almost no mint smell, and it is one of the first things feeding the honeybees each year."],
+    
     wow:"Those purple carpets across fields every early spring? Free salad greens, blooming before the mowers wake up. And \u201cdead\u201d nettle just means it can't sting — nettle's costume, none of the bite.",
     spot:"Mint cousins with square stems and small purple trumpet flowers. Henbit's round scalloped leaves hug the stem like collars; deadnettle's are triangular, stacked like a pagoda, blushing purple on top.",
     eat:"Leaves, stems, and flowers of either — raw, blended into pesto, or cooked. Henbit's like celery with a whisper of mint."}
@@ -27347,6 +27418,16 @@ function yardShow(id){
       '<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:2px">'+uses+'</div>'+
       yardEatHTML(p)+
       yardSourceHTML(p)+
+      /* The nerdy meter never drew on these cards, so the backyard plants had
+         no facts at all - the one part of a card people actually play with.
+         Same slider as a Ranger card, drawn only when facts exist, and the
+         max follows the array so a card with five never hides the last one. */
+      ((p.teach && p.teach.length)
+        ? '<div style="background:rgba(255,255,255,.05);border-radius:11px;padding:11px 12px;margin-top:11px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:var(--muted)">\ud83c\udf3f Nerdy meter</span><span class="rnlab" style="font-size:11px;color:var(--gold);font-weight:700">'+RANGER_NLAB[0]+'</span></div>'+
+          '<input type="range" min="0" max="'+(p.teach.length-1)+'" step="1" value="0" style="width:100%;accent-color:var(--gold)" oninput="rangerTeach(this,\''+id+'\')">'+
+          '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted)"><span>breezy</span><span>fact</span><span>teach</span><span>nerd</span></div>'+
+          '<div class="rte" style="background:rgba(0,0,0,.25);border-radius:9px;padding:9px 11px;margin-top:9px;font-size:12.5px;line-height:1.5">'+p.teach[0]+'</div></div>'
+        : '')+
       '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:9px 11px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11px;color:#ffcf6b;line-height:1.45">'+p.safety+'</p></div>'+
       '<button onclick="yardToggle(\''+id+'\',this);yardShow(\''+id+'\');openYardIndexRefresh()" style="width:100%;background:'+(have?'rgba(255,255,255,.06)':'linear-gradient(180deg,#e7c873,#caa44a)')+';color:'+(have?'var(--muted)':'#1a1405')+';border:'+(have?'1px solid rgba(255,255,255,.12)':'none')+';border-radius:13px;padding:13px;font-size:14.5px;font-weight:700;cursor:pointer">'+(have?'✓ Growing at my place':'＋ This grows at my place')+'</button>'+
     '</div></div>'+
