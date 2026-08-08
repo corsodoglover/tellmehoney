@@ -12,3 +12,4 @@ onapple*.html
 *.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
 tellmehoneyfullcopy/
 index[0-9]*.html
+.DS_Store
