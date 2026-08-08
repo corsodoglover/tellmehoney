@@ -2605,7 +2605,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v259</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">six new plants · chicory, sassafras, bittercress, lamb’s quarters, redbud, wild onion · one big picture on every card · add a picture from your phone, not just the camera · hands-free or read-aloud or type</div></div>
+    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v266</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">thirty-three plants · green cucumbers only, never the black · honeysuckle flowers, never the berries · add a picture from your phone, not just the camera · hands-free or read-aloud or type</div></div>
   </div>
 </section>
 
@@ -8279,7 +8279,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v259";
+window.HONEY_BUILD = "v266";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -22339,6 +22339,61 @@ function bootFallback(){
    Every safety line is quoted/condensed from the book's own NOTE for that plant. */
 var RANGER_ALL_NUTRIENTS=["Vit A","Vit C","B Vits","Vit E","Vit K","Fiber","Calcium","Iron","Omega-3","Antioxidants"];
 var RANGER_PLANTS={
+  e34:{name:"Mulberry",
+    alt:["Mulberry", "Red Mulberry", "White Mulberry", "Mulberry Tree", "Morus"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension \u00b7 Lady Bird Johnson Wildflower Center",
+         what:"Morus rubra, Moraceae. Native to the eastern US, volunteers freely in yards and fence rows. Ripe fruit eaten fresh; no toxic look-alike.",
+         url:"https://plants.ces.ncsu.edu/plants/morus-rubra/",
+         checked:20260808},sci:"Morus rubra \u00b7 Moraceae",leaf:"\ud83e\uded0",img:"images/plants/mulberry.jpg",match:95,edible:true,months:[5,6,7],season:"Late spring into early summer",fresh:"Eat them the same day. They bruise if you look at them wrong.",
+    nutrients:["Vit C","Vit K","Iron","Anthocyanins","Fiber"],
+    uses:[["\ud83e\uded0","Straight off the tree"],["\ud83e\udd5e","In pancakes"],["\ud83e\uded9","Jam"],["\ud83e\uddca","Frozen for winter"]],
+    safety:"About as safe as foraging gets \u2014 there is no dangerous look-alike, and a mulberry is a mulberry. Two small things. Unripe white or red fruit can upset a stomach, so take the ones that are properly dark and come away at a touch. And the milky sap in the leaves and twigs is not food. Do not park under one in June unless you meant to.",
+    intro:"Mulberry \u2014 the tree the birds planted for you. Late spring, and the ground underneath goes purple.",
+    teach:["Nobody plants these. Birds do, along fence lines and behind sheds, and one day you notice a tree with fruit on it.","Ripe means nearly black and falling off in your hand. Red is not ready \u2014 give it three more days.","Spread an old sheet under the branches and shake. Picking one at a time is a fool's errand.","Morus rubra is our native one. The white mulberry came over for silkworms that never took, and stayed."]},
+
+  e36:{name:"Sheep Sorrel",
+    alt:["Sheep Sorrel", "Sheep's Sorrel", "Red Sorrel", "Sour Weed", "Sourgrass",
+         "Field Sorrel", "Sour Dock", "Common Sorrel"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension \u00b7 Plants For A Future",
+         what:"Rumex acetosella, Polygonaceae. Leaves eaten raw or cooked, sharp lemon flavour from oxalic acid. Small quantities.",
+         url:"https://plants.ces.ncsu.edu/plants/rumex-acetosella/",
+         checked:20260808},sci:"Rumex acetosella \u00b7 Polygonaceae",leaf:"\ud83c\udf4b",img:"images/plants/sheep-sorrel.jpg",match:89,edible:true,months:[3,4,5,6,9,10],season:"Cool weather, spring and autumn",fresh:"Same day. It goes limp within hours of picking.",
+    nutrients:["Vit C","Vit A","Potassium","Antioxidants"],
+    uses:[["\ud83e\udd57","A few leaves in a salad"],["\ud83c\udf72","Stirred into soup at the end"],["\ud83d\udc1f","With fish, instead of lemon"],["\ud83e\uded6","Sorrel sauce"]],
+    safety:"A handful, not a bowlful. The sharp lemon taste is oxalic acid \u2014 the same thing that is in spinach and rhubarb leaves \u2014 and in small amounts it is a seasoning, not a vegetable. Anyone with kidney stones, gout, or on a low-oxalate diet should leave it be. Cooking helps a little but does not remove it. The arrow-shaped leaves with two backward-pointing lobes at the base are the tell, and nothing dangerous in a Carolina lawn looks like it.",
+    intro:"Sheep sorrel \u2014 that sour little arrow-shaped leaf. Children find it before adults do.",
+    teach:["The leaf is a small arrowhead with two lobes flaring backwards at the base. Once you see it you cannot unsee it.","Tastes of lemon, which is startling in something growing out of a lawn. That is the oxalic acid, so a few leaves rather than a plateful.","Wonderful with fish, or stirred into a soup right at the end when you want brightness and have no lemon.","Rumex acetosella. It prefers thin, sour, sandy soil \u2014 so where it thrives, your lawn is telling you something."]},
+
+  e37:{name:"Violet",
+    alt:["Violet", "Common Blue Violet", "Wild Violet", "Blue Violet",
+         "Purple Violet", "Confederate Violet", "Johnny Jump Up", "Heartsease"], altOK:false,
+    src:{tier:"checked",
+         who:"Lady Bird Johnson Wildflower Center \u00b7 NC State Extension",
+         what:"Viola sororia, Violaceae. Native. Leaves and flowers edible raw or cooked. NOT African violet, which is a different family and not edible.",
+         url:"https://www.wildflower.org/plants/result.php?id_plant=viso",
+         checked:20260808},sci:"Viola sororia \u00b7 Violaceae",leaf:"\ud83d\udc9c",img:"images/plants/violet.jpg",match:92,edible:true,months:[3,4,5],season:"Flowers in early spring, leaves through summer",fresh:"Flowers the same day. Leaves keep a couple of days.",
+    nutrients:["Vit C","Vit A","Rutin","Antioxidants"],
+    uses:[["\ud83e\uddc1","Candied on a cake"],["\ud83e\udd57","Flowers scattered on a salad"],["\ud83c\udf75","Leaves as a tea"],["\ud83e\uded9","Violet jelly, which comes out pink"]],
+    safety:"The leaves and flowers of the wild blue violet are both good, raw or cooked. Two things to keep straight. The African violet on a windowsill is a different family altogether and is not food \u2014 same name, no relation. And the roots of the wild violet are not eaten; they will make you sick. Take the heart-shaped leaves and the flowers, leave the rest. The leaves are mucilaginous, which is a fine word for slightly slippery, and that is what thickens a soup.",
+    intro:"Violets \u2014 the ones you mow over every April. Leaves and flowers both, and the jelly comes out pink.",
+    teach:["Heart-shaped leaves in a low clump, and those five-petalled flowers on their own little stalks. Native here, not a weed from anywhere else.","Candy the flowers with egg white and sugar and you have something for the top of a cake that costs nothing.","Violet jelly starts out blue and turns pink when the lemon juice goes in. Children will want to watch that twice.","Viola sororia. The African violet on the windowsill is no relation at all \u2014 do not eat that one."]},
+
+  e38:{name:"Yaupon Holly",
+    alt:["Yaupon", "Yaupon Holly", "Yopon", "Cassina", "Cassine", "Carolina Tea",
+         "Appalachian Tea", "Black Drink", "Emetic Holly", "Indian Tea"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension \u00b7 Lady Bird Johnson Wildflower Center \u00b7 USDA",
+         what:"Ilex vomitoria, Aquifoliaceae. Native to the SC coastal plain. LEAVES roasted for a caffeinated tea \u2014 the only caffeinated plant native to North America. Berries toxic, as with all hollies.",
+         url:"https://plants.ces.ncsu.edu/plants/ilex-vomitoria/",
+         checked:20260808},sci:"Ilex vomitoria \u00b7 Aquifoliaceae",leaf:"\ud83c\udf75",img:"images/plants/yaupon.jpg",match:90,edible:true,months:[1,2,3,4,5,6,7,8,9,10,11,12],season:"Leaves any time of year",fresh:"Roasted leaves keep months in a jar. Better than fresh.",
+    nutrients:["Caffeine","Theobromine","Antioxidants","Polyphenols"],
+    uses:[["\u2615","Roasted leaf tea"],["\ud83c\udf75","Green, unroasted, like a light tea"],["\ud83e\uddca","Iced, in July"],["\ud83e\uded9","Roasted dark, like coffee"]],
+    safety:"THE LEAVES, NEVER THE BERRIES. The red berries are toxic, the same as every other holly, and there are always a lot of them \u2014 so this is another one to name for the children. The leaves are the tea, and they are safe: pick them, dry them, roast them in a low oven until they smell like tobacco and toast, then steep. The species name says vomitoria and it is a slander \u2014 it came from a ceremonial drink, not from the plant, and the leaves do no such thing. Do not confuse it with other hollies for tea; get the identification right, then use only leaves.",
+    intro:"Yaupon holly \u2014 the only plant native to North America with caffeine in it. That hedge makes tea.",
+    teach:["Small dark glossy leaves with rounded scallops on the edge, not spines \u2014 that is how you know it from the prickly hollies.","The only caffeinated plant native to this continent. It grew here the whole time and almost nobody remembers.","Roast the dried leaves low and slow. Light roast tastes green like tea; dark roast comes out closer to coffee.","Ilex vomitoria. The name is a four-hundred-year-old mistake from a ceremonial drink \u2014 the tea itself is just tea, and it was traded across half the continent."]},
+
   e33:{name:"Sassafras",
     alt:["Sassafras", "Sassafrass", "File", "Fil\u00e9", "Filet Gumbo", "Gumbo File",
          "White Sassafras", "Ague Tree", "Cinnamon Wood", "Mitten Tree",
@@ -22450,15 +22505,15 @@ var RANGER_PLANTS={
     src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Lonicera japonica · Caprifoliaceae",leaf:"🌸",img:"images/plants/honeysuckle.jpg",match:91,edible:true,months:[4,5,6,7],season:"Spring–summer bloom",fresh:"Pick flowers the morning you'll use them — they fade fast.",
     nutrients:["Antioxidants"],
     uses:[["🍵","Tea"],["🍯","Syrup"],["🌸","Fresh nectar"],["🍨","Cream"]],
-    safety:"Eat the FLOWERS only — berries can be toxic. Highly invasive in the Southeast, so forage the blossoms freely, but keep it controlled.",
+    safety:"THE FLOWERS ONLY \u2014 NOT THE BERRIES. The white and yellow flowers and the drop of nectar inside them are the food, and they are lovely. The small dark berries that follow are NOT: they contain saponins, they will upset a stomach badly, and there are always plenty of them at a child's reach. Name the berries to the children the same day you show them the flowers. Take the flowers where nothing has been sprayed \u2014 this vine grows along road edges and fence lines that often get treated.",
     intro:"Oh, honeysuckle! Pinch the green base, pull the stamen through the back — that's the sweet nectar from childhood.",
     teach:["That's the sweet one from childhood. Flowers only, sugar.","Steep a big handful in just-off-the-boil water 5–10 minutes for a fragrant tea.","Pack 2 cups of blossoms in hot simple syrup overnight, strain, and pour it over pancakes or into lemonade.","Lonicera japonica — wildly invasive, so pick all you like. Flowers infuse into honey or cream beautifully; the berries you always leave alone."]},
   e18:{name:"Magnolia",
     alt:["Magnolia", "Southern Magnolia", "Bull Bay", "Sweetbay", "Laurel Magnolia"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Magnolia sp. · Magnoliaceae",leaf:"🌺",img:"images/plants/magnolia.jpg",match:89,edible:true,months:[4,5,6],season:"Spring–early summer",fresh:"Best the day you pick — the perfume fades quickly.",
+    src:{tier:"checked", nut:"", notes:"", checked:0},sci:"Magnolia sp. · Magnoliaceae",leaf:"🌺",img:"images/plants/magnolia.jpg",match:89,edible:true,months:[4,5,6],season:"Spring–early summer",fresh:"Best the day you pick — the perfume fades quickly.",
     nutrients:["Antioxidants"],
     uses:[["🥒","Pickled"],["🍬","Candied"],["🌶️","Spice"]],
-    safety:"Use petals in moderation — the flavor is strong. Confirm it's a true Magnolia first.",
+    safety:"PETALS AND BUDS \u2014 NEVER THE SEED CONE. Good news first: no magnolia has been found toxic to people, so there is no dangerous one to mix it up with. The petals are the food, and the younger the better \u2014 buds and just-opened flowers are sweetest, older ones turn bitter. PULL OFF THE WHITE FLESHY BASE of each petal before you use it; that part is bitter and can upset a stomach. What you must not eat is the red seed cone that comes later in the year, which carries alkaloids and will make you ill. Southern magnolia leaves can be dried and used like a bay leaf, cut small and fished out afterwards. Take flowers from a tree nobody has sprayed \u2014 these are dooryard trees and dooryard trees get treated.",
     intro:"Magnolia! Those big petals pickle up like ginger — a little goes a long way.",
     teach:["Those petals? Southern ginger. Pickle a few and see.","The flavor is strong and gingery — a little goes a long way.","Slice young petals thin and pickle them, or candy them for a sweet spice.","Magnolia is one of the oldest flowering plant lines on earth — beetles pollinated it before bees existed. Petals in moderation; confirm a true magnolia first."]},
   e2:{name:"Confederate Rose & Rose of Sharon",
@@ -22468,12 +22523,12 @@ var RANGER_PLANTS={
     alt:["Confederate Rose", "Rose of Sharon", "Althea", "Cotton Rose",
          "Rose Mallow", "Changeable Rose", "Dixie Rosemallow",
          "Molokhia", "Jute Mallow", "Egyptian Spinach", "Jew's Mallow", "Nalta Jute"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Hibiscus mutabilis · H. syriacus · Corchorus olitorius · Malvaceae",leaf:"🌺",img:"images/plants/confederate-rose.jpg",match:88,edible:true,months:[9,10,11],season:"Late-season bloom",fresh:"Use flowers the day you pick them.",
+    src:{tier:"checked", nut:"", notes:"", checked:0},sci:"Hibiscus mutabilis · H. syriacus · Malvaceae",leaf:"🌺",img:"images/plants/confederate-rose.jpg",match:88,edible:true,months:[9,10,11],season:"Late-season bloom",fresh:"Use flowers the day you pick them.",
     nutrients:["Vit C","Antioxidants"],
     uses:[["🍵","Tea"],["🌸","Fresh"],["🥗","Garnish"]],
-    safety:"A mallow-family flower — a cousin of common mallow and molokhia, but a different plant. Confirm the species before eating.",
+    safety:"PETALS AND YOUNG LEAVES. The petals of both are good \u2014 fresh in a salad, or dried and steeped, which makes a tart pink tea. The young leaves are a pot herb: cooked down soft, the way you would any green, and they thicken a little as they go. Not the woody stems, not the seed pods, not the roots. Both are mallows and neither has a dangerous look-alike in a Southern yard, but confirm you have a hibiscus before you pick \u2014 five petals, a long central column of stamens, and leaves shaped like a broad hand. Take them from a shrub nobody has sprayed; these are garden plants and garden plants get treated.",
     intro:"Confederate rose — the bloom that opens white and blushes to pink by evening. A gentle mallow you can steep.",
-    teach:["The flower that changes color through the day — white to deep pink by dusk.","A hibiscus cousin, so the petals make a mild, pretty tea.","Steep the fresh blooms for a soft floral tea or use them as a garnish.","Hibiscus mutabilis — 'mutabilis' means changeable, for those color-shifting petals. Same mallow family as molokhia and common mallow, but its own plant."]},
+    teach:["The flower that changes color through the day — white to deep pink by dusk.","A hibiscus cousin, so the petals make a mild, pretty tea.","Steep the fresh blooms for a soft floral tea or use them as a garnish.","Hibiscus mutabilis — 'mutabilis' means changeable, for those color-shifting petals. Same mallow family as molokhia and common mallow, but its own plant.","If a recipe calls for MOLOKHIA \u2014 and half the Middle East and North Africa cooks with it \u2014 that is Corchorus olitorius, jute mallow, a cousin in the same family. The young leaves here are used the very same way, cooked down soft and slightly thickening. You will find molokhia in a hundred recipes and Confederate rose leaves in none, so cook them as though the recipe meant these."]},
   /* e3 removed 4 August — Molokhia folded into the Rose Mallow card. */
   e27:{/* Yellow wood sorrel and pink sorrel are the same genus, look the same,
    taste the same and are eaten the same way — one card covers both, with
@@ -22561,10 +22616,10 @@ var RANGER_PLANTS={
     teach:["That heady white perfume flower — the petals can scent sweets.","Lightly floral; the fruit is a famous natural yellow dye.","Infuse a few petals into syrup or a light tea; the fruit ('Zhi Zi') colors food gold.","Gardenia jasminoides — an ancient Chinese plant, coffee family. Its fruit dye colored royal robes; medicinal use is folklore, so keep it culinary."]},
   e9:{name:"Wax Myrtle",
     alt:["Wax Myrtle", "Southern Bayberry", "Candleberry", "Southern Wax Myrtle", "Tallow Shrub"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Myrica cerifera · Myricaceae",leaf:"🌿",img:"images/plants/wax-myrtle.jpg",match:84,edible:true,months:[1,2,3,4,5,6,7,8,9,10,11,12],season:"Leaves year-round",fresh:"Dry leaves keep for months as a seasoning.",
+    src:{tier:"checked", nut:"", notes:"", checked:0},sci:"Myrica cerifera · Myricaceae",leaf:"🌿",img:"images/plants/wax-myrtle.jpg",match:84,edible:true,months:[1,2,3,4,5,6,7,8,9,10,11,12],season:"Leaves year-round",fresh:"Dry leaves keep for months as a seasoning.",
     nutrients:["Antioxidants"],
     uses:[["🍲","Bay-leaf seasoning"],["🕯️","Berry wax"]],
-    safety:"Use the leaves as a bay-leaf-style SEASONING — not eaten whole. Berries are waxy, so season sparingly. Medicinal uses are folklore.",
+    safety:"THE LEAVES, NEVER THE BERRIES. The leaves are a seasoning, used the way you would use a bay leaf \u2014 dropped into a pot to give up their flavour and then FISHED OUT, not eaten whole. One or two is plenty; they are stronger than shop bay. The little grey-blue berries are not food at all: that waxy coating is candle wax, which is where bayberry candles come from, and boiling it off is a craft rather than a recipe. Crush a leaf and smell it \u2014 that clean resinous scent is how you know the shrub. Medicinal claims for the root bark are folklore, not advice.",
     intro:"Wax myrtle — the 'bayberry.' Toss a leaf in the pot like a bay leaf; fish it out before serving.",
     teach:["The Southern 'bayberry' — a leaf flavors a pot just like store bay.","Aromatic, not a green to eat by the handful — it's a seasoning.","Drop a leaf into soups and stews, then remove it before serving.","Myrica cerifera — colonists boiled the waxy berries to make bayberry candles. The leaf seasons like bay; the berries are for wax and scent, used sparingly."]},
   e21:{name:"Canada & Woodland Lettuce",
@@ -22607,20 +22662,25 @@ var RANGER_PLANTS={
     alt:["Dollarweed", "Pennywort", "Water Pennywort", "Marsh Pennywort",
          "Manyflower Marshpennywort", "Coinleaf", "Centella", "Gotu Kola",
          "Asiatic Pennywort", "Indian Pennywort"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Hydrocotyle umbellata · Apiaceae",leaf:"🟢",img:"images/plants/dollarweed.jpg",match:87,edible:true,months:[4,5,6,7,8,9,10],season:"Warm season leaves",fresh:"Use the round leaves fresh — they're crisp and mild.",
+    src:{tier:"checked", nut:"", notes:"", checked:0},sci:"Hydrocotyle umbellata · Apiaceae",leaf:"🟢",img:"images/plants/dollarweed.jpg",match:87,edible:true,months:[4,5,6,7,8,9,10],season:"Warm season leaves",fresh:"Use the round leaves fresh — they're crisp and mild.",
     nutrients:["Vit C","Antioxidants"],
     uses:[["🥗","Salad"],["🥪","Sandwich green"],["🍵","Tea"]],
-    safety:"Two cousins on one card, both carrot-family pennyworts in the same wet ground, both eaten the same way. Dollarweed: the leaf STALK JOINS IN THE MIDDLE of a round leaf, like a tiny lily pad. Coinleaf: the stalk joins at the EDGE and the leaf is kidney shaped, often toothed. Coinleaf is the American kin of the herb Asia calls gotu kola — true gotu kola (Centella asiatica) does not grow wild here, and coinleaf carries less of what that herb is prized for, so treat it as a good green rather than a medicine. Harvest only from untreated, unsprayed ground.",
+    safety:"LOOK AT THE LEAF BEFORE ANYTHING ELSE. Dollarweed is in the carrot family, and so is water hemlock \u2014 the most poisonous plant in North America \u2014 which grows in exactly the same wet ditches and pond edges. They look nothing alike once you know, and that is the point: KNOW. Dollarweed is a single ROUND leaf like a tiny lily pad, with the stalk joining in the MIDDLE of it, growing low and flat. Water hemlock is a tall branching plant, three to six feet, with leaves divided into many toothed leaflets and flowers in a flat white umbrella. If what you are holding is tall, or has divided leaves, or white flower heads \u2014 walk away and wash your hands. Never eat any carrot-family plant from wet ground on a maybe. Once you are certain it is dollarweed: it is fine raw or cooked, mild and slightly peppery. Take it from clean water, not a ditch by a road or a lawn that gets treated. Coinleaf, the kidney-shaped cousin with the stalk at the EDGE, is used the same way.",
     intro:"Dollarweed — that round-leaf lawn 'weed' by the wet spots. Crisp, mild, and a perfectly good salad green.",
     teach:["That round silver-dollar lawn weed? Crisp and mild, like a little salad coin.","A hydrating green with a light, fresh, parsley-ish snap.","Toss the round leaves into salad, tuck into a sandwich, or steep for tea.","Hydrocotyle umbellata — a carrot-family pennywort, cousin to gotu kola. The leaf stem joins in the middle like an umbrella. Only pick from clean, unsprayed ground."]},
   e16:{name:"Creeping Cucumber",
     alt:["Creeping Cucumber", "Guadeloupe Cucumber", "Melonette", "Meloncito", "Speckled Gourd"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Melothria pendula · Cucurbitaceae",leaf:"🥒",img:"images/plants/creeping-cucumber.jpg",match:85,edible:true,months:[6,7,8,9],season:"Fruits summer–fall",fresh:"Eat only the GREEN fruits, fresh.",
-    nutrients:["Vit C","Antioxidants"],
-    uses:[["🥒","Fresh green"],["🥗","Salad"],["🥫","Pickled"]],
-    safety:"Eat ONLY the tiny GREEN fruits — they taste like cucumber. The ripe BLACK fruits are a strong laxative; never eat those. ID carefully.",
-    intro:"Creeping cucumber — those grape-sized 'baby watermelons.' Green ones taste just like cucumber.",
-    teach:["Those tiny watermelon-looking fruits taste like a little cucumber — green ones only.","A fun, crisp nibble with some vitamin C, straight off the vine.","Eat green fruits fresh, sliced in salad, or quick-pickled like tiny gherkins.","Melothria pendula — the single most important rule: GREEN good, BLACK bad. The ripe black fruits are a powerful laxative, so only ever eat the small green ones."]},
+    src:{tier:"checked",
+         who:"Clemson HGIC \u00b7 NC State Extension",
+         what:"Melothria pendula, Cucurbitaceae. Clemson: green unripe fruit generally considered safe; BLACK ripe fruit is a laxative and should not be consumed. NC State: ripe berries a strong laxative, can cause diarrhea.",
+         url:"https://hgic.clemson.edu/question-of-the-week-creeping-cucumber/",
+         checked:20260808},sci:"Melothria pendula \u00b7 Cucurbitaceae",leaf:"\ud83e\udd52",img:"images/plants/creeping-cucumber.jpg",match:90,edible:true,months:[6,7,8,9],season:"Summer into early autumn",fresh:"Eat them the day you pick them. They are best straight off the vine.",
+    nutrients:["Vit C","Fiber","Protein","Carbohydrates"],
+    uses:[["\ud83e\udd57","Whole in a salad"],["\ud83e\udd52","Straight off the vine"],["\ud83e\uded9","Pickled like a gherkin"],["\ud83e\uddc0","On a cheese board"]],
+    safety:"GREEN ONLY \u2014 NEVER THE BLACK ONES. The little fruits look like miniature watermelons, and while they are light green, speckled and HARD they are good food, tasting of a strong cucumber. Once they darken and soften they become a powerful laxative: Clemson says the black ripe fruit should not be consumed, and NC State calls it a strong laxative that causes diarrhea. One black one is enough to ruin a day. And even the green ones do not agree with everybody \u2014 some people are sensitive to the same effect \u2014 so the first time, eat one or two and wait a day before you eat a handful. Firm and light green with speckles: yes. Soft, dark, or black: leave it on the vine.",
+    intro:"Creeping cucumber \u2014 tiny watermelons on a thin vine. Eat them green and hard; leave the black ones alone.",
+    teach:["They look like watermelons the size of a jelly bean, hanging under the leaves where you have to look for them.","Light green, speckled and firm is the eating stage. That is the whole skill of this plant.","Once they go soft and dark, that is the plant telling you it is done with you. Believe it.","The first time, one or two and wait a day. People differ, and this is not a plant to find that out about in bulk.","Melothria pendula. Only a distant cousin of the cucumber in your fridge, despite tasting so much like one."]},
+
   e17:{name:"Mugwort",
     alt:["Mugwort", "Common Wormwood", "Felon Herb", "Chrysanthemum Weed", "Wild Wormwood"], altOK:false,
     src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Artemisia vulgaris · Asteraceae",leaf:"🌿",img:"images/plants/mugwort.jpg",match:83,edible:true,months:[5,6,7,8,9],season:"Leaves & tops summer–fall",fresh:"Use young leaves fresh, or dry the tops.",
@@ -22637,27 +22697,6 @@ var RANGER_PLANTS={
     safety:"Eat the TENDER new spring shoot tips (snap like asparagus) — the mature woody vine and thorns are not eaten. Confirm Smilax.",
     intro:"Greenbriar — that thorny vine that grabs your ankles. The tender spring tips snap off like wild asparagus.",
     teach:["That thorny ankle-grabbing vine gives you free 'wild asparagus' every spring.","The new growing tips are crisp and green, full of a little vitamin C.","Snap the tender tips like asparagus — eat raw or lightly cooked; the root makes tea.","Smilax — the root was the original flavoring in old-fashioned sarsaparilla root beer. Only the soft new tips are food; the mature vine turns woody and thorned."]},
-  e6:{name:"Peppervine",
-    alt:["Peppervine", "Pepper Vine", "Buckvine", "Cow Itch", "Racoon Grape"], altOK:false,
-    src:{tier:"pending", nut:"", notes:"", checked:0},sci:"Nekemias arborea · Vitaceae",leaf:"🍇",img:"images/plants/peppervine.jpg",match:82,edible:true,months:[8,9],season:"Berries ripe late summer–fall",fresh:"Cook berries with the oxalate prep below before eating.",
-    nutrients:["Vit A","Vit C","Vit K","Fiber","Antioxidants"],
-    uses:[["🥫","Berry jam"],["🍲","Leaf stew"],["🥤","Syrup"]],
-    safety:"Ripe BLACK berries only, and cook them — raw berries hold oxalate crystals that irritate the throat. Do the oxalate prep first; start with just 5–10 berries.",
-    intro:"Peppervine — a grape cousin that sprawls everywhere. Cook the black berries down (there's a prep step) and it's genuinely useful.",
-    teach:["A grape relative that's everywhere yet overlooked — young leaves and black berries both cook up.","Low-calorie leaves rich in vitamin K; berries hold the same compound as elderberry.","Oxalate prep first: boil, smash, strain, chill the juice 24 hrs, pour off the clear top — then jam it or stew the leaves.","Nekemias arborea — the berries carry calcium-oxalate crystals raw, so always cook and prep them. One forager kept to 5–10 berries at a time until she knew how they sat."]},
-  /* ══════════ FOLDED INTO THE PENNYWORT CARD, 4 AUGUST ═══════════════════
-     True gotu kola is Centella asiatica, and the Flora of the Southeastern
-     United States is plain that it "otherwise has an Old World distribution" —
-     it does not grow wild here. What grows in a Carolina yard is Centella
-     erecta, its American twin, called coinleaf.
-
-     A foraging app should show what is in the yard. So the standalone gotu
-     kola card is gone and coinleaf sits on the pennywort card, where somebody
-     will actually meet it — the two are cousins in the carrot family and grow
-     in the same wet ground. Gotu kola stays searchable, because that is the
-     name people have heard of, and it lands them on the right card. */
-  /* g1 removed 4 August — Coinleaf/Gotu Kola — folded into Dollarweed. */
-  /* ── KNOWN, NOT EATEN — routed away from the edible flow ── */
 };
 /* ════════════════ REAL FOOD RANGER — logic ════════════════ */
 var RANGER_EATWITHIN={e4:"3 days",e1:"Same day",e18:"Same day",e2:"Same day",e3:"3 days",e27:"1–2 days",e19:"1–2 days",e20:"3 days",e7:"1–2 days",e13:"Same day",e14:"Same day",e15:"Same day",e10:"1 week",e11:"Same day",e12:"Same day",e9:"Months dried",e21:"2 days",e22:"2 days",e23:"Dried keeps",e25:"2 days",e26:"2 days",e16:"3 days",e17:"Dried keeps",e24:"1–2 days",e6:"Cook first",g1:"2 days"};
