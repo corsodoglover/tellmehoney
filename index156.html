@@ -2605,7 +2605,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v254</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">one big picture on every plant card · five plants got their photograph back · add a picture from your phone, not just the camera · hands-free or read-aloud or type</div></div>
+    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v259</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">six new plants · chicory, sassafras, bittercress, lamb’s quarters, redbud, wild onion · one big picture on every card · add a picture from your phone, not just the camera · hands-free or read-aloud or type</div></div>
   </div>
 </section>
 
@@ -8279,7 +8279,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v254";
+window.HONEY_BUILD = "v259";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -22339,6 +22339,90 @@ function bootFallback(){
    Every safety line is quoted/condensed from the book's own NOTE for that plant. */
 var RANGER_ALL_NUTRIENTS=["Vit A","Vit C","B Vits","Vit E","Vit K","Fiber","Calcium","Iron","Omega-3","Antioxidants"];
 var RANGER_PLANTS={
+  e33:{name:"Sassafras",
+    alt:["Sassafras", "Sassafrass", "File", "Fil\u00e9", "Filet Gumbo", "Gumbo File",
+         "White Sassafras", "Ague Tree", "Cinnamon Wood", "Mitten Tree",
+         "Root Beer Tree"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension \u00b7 FDA 21 CFR 189.180 \u00b7 National Toxicology Program",
+         what:"Sassafras albidum, Lauraceae. LEAVES only: dried and ground as fil\u00e9, negligible safrole, not subject to the ban. Root and bark are roughly 80% safrole by oil content; FDA order of 3 December 1960 names sassafras tea specifically.",
+         url:"https://plants.ces.ncsu.edu/plants/sassafras-albidum/",
+         checked:20260807},sci:"Sassafras albidum \u00b7 Lauraceae",leaf:"\ud83c\udf42",img:"images/plants/sassafras.jpg",match:93,edible:true,months:[5,6,7,8,9],season:"Young leaves through the summer",fresh:"Dry the leaves and grind them. The powder keeps a year in a jar out of the light.",
+    nutrients:["Vit A","Manganese","Iron","Antioxidants"],
+    uses:[["\ud83c\udf72","Fil\u00e9 in gumbo"],["\ud83e\uddc2","Ground as a seasoning"],["\ud83c\udf5b","Thickening a stew"],["\ud83c\udf42","Dried for the winter"]],
+    safety:"THE LEAVES, NOT THE ROOT \u2014 and this is the one card where the famous part is the part to leave alone. Sassafras root and bark are about 80 percent safrole by oil content, safrole causes liver cancer in animals, and the FDA banned it from food in December 1960 naming sassafras tea by name. So: no root tea, no bark tea, no matter what your grandmother did, and however much of it is growing there. The LEAVES are a different thing chemically \u2014 only traces of safrole, never banned, and sold in every grocery in Louisiana as fil\u00e9. Pick young leaves, dry them, grind them, and you have the real article. Not for pregnancy without asking a doctor first.",
+    intro:"Sassafras \u2014 the mitten tree. The leaves ground up are fil\u00e9, the thing that makes gumbo gumbo.",
+    teach:["Three different leaf shapes on the same branch \u2014 a plain oval, a mitten with a thumb, and one with three lobes. Nothing else here does that, so it names itself.","Dry the young leaves, grind them fine, and that is fil\u00e9 \u2014 the same powder they sell in a tin in New Orleans. The Choctaw were doing it first.","Stir fil\u00e9 in OFF the heat, right at the end. Boil it and it goes stringy, which is the one mistake everybody makes once.","Root beer got its flavour and its name from the root of this tree, until 1960. The soda you buy now is either artificial or made from an extract with the safrole taken out.","Sassafras albidum. Crush a leaf and smell it \u2014 that sweet, slightly citrus smell is how you will know it from across the yard next time."]},
+
+  e28:{name:"Hairy Bittercress",
+    alt:["Hairy Bittercress", "Bittercress", "Flick Weed", "Shot Weed", "Land Cress",
+         "Lamb's Cress", "Springcress", "Hoary Bittercress"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension \u00b7 Plants For A Future",
+         what:"NC State tags it #edible weed, Brassicaceae. Leaves and flowers raw or cooked, hot cress-like flavour.",
+         url:"https://plants.ces.ncsu.edu/plants/cardamine-hirsuta/",
+         checked:20260807},sci:"Cardamine hirsuta \u00b7 Brassicaceae",leaf:"\ud83c\udf3f",img:"images/plants/hairy-bittercress.jpg",match:88,edible:true,months:[12,1,2,3,4,5],season:"Winter into spring",fresh:"Use within a day or two \u2014 it wilts as fast as watercress.",
+    nutrients:["Vit C","Vit A","Calcium","Antioxidants"],
+    uses:[["\ud83e\udd57","Salad"],["\ud83e\uddc8","On buttered bread"],["\ud83c\udf72","Stirred into soup"],["\ud83c\udf3f","Instead of parsley"]],
+    safety:"A mustard, so the taste is peppery rather than bitter despite the name. The whole plant above ground is edible \u2014 leaves, stems, flowers and the little seed pods. It has no dangerous look-alike in a Carolina lawn, but confirm the ID before eating, as always. Harvest from ground that has not been sprayed; it grows exactly where people treat their lawns.",
+    intro:"Hairy bittercress \u2014 the first green thing in the yard every year, and it tastes of pepper and cress.",
+    teach:["The little rosette that appears in January, long before anything else \u2014 that is supper.","A mustard, so it is peppery rather than bitter. The name does it no favours.","Leaves, stems, flowers and seed pods are all good. Scatter it over anything.","Touch a ripe seed pod and it fires seeds sixteen feet. That is how it got the name Shot Weed, and why there is always more of it next year."]},
+
+  e29:{name:"Lamb's Quarters",
+    alt:["Lamb's Quarters", "Lambsquarters", "Wild Spinach", "Goosefoot",
+         "White Goosefoot", "Fat Hen", "Wild Quinoa"], altOK:false,
+    src:{tier:"checked",
+         who:"Lady Bird Johnson Wildflower Center \u00b7 University of Delaware",
+         what:"Chenopodium album, Amaranthaceae. Recorded in SC and every other state. Leaves eaten cooked; cooking removes the oxalic acid.",
+         url:"https://www.wildflower.org/plants/result.php?id_plant=chal7",
+         checked:20260807},sci:"Chenopodium album \u00b7 Amaranthaceae",leaf:"\ud83e\udd6c",img:"images/plants/lambs-quarters.jpg",match:91,edible:true,months:[5,6,7,8,9,10],season:"Late spring through autumn",fresh:"Pick the young tips \u2014 they cook down like spinach, so take more than looks sensible.",
+    nutrients:["Vit A","Vit C","Vit K","Calcium","Iron","Protein","Fiber"],
+    uses:[["\ud83c\udf73","Wilted like spinach"],["\ud83c\udf72","In soup"],["\ud83e\udd67","In a pie"],["\ud83c\udf3e","Seeds like quinoa"]],
+    safety:"COOK IT. The leaves carry oxalic acid, the same as spinach and rhubarb, and cooking removes it \u2014 a little raw in a salad is fine, a bowlful is not. It is a close relative of quinoa and the seeds can be used the same way. Take it from clean ground: it thrives in disturbed soil and old farmyards, and it takes up whatever is there.",
+    intro:"Lamb's quarters \u2014 wild spinach, growing in the vegetable patch you were about to weed.",
+    teach:["The dusty white bloom under the young leaves is the tell. Rub it and it comes away like flour.","Cooks down exactly like spinach, and there is more of it than you will ever need.","Quinoa's close cousin \u2014 the seeds can be cooked the same way, though it is a long job.","Chenopodium album. It has followed farming around the world for so long that nobody is certain where it started."]},
+
+  e30:{name:"Wild Onion & Wild Garlic",
+    alt:["Wild Onion", "Wild Garlic", "Meadow Garlic", "Canada Onion",
+         "Canadian Garlic", "Field Garlic"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension",
+         what:"Allium canadense, Amaryllidaceae. Native to NC and much of the eastern US. Edible bulb; strong onion odour when crushed.",
+         url:"https://plants.ces.ncsu.edu/plants/allium-canadense/",
+         checked:20260807},sci:"Allium canadense \u00b7 Amaryllidaceae",leaf:"\ud83e\uddc4",img:"images/plants/wild-onion.jpg",match:94,edible:true,months:[3,4,5,6,10,11],season:"Spring, and again in autumn",fresh:"Greens keep a few days; the little bulbs keep for weeks in a paper bag.",
+    nutrients:["Vit C","Vit A","Sulfur compounds","Antioxidants"],
+    uses:[["\ud83e\udd54","In potato cakes"],["\ud83e\uddc8","Onion butter"],["\ud83c\udf72","Anywhere you would use a spring onion"],["\ud83e\uddc2","Dried as a seasoning"]],
+    safety:"THE SMELL IS THE TEST, AND IT IS NOT OPTIONAL. Crush a leaf. If it smells of onion or garlic, it is an Allium and it is safe. If it does NOT smell of onion, put it down and wash your hands \u2014 several grassy plants with bulbs are poisonous, and death camas is one of them. No exceptions to this, however sure the plant looks. Beyond that: it is native here, it grows in lawns and fields, and every part above and below ground is good.",
+    intro:"Wild onion \u2014 that grassy clump you keep mowing. Crush a leaf and you will know it straight away.",
+    teach:["The clumps of thin round leaves that come up before the grass does \u2014 crush one and smell it.","Green tops like chives, little bulbs like pearl onions. Both worth having.","Native to the Carolinas, so it belongs here in a way most lawn plants do not.","Allium canadense. The one rule that matters: no onion smell, no eating. That is the whole safety lesson and it never changes."]},
+
+  e31:{name:"Redbud",
+    alt:["Redbud", "Eastern Redbud", "Judas Tree", "Spicewood Tree"], altOK:false,
+    src:{tier:"checked",
+         who:"Russ Cohen, Edible Native Plants of the Northeast \u00b7 NC State Extension",
+         what:"Cercis canadensis, Fabaceae. Native understory tree; flowers and young pods eaten.",
+         url:"https://plants.ces.ncsu.edu/plants/cercis-canadensis/",
+         checked:20260807},sci:"Cercis canadensis \u00b7 Fabaceae",leaf:"\ud83c\udf38",img:"images/plants/redbud.jpg",match:93,edible:true,months:[3,4,5],season:"Flowers in early spring",fresh:"Flowers are best the day you pick them \u2014 they go limp by evening.",
+    nutrients:["Vit C","Anthocyanins","Antioxidants"],
+    uses:[["\ud83e\udd57","Scattered on a salad"],["\ud83e\uddc1","On a cake"],["\ud83e\uddca","Frozen in ice cubes"],["\ud83e\uded9","Pickled pods"]],
+    safety:"Eat the FLOWERS and the very young green pods, in spring while they are still tender. Not the bark, not the older pods, not the seeds inside them. It is a pea-family tree and plenty of that family are not edible, so this is one to be sure of \u2014 but a redbud in April is unmistakable: bare branches covered in magenta flowers before a single leaf appears.",
+    intro:"Redbud \u2014 the magenta tree in April. Those flowers are food, and they taste faintly of green apple.",
+    teach:["The flowers come out on the bare wood, before the leaves. Nothing else here does that.","They taste faintly sour, a little like green apple, and they are wonderful scattered over anything.","The young pods can be eaten too, while they are flat and tender \u2014 not once they toughen.","Cercis canadensis. Native to the Carolinas, and one of the few trees whose flowers are worth picking to eat rather than just to look at."]},
+
+  e32:{name:"Chicory",
+    alt:["Chicory", "Common Chicory", "Blue Sailors", "Coffeeweed", "Succory",
+         "Italian Dandelion", "Cornflower", "Wild Endive"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension \u00b7 University of Wisconsin Extension \u00b7 Weakley's Flora of the Southeastern US",
+         what:"Cichorium intybus, Asteraceae. NC State tags it #edible weed and #edible roots. Young leaves raw, older cooked; dried roasted root used as a coffee substitute.",
+         url:"https://plants.ces.ncsu.edu/plants/cichorium-intybus/",
+         checked:20260807},sci:"Cichorium intybus \u00b7 Asteraceae",leaf:"\ud83d\udc99",img:"images/plants/chicory.jpg",match:92,edible:true,months:[3,4,5,6,9,10,11],season:"Leaves in cool weather, roots in autumn",fresh:"Young leaves the same day. Roots keep for weeks in the cold.",
+    nutrients:["Vit A","Vit C","Vit K","Folate","Inulin","Fiber"],
+    uses:[["\u2615","Roasted root coffee"],["\ud83e\udd57","Young leaves raw"],["\ud83c\udf73","Older leaves cooked"],["\ud83d\udc99","Flowers on a salad"]],
+    safety:"Bitter, and that is the point of it \u2014 the young rosette leaves are mildest, older ones want cooking with a change of water. The whole plant is edible. In its first year the rosette looks very like a dandelion, which is a harmless confusion since both are good; if it has milky sap and hairy leaves and later throws up a wiry stem of blue flowers, it is chicory. Take it from ground that has not been sprayed, and not from the verge of a busy road, however much of it is growing there.",
+    intro:"Chicory \u2014 those blue flowers along the roadside every summer. The root is what makes New Orleans coffee taste like New Orleans.",
+    teach:["The clear blue flowers on wiry stems, open in the morning and shut by lunchtime.","Roast and grind the root and you have chicory coffee \u2014 the same thing they still put in the tin down in New Orleans.","First-year leaves look like a dandelion. Both are edible, so it is a forgiving mistake to make.","Cichorium intybus. Radicchio and Belgian endive are the same species, bred soft and sold dear. This is the wild one, growing free in the ditch."]},
+
   /* HAWKSBEARD ADDED 4 AUGUST. Three yellow-flowered Asteraceae that grow in
      the same lawns and get eaten the same way. Naming it here means somebody
      who finds hawksbeard and searches for it lands on a card that mentions it,
@@ -23603,7 +23687,26 @@ function rangerImageStrip(p, badges, plantId){
              keeps every plant looking the same and keeps the provenance clean —
              each one arrives with an author and a citation. */
   var draw=p.img||'';
+  /* ══════════ THE CARD HAD THE PICTURE, THE PAGE DID NOT ════════════════════
+     The grid shows every photograph correctly and the detail page showed an
+     emoji for all of them — same plants, same folder. The difference is what
+     gets handed in: the grid reads the book entry, while the detail page is
+     sometimes passed a lighter object (a yard entry, an identification result)
+     that carries the name and the species but not the image path.
+
+     So it was never a missing file. It was a missing field on the way through.
+     Go and ask the book directly when the path is not already here. */
   var leaf=p.leaf||'\ud83c\udf3f';
+  if(!draw && plantId){
+    try{
+      var _BK = (typeof yardBook==='function') ? yardBook() : null;
+      var _bp = _BK && _BK[plantId];
+      if(_bp){
+        if(_bp.img) draw = _bp.img;
+        if(!p.leaf && _bp.leaf) leaf = _bp.leaf;
+      }
+    }catch(e){}
+  }
   var nm=(p.name||'').replace(/'/g,"\\'");
   var pid = plantId || p.__id || '';
   var refImg='', credit='';
@@ -23642,7 +23745,79 @@ function rangerImageStrip(p, badges, plantId){
      already a place to add photos further down the page — but if somebody is
      standing in their own yard looking at this card, the button is where their
      eye already is. */
-  var mainSrc = draw || refImg || ourPhoto;
+  /* ══════════ TRY EVERY PICTURE BEFORE GIVING UP ═══════════════════════════
+     The old layout had two independent halves, so a broken path on one side
+     cost you that side only — the other still showed a photograph. Merging
+     them into one frame meant the FIRST candidate got the only chance, and a
+     path pointing at a file that is not there took the whole card down to an
+     emoji. That is a worse failure than the thing it replaced.
+
+     So the frame gets a list, not a single source. If one will not load it
+     quietly tries the next, and the emoji appears only when every real
+     candidate has actually been attempted and failed. */
+  /* ══════════ THE REAL FILES END IN -photo ═════════════════════════════════
+     Every photograph on disk is named canada-lettuce-PHOTO.jpg, and the book
+     entry stores the bare canada-lettuce.jpg. rangerPhotoPath() is what bridges
+     them — which is why the old right-hand half worked while the left half,
+     reading the raw path, showed an emoji for every single plant.
+
+     I had the list the wrong way round: draw first, and draw is the name that
+     never exists. So the frame tried the one file guaranteed to be missing and
+     the fallback did the rest of the damage.
+
+     ourPhoto goes first now. And two real-world wrinkles get their own
+     candidates rather than being treated as missing photos: a couple were
+     saved as .jpeg rather than .jpg, and the muscadine file dropped the
+     "-grape". Both are on disk. Neither needs renaming. */
+  var _cands = [];
+  var _push = function(u){ if(u && _cands.indexOf(u) < 0) _cands.push(u); };
+
+  /* Some cards are filed under one name and photographed under another —
+     the dandelion card covers three plants and the picture on disk is of the
+     hawksbeard. Rather than rename a good photograph to something it isn't,
+     the card points at the file that exists. */
+  /* A LIST per plant, not one alternative. Photographs get named by whoever
+     took them, and the same plant honestly attracts several spellings — wild
+     onion is filed as wild-onion, onion, and wild-onion-garlic depending on the
+     day. Renaming files to suit the code is the wrong way round; the code can
+     hold every name that has ever been used and try them all. Nothing here
+     needs removing when a filename changes, only adding. */
+  var PHOTO_ALIAS = {
+    'dandelion'         : ['hawksbeard'],
+    'muscadine-grape'   : ['muscadine'],
+    'greenbriar'        : ['green-briar', 'greenbrier'],
+    'dollarweed'        : ['dollar-weed'],
+    'chicory'           : ['chichory'],
+    'wild-onion'        : ['wild-onion-garlic', 'onion', 'wild-garlic'],
+    'henbit-deadnettle' : ['henbit'],
+    'lambs-quarters'    : ['lambsquarters', 'lambs-quarter'],
+    'hairy-bittercress' : ['bittercress'],
+    'plantain'          : ['broadleaf-plantain'],
+    'daylily'           : ['day-lily'],
+    'sawtooth-blackberry': ['blackberry'],
+    'wood-sorrel'       : ['pink-sorrel'],
+    'pink-sorrel'       : ['wood-sorrel']
+  };
+
+  var _stem = ourPhoto.replace(/-photo\.[a-z]+$/i, '').replace(/^.*\//, '');
+  var _dir  = ourPhoto.replace(/[^\/]*$/, '');
+
+  /* iOS is case-sensitive: fig-photo.JPG and fig-photo.jpg are two different
+     files, and asking for the wrong case fails silently. Cameras hand back
+     both cases and both spellings of jpeg, so try all of them rather than
+     making somebody rename photographs to suit the code. */
+  var _exts = ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG'];
+  var _names = [_stem];
+  if(PHOTO_ALIAS[_stem]) _names = _names.concat(PHOTO_ALIAS[_stem]);
+
+  _names.forEach(function(n){
+    _exts.forEach(function(e){ _push(_dir + n + '-photo' + e); });
+  });
+
+  _push(refImg);
+  _push(draw);
+
+  var mainSrc = _cands[0] || '';
   var mainCredit = (mainSrc && mainSrc === refImg) ? credit : '';
   var addBtn = pid
     ? '<button onclick="event.stopPropagation();plantAddPhoto(\''+pid+'\')" '+
@@ -23661,7 +23836,7 @@ function rangerImageStrip(p, badges, plantId){
     ? '<div class="rimg-tap" onclick="openPlantImage(\''+mainSrc+'\',\''+nm+'\',\''+(mainCredit? esc(mainCredit).replace(/\'/g,"") : 'photo')+'\')" '+
         'style="width:100%;height:210px;background:#eef2ee;position:relative">'+
         '<img src="'+mainSrc+'" alt="'+p.name+'" style="width:100%;height:210px;object-fit:cover;display:block" '+
-        'data-ref="'+(refImg||'')+'" onerror="rimgPhotoFallback(this,\''+nm+'\')">'+
+        'data-list="'+esc(_cands.join('|'))+'" data-i="0" onerror="rimgNextSource(this)">'+
         '<div class="rphoto-soon" style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#243024,#18201a);flex-direction:column;align-items:center;justify-content:center;color:#7d8a80"><div style="font-size:34px">'+leaf+'</div><div style="font-size:10.5px;margin-top:5px">picture coming</div></div>'+
         creditLine2 + addBtn +
       '</div>'
@@ -23671,6 +23846,25 @@ function rangerImageStrip(p, badges, plantId){
       '</div>';
 
   return '<div style="position:relative">'+body+(badges||'')+'</div>';
+}
+
+/* Walk the candidate list. Each failure advances one place; the placeholder
+   shows only after the last real option has been tried and failed. */
+function rimgNextSource(img){
+  try{
+    var list=(img.getAttribute('data-list')||'').split('|').filter(Boolean);
+    var i=parseInt(img.getAttribute('data-i')||'0',10)+1;
+    if(i < list.length){
+      img.setAttribute('data-i', String(i));
+      img.src = list[i];
+      return;
+    }
+    img.style.display='none';
+    var box=img.parentNode; if(!box) return;
+    var soon=box.querySelector('.rphoto-soon');
+    if(soon) soon.style.display='flex';
+    box.onclick=null; box.classList.remove('rimg-tap');
+  }catch(e){}
 }
 
 /* The + on the frame IS the button at the bottom of the page — the one that

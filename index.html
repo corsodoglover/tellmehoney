@@ -2605,7 +2605,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v256</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">one big picture on every plant card · every photograph loads, whatever the camera named it · add a picture from your phone, not just the camera · hands-free or read-aloud or type</div></div>
+    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v260</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">thirty-five plants · mulberry, yaupon tea, violets, sheep sorrel — and pokeweed, to know and leave alone · add a picture from your phone, not just the camera · hands-free or read-aloud or type</div></div>
   </div>
 </section>
 
@@ -8279,7 +8279,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v256";
+window.HONEY_BUILD = "v260";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -22339,6 +22339,160 @@ function bootFallback(){
    Every safety line is quoted/condensed from the book's own NOTE for that plant. */
 var RANGER_ALL_NUTRIENTS=["Vit A","Vit C","B Vits","Vit E","Vit K","Fiber","Calcium","Iron","Omega-3","Antioxidants"];
 var RANGER_PLANTS={
+  e34:{name:"Mulberry",
+    alt:["Mulberry", "Red Mulberry", "White Mulberry", "Mulberry Tree", "Morus"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension \u00b7 Lady Bird Johnson Wildflower Center",
+         what:"Morus rubra, Moraceae. Native to the eastern US, volunteers freely in yards and fence rows. Ripe fruit eaten fresh; no toxic look-alike.",
+         url:"https://plants.ces.ncsu.edu/plants/morus-rubra/",
+         checked:20260808},sci:"Morus rubra \u00b7 Moraceae",leaf:"\ud83e\uded0",img:"images/plants/mulberry.jpg",match:95,edible:true,months:[5,6,7],season:"Late spring into early summer",fresh:"Eat them the same day. They bruise if you look at them wrong.",
+    nutrients:["Vit C","Vit K","Iron","Anthocyanins","Fiber"],
+    uses:[["\ud83e\uded0","Straight off the tree"],["\ud83e\udd5e","In pancakes"],["\ud83e\uded9","Jam"],["\ud83e\uddca","Frozen for winter"]],
+    safety:"About as safe as foraging gets \u2014 there is no dangerous look-alike, and a mulberry is a mulberry. Two small things. Unripe white or red fruit can upset a stomach, so take the ones that are properly dark and come away at a touch. And the milky sap in the leaves and twigs is not food. Do not park under one in June unless you meant to.",
+    intro:"Mulberry \u2014 the tree the birds planted for you. Late spring, and the ground underneath goes purple.",
+    teach:["Nobody plants these. Birds do, along fence lines and behind sheds, and one day you notice a tree with fruit on it.","Ripe means nearly black and falling off in your hand. Red is not ready \u2014 give it three more days.","Spread an old sheet under the branches and shake. Picking one at a time is a fool's errand.","Morus rubra is our native one. The white mulberry came over for silkworms that never took, and stayed."]},
+
+  e35:{name:"Pokeweed",
+    alt:["Pokeweed", "Poke", "Poke Sallet", "Poke Salad", "Poke Salet",
+         "Pokeberry", "Poke Berry", "Inkberry", "Pigeonberry", "Scoke",
+         "Red Weed", "Poke Root"], altOK:false,
+    src:{tier:"checked",
+         who:"Missouri Poison Center \u00b7 Tennessee Poison Center \u00b7 NC State Extension",
+         what:"Phytolacca americana, Phytolaccaceae. ALL parts toxic; root most toxic. Toxic dose reported as little as 0.5 tsp of root or 10+ berries. Sap causes contact dermatitis. Traditional poke sallet requires young shoots boiled in three changes of water and is not considered safe by modern food-safety standards.",
+         url:"https://missouripoisoncenter.org/is-this-a-poison/pokeweed/",
+         checked:20260808},sci:"Phytolacca americana \u00b7 Phytolaccaceae",leaf:"\u26a0\ufe0f",img:"images/plants/pokeweed.jpg",match:96,edible:false,months:[],season:"Everywhere, all summer \u2014 and worth knowing on sight",fresh:"",
+    nutrients:[],
+    uses:[],
+    safety:"THIS ONE IS POISONOUS AND IT IS IN THE BOOK SO YOU CAN RECOGNISE IT, NOT SO YOU CAN EAT IT. Every part is toxic \u2014 the root most of all, and the poison centres put a toxic dose at as little as half a teaspoon of root, or ten berries. The berries are shiny and dark and hang in pretty drooping clusters at a child's eye level, which is exactly the problem: teach the children this plant by name. Even the sap will raise a rash, so wear gloves and sleeves if you are pulling it out. Yes, poke sallet is a real Southern dish and your people may well have made it. It needs the youngest shoots, picked before any red shows in the stem, boiled through three changes of water \u2014 and telling a safe shoot from a dangerous one takes an eye that comes from years of being shown. That is not something a card in an app can give you. If somebody has eaten any part of this, ring Poison Control on 1-800-222-1222.",
+    intro:"Pokeweed. This is the one to know and leave alone \u2014 tall, purple-stemmed, dark berries. Poisonous, all of it.",
+    teach:["Learn it by the stem: thick, hollow and a showy purple-red, standing four to ten feet tall by August.","The berries are the danger, because they are beautiful and they hang low. Show them to the children and name them.","Poke sallet is real, and it belongs to people who were taught it hand to hand. There is no shame in admiring the tradition and not attempting it.","Phytolacca americana. Those berries were ink and dye long before they were ever a worry \u2014 that is where Inkberry comes from."]},
+
+  e36:{name:"Sheep Sorrel",
+    alt:["Sheep Sorrel", "Sheep's Sorrel", "Red Sorrel", "Sour Weed", "Sourgrass",
+         "Field Sorrel", "Sour Dock", "Common Sorrel"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension \u00b7 Plants For A Future",
+         what:"Rumex acetosella, Polygonaceae. Leaves eaten raw or cooked, sharp lemon flavour from oxalic acid. Small quantities.",
+         url:"https://plants.ces.ncsu.edu/plants/rumex-acetosella/",
+         checked:20260808},sci:"Rumex acetosella \u00b7 Polygonaceae",leaf:"\ud83c\udf4b",img:"images/plants/sheep-sorrel.jpg",match:89,edible:true,months:[3,4,5,6,9,10],season:"Cool weather, spring and autumn",fresh:"Same day. It goes limp within hours of picking.",
+    nutrients:["Vit C","Vit A","Potassium","Antioxidants"],
+    uses:[["\ud83e\udd57","A few leaves in a salad"],["\ud83c\udf72","Stirred into soup at the end"],["\ud83d\udc1f","With fish, instead of lemon"],["\ud83e\uded6","Sorrel sauce"]],
+    safety:"A handful, not a bowlful. The sharp lemon taste is oxalic acid \u2014 the same thing that is in spinach and rhubarb leaves \u2014 and in small amounts it is a seasoning, not a vegetable. Anyone with kidney stones, gout, or on a low-oxalate diet should leave it be. Cooking helps a little but does not remove it. The arrow-shaped leaves with two backward-pointing lobes at the base are the tell, and nothing dangerous in a Carolina lawn looks like it.",
+    intro:"Sheep sorrel \u2014 that sour little arrow-shaped leaf. Children find it before adults do.",
+    teach:["The leaf is a small arrowhead with two lobes flaring backwards at the base. Once you see it you cannot unsee it.","Tastes of lemon, which is startling in something growing out of a lawn. That is the oxalic acid, so a few leaves rather than a plateful.","Wonderful with fish, or stirred into a soup right at the end when you want brightness and have no lemon.","Rumex acetosella. It prefers thin, sour, sandy soil \u2014 so where it thrives, your lawn is telling you something."]},
+
+  e37:{name:"Violet",
+    alt:["Violet", "Common Blue Violet", "Wild Violet", "Blue Violet",
+         "Purple Violet", "Confederate Violet", "Johnny Jump Up", "Heartsease"], altOK:false,
+    src:{tier:"checked",
+         who:"Lady Bird Johnson Wildflower Center \u00b7 NC State Extension",
+         what:"Viola sororia, Violaceae. Native. Leaves and flowers edible raw or cooked. NOT African violet, which is a different family and not edible.",
+         url:"https://www.wildflower.org/plants/result.php?id_plant=viso",
+         checked:20260808},sci:"Viola sororia \u00b7 Violaceae",leaf:"\ud83d\udc9c",img:"images/plants/violet.jpg",match:92,edible:true,months:[3,4,5],season:"Flowers in early spring, leaves through summer",fresh:"Flowers the same day. Leaves keep a couple of days.",
+    nutrients:["Vit C","Vit A","Rutin","Antioxidants"],
+    uses:[["\ud83e\uddc1","Candied on a cake"],["\ud83e\udd57","Flowers scattered on a salad"],["\ud83c\udf75","Leaves as a tea"],["\ud83e\uded9","Violet jelly, which comes out pink"]],
+    safety:"The leaves and flowers of the wild blue violet are both good, raw or cooked. Two things to keep straight. The African violet on a windowsill is a different family altogether and is not food \u2014 same name, no relation. And the roots of the wild violet are not eaten; they will make you sick. Take the heart-shaped leaves and the flowers, leave the rest. The leaves are mucilaginous, which is a fine word for slightly slippery, and that is what thickens a soup.",
+    intro:"Violets \u2014 the ones you mow over every April. Leaves and flowers both, and the jelly comes out pink.",
+    teach:["Heart-shaped leaves in a low clump, and those five-petalled flowers on their own little stalks. Native here, not a weed from anywhere else.","Candy the flowers with egg white and sugar and you have something for the top of a cake that costs nothing.","Violet jelly starts out blue and turns pink when the lemon juice goes in. Children will want to watch that twice.","Viola sororia. The African violet on the windowsill is no relation at all \u2014 do not eat that one."]},
+
+  e38:{name:"Yaupon Holly",
+    alt:["Yaupon", "Yaupon Holly", "Yopon", "Cassina", "Cassine", "Carolina Tea",
+         "Appalachian Tea", "Black Drink", "Emetic Holly", "Indian Tea"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension \u00b7 Lady Bird Johnson Wildflower Center \u00b7 USDA",
+         what:"Ilex vomitoria, Aquifoliaceae. Native to the SC coastal plain. LEAVES roasted for a caffeinated tea \u2014 the only caffeinated plant native to North America. Berries toxic, as with all hollies.",
+         url:"https://plants.ces.ncsu.edu/plants/ilex-vomitoria/",
+         checked:20260808},sci:"Ilex vomitoria \u00b7 Aquifoliaceae",leaf:"\ud83c\udf75",img:"images/plants/yaupon.jpg",match:90,edible:true,months:[1,2,3,4,5,6,7,8,9,10,11,12],season:"Leaves any time of year",fresh:"Roasted leaves keep months in a jar. Better than fresh.",
+    nutrients:["Caffeine","Theobromine","Antioxidants","Polyphenols"],
+    uses:[["\u2615","Roasted leaf tea"],["\ud83c\udf75","Green, unroasted, like a light tea"],["\ud83e\uddca","Iced, in July"],["\ud83e\uded9","Roasted dark, like coffee"]],
+    safety:"THE LEAVES, NEVER THE BERRIES. The red berries are toxic, the same as every other holly, and there are always a lot of them \u2014 so this is another one to name for the children. The leaves are the tea, and they are safe: pick them, dry them, roast them in a low oven until they smell like tobacco and toast, then steep. The species name says vomitoria and it is a slander \u2014 it came from a ceremonial drink, not from the plant, and the leaves do no such thing. Do not confuse it with other hollies for tea; get the identification right, then use only leaves.",
+    intro:"Yaupon holly \u2014 the only plant native to North America with caffeine in it. That hedge makes tea.",
+    teach:["Small dark glossy leaves with rounded scallops on the edge, not spines \u2014 that is how you know it from the prickly hollies.","The only caffeinated plant native to this continent. It grew here the whole time and almost nobody remembers.","Roast the dried leaves low and slow. Light roast tastes green like tea; dark roast comes out closer to coffee.","Ilex vomitoria. The name is a four-hundred-year-old mistake from a ceremonial drink \u2014 the tea itself is just tea, and it was traded across half the continent."]},
+
+  e33:{name:"Sassafras",
+    alt:["Sassafras", "Sassafrass", "File", "Fil\u00e9", "Filet Gumbo", "Gumbo File",
+         "White Sassafras", "Ague Tree", "Cinnamon Wood", "Mitten Tree",
+         "Root Beer Tree"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension \u00b7 FDA 21 CFR 189.180 \u00b7 National Toxicology Program",
+         what:"Sassafras albidum, Lauraceae. LEAVES only: dried and ground as fil\u00e9, negligible safrole, not subject to the ban. Root and bark are roughly 80% safrole by oil content; FDA order of 3 December 1960 names sassafras tea specifically.",
+         url:"https://plants.ces.ncsu.edu/plants/sassafras-albidum/",
+         checked:20260807},sci:"Sassafras albidum \u00b7 Lauraceae",leaf:"\ud83c\udf42",img:"images/plants/sassafras.jpg",match:93,edible:true,months:[5,6,7,8,9],season:"Young leaves through the summer",fresh:"Dry the leaves and grind them. The powder keeps a year in a jar out of the light.",
+    nutrients:["Vit A","Manganese","Iron","Antioxidants"],
+    uses:[["\ud83c\udf72","Fil\u00e9 in gumbo"],["\ud83e\uddc2","Ground as a seasoning"],["\ud83c\udf5b","Thickening a stew"],["\ud83c\udf42","Dried for the winter"]],
+    safety:"THE LEAVES, NOT THE ROOT \u2014 and this is the one card where the famous part is the part to leave alone. Sassafras root and bark are about 80 percent safrole by oil content, safrole causes liver cancer in animals, and the FDA banned it from food in December 1960 naming sassafras tea by name. So: no root tea, no bark tea, no matter what your grandmother did, and however much of it is growing there. The LEAVES are a different thing chemically \u2014 only traces of safrole, never banned, and sold in every grocery in Louisiana as fil\u00e9. Pick young leaves, dry them, grind them, and you have the real article. Not for pregnancy without asking a doctor first.",
+    intro:"Sassafras \u2014 the mitten tree. The leaves ground up are fil\u00e9, the thing that makes gumbo gumbo.",
+    teach:["Three different leaf shapes on the same branch \u2014 a plain oval, a mitten with a thumb, and one with three lobes. Nothing else here does that, so it names itself.","Dry the young leaves, grind them fine, and that is fil\u00e9 \u2014 the same powder they sell in a tin in New Orleans. The Choctaw were doing it first.","Stir fil\u00e9 in OFF the heat, right at the end. Boil it and it goes stringy, which is the one mistake everybody makes once.","Root beer got its flavour and its name from the root of this tree, until 1960. The soda you buy now is either artificial or made from an extract with the safrole taken out.","Sassafras albidum. Crush a leaf and smell it \u2014 that sweet, slightly citrus smell is how you will know it from across the yard next time."]},
+
+  e28:{name:"Hairy Bittercress",
+    alt:["Hairy Bittercress", "Bittercress", "Flick Weed", "Shot Weed", "Land Cress",
+         "Lamb's Cress", "Springcress", "Hoary Bittercress"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension \u00b7 Plants For A Future",
+         what:"NC State tags it #edible weed, Brassicaceae. Leaves and flowers raw or cooked, hot cress-like flavour.",
+         url:"https://plants.ces.ncsu.edu/plants/cardamine-hirsuta/",
+         checked:20260807},sci:"Cardamine hirsuta \u00b7 Brassicaceae",leaf:"\ud83c\udf3f",img:"images/plants/hairy-bittercress.jpg",match:88,edible:true,months:[12,1,2,3,4,5],season:"Winter into spring",fresh:"Use within a day or two \u2014 it wilts as fast as watercress.",
+    nutrients:["Vit C","Vit A","Calcium","Antioxidants"],
+    uses:[["\ud83e\udd57","Salad"],["\ud83e\uddc8","On buttered bread"],["\ud83c\udf72","Stirred into soup"],["\ud83c\udf3f","Instead of parsley"]],
+    safety:"A mustard, so the taste is peppery rather than bitter despite the name. The whole plant above ground is edible \u2014 leaves, stems, flowers and the little seed pods. It has no dangerous look-alike in a Carolina lawn, but confirm the ID before eating, as always. Harvest from ground that has not been sprayed; it grows exactly where people treat their lawns.",
+    intro:"Hairy bittercress \u2014 the first green thing in the yard every year, and it tastes of pepper and cress.",
+    teach:["The little rosette that appears in January, long before anything else \u2014 that is supper.","A mustard, so it is peppery rather than bitter. The name does it no favours.","Leaves, stems, flowers and seed pods are all good. Scatter it over anything.","Touch a ripe seed pod and it fires seeds sixteen feet. That is how it got the name Shot Weed, and why there is always more of it next year."]},
+
+  e29:{name:"Lamb's Quarters",
+    alt:["Lamb's Quarters", "Lambsquarters", "Wild Spinach", "Goosefoot",
+         "White Goosefoot", "Fat Hen", "Wild Quinoa"], altOK:false,
+    src:{tier:"checked",
+         who:"Lady Bird Johnson Wildflower Center \u00b7 University of Delaware",
+         what:"Chenopodium album, Amaranthaceae. Recorded in SC and every other state. Leaves eaten cooked; cooking removes the oxalic acid.",
+         url:"https://www.wildflower.org/plants/result.php?id_plant=chal7",
+         checked:20260807},sci:"Chenopodium album \u00b7 Amaranthaceae",leaf:"\ud83e\udd6c",img:"images/plants/lambs-quarters.jpg",match:91,edible:true,months:[5,6,7,8,9,10],season:"Late spring through autumn",fresh:"Pick the young tips \u2014 they cook down like spinach, so take more than looks sensible.",
+    nutrients:["Vit A","Vit C","Vit K","Calcium","Iron","Protein","Fiber"],
+    uses:[["\ud83c\udf73","Wilted like spinach"],["\ud83c\udf72","In soup"],["\ud83e\udd67","In a pie"],["\ud83c\udf3e","Seeds like quinoa"]],
+    safety:"COOK IT. The leaves carry oxalic acid, the same as spinach and rhubarb, and cooking removes it \u2014 a little raw in a salad is fine, a bowlful is not. It is a close relative of quinoa and the seeds can be used the same way. Take it from clean ground: it thrives in disturbed soil and old farmyards, and it takes up whatever is there.",
+    intro:"Lamb's quarters \u2014 wild spinach, growing in the vegetable patch you were about to weed.",
+    teach:["The dusty white bloom under the young leaves is the tell. Rub it and it comes away like flour.","Cooks down exactly like spinach, and there is more of it than you will ever need.","Quinoa's close cousin \u2014 the seeds can be cooked the same way, though it is a long job.","Chenopodium album. It has followed farming around the world for so long that nobody is certain where it started."]},
+
+  e30:{name:"Wild Onion & Wild Garlic",
+    alt:["Wild Onion", "Wild Garlic", "Meadow Garlic", "Canada Onion",
+         "Canadian Garlic", "Field Garlic"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension",
+         what:"Allium canadense, Amaryllidaceae. Native to NC and much of the eastern US. Edible bulb; strong onion odour when crushed.",
+         url:"https://plants.ces.ncsu.edu/plants/allium-canadense/",
+         checked:20260807},sci:"Allium canadense \u00b7 Amaryllidaceae",leaf:"\ud83e\uddc4",img:"images/plants/wild-onion.jpg",match:94,edible:true,months:[3,4,5,6,10,11],season:"Spring, and again in autumn",fresh:"Greens keep a few days; the little bulbs keep for weeks in a paper bag.",
+    nutrients:["Vit C","Vit A","Sulfur compounds","Antioxidants"],
+    uses:[["\ud83e\udd54","In potato cakes"],["\ud83e\uddc8","Onion butter"],["\ud83c\udf72","Anywhere you would use a spring onion"],["\ud83e\uddc2","Dried as a seasoning"]],
+    safety:"THE SMELL IS THE TEST, AND IT IS NOT OPTIONAL. Crush a leaf. If it smells of onion or garlic, it is an Allium and it is safe. If it does NOT smell of onion, put it down and wash your hands \u2014 several grassy plants with bulbs are poisonous, and death camas is one of them. No exceptions to this, however sure the plant looks. Beyond that: it is native here, it grows in lawns and fields, and every part above and below ground is good.",
+    intro:"Wild onion \u2014 that grassy clump you keep mowing. Crush a leaf and you will know it straight away.",
+    teach:["The clumps of thin round leaves that come up before the grass does \u2014 crush one and smell it.","Green tops like chives, little bulbs like pearl onions. Both worth having.","Native to the Carolinas, so it belongs here in a way most lawn plants do not.","Allium canadense. The one rule that matters: no onion smell, no eating. That is the whole safety lesson and it never changes."]},
+
+  e31:{name:"Redbud",
+    alt:["Redbud", "Eastern Redbud", "Judas Tree", "Spicewood Tree"], altOK:false,
+    src:{tier:"checked",
+         who:"Russ Cohen, Edible Native Plants of the Northeast \u00b7 NC State Extension",
+         what:"Cercis canadensis, Fabaceae. Native understory tree; flowers and young pods eaten.",
+         url:"https://plants.ces.ncsu.edu/plants/cercis-canadensis/",
+         checked:20260807},sci:"Cercis canadensis \u00b7 Fabaceae",leaf:"\ud83c\udf38",img:"images/plants/redbud.jpg",match:93,edible:true,months:[3,4,5],season:"Flowers in early spring",fresh:"Flowers are best the day you pick them \u2014 they go limp by evening.",
+    nutrients:["Vit C","Anthocyanins","Antioxidants"],
+    uses:[["\ud83e\udd57","Scattered on a salad"],["\ud83e\uddc1","On a cake"],["\ud83e\uddca","Frozen in ice cubes"],["\ud83e\uded9","Pickled pods"]],
+    safety:"Eat the FLOWERS and the very young green pods, in spring while they are still tender. Not the bark, not the older pods, not the seeds inside them. It is a pea-family tree and plenty of that family are not edible, so this is one to be sure of \u2014 but a redbud in April is unmistakable: bare branches covered in magenta flowers before a single leaf appears.",
+    intro:"Redbud \u2014 the magenta tree in April. Those flowers are food, and they taste faintly of green apple.",
+    teach:["The flowers come out on the bare wood, before the leaves. Nothing else here does that.","They taste faintly sour, a little like green apple, and they are wonderful scattered over anything.","The young pods can be eaten too, while they are flat and tender \u2014 not once they toughen.","Cercis canadensis. Native to the Carolinas, and one of the few trees whose flowers are worth picking to eat rather than just to look at."]},
+
+  e32:{name:"Chicory",
+    alt:["Chicory", "Common Chicory", "Blue Sailors", "Coffeeweed", "Succory",
+         "Italian Dandelion", "Cornflower", "Wild Endive"], altOK:false,
+    src:{tier:"checked",
+         who:"NC State Extension \u00b7 University of Wisconsin Extension \u00b7 Weakley's Flora of the Southeastern US",
+         what:"Cichorium intybus, Asteraceae. NC State tags it #edible weed and #edible roots. Young leaves raw, older cooked; dried roasted root used as a coffee substitute.",
+         url:"https://plants.ces.ncsu.edu/plants/cichorium-intybus/",
+         checked:20260807},sci:"Cichorium intybus \u00b7 Asteraceae",leaf:"\ud83d\udc99",img:"images/plants/chicory.jpg",match:92,edible:true,months:[3,4,5,6,9,10,11],season:"Leaves in cool weather, roots in autumn",fresh:"Young leaves the same day. Roots keep for weeks in the cold.",
+    nutrients:["Vit A","Vit C","Vit K","Folate","Inulin","Fiber"],
+    uses:[["\u2615","Roasted root coffee"],["\ud83e\udd57","Young leaves raw"],["\ud83c\udf73","Older leaves cooked"],["\ud83d\udc99","Flowers on a salad"]],
+    safety:"Bitter, and that is the point of it \u2014 the young rosette leaves are mildest, older ones want cooking with a change of water. The whole plant is edible. In its first year the rosette looks very like a dandelion, which is a harmless confusion since both are good; if it has milky sap and hairy leaves and later throws up a wiry stem of blue flowers, it is chicory. Take it from ground that has not been sprayed, and not from the verge of a busy road, however much of it is growing there.",
+    intro:"Chicory \u2014 those blue flowers along the roadside every summer. The root is what makes New Orleans coffee taste like New Orleans.",
+    teach:["The clear blue flowers on wiry stems, open in the morning and shut by lunchtime.","Roast and grind the root and you have chicory coffee \u2014 the same thing they still put in the tin down in New Orleans.","First-year leaves look like a dandelion. Both are edible, so it is a forgiving mistake to make.","Cichorium intybus. Radicchio and Belgian endive are the same species, bred soft and sold dear. This is the wild one, growing free in the ditch."]},
+
   /* HAWKSBEARD ADDED 4 AUGUST. Three yellow-flowered Asteraceae that grow in
      the same lawns and get eaten the same way. Naming it here means somebody
      who finds hawksbeard and searches for it lands on a card that mentions it,
@@ -23692,8 +23846,28 @@ function rangerImageStrip(p, badges, plantId){
      the dandelion card covers three plants and the picture on disk is of the
      hawksbeard. Rather than rename a good photograph to something it isn't,
      the card points at the file that exists. */
-  var PHOTO_ALIAS = { 'dandelion':'hawksbeard', 'muscadine-grape':'muscadine',
-                      'greenbriar':'green-briar', 'dollarweed':'dollar-weed' };
+  /* A LIST per plant, not one alternative. Photographs get named by whoever
+     took them, and the same plant honestly attracts several spellings — wild
+     onion is filed as wild-onion, onion, and wild-onion-garlic depending on the
+     day. Renaming files to suit the code is the wrong way round; the code can
+     hold every name that has ever been used and try them all. Nothing here
+     needs removing when a filename changes, only adding. */
+  var PHOTO_ALIAS = {
+    'dandelion'         : ['hawksbeard'],
+    'muscadine-grape'   : ['muscadine'],
+    'greenbriar'        : ['green-briar', 'greenbrier'],
+    'dollarweed'        : ['dollar-weed'],
+    'chicory'           : ['chichory'],
+    'wild-onion'        : ['wild-onion-garlic', 'onion', 'wild-garlic'],
+    'henbit-deadnettle' : ['henbit'],
+    'lambs-quarters'    : ['lambsquarters', 'lambs-quarter'],
+    'hairy-bittercress' : ['bittercress'],
+    'plantain'          : ['broadleaf-plantain'],
+    'daylily'           : ['day-lily'],
+    'sawtooth-blackberry': ['blackberry'],
+    'wood-sorrel'       : ['pink-sorrel'],
+    'pink-sorrel'       : ['wood-sorrel']
+  };
 
   var _stem = ourPhoto.replace(/-photo\.[a-z]+$/i, '').replace(/^.*\//, '');
   var _dir  = ourPhoto.replace(/[^\/]*$/, '');
@@ -23704,7 +23878,7 @@ function rangerImageStrip(p, badges, plantId){
      making somebody rename photographs to suit the code. */
   var _exts = ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG'];
   var _names = [_stem];
-  if(PHOTO_ALIAS[_stem]) _names.push(PHOTO_ALIAS[_stem]);
+  if(PHOTO_ALIAS[_stem]) _names = _names.concat(PHOTO_ALIAS[_stem]);
 
   _names.forEach(function(n){
     _exts.forEach(function(e){ _push(_dir + n + '-photo' + e); });
