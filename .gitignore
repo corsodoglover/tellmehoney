@@ -11,3 +11,4 @@ old*.html
 onapple*.html
 *.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
 tellmehoneyfullcopy/
+index[0-9]*.html
