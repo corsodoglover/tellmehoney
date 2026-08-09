@@ -7,87 +7,73 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-    // ══════════ SETTING IT ONCE WAS NOT ENOUGH ══════════════════════════════
-    // The old version configured the audio session at launch and again on
-    // becomeActive, and assumed it would hold. It does not. The speech
-    // recogniser sets its OWN session when it starts listening, and what it
-    // leaves behind is a record-oriented route pointed at the earpiece.
+    // ══════════ AUDIO SESSION WORK IS DISABLED ON PURPOSE ═══════════════════
     //
-    // That is exactly the symptom: Honey and the premium voices play faint,
-    // out of the receiver instead of the loudspeaker, and only manage one
-    // hands-free turn before the microphone dies. The free phone voice is
-    // untouched because speechSynthesis is managed by iOS itself and never
-    // competes for the session at all.
+    // TEST BUILD. Everything this file used to do to the audio session is
+    // switched off below, and here is the reasoning.
     //
-    // So the session has to be re-asserted, not just set — after every route
-    // change and every interruption, which is precisely when the recogniser
-    // has been meddling.
-    // Re-entrancy guard. setCategory, setActive and overrideOutputAudioPort
-    // each CAUSE a route change — so configuring the session from inside a
-    // route-change handler makes it call itself, forever, on the main thread.
-    // That is a spinning app that will not take a button press, and a
-    // microphone that can never open because the session is yanked out from
-    // under the recogniser the instant it sets one up.
+    // The speech plugin was never actually in the iOS build until the CocoaPods
+    // conversion. So every audio-session theory in this file was written to
+    // explain the behaviour of a recogniser that was not there — hands-free was
+    // silently falling back to webkitSpeechRecognition in the web view. The
+    // comments were careful and reasonable and they were describing a ghost.
+    //
+    // Now the real plugin runs, and the symptom has changed to "No speech
+    // detected": the microphone opens, the engine runs, and no audio ever
+    // arrives at the recogniser. That points straight back here.
+    //
+    //   • mode .voiceChat turns on the voice-processing I/O unit. The plugin
+    //     builds its tap from inputNode.outputFormat(forBus: 0). With voice
+    //     processing active that format can differ from what the tap expects,
+    //     and a mismatched tap installs cleanly and then delivers nothing at
+    //     all. Engine running, recogniser listening, silence. Exactly this.
+    //
+    //   • The route observer fires overrideOutputAudioPort 0.2s after any route
+    //     change — and starting the recogniser IS a route change. So a fifth of
+    //     a second into every listening session, this file reached into a live
+    //     recording session and changed its output port, which can restart the
+    //     audio unit and detach the input tap underneath.
+    //
+    //   • applicationDidBecomeActive reconfigured the whole session again on
+    //     every return to the foreground.
+    //
+    // The plugin sets its own session properly — .playAndRecord with
+    // .defaultToSpeaker and mode .default — and that is the configuration it
+    // was written and tested against. So: let it. If speech is detected with
+    // this file quiet, we know what was breaking it, and any speaker routing we
+    // still need can be added back one piece at a time, with the microphone
+    // working as the thing we protect.
+    //
+    // Nothing is deleted. If this makes no difference, put it all back.
+
     private static var isConfiguring = false
 
     static func configureAudioSession(activate: Bool = true) {
-        if isConfiguring { return }
-        isConfiguring = true
-        defer { isConfiguring = false }
-
-        let session = AVAudioSession.sharedInstance()
-        do {
-            // .voiceChat is the change that matters.
-            //
-            //   • It turns on the voice-processing I/O unit, which is hardware
-            //     ECHO CANCELLATION. That is the real fix for the microphone
-            //     hearing Honey through the loudspeaker and transcribing her
-            //     back at you — a thing no amount of JavaScript timing can do,
-            //     because by the time the sound has left the speaker it is a
-            //     real sound in a real room.
-            //
-            //   • It is designed for simultaneous record and playback, which is
-            //     what hands-free actually is.
-            //
-            //   • It routes to the loudspeaker rather than the receiver, which
-            //     is the "faint, in the earpiece" problem.
-            //
-            // .spokenAudio was the wrong tool: a playback mode, on a session
-            // that has to record at the same time.
-            //
-            // .mixWithOthers is gone. It is polite about other people's music,
-            // but it competes with the routing we are trying to force, and a
-            // companion app that is talking to you should be the thing you
-            // hear. Politeness was costing us the speaker.
-            try session.setCategory(
-                .playAndRecord,
-                mode: .voiceChat,
-                options: [.defaultToSpeaker, .allowBluetoothHFP]
-            )
-            // Only claim the session on the way in. Re-activating it later
-            // interrupts whatever is already using it — which, during
-            // hands-free, is the speech recogniser.
-            if activate { try session.setActive(true, options: []) }
-
-            // Belt and braces. .defaultToSpeaker is a default, and a default is
-            // something the recogniser can quietly overrule. This says it
-            // outright. Only when nothing better is plugged in — headphones and
-            // car speakers still win, which is the whole point of hands-free.
-            if session.currentRoute.outputs.allSatisfy({ $0.portType == .builtInReceiver }) {
-                try? session.overrideOutputAudioPort(.speaker)
-            }
-        } catch {
-            // A session that will not configure is not worth crashing over.
-            // The app still works; hands-free may not.
-            NSLog("TellMeHoney: audio session setup failed — \(error.localizedDescription)")
-        }
+        // DISABLED FOR TEST — see the note above.
+        // The original body is kept below so it can be restored in one edit.
+        //
+        // if isConfiguring { return }
+        // isConfiguring = true
+        // defer { isConfiguring = false }
+        //
+        // let session = AVAudioSession.sharedInstance()
+        // do {
+        //     try session.setCategory(
+        //         .playAndRecord,
+        //         mode: .voiceChat,
+        //         options: [.defaultToSpeaker, .allowBluetoothHFP]
+        //     )
+        //     if activate { try session.setActive(true, options: []) }
+        //     if session.currentRoute.outputs.allSatisfy({ $0.portType == .builtInReceiver }) {
+        //         try? session.overrideOutputAudioPort(.speaker)
+        //     }
+        // } catch {
+        //     NSLog("TellMeHoney: audio session setup failed — \(error.localizedDescription)")
+        // }
+        NSLog("TellMeHoney: configureAudioSession skipped (test build)")
     }
 
-    // Nudge the output back to the loudspeaker — and ONLY that. No category
-    // change, no setActive, nothing that interrupts whoever holds the session.
-    // Deliberately does nothing when headphones or a car speaker are connected:
-    // hands-free in the car is the whole point, and forcing the phone's own
-    // speaker there would be worse than the bug.
+    // Left in place and unused. Nothing calls it while the observer is off.
     static func forceSpeakerIfOnReceiver() {
         let session = AVAudioSession.sharedInstance()
         let onReceiver = session.currentRoute.outputs.contains { $0.portType == .builtInReceiver }
@@ -97,87 +83,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
-        AppDelegate.configureAudioSession()
+        // DISABLED FOR TEST — the plugin configures the session itself.
+        // AppDelegate.configureAudioSession()
 
-        // The recogniser changes the route out from under us every time it
-        // opens. Listen for that and put it back, rather than finding out the
-        // hard way one turn later.
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleRouteChange(_:)),
-            name: AVAudioSession.routeChangeNotification,
-            object: nil
-        )
+        // DISABLED FOR TEST — this fired overrideOutputAudioPort 0.2s after
+        // every route change, and opening the microphone is a route change.
+        // NotificationCenter.default.addObserver(
+        //     self,
+        //     selector: #selector(handleRouteChange(_:)),
+        //     name: AVAudioSession.routeChangeNotification,
+        //     object: nil
+        // )
 
-        // A phone call, a timer, Siri — anything that takes the session hands
-        // it back in whatever state it likes. Reclaim it properly.
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleInterruption(_:)),
-            name: AVAudioSession.interruptionNotification,
-            object: nil
-        )
+        // Interruptions are left alone too, so that nothing in this file
+        // touches the session while we find out whether it was the problem.
+        // NotificationCenter.default.addObserver(
+        //     self,
+        //     selector: #selector(handleInterruption(_:)),
+        //     name: AVAudioSession.interruptionNotification,
+        //     object: nil
+        // )
 
         return true
     }
 
     @objc func handleRouteChange(_ notification: Notification) {
-        guard
-            let info = notification.userInfo,
-            let raw = info[AVAudioSessionRouteChangeReasonKey] as? UInt,
-            let reason = AVAudioSession.RouteChangeReason(rawValue: raw)
-        else { return }
-
-        // ══════════ PUT THE ROUTE BACK, NOTHING ELSE ════════════════════════
-        // The recogniser sets its own session when it opens, and that session
-        // points at the receiver. When it stops, nobody puts the route back —
-        // so Honey plays into a record-shaped route: faint, in the earpiece,
-        // and holding a session the next mic open cannot take. One turn, then
-        // dead. Every time.
-        //
-        // The trick is to fix ONLY the route, and only when it is actually
-        // wrong. overrideOutputAudioPort does not touch the category and does
-        // not interrupt the recogniser. It does fire another route change —
-        // but by then the output IS the speaker, so the condition below is
-        // false and it stops. It cannot loop, because acting on it removes the
-        // reason to act.
-        //
-        // A short delay lets the recogniser finish settling first. Grabbing
-        // the route out from under it mid-start is what broke it last time.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            AppDelegate.forceSpeakerIfOnReceiver()
-        }
-
-        switch reason {
-        case .oldDeviceUnavailable:
-            // Headphones pulled out. Without this iOS drops to the receiver
-            // and she goes quiet mid-sentence. This is a real, physical event
-            // that we did not cause, so reacting to it cannot loop.
-            //
-            // .categoryChange, .override and .routeConfigurationChange are NOT
-            // handled, deliberately. Those are the speech recogniser doing its
-            // job — and they are also what we ourselves produce every time we
-            // touch the session. Answering them meant the app argued with
-            // itself and with the microphone at the same time.
-            //
-            // .voiceChat set once at launch is enough to hold the loudspeaker.
-            // The voices proved that. Let the recogniser work.
-            AppDelegate.configureAudioSession(activate: false)
-        default:
-            break
-        }
+        // Not registered in this build.
     }
 
     @objc func handleInterruption(_ notification: Notification) {
-        guard
-            let info = notification.userInfo,
-            let raw = info[AVAudioSessionInterruptionTypeKey] as? UInt,
-            let type = AVAudioSession.InterruptionType(rawValue: raw)
-        else { return }
-
-        if type == .ended {
-            AppDelegate.configureAudioSession()
-        }
+        // Not registered in this build.
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -190,11 +125,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
-        // Coming back from a phone call, or from another app that took the
-        // session, can leave the category changed. Setting it again on return
-        // means hands-free still works after an interruption rather than going
-        // quiet until the app is restarted.
-        AppDelegate.configureAudioSession()
+        // DISABLED FOR TEST — this reconfigured the session on every return to
+        // the foreground, including straight after granting a permission.
+        // AppDelegate.configureAudioSession()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {

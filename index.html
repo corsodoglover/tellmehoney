@@ -2606,7 +2606,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v277 · diagnostic</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">hands-free reclaims the speaker after the microphone lets go, not before · printed recipe cards carry your notes, not just the shopping list · the nerdy meter is back on every card · all 36 cards show where they come from</div></div>
+    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v291 · diagnostic</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">she waits while you think and hears you out to the end of the sentence · the keyboard stays down when you come into the chat · one line that landed sharp has been retired · printed recipe cards carry your notes, not just the shopping list · the nerdy meter is back on every card · all 36 cards show where they come from</div></div>
   </div>
 </section>
 
@@ -2983,7 +2983,7 @@ textarea{resize:none;line-height:1.4;}
     </div>
     <div class="input-row">
       <div class="pill">
-        <input id="chatInput" placeholder="Type here, or tap a button below…" autocomplete="off" onkeydown="if(event.key===&#39;Enter&#39;)sendUser()">
+        <input id="chatInput" placeholder="Type here, or tap a button below…" autocomplete="off" onfocus="try{clearInterim()}catch(e){}" onkeydown="if(event.key===&#39;Enter&#39;)sendUser()">
       </div>
       <button class="send" onclick="sendUser()">➤</button>
     </div>
@@ -7596,7 +7596,27 @@ function enterChat(){
   if(sbnr) sbnr.style.display = honeyNeedsSetup() ? 'block' : 'none';
   var coming=S.returning || (S.transcript && S.transcript.length>0); S.returning=false;
   var skipGreet=S.skipGreet; S.skipGreet=false;
-  setTimeout(()=>{ var ci=document.getElementById('chatInput'); if(ci)ci.focus({preventScroll:true}); }, 450);
+  /* ══════════ THIS WAS UNDOING THE FIX TWELVE LINES ABOVE ═══════════════════
+     This used to be:
+
+         setTimeout(()=>{ chatInput.focus({preventScroll:true}); }, 450);
+
+     The blur further up puts the keyboard away on arrival, exactly as its
+     comment says it should. Then this fired 450ms later and pulled it right
+     back up — so the keyboard covered the conversation every single time
+     somebody came into the chat, and the blur looked like it had never
+     worked. Two lines of the same file arguing, and the later one won.
+
+     Nothing should take focus on arrival. Tapping the box is the only thing
+     that should ever raise the keyboard, and it still does. This second blur
+     is here because iOS likes to restore focus to the last field a beat after
+     the view settles, which is the same keyboard by a different route. */
+  setTimeout(function(){
+    try{
+      var ci=document.getElementById('chatInput');
+      if(ci && document.activeElement===ci) ci.blur();
+    }catch(e){}
+  }, 450);
 
   if(skipGreet){
     // jumping in from a buzz prompt — keep history if any, no generic greeting
@@ -8280,7 +8300,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v274d";
+window.HONEY_BUILD = "v291";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -14738,7 +14758,17 @@ function replyTo(l){
     "I'd like to hear more of that.",
     "Hm. Tell me the rest.",
     "You've got my attention. Go on.",
-    "And then what?",
+    /* "And then what?" removed 9 August — the only bare line in the pool.
+       Every other one has a soft opener ("Mm.", "Well now.", "Hm.", "Go on —")
+       that gives the voice a runway; this one started cold on a stressed word
+       and ended on a question mark three words later, so it came in at full
+       attack however it was recorded. Same fault as "Back with you." on
+       2 August, and the same fix.
+
+       It was not only abrupt, it was impatient — the rest of this pool hands
+       the conversation back, and that one demanded she get to the point.
+       catch_17 stays in HONEY_AUDIO_MAP alongside the other retired lines;
+       an unused clip costs nothing and the key is harmless. */
     "Keep going, I'm right here."
   ];
   /* SIX LINES BECAME EIGHTEEN, AND THAT IS WHAT WENT WRONG.
@@ -15314,6 +15344,17 @@ function audioSessionChatReport(){
   try{ pushThemText(L.join('\n'), true); }catch(e){}
 }
 function sessionToSpeaker(from){
+  /* The report used to print only when the plugin was missing, which made its
+     absence ambiguous - it could mean the plugin registered, or it could mean
+     this code never ran. After a dependency-system conversion that is exactly
+     the thing we cannot afford to guess about, so it prints every launch now,
+     found or not. */
+  var _dbg = false;
+  try{ _dbg = !!window.__OBDEBUG; }catch(e){}
+  if(_dbg && !window.__OBREPORTED){
+    window.__OBREPORTED = true;
+    try{ audioSessionChatReport(); }catch(e){}
+  }
   var dbg = false;
   try{ dbg = !!window.__OBDEBUG; }catch(e){}
   var tag = from ? (' [' + from + ']') : '';
@@ -15437,7 +15478,11 @@ function keepAudioWarm(){
      The cloud element is the one that actually needs the permission kept
      alive, because its audio arrives from the network long after any tap.
      And nothing is warmed at all while the microphone is open. */
-  if(listening || _micStarting || recOpen) return;
+  /* _micPendingStart covers the second or two AFTER stop(), while iOS is still
+     finalising the sentence. listening is already false by then, so without it
+     a tap in that window put a silent clip through the audio session at the
+     exact moment the words were being handed over. */
+  if(listening || _micStarting || recOpen || _micPendingStart) return;
   var a = cloudPlayer();
   // Only warm it when the element is idle — never interrupt a line mid-play.
   try{
@@ -21519,6 +21564,236 @@ function cancelPendingMicOpen(){
   if(_micOpenTimer){ clearTimeout(_micOpenTimer); _micOpenTimer=null; }
 }
 
+/* ══════════ THE WORDS ARRIVE AFTER THE TURN IS OVER ═══════════════════════
+   The Xcode log said it plainly: every "matches" came AFTER the next
+   "SpeechRecognition start". The sentence was one full turn behind, which is
+   why it only appeared on screen when Honey spoke her NEXT line.
+
+   Here is the actual sequence, and nothing in it is a repaint problem:
+
+     1. Session A is open, you speak.
+     2. Honey has a line to say, so _spDrain calls pauseListening().
+        That sets listening=false and asks the plugin to stop.
+     3. stop() is a REQUEST. iOS takes a second or two to finalise the
+        transcription and only then resolves session A's start() promise.
+     4. Meanwhile the clip finishes, the drain calls reopenMic(), and because
+        listening is already false nothing blocks it — session B starts.
+     5. NOW session A resolves with your words. Its handler sets listening
+        false, calls removeAllListeners() — tearing down the session that just
+        opened — and hands your sentence to userSays() a whole beat late.
+
+   listening=false was being used to mean "no session" when what it really
+   meant was "the session is closing and its words are still in the post".
+   Those are different states and the mic needed to know the difference.
+
+   _micPendingStart is that second state. While a start() promise is still in
+   flight — open or closing — nothing may start another one. Anything that
+   asks sets _micReopenWanted instead, and the reopen happens the moment the
+   words land. One turn owns the microphone from start to sentence. */
+var _micPendingStart = false;   /* a start() promise has not settled yet */
+var _micReopenWanted = false;   /* something asked for the mic during that   */
+var _micSettleGuard  = null;    /* a lost result must never deafen the app   */
+var _micTurn = 0;               /* which session a late resolve belongs to   */
+
+/* Arming this whenever we ask the recogniser to stop. If the result really
+   does come back, micSettled() cancels it long before it fires. If the plugin
+   drops it — which is the one way this new gate could leave somebody talking
+   to a dead microphone — this lets go after four seconds and carries on. */
+function armMicSettleGuard(){
+  try{ clearTimeout(_micSettleGuard); }catch(e){}
+  _micSettleGuard = setTimeout(function(){
+    _micSettleGuard = null;
+    if(!_micPendingStart) return;
+    if(window.__OBDEBUG) try{ toast('MIC: no result came back — releasing'); }catch(e){}
+    _micPendingStart = false;
+    _micTurn++;                                   /* a late resolve is stale now */
+    if(_micReopenWanted){
+      _micReopenWanted = false;
+      if(audioOn()) reopenMic();
+    }
+  }, 4000);
+}
+
+function micSettled(){
+  _micPendingStart = false;
+  try{ clearTimeout(_micSettleGuard); }catch(e){}
+  _micSettleGuard = null;
+}
+
+/* ══════════ NOTHING EVER TOLD HER YOU HAD FINISHED TALKING ═════════════════
+   The Xcode log made this one plain. Every single turn ran in this order:
+
+       start  →  buffers flow  →  stop  →  matches arrive
+
+   The words only ever came back AFTER stop(). And the only thing in this file
+   that called stop() was pauseListening() — which fires when Honey is about
+   to speak. So the whole thing was knotted:
+
+       Honey cannot reply until she has your words.
+       Your words do not arrive until something calls stop().
+       Nothing calls stop() until Honey replies.
+
+   The only way out was to tap something, which made her say a line, which
+   stopped the recogniser, which finally released the sentence you had spoken
+   half a minute earlier. That is exactly "you don't show my box until after
+   you speak and I have to force it".
+
+   partialResults was false, so the recogniser said nothing at all until the
+   session was torn down, and there was no silence timer anywhere — the mic
+   would happily stay open forever waiting for an end that never came.
+
+   So the turn ends itself now. Partial results stream in as you speak; every
+   one of them pushes the end of the turn back. When they stop coming for a
+   moment and a half, you have finished, and THAT is the end of the turn: the
+   words go on screen immediately and the recogniser is closed afterwards
+   rather than before. The bubble no longer waits on Honey. */
+var MIC_SILENCE_MS  = 2400;   /* quiet this long after speech = you're done */
+var MIC_NOTHING_MS  = 9000;   /* opened and never heard a thing = give up   */
+/* ══════════ DO NOT MAKE PEOPLE TALK LIKE A COMPUTER ═══════════════════════
+   1500ms sounded generous and was not. It cut real sentences in half — "it
+   was nice to see the chat not the", "so I can't see what you're saying or" —
+   every time somebody paused to think. The person then learns to talk faster
+   and flatter to suit the machine, which is exactly backwards, and worse for
+   an older user than for anybody.
+
+   2200ms was better and still not enough: "Wonderful now" was cut, and "I
+   might have to" arrived after the turn had closed and was thrown away. So
+   2600ms, plus the grace below.
+
+   TUNING NOTE FOR LATER: these two numbers are the comfort dial for the whole
+   app. If she ever feels like she is jumping in, raise MIC_SILENCE_MS. If she
+   feels slow to answer, lower it. Nothing else needs to change. */
+/* Only words a sentence genuinely never ends on, plus the ones that in
+   practice always have something after them — "wonderful NOW ...", "I might
+   HAVE to ...". The first draft had "you", "there", "it", "that" and "so" in
+   it, and people end on all of those constantly: "thank you", "over there",
+   "I think so". Every one would have bought a needless pause after a
+   perfectly finished sentence. When in doubt, leave a word OUT: a missed
+   extension costs a cut-off sentence once, but a wrong one makes her feel
+   slow on every single turn. */
+var MIC_HANGING_WORDS = (
+  'and or but because if when while '+
+  'the a an to of for with into onto from '+
+  'my your our their his her '+
+  'is are was were am '+
+  'thats whats theres its '+
+  'now then well maybe '+
+  'have has had gonna going want need got '+
+  'very really quite pretty kinda sorta'
+).split(' ');
+var MIC_HANGING_EXTRA = 1600;  /* one more breath when clearly mid-sentence */
+
+function micSoundsUnfinished(s){
+  try{
+    var txt = String(s||'').trim().toLowerCase();
+    var w = txt.split(/[\s,]+/).filter(Boolean);
+    /* ══════════ A COUPLE OF WORDS IS USUALLY A RUN-UP ═══════════════════════
+       "Yeah" was cut off, and "how are you" arrived a turn later as if it were
+       a separate thought. People open with a word and then say the thing —
+       "Yeah... how are you", "Right... so what I meant was". One or two words
+       on their own is far more often the start of a sentence than the whole
+       of one, and the cost of being wrong is a second and a half. */
+    if(w.length <= 2) return true;
+    var last = (w[w.length-1]||'').replace(/[^a-z']/g,'').replace(/'/g,'');
+    if(!last) return false;
+    return MIC_HANGING_WORDS.indexOf(last) >= 0;
+  }catch(e){ return false; }
+}
+var _micHeard       = '';     /* best transcript so far this turn           */
+var _micDelivered   = false;  /* these words have already been handed over  */
+var _micSilenceTimer= null;
+var _micNothingTimer= null;
+var _micGaveExtra   = false;  /* the hanging-word grace has been used        */
+
+function clearMicTurnTimers(){
+  if(_micSilenceTimer){ clearTimeout(_micSilenceTimer); _micSilenceTimer=null; }
+  if(_micNothingTimer){ clearTimeout(_micNothingTimer); _micNothingTimer=null; }
+}
+
+/* ══════════ THE RECOGNISER RUNS BEHIND YOUR MOUTH ═════════════════════════
+   The log showed this and I nearly missed it:
+
+       matches ["Wonderful now"]
+       stop                                     <- no new words for 2.2s
+       matches ["Wonderful now I might have to"] <- AFTER the stop
+
+   If somebody had really been silent for two and a bit seconds, the
+   recogniser could not produce more words afterwards. So those words were
+   already spoken — the transcription was simply running behind the mouth,
+   which SFSpeechRecognizer does, especially early in a session.
+
+   Which means "no new partials" is NOT the same as "no more speech", and the
+   silence timer was measuring the wrong thing. It was right that the turn had
+   ended; it was wrong about where the sentence ended.
+
+   So ending a turn is now two steps. Stop the recogniser, then wait a short
+   flush for it to catch up and take the longest version of the sentence it
+   gives us. It costs a fraction of a second and it is the difference between
+   "Wonderful now" and "Wonderful now I might have to". */
+var MIC_FLUSH_MS   = 500;    /* wait this long after stop for stragglers   */
+var MIC_FLUSH_MORE = 350;    /* and this much more each time one arrives   */
+var MIC_FLUSH_CAP  = 1800;   /* but never hold the sentence longer than    */
+var _micFlushing = false;
+var _micFlushTimer = null;
+var _micFlushUntil = 0;
+
+function endMicTurn(why){
+  clearMicTurnTimers();
+  if(_micDelivered) return;
+  _micDelivered = true;      /* no second turn can start from here */
+  _micFlushing  = true;      /* but late words still count as this one */
+
+  listening = false; _micStarting = false;
+  syncMicUI();
+
+  /* Close the session. listeningState 'stopped' clears the pending gate when
+     the engine is really down; the guard covers it never arriving. */
+  try{ var P = nativeSpeech(); if(P) P.stop(); }catch(e){}
+  if(_micPendingStart) armMicSettleGuard();
+
+  _micFlushUntil = Date.now() + MIC_FLUSH_CAP;
+  if(_micFlushTimer) clearTimeout(_micFlushTimer);
+  _micFlushTimer = setTimeout(function(){
+    _micFlushTimer = null;
+    deliverMicWords(why);
+  }, MIC_FLUSH_MS);
+}
+
+/* The words go out here, once the recogniser has stopped catching up. */
+function deliverMicWords(why){
+  if(!_micFlushing) return;
+  _micFlushing = false;
+  if(_micFlushTimer){ clearTimeout(_micFlushTimer); _micFlushTimer=null; }
+
+  var words = String(_micHeard||'').trim();
+  _micHeard = '';
+  try{ clearInterim(); }catch(e){}
+
+  if(window.__OBDEBUG) try{ toast('MIC turn end ('+why+'): '+(words?('"'+words.slice(0,28)+'"'):'nothing')); }catch(e){}
+
+  if(words){
+    _awaitingReply = true;
+    _micReopenWanted = false;
+    userSays(words);
+    /* Give the compositor a frame so the bubble is drawn before she starts
+       speaking rather than in the same breath. */
+    try{
+      var _m = document.getElementById('msgs');
+      if(_m){
+        void _m.offsetHeight;
+        requestAnimationFrame(function(){ try{ void _m.offsetHeight; scrollMsgs(); }catch(e){} });
+      }
+    }catch(e){}
+    /* If she never manages to say anything, nothing would come round to
+       reopen the microphone. This is that safety net. */
+    setTimeout(function(){
+      if(_awaitingReply){ _awaitingReply=false; if(audioOn()) reopenMic(); }
+    }, 4000);
+  } else {
+    if(audioOn()) setTimeout(reopenMic, 600);
+  }
+}
+
 function stopMicWait(){
   if(_micWaitTimer){ clearTimeout(_micWaitTimer); _micWaitTimer=null; }
   _micWaitUntil=0;
@@ -21537,6 +21812,14 @@ function reopenMic(){
   if(!listening){ _micStarting=false; }
   if(!audioOn())     return;   // hands-free turned off — stop
   if(recOpen)        return;   // record sheet owns the mic
+  /* The last turn's sentence is still on its way up from iOS. Opening now is
+     exactly what put the words a beat behind. Remember that the mic is wanted
+     and come back to it the instant they land. */
+  if(_micPendingStart){
+    _micReopenWanted = true;
+    if(window.__OBDEBUG) try{ toast('MIC: waiting for the last words'); }catch(e){}
+    return;
+  }
   if(micPaused && !listening){ /* keep going — startListening clears it */ }
   if(!_micWaitUntil) _micWaitUntil = Date.now() + 25000;
   _micTry();
@@ -21646,12 +21929,164 @@ function nativeSpeech(){
    itself the first time and never again, and only if start actually fails with
    a permission error do we say anything. The system is the authority on its
    own permissions, not my guess about a return value. */
+/* ══════════ SPEECH RECOGNITION HAS TO BE ASKED FOR ═════════════════════════
+   The note below is right about the microphone and wrong about speech
+   recognition, and the difference is why hands-free never heard a word.
+
+   iOS prompts for the MICROPHONE by itself the first time something records.
+   It does NOT do that for SPEECH RECOGNITION. That one only ever becomes
+   .authorized when an app explicitly calls SFSpeechRecognizer
+   .requestAuthorization. Nothing here ever did - and it could not have, since
+   the plugin was not in the build until tonight.
+
+   The plugin's start() checks the status and rejects before it opens anything:
+
+       let status = SFSpeechRecognizer.authorizationStatus()
+       if status != .authorized { call.reject("Missing permission") }
+
+   Which is a rejection matching /permission/, so the catch handler switched
+   hands-free off - the mic button going grey on its own. And the Settings
+   toggle showing "on" is not the same thing: that reflects what the app has
+   declared, not what has been authorised.
+
+   So: ask once, before the first start, and remember we asked. Failing here
+   is not fatal - start() will reject with the real reason and the existing
+   handler will say so. */
+var _speechAuthAsked = false;
+function ensureSpeechAuth(P){
+  if(_speechAuthAsked || !P) return Promise.resolve();
+  _speechAuthAsked = true;
+  try{
+    if(typeof P.requestPermissions === 'function'){
+      var r = P.requestPermissions();
+      if(r && r.then){
+        return r.then(function(res){
+          if(window.__OBDEBUG){
+            try{ toast('SPEECH auth: ' + JSON.stringify(res)); }catch(e){}
+          }
+        }).catch(function(err){
+          if(window.__OBDEBUG){
+            try{ toast('SPEECH auth failed: ' + (err && err.message ? err.message : err)); }catch(e){}
+          }
+        });
+      }
+    }
+  }catch(e){}
+  return Promise.resolve();
+}
+
+/* ══════════ ONE SESSION AT A TIME, AND WAIT FOR IT TO CLOSE ════════════════
+   "Ongoing speech recognition" is the plugin refusing a second start() while
+   the first is still up:
+
+       if self.audioEngine!.isRunning { call.reject(messageOngoing) }
+
+   And its stop() ends the engine without removing the tap or clearing
+   audioEngine, so isRunning can still read true for a moment afterwards. Ask
+   again inside that moment and you are refused - which is the phrase arriving
+   twice and then nothing, over and over.
+
+   So: stop through the plugin, wait for it to actually settle, and only then
+   report ready. Everything that reopens the mic goes through here first. */
+function nativeStopAndSettle(P, done){
+  var finished = false;
+  var finish = function(){ if(finished) return; finished = true; try{ done(); }catch(e){} };
+  if(!P){ finish(); return; }
+  try{
+    var r = P.stop();
+    if(r && r.then){ r.then(function(){ setTimeout(finish, 350); })
+                      .catch(function(){ setTimeout(finish, 350); }); }
+    else setTimeout(finish, 350);
+  }catch(e){ setTimeout(finish, 350); }
+  /* Never hang the microphone on a stop that does not come back. */
+  setTimeout(finish, 1200);
+}
+
 function micStartNative(P){
-  return P.start({ language:'en-US', maxResults:1, partialResults:true, popup:false });
+  /* ══════════ partialResults MUST BE TRUE HERE ══════════════════════════════
+     This said the opposite for a long time, and the reasoning was half right,
+     which is why it survived. Here is what the plugin does:
+
+         if partialResults { call.resolve() }      // immediately, empty
+         ...
+         if partialResults { notifyListeners("partialResults", ...) }
+         else              { call.resolve(["matches": resultArray]) }
+
+     The old note was correct that with it TRUE, start() resolves the instant
+     the microphone opens with nothing in it — and the code back then treated
+     that promise as the owner of the turn, so it tore the session down a
+     millisecond after opening it. Setting it false did fix that.
+
+     But it bought the fix at a price nobody had priced. With it false the
+     recogniser says NOTHING until the session is torn down, and nothing in
+     this file ever tore a session down on its own. So your words could not
+     come back until Honey spoke, and Honey could not speak until your words
+     came back. The only way through was to tap something. Weeks of "it does
+     not show my box until after you talk" was that, exactly.
+
+     True is what this architecture actually wants. The promise is no longer
+     the owner of anything — it just means the microphone is open. Partial
+     results stream in as you speak, each one pushing back the end of the
+     turn, and the turn ends by itself when you go quiet. You get live text in
+     the pill as a bonus, which for somebody who is not sure the app heard
+     them is worth a great deal on its own. */
+  return ensureSpeechAuth(P).then(function(){
+    /* Ask the plugin, not our own flags. `listening` is this file's idea of
+       the world and it has been wrong all evening - the engine can still be
+       running underneath after a turn we thought had ended. isListening() is
+       the only honest answer, and if it says yes we close that session and
+       let it settle rather than being refused. */
+    return new Promise(function(resolve, reject){
+      var go = function(){
+        resolve(P.start({ language:'en-US', maxResults:1, partialResults:true, popup:false }));
+      };
+      try{
+        var q = P.isListening && P.isListening();
+        if(q && q.then){
+          q.then(function(res){
+            if(res && res.listening){
+              /* ══════════ DO NOT INTERRUPT A LIVE MICROPHONE ═════════════
+                 This used to stop the running session and immediately start
+                 a new one. That turned hands-free into a stutter: open, close,
+                 open, close, about once a second, and never a gap long enough
+                 for anyone to finish a sentence. The only things that survived
+                 were single words - "No", "Yeah", "I" - snatched out of the
+                 middle of what somebody was trying to say.
+
+                 If the microphone is already listening, it is already doing
+                 the job. Leave it alone.
+
+                 ══════════ BUT DO NOT ABANDON THE PROMISE ══════════════════
+                 This used to just `return`, and nothing ever resolved. The
+                 turn stayed half-open forever: listening stuck true, no
+                 promise to deliver words, and now the pending gate stuck too
+                 — a microphone that is believed to be on and can never hear
+                 anything again. It only recovered by accident, when something
+                 else happened to stop the session.
+
+                 Rejecting unwinds the attempt cleanly and the catch below
+                 tries again in 800ms. That is a poll, not the old stutter —
+                 it never calls stop(), so a live session is genuinely left
+                 alone, and once the engine is really free the next poll
+                 opens it. */
+              if(window.__OBDEBUG) try{ toast('MIC: already listening - leaving it'); }catch(e){}
+              reject(new Error('Ongoing speech recognition'));
+              return;
+            }
+            go();
+          }).catch(go);
+        } else go();
+      }catch(e){ go(); }
+    });
+  });
 }
 
 function startListening(){
   if(listening || _micStarting) return;
+  /* Backstop for the same gate reopenMic carries. Everything is supposed to
+     come through that door, but this is the door that actually opens the
+     microphone, so the rule is enforced here too. */
+  if(_micPendingStart){ _micReopenWanted = true; return; }
   var P = nativeSpeech();
 
   if(P){
@@ -21677,13 +22112,70 @@ function startListening(){
         P.addListener('partialResults', function(data){
           try{
             var t = data && data.matches && data.matches[0];
-            if(t) showInterim(t);
+            if(!t) return;
+            var s = String(t).trim();
+            if(!s) return;
+            /* ══════════ LATE WORDS BELONG TO THE TURN THAT SAID THEM ═══════
+               This used to drop anything arriving after _micDelivered, which
+               threw away the tail of every sentence the recogniser was slow
+               to transcribe. While we are flushing, keep taking the longer
+               version — that IS the rest of what you said. */
+            if(_micFlushing){
+              if(s.length >= String(_micHeard||'').length) _micHeard = s;
+              showInterim(s);
+              /* A straggler means more may be coming. Give it another moment,
+                 but never hold somebody's sentence hostage — the cap ends it
+                 whatever happens. */
+              if(Date.now() < _micFlushUntil){
+                if(_micFlushTimer) clearTimeout(_micFlushTimer);
+                _micFlushTimer = setTimeout(function(){
+                  _micFlushTimer = null;
+                  deliverMicWords('flush');
+                }, MIC_FLUSH_MORE);
+              }
+              return;
+            }
+            if(_micDelivered) return;      /* this turn is well and truly over */
+            /* Every partial is proof you are still talking. Keep the best one
+               and push the end of the turn back. */
+            _micHeard = s;
+            showInterim(s);
+            if(_micNothingTimer){ clearTimeout(_micNothingTimer); _micNothingTimer=null; }
+            if(_micSilenceTimer) clearTimeout(_micSilenceTimer);
+            _micGaveExtra = false;
+            _micSilenceTimer = setTimeout(function endOfSpeech(){
+              _micSilenceTimer = null;
+              /* One more breath if you stopped on a word nobody stops on.
+                 Only once — otherwise a stray "and" could hold the mic open
+                 all day. */
+              if(!_micGaveExtra && micSoundsUnfinished(_micHeard)){
+                _micGaveExtra = true;
+                _micSilenceTimer = setTimeout(function(){
+                  _micSilenceTimer = null;
+                  endMicTurn('silence after a hanging word');
+                }, MIC_HANGING_EXTRA);
+                return;
+              }
+              endMicTurn('silence');
+            }, MIC_SILENCE_MS);
           }catch(e){}
         });
         P.addListener('listeningState', function(data){
-          /* UI only. Never restarts. */
+          /* The engine telling us what it is actually doing. 'stopped' is the
+             honest signal that the session is down — better than guessing at
+             promise timing, which is what put the words a turn behind. */
           try{
-            if(data && data.status === 'stopped'){ listening=false; syncMicUI(); }
+            if(data && data.status === 'stopped'){
+              listening = false; syncMicUI();
+              micSettled();
+              /* If something asked for the mic while this session was closing,
+                 the ask is owed now — unless a reply is on its way, in which
+                 case the speech queue reopens it at the only safe moment. */
+              if(_micReopenWanted){
+                _micReopenWanted = false;
+                if(audioOn() && !_awaitingReply) setTimeout(reopenMic, 400);
+              }
+            }
           }catch(e){}
         });
       }catch(e){}
@@ -21691,51 +22183,89 @@ function startListening(){
       micPaused=false; _micDiscard=false; _micRecheck=0;
       listening=true; _micStarting=false; syncMicUI();
 
+      /* A fresh turn. Nothing heard yet, nothing delivered yet. If a flush
+         from the previous turn is somehow still in flight, hand those words
+         over now rather than losing them to the reset below. */
+      if(_micFlushing){ try{ deliverMicWords('flush before new turn'); }catch(e){} }
+      clearMicTurnTimers();
+      _micHeard = ''; _micDelivered = false; _micGaveExtra = false;
+      _micNothingTimer = setTimeout(function(){
+        _micNothingTimer = null;
+        if(!_micHeard) endMicTurn('nothing heard');
+      }, MIC_NOTHING_MS);
+
+      /* This turn owns the microphone from here until its own words come
+         back. _micTurn is the receipt: if a result turns up after the guard
+         has already given up on it, we can still keep the sentence without
+         letting it tear down whatever session is live by then. */
+      _micPendingStart = true;
+      _micReopenWanted = false;
+      var myTurn = ++_micTurn;
+
       micStartNative(P)
         .then(function(res){
-          listening=false; _micStarting=false; syncMicUI(); clearInterim();
-          try{ P.removeAllListeners && P.removeAllListeners(); }catch(e){}
-          var t = res && res.matches && res.matches[0];
-          /* ══════════ DON'T REOPEN INTO HER ANSWER ═══════════════════════════
-             This reopened the mic 600ms after catching your words — but she has
-             not started speaking by then. She is still "typing". So the busy
-             check saw nothing playing, opened the microphone, and then she
-             spoke straight into it and the app transcribed her own voice back
-             as if you had said it.
+          /* ══════════ THE PROMISE NO LONGER OWNS THE TURN ═════════════════
+             With partialResults true the plugin resolves this the instant the
+             microphone opens, with nothing in it:
 
-             The speech queue reopens the mic itself when it finishes, which is
-             the only moment that is actually safe. So nothing is scheduled
-             here. The fallback below covers the case where she never speaks at
-             all — a message with no clip and read-aloud off — because then
-             nothing would ever come round to reopen it. */
-          if(_micDiscard){
-            /* We ended this turn ourselves so Honey could speak. Anything in
-               here is her, or a fragment of a turn nobody finished. Drop it. */
-            _micDiscard=false;
-            if(window.__OBDEBUG && t) toast("mic: discarded \""+String(t).slice(0,24)+"\"");
+                 if partialResults { call.resolve() }
+
+             That is a "the mic is open" signal, not a result. Treating it as
+             the end of a turn is what used to tear the session down a
+             millisecond after opening it. The turn ends in endMicTurn() now,
+             when you actually stop talking.
+
+             A result can still turn up here on a build where partials never
+             arrive, so if there are words in it, take them rather than throw
+             somebody's sentence away. */
+          if(myTurn !== _micTurn) return;
+          var t = res && res.matches && res.matches[0];
+          if(t && String(t).trim()){
+            _micHeard = String(t).trim();
+            endMicTurn('final result');
             return;
           }
-          if(t && String(t).trim()){
-            _awaitingReply = true;
-            userSays(String(t).trim());
-            setTimeout(function(){
-              if(_awaitingReply){ _awaitingReply=false; if(audioOn()) reopenMic(); }
-            }, 4000);
-          } else {
-            if(audioOn()) setTimeout(reopenMic, 600);
-          }
+          if(window.__OBDEBUG) try{ toast('MIC open — listening'); }catch(e){}
         })
         .catch(function(err){
-          listening=false; _micStarting=false; syncMicUI(); clearInterim();
-          try{ P.removeAllListeners && P.removeAllListeners(); }catch(e){}
+          var mine = (myTurn === _micTurn);
+          if(mine){
+            micSettled();
+            clearMicTurnTimers();
+            _micDelivered = true;   /* no turn to end — start never happened */
+            listening=false; _micStarting=false; syncMicUI(); clearInterim();
+            try{ P.removeAllListeners && P.removeAllListeners(); }catch(e){}
+            _micReopenWanted = false;   /* the retry below is the reopen */
+          }
           var msg = (err && err.message) ? err.message : String(err||'');
+          /* The plugin rejects with a real reason - "Missing permission",
+             "Ongoing speech recognition", "Microphone is already in use by
+             another application", "User denied access to microphone" - and
+             every one of them was being swallowed unless it happened to match
+             /permission/. A microphone that fails silently is the hardest kind
+             to fix, so with debug on, say exactly what it said. */
+          if(window.__OBDEBUG) try{ toast('MIC start failed: ' + (msg || '(no message)')); }catch(e){}
           if(/denied|not.?allowed|permission/i.test(msg)){
             toast("Microphone permission is off. Turn it on in Settings \u203a Tell Me Honey.");
             S.ttsOn=false; S.handsFree=false; updateStatus();
             return;
           }
-          /* Silence, or a turn that caught nothing. Only hands-free tries again. */
-          if(S.handsFree && audioOn()) setTimeout(reopenMic, 800);
+          /* ══════════ BACK OFF AFTER SILENCE ════════════════════════════
+             800ms was far too eager. iOS reports "No speech detected" within
+             about a second of hearing nothing, so this reopened the mic almost
+             immediately, which reported nothing again, and round it went - a
+             microphone that spent its life opening and closing instead of
+             listening. Somebody drawing breath before speaking never got a
+             window at all.
+
+             Give it a proper pause. Two and a half seconds is long enough for
+             the audio session to settle and for a person to start a sentence,
+             and short enough that hands-free still feels like it is waiting
+             for you. */
+          if(mine && S.handsFree && audioOn()){
+            var wait = /no speech/i.test(msg) ? 2500 : 800;
+            setTimeout(reopenMic, wait);
+          }
         });
     })();
     return;
@@ -21784,7 +22314,13 @@ function startListening(){
 function showInterim(t){
   try{
     var el=document.getElementById('chatInput');
-    if(el){ el.value=t; el.setAttribute('data-interim','1'); }
+    if(!el) return;
+    /* Partial results only started streaming in this build, so this could not
+       happen before: if somebody is part-way through typing, their words must
+       not be wiped by something the microphone thought it heard. Only ever
+       write into an empty pill or one this function already owns. */
+    if(el.value && !el.getAttribute('data-interim')) return;
+    el.value=t; el.setAttribute('data-interim','1');
   }catch(e){}
 }
 function clearInterim(){
@@ -21808,9 +22344,31 @@ function clearInterim(){
    So both engines are told now, and the flag is cleared by hand. reopenMic
    brings it back once she has finished. */
 function pauseListening(){
+  /* If you had already said something this turn, do not throw it away just
+     because she needs the microphone back. Hold on to it and hand it over at
+     the end — an interruption ends a turn the same way silence does.
+
+     Rescuing it must NOT skip the rest of this function: sessionToSpeaker()
+     below is what keeps her out of the earpiece, and an early return here
+     would quietly undo that fix. */
+  var rescued = '';
+  if((!_micDelivered || _micFlushing) && String(_micHeard||'').trim()) rescued = String(_micHeard).trim();
+  clearMicTurnTimers();
+  if(_micFlushTimer){ clearTimeout(_micFlushTimer); _micFlushTimer=null; }
+  _micFlushing = false;
+  _micDelivered = true; _micHeard = '';
   micPaused=true; listening=false; _micStarting=false; _micDiscard=true;
   try{ cancelPendingMicOpen(); }catch(e){}
-  try{ var P=nativeSpeech(); if(P){ P.stop(); } }catch(e){}
+  /* Stop through the plugin and let the engine actually come down. Ending a
+     turn and reopening immediately is what produced "Ongoing speech
+     recognition": the next start arrived while this one was still closing
+     and the plugin refused it outright. */
+  try{ var P=nativeSpeech(); if(P){ nativeStopAndSettle(P, function(){}); } }catch(e){}
+  /* listening just went false, but the session's words have NOT arrived yet —
+     stop() only asks iOS to finalise. _micPendingStart is what holds the mic
+     shut until they do. This is the safety net for the case where they never
+     turn up at all. */
+  if(_micPendingStart) armMicSettleGuard();
   try{ if(recog) recog.stop(); }catch(e){}
   /* STEP 1 - ORDERING. This used to run at the top of the function, above the
      two stop() calls, under a comment saying the recogniser had just let go.
@@ -21822,6 +22380,19 @@ function pauseListening(){
   sessionToSpeaker('pause');
   try{ clearInterim(); }catch(e){}
   syncMicUI();
+  /* Now that the session is down and the speaker is reclaimed, give her what
+     you actually said. On a timeout so the caller — usually the speech drain,
+     mid-flight — finishes its own work first. */
+  if(rescued){
+    setTimeout(function(){
+      if(window.__OBDEBUG) try{ toast('MIC rescued: "'+rescued.slice(0,28)+'"'); }catch(e){}
+      _awaitingReply = true;
+      userSays(rescued);
+      setTimeout(function(){
+        if(_awaitingReply){ _awaitingReply=false; if(audioOn()) reopenMic(); }
+      }, 4000);
+    }, 0);
+  }
 }
 /* ══════════ OFF MEANS OFF ═══════════════════════════════════════════════════
    Turning the mic off used to call recog.stop() on a session that was never
@@ -21829,6 +22400,11 @@ function pauseListening(){
    it took the hands-free dance to clear it. Both engines are told to stop now,
    and the flags are cleared by hand regardless of what either says. */
 function stopListening(){
+  clearMicTurnTimers();
+  /* Off means off — a flush still in flight is dropped, not delivered. */
+  if(_micFlushTimer){ clearTimeout(_micFlushTimer); _micFlushTimer=null; }
+  _micFlushing = false;
+  _micDelivered = true; _micHeard = '';
   micPaused=true; listening=false; _micStarting=false; _micDiscard=true;
   try{ cancelPendingMicOpen(); }catch(e){}
   try{ clearTimeout(_micWatchdog); }catch(e){}
@@ -21838,6 +22414,12 @@ function stopListening(){
     try{ P.removeAllListeners && P.removeAllListeners(); }catch(e){}
   }
   if(recog){ try{ recog.stop(); }catch(e){} }
+  /* Off means off. Retire the turn so a result still in the post cannot come
+     back and reopen anything, and drop the pending gate so switching
+     hands-free straight back on is not blocked by a session nobody wants. */
+  _micTurn++;
+  _micReopenWanted = false;
+  micSettled();
   sessionToSpeaker('stop');   /* STEP 1 - after both engines are stopped, not before */
   try{ clearInterim(); }catch(e){}
   syncMicUI();

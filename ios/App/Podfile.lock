@@ -1,0 +1,71 @@
+PODS:
+  - Capacitor (8.4.2):
+    - CapacitorCordova
+  - CapacitorCamera (8.2.1):
+    - Capacitor
+    - IONCameraLib (~> 1.0.4)
+  - CapacitorCommunitySpeechRecognition (7.0.1):
+    - Capacitor
+  - CapacitorCommunityTextToSpeech (8.0.2):
+    - Capacitor
+  - CapacitorCordova (8.4.2)
+  - CapacitorLocalNotifications (8.2.1):
+    - Capacitor
+  - CapgoCapacitorCalendar (8.0.8):
+    - Capacitor
+  - CapgoCapacitorHealth (8.10.0):
+    - Capacitor
+  - CapgoNativePurchases (8.6.5):
+    - Capacitor
+  - IONCameraLib (1.0.5)
+
+DEPENDENCIES:
+  - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorCamera (from `../../node_modules/@capacitor/camera`)"
+  - "CapacitorCommunitySpeechRecognition (from `../../node_modules/@capacitor-community/speech-recognition`)"
+  - "CapacitorCommunityTextToSpeech (from `../../node_modules/@capacitor-community/text-to-speech`)"
+  - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorLocalNotifications (from `../../node_modules/@capacitor/local-notifications`)"
+  - "CapgoCapacitorCalendar (from `../../node_modules/@capgo/capacitor-calendar`)"
+  - "CapgoCapacitorHealth (from `../../node_modules/@capgo/capacitor-health`)"
+  - "CapgoNativePurchases (from `../../node_modules/@capgo/native-purchases`)"
+
+SPEC REPOS:
+  trunk:
+    - IONCameraLib
+
+EXTERNAL SOURCES:
+  Capacitor:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorCamera:
+    :path: "../../node_modules/@capacitor/camera"
+  CapacitorCommunitySpeechRecognition:
+    :path: "../../node_modules/@capacitor-community/speech-recognition"
+  CapacitorCommunityTextToSpeech:
+    :path: "../../node_modules/@capacitor-community/text-to-speech"
+  CapacitorCordova:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorLocalNotifications:
+    :path: "../../node_modules/@capacitor/local-notifications"
+  CapgoCapacitorCalendar:
+    :path: "../../node_modules/@capgo/capacitor-calendar"
+  CapgoCapacitorHealth:
+    :path: "../../node_modules/@capgo/capacitor-health"
+  CapgoNativePurchases:
+    :path: "../../node_modules/@capgo/native-purchases"
+
+SPEC CHECKSUMS:
+  Capacitor: 52f999235b8bd6a7d01694753f4f4d54d182e3a3
+  CapacitorCamera: 1b9dde3aaffbd1f051486f4cee2b4cdd962662ae
+  CapacitorCommunitySpeechRecognition: 3e03566c44c2bb3b52391a33d4518b1adbdeb38f
+  CapacitorCommunityTextToSpeech: a9f7c5bcdc424197d11bb7ae3e9010b415e931b0
+  CapacitorCordova: 345eacdc4c8282415446aea4acd8c77d82480bd4
+  CapacitorLocalNotifications: 908a69a3cf7ae345426de3223d4980befb0103c6
+  CapgoCapacitorCalendar: 220e3a9ee9ba921077724f03cb04320d68349e2b
+  CapgoCapacitorHealth: 5ce1ea566324659669e6eda7e4c3e25209596431
+  CapgoNativePurchases: 2b32baa6c85d55e4d649cd34001502614cb6d30e
+  IONCameraLib: ecbd8ef0077d481df429cee267bbeb1a7b9bddd0
+
+PODFILE CHECKSUM: 05515358e553429c65ecd7fe359db197375f1d61
+
+COCOAPODS: 1.17.0
