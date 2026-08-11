@@ -72,12 +72,20 @@ html[data-theme="honeydark"]  #welcome,
 html[data-theme="honeydark"]  #welcome.home-on{background:linear-gradient(180deg,#13141d 0%,#0b0c12 100%);}
 /* On dark theme, the home text needs to be light instead of the hardcoded brown */
 html[data-theme="honeydark"] .home-title,
-html[data-theme="honeydark"] .home-friendname,
-html[data-theme="honeydark"] .home-big .hb-tx b{color:#f3f1ea;}
+html[data-theme="honeydark"] .home-friendname{color:#f3f1ea;}
 html[data-theme="honeydark"] .home-title em{color:#e7c873;}
 html[data-theme="honeydark"] .sync-note,
-html[data-theme="honeydark"] .home-secondary,
-html[data-theme="honeydark"] .home-big .hb-tx small{color:#cdd0db;}
+html[data-theme="honeydark"] .home-secondary{color:#cdd0db;}
+/* ══════════ THE OTHER HALF OF THE SAME MISTAKE ════════════════════════════
+   .home-big .hb-tx b and small were being set to near-white for Honey Dark.
+   That was written to sit on a dark card - and the dark cards are gone, so
+   near-white text landed on a near-white card and the words on the front page
+   faded almost out of sight: Share or make a joke, My Sweet Life.
+
+   The front page keeps its sky and its pale cards in every theme, so the text
+   on them wants the same dark ink in every theme too. Those two lines are
+   simply deleted; the base .home-big colours now apply everywhere, which is
+   what they were written for. */
 
 /* ===== Light themes: let the picked personality fully show on the home screen.
    Crisp white cards, accent-colored title em, themed chips, black-ish lines. ===== */
@@ -107,6 +115,21 @@ html[data-theme="business"] .home-big .hb-tx small, html[data-theme="business"] 
 html[data-theme="slate"]    .home-big .hb-tx small, html[data-theme="slate"]    .home-secondary,
 html[data-theme="natural"]  .home-big .hb-tx small, html[data-theme="natural"]  .home-secondary,
 html[data-theme="honeylight"] .home-big .hb-tx small, html[data-theme="honeylight"] .home-secondary{color:var(--muted);}
+
+/* ══════════ THE BLACK HOME TILES ARE GONE ═════════════════════════════════
+   These rules turned the front-page cards into solid dark panels. The reason
+   given was readability in Honey Dark - but the front page has its own sky
+   background in every theme, and black slabs on that sky look wrong, take all
+   the weight off Talk to Honey, and were never wanted.
+
+   The base .home-big style - white at 65% with a soft warm border - is what
+   the front page is designed around and what it looked like before. It is
+   back. Only the text colours stay fixed, which was the actual complaint:
+   words that could not be read.
+
+   If Honey Dark ever needs attention here, the fix is the TEXT on these
+   cards, not the cards themselves. */
+html[data-theme="honeydark"] .home-half .hh-net{color:#7a6e4e;}
 /* themed chips + hints + friend-face ring */
 html[data-theme="business"] .streak-chip, html[data-theme="business"] .honey-chip,
 html[data-theme="slate"]    .streak-chip, html[data-theme="slate"]    .honey-chip,
@@ -208,6 +231,13 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   .rc-cover{text-align:center;padding:40px 20px 26px;break-after:page;page-break-after:always;}
   .rc-cover h1{font-family:Georgia,serif;font-size:30px;margin:0 0 6px;color:#000;}
   .rc-cover p{font-size:13px;color:#555;margin:0;}
+  /* Journals. A month heading so a year of entries has somewhere to breathe,
+     and a smaller floated photo for entries carrying several - the single
+     .rc-img is sized for one picture beside the text. */
+  .jp-month{font-family:Georgia,serif;font-size:14px;color:#555;margin:20px 0 8px;
+    border-bottom:1px solid #eee;padding-bottom:4px;break-after:avoid;page-break-after:avoid;}
+  .jp-img{max-width:46%;max-height:140px;object-fit:cover;border-radius:6px;
+    margin:0 7px 9px 0;}
 }
 
 /* ── WELCOME ── */
@@ -243,7 +273,14 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .honey-bank .hb-pot{width:150px;height:150px;margin:0 auto 6px;}
 .honey-bank .hb-pot svg{width:100%;height:100%;}
 .honey-bank .hb-amt{font-size:34px;font-weight:800;color:var(--gold);line-height:1;}
-.honey-bank .hb-sub{font-size:14px;color:var(--ink);font-weight:700;margin-top:4px;letter-spacing:.5px;}
+/* ══════════ TEXT ON A CARD THAT IS ALWAYS DARK ════════════════════════════
+   var(--ink) is the page's reading colour, and on every light theme that is a
+   dark brown meant for a cream background. But this card is deliberately dark
+   in EVERY theme - the near-black honey pot panel. So on Honey Light the
+   label was dark brown on near-black and simply could not be read.
+
+   A card that never changes colour needs text that never changes either. */
+.honey-bank .hb-sub{font-size:14px;color:#f3f1ea;font-weight:700;margin-top:4px;letter-spacing:.5px;}
 .honey-bank .hb-today{font-size:11.5px;color:var(--gold2);margin-top:8px;}
 .insights-reset{display:block;margin:24px auto 0;background:none;border:1px solid var(--line);
   color:var(--muted);border-radius:30px;padding:9px 18px;font-size:12.5px;}
@@ -269,7 +306,10 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   max-height:56px;overflow:hidden;}
 .thrive-ring{width:140px;height:140px;margin:0 auto 12px;}
 .thrive-ring svg{width:100%;height:100%;}
-.thrive-reflect{font-size:14px;line-height:1.55;color:var(--ink);}
+/* Same again. The thriving card is dark in every theme, so Honey's line about
+   your day was dark grey on black - the one sentence on the screen most worth
+   reading, and the hardest to see. */
+.thrive-reflect{font-size:14px;line-height:1.55;color:#e8e6df;}
 .lang-bars{display:flex;flex-direction:column;gap:11px;margin-bottom:24px;}
 .lbar{}
 .lbar .lrow{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:5px;}
@@ -372,7 +412,7 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .pl-tab:active{opacity:.65;}
 .pl-tab+.pl-tab{border-left:1px solid var(--line);}
 .pl-mini{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);
+  gap:3px;background:#FFFDF9;border:1px solid var(--line);
   border-radius:12px;padding:9px 4px;font-size:17px;line-height:1;color:#3a2c08;cursor:pointer;}
 .pl-mini span{font-size:10px;font-weight:600;opacity:.8;white-space:nowrap;}
 .pl-mini:active{opacity:.65;}
@@ -604,7 +644,37 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .yi-box.on{background:rgba(231,200,115,.16);border-color:var(--gold);}
 .yi-box.on::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   color:var(--gold);font-size:19px;font-weight:700;}
+/* ══════════ THE JOURNAL PREVIEW ═══════════════════════════════════════════
+   White paper on a grey desk, so what you are looking at reads as the printed
+   page rather than another app screen. The classes inside are the same ones
+   the print stylesheet uses, restated here in screen colours - a preview that
+   does not match the print is worse than no preview. */
+.jp-paper{background:#fff;color:#111;border-radius:6px;padding:20px 18px;
+  box-shadow:0 6px 22px rgba(0,0,0,.3);max-width:520px;margin:0 auto;}
+.jp-paper .rc-card{break-inside:avoid;border:1px solid #e9e9e9;border-radius:9px;
+  padding:15px 16px;margin:0 0 14px;overflow:hidden;}
+.jp-paper .rc-title{font-family:Georgia,serif;font-size:18px;font-weight:700;
+  margin:0 0 2px;color:#111;}
+.jp-paper .rc-sub{font-size:11.5px;color:#666;margin:0 0 9px;}
+.jp-paper .rc-steps{font-size:13px;line-height:1.7;white-space:pre-wrap;margin:0;color:#111;}
+.jp-paper .rc-img{max-width:150px;max-height:115px;object-fit:cover;border-radius:6px;
+  float:right;margin:0 0 8px 12px;}
+.jp-paper .jp-img{max-width:46%;max-height:140px;object-fit:cover;border-radius:6px;
+  margin:0 7px 9px 0;}
+.jp-paper .rc-foot{font-size:9.5px;color:#888;margin-top:12px;
+  border-top:1px solid #eee;padding-top:6px;}
+.jp-paper .rc-cover{text-align:center;padding:30px 16px 26px;
+  border-bottom:2px solid #eee;margin-bottom:18px;}
+.jp-paper .rc-cover h1{font-family:Georgia,serif;font-size:27px;margin:0 0 6px;color:#111;}
+.jp-paper .rc-cover p{font-size:13px;color:#555;margin:0;}
+.jp-paper .jp-month{font-family:Georgia,serif;font-size:15px;color:#555;
+  margin:20px 0 8px;border-bottom:1px solid #eee;padding-bottom:4px;}
 .mood-span{display:flex;gap:6px;justify-content:center;margin:2px 0 10px;}
+/* The four daily-hello times. Wraps to two rows on a narrow phone rather than
+   running off the edge, and each button takes an equal share of the row so
+   Morning and Afternoon do not sit at different widths. */
+.nudge-times{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 2px;}
+.nudge-times .ms-btn{flex:1 1 calc(50% - 3px);padding:7px 8px;text-align:center;}
 .ms-btn{background:var(--panel2);border:1.5px solid var(--line);border-radius:999px;
   padding:5px 16px;font-size:12.5px;font-weight:700;color:var(--muted);min-height:32px;
   letter-spacing:.3px;transition:border-color .18s,color .18s,background .18s;}
@@ -1246,6 +1316,28 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .home-big .hb-tx{display:flex;flex-direction:column;align-items:center;gap:2px;}
 .home-big .hb-tx b{font-size:17px;color:#3a2c08;font-weight:800;}
 .home-big .hb-tx small{font-size:13px;color:#7a6e4e;}
+/* ══════════ THE KIND FILTER ON THE PRINT SHEET ═══════════════════════════
+   This was a bare flex row with padding-bottom:9px and margin-bottom:4px and
+   nothing above it, so the chips sat hard against the paragraph over them and
+   the Select all buttons under them — crammed, with a scrollbar that could
+   appear across the chips themselves.
+
+   It needs three things it did not have: room to breathe top and bottom, a
+   hidden scrollbar so nothing draws over the chips, and side padding so a
+   chip scrolls cleanly to the edge instead of being sliced in half by it.
+   The label tells people what the row is for, which the chips alone did not. */
+.ft-kind-label{font-size:11px;font-weight:700;letter-spacing:.4px;
+  text-transform:uppercase;color:var(--muted);margin:4px 2px 7px;}
+.ft-kind-row{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  padding:2px 2px 3px;margin:0 -2px 16px;scrollbar-width:none;
+  /* min-width:0 is the whole fix. A flex item's minimum size is its CONTENT
+     size unless you say otherwise, so this un-wrappable row of chips was
+     forcing the sheet wider than the phone instead of scrolling inside it.
+     That is why the chips looked like they were shoving the box around —
+     they were. */
+  min-width:0;}
+.ft-kind-row::-webkit-scrollbar{display:none;height:0;}
+.ft-kind-row > button{flex:0 0 auto;}
 .home-half-row{display:flex;gap:12px;}
 .home-half{flex:1;min-height:88px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
   background:rgba(255,255,255,.65);border:1.5px solid rgba(120,100,60,.2);border-radius:16px;
@@ -1394,8 +1486,19 @@ textarea{resize:none;line-height:1.4;}
   padding:calc(12px + var(--safe-t)) 16px 8px;}
 .ft-top .back{font-size:30px;color:#fff;width:26px;line-height:1;text-shadow:0 1px 6px rgba(0,0,0,.6);}
 .ft-id{flex:1;}
+/* ══════════ THIS NAME SAT ON A DARK BACKDROP AND INHERITED DARK INK ═══════
+   The chat backdrop is #1a1a28 with a dark gradient over it, in EVERY theme —
+   the photo behind Honey doesn't get lighter just because you picked Honey
+   Light. But this line had no colour of its own, so it inherited --ink, which
+   is nearly black in Honey Light, Business Blue, Calm Blue-Gray and Deep
+   Forest. Dark text, dark background, name gone.
+
+   Its own neighbours were the clue: .back and .st are both hardcoded light,
+   which is why the arrow and the status line stayed readable and only the
+   name vanished. Anything sitting on that backdrop needs a fixed light colour
+   rather than a theme variable. */
 .ft-id .nm{font-weight:700;font-size:18px;display:flex;align-items:center;gap:7px;
-  text-shadow:0 1px 8px rgba(0,0,0,.7);}
+  color:#ffffff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--grn);box-shadow:0 0 8px var(--grn);}
 .ft-id .st{font-size:12.5px;color:#e8e8ee;opacity:.85;text-shadow:0 1px 6px rgba(0,0,0,.7);}
 .ft-vault{font-size:22px;z-index:4;text-shadow:0 1px 6px rgba(0,0,0,.6);}
@@ -2009,6 +2112,9 @@ textarea{resize:none;line-height:1.4;}
     <button class="fresh-start-btn" onclick="freshStart()">🌱 Start Fresh this week</button>
     <p class="fresh-start-sub">Begins a clean week without erasing your story. Your long-term trend stays — so every comeback shows.</p>
     <button class="full-wipe-link" onclick="confirmFullWipe()">Erase all my history…</button>
+    <!-- Debug only. Hidden unless __OBDEBUG is on, and removed from view the
+         moment that switch comes out before the App Store build. -->
+    <button class="full-wipe-link" id="obPreviewLink" style="display:none" onclick="previewOnboard()">Replay onboarding (debug)</button>
   </div>
 </section>
 
@@ -2140,7 +2246,7 @@ textarea{resize:none;line-height:1.4;}
   <div class="insights-body scroll" style="padding:16px">
     <p style="font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.5">Ideas worth cooking. Search something, or start from what's in season or already in your fridge.</p>
     <div style="display:flex;gap:8px;margin-bottom:10px">
-      <input id="ftSearch" placeholder="A food, or a dish…" style="flex:1;min-height:48px;padding:10px 13px;border-radius:13px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--ink);font-size:15px" onkeydown="if(event.key==='Enter')ftSearch()">
+      <input id="ftSearch" placeholder="A food, or a dish…" style="flex:1;min-height:48px;padding:10px 13px;border-radius:13px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);font-size:15px" onkeydown="if(event.key==='Enter')ftSearch()">
       <button class="home-half" style="flex:0 0 auto;min-width:64px" onclick="ftSearch()">Find</button>
     </div>
       <button class="ft-own-btn" style="margin-top:10px" onclick="ftOwnOpen()">📝 Add one of my own</button>
@@ -2389,6 +2495,11 @@ textarea{resize:none;line-height:1.4;}
     <h2 id="djBookTitle">Journal</h2><span style="width:40px"></span></div>
   <div class="insights-body scroll">
     <button class="dj-newbtn" onclick="djNewEntry()" aria-label="New entry">＋ New Entry</button>
+    <!-- Print or send the whole book. Sits under New Entry the same way the
+         recipe screen keeps its print button under the cards, so the two
+         behave alike. Hidden until there is something in the book. -->
+    <button class="home-half" id="jpBtn" style="width:100%;margin:0 0 12px;display:none"
+      onclick="jpOpen()">🖨️ Print or send this journal</button>
     <div id="djFeed"></div>
   </div>
 </section>
@@ -2596,7 +2707,12 @@ textarea{resize:none;line-height:1.4;}
         👋 A little hello each day
       </label>
       <p class="rec-hint" id="nudgeHint" style="margin:6px 0 0;font-size:11.5px;line-height:1.5"></p>
-      <div id="nudgeTimes" class="mood-span" style="display:none;margin-top:9px;gap:6px"></div>
+      <!-- Its own class rather than .mood-span. That one is a plain flex row
+           built for three short mood words, and four time names at 16px of
+           padding each are wider than the card - so Evening ran off the right
+           edge and the whole block looked like it was spilling out of its
+           box. This wraps, and the buttons share the width evenly. -->
+      <div id="nudgeTimes" class="nudge-times" style="display:none"></div>
     </div>
     <button class="prof-row" onclick="openManageSubscription()">💳 Manage my subscription</button>
     <button class="prof-row" onclick="openHelpPage()">❓ Help &amp; how-to videos</button>
@@ -2606,7 +2722,7 @@ textarea{resize:none;line-height:1.4;}
     <button class="prof-row" onclick="exportBackup()">💾 Back up my Honey</button>
     <button class="prof-row" onclick="triggerImport()">↩️ Restore from a backup</button>
     <input type="file" id="restoreFile" accept="application/json,.json,.honey" class="file-hidden" onchange="importBackup(this.files[0])">
-    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v291 · diagnostic</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">she waits while you think and hears you out to the end of the sentence · the keyboard stays down when you come into the chat · one line that landed sharp has been retired · printed recipe cards carry your notes, not just the shopping list · the nerdy meter is back on every card · all 36 cards show where they come from</div></div>
+    <div style="text-align:center;margin-top:16px"><div style="font-size:13px;font-weight:700;opacity:.7;letter-spacing:.3px">Build v299 · diagnostic</div><div style="font-size:9.5px;opacity:.38;line-height:1.4;margin-top:3px;padding:0 18px">she waits while you think and hears you out to the end of the sentence · the keyboard stays down when you come into the chat · the boxes on the front page read properly in Honey Dark, and so does her name in the chat · printed recipe cards carry your notes, not just the shopping list · the nerdy meter is back on every card · all 36 cards show where they come from</div></div>
   </div>
 </section>
 
@@ -5001,7 +5117,7 @@ function loadInsights(cb){ if(!DB_OK){ cb&&cb(); return; }
 /* long-term daily history for trends: { "YYYY-M-D": {thriving, lang:{}, msgs} } */
 var HISTORY={ days:{} };
 /* streak + lightweight app settings (global, on-device) */
-var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honey", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, rangerHave:[], foodCards:[], cloneForKeepsakes:false, verseColls:[], jokeColls:[], keptVerses:[], myJokesInChat:false, lastJokeColl:'mine', comicFreeUsed:false, calSync:false, nudgeOn:false, nudgeWhen:'morning', checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
+var SETTINGS={ streakOn:true, streakCount:0, lastDay:"", honey:0, honeyToday:0, honeyDay:"", loved:[], favorites:[], shareDay:"", shareToday:0, tier:"pint", dlDay:"", dlToday:0, shopping:[], reminders:[], trials:{}, perks:{}, lists:null, trash:[], lastList:"shopping", owner:false, learnLang:"es", contacts:[], theme:"honeydark", goals:[], goalsTrash:[], goalDone:{}, goalStats:{}, skin:"", aiVidDay:"", aiVidToday:0, aiVidWeek:"", aiVidUsed:0, aiVidTopups:0, voiceCloneDone:false, cloneDay:"", cloneUsed:0, pzVoice:true, rangerCook:[], rangerMyYard:[], rangerDrafts:{}, rangerDinner:[], rangerYardNoteSeen:false, rangerYardCookNoteSeen:false, rangerHave:[], foodCards:[], cloneForKeepsakes:false, verseColls:[], jokeColls:[], keptVerses:[], myJokesInChat:false, lastJokeColl:'mine', comicFreeUsed:false, calSync:false, nudgeOn:false, nudgeWhen:'morning', checkins:[], nourish:null, learnedItems:{}, money:null, content:{}, journal:[], journalBooks:[] };
 
 /* ===== COLOR THEME SYSTEM =====
    Re-skins the whole app by setting data-theme on <html>. Persists in SETTINGS
@@ -5017,12 +5133,24 @@ var COLOR_THEMES=[
    mood:"Balanced & restful", why:"Green is tied to balance and well-being, eases eye strain, and echoes the calm of nature and green spaces."},
   {id:"honeydark",  nm:"Honey Dark",      ic:"🌙", cost:0,   sw:"#e7c873", bg:"#0b0c12", kind:"Dark",
    mood:"Cozy & easy on the eyes", why:"A warm, dim palette for evenings and low light — gentle on tired eyes when the day winds down."},
-  {id:"honey",      nm:"Honey Classic",   ic:"🐝", cost:0, sw:"#e7c873", bg:"#07080d", kind:"Dark",
+  /* ══════════ CLASSIC MOVED TO THE PAID SET, 9 AUGUST ══════════════════
+     There were three free themes and two of them were the same picture:
+     Honey Dark at #0b0c12 and Honey Classic at #07080d. Nobody was choosing
+     between them, they were just choosing twice.
+
+     Honey Dark stays free because it is the one with the finished styling —
+     its cards and text were made to match. Classic keeps its place in the
+     list, darkened with its price, so the original look is still there for
+     anyone who wants it and there is one more thing to spend honey on.
+
+     The SETTINGS default moved to honeydark at the same time. It has to: a
+     new user starting on a locked theme would be a strange first minute. */
+  {id:"honey",      nm:"Honey Classic",   ic:"🐝", cost:600, sw:"#e7c873", bg:"#07080d", kind:"Dark",
    mood:"The original", why:"The first Tell Me Honey look — deep and warm, with golden honey accents."}
 ];
-function themeName(){ var t=(COLOR_THEMES.find(function(x){return x.id===(SETTINGS.theme||"honey");})); return t?t.nm:"Honey"; }
+function themeName(){ var t=(COLOR_THEMES.find(function(x){return x.id===(SETTINGS.theme||"honeydark");})); return t?t.nm:"Honey"; }
 function applyTheme(){
-  var id=SETTINGS.theme||"honey";
+  var id=SETTINGS.theme||"honeydark";
   if(id==="honey"){ document.documentElement.removeAttribute("data-theme"); }
   else { document.documentElement.setAttribute("data-theme", id); }
 }
@@ -5080,6 +5208,10 @@ function themeIsFree(id){
 }
 function themeUnlocked(id){
   if(themeIsFree(id)) return true;
+  /* Never take a theme off somebody who is already using it. Honey Classic
+     was free until 9 August, so anyone who picked it before then keeps it —
+     charging them for the look they already had would be a mean surprise. */
+  if(SETTINGS.theme === id) return true;
   if(typeof tierAtLeast==='function' && tierAtLeast('gallon')) return true;  // Gallon & Gallon Plus
   if(typeof isOwner==='function' && isOwner()) return true;
   return !!(SETTINGS.perks && SETTINGS.perks.themes && SETTINGS.perks.themes.indexOf(id)>=0);
@@ -5126,7 +5258,7 @@ function buyThemeWithHoney(id){
 function openThemePicker(){ go('themePicker'); renderThemePicker(); }
 function renderThemePicker(){
   var wrap=document.getElementById('themeList'); if(!wrap)return;
-  var cur=SETTINGS.theme||"honey"; var html="";
+  var cur=SETTINGS.theme||"honeydark"; var html="";
   function row(t){
     var on = t.id===cur;
     var have = themeUnlocked(t.id);
@@ -8300,7 +8432,7 @@ var ONBOARD_JOKE = {s:"Why did the denim jacket never retire?", p:"Cool has no e
    shouldn't pretend to. Everything else comes to laugh@tellmehoneyapp.com.
    Drop it anywhere with:  <div id="helpCard"></div>  then renderHelpCard(). */
 var HONEY_HELP_URL = "https://tellmehoneyapp.com/help";
-window.HONEY_BUILD = "v291";
+window.HONEY_BUILD = "v299";
 
 function honeyHelpCard(){
   return '<div class="hh-card">'+
@@ -8347,8 +8479,12 @@ function openHelpPage(){
    links to Terms of Use (EULA) and a Privacy Policy inside the app itself — not
    only on the App Store page — and they must be reachable before somebody buys.
    Missing these is one of the most common subscription rejections. */
-var HONEY_TERMS_URL   = "https://tellmehoneyapp.com/terms";
-var HONEY_PRIVACY_URL = "https://tellmehoneyapp.com/privacy";
+/* These must match the live pages exactly. "/privacy" 404'd for weeks — the
+   page is at "/privacy-policy/". Apple follows this link during review, and a
+   dead privacy link is a straight rejection. Trailing slashes kept because
+   that is how WordPress serves them. */
+var HONEY_TERMS_URL   = "https://tellmehoneyapp.com/terms/";
+var HONEY_PRIVACY_URL = "https://tellmehoneyapp.com/privacy-policy/";
 /* Apple's standard licence, valid to use as-is if you'd rather not write your own. */
 var APPLE_STD_EULA    = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/";
 
@@ -11257,6 +11393,9 @@ function openDailyJournal(){ openJournalBooks(); }
 function renderJournalFeed(){
   var feed=document.getElementById('djFeed'); if(!feed) return;
   var entries=entriesInBook(_curBook).slice().sort(function(a,b){ return b.when-a.when; });
+  /* Nothing to print in an empty book, so the button waits until there is. */
+  var _jpb=document.getElementById('jpBtn');
+  if(_jpb) _jpb.style.display = entries.length ? 'block' : 'none';
   if(!entries.length){
     feed.innerHTML='<div class="dj-empty">Your journal is empty.<br><br>Tap ＋ New Entry up top to start —<br>add a photo, a title, and a little about your day. 🍯</div>';
     return;
@@ -11307,6 +11446,319 @@ function djShareText(text){
   else { try{ navigator.clipboard.writeText(text); toast("Copied — paste it anywhere!"); }catch(e){ toast("Couldn't share here."); } }
 }
 function djShareCurrent(){ if(_djEditId) djShareEntry(_djEditId); }
+
+/* ══════════ PRINTING A JOURNAL ═══════════════════════════════════════════════
+
+   Recipe cards could be printed and journals could not, and they are the same
+   job: pick what you want, look it over, and send it wherever it needs to go.
+   A week of a mission trip, a year of ironwork, one afternoon at the golf
+   course. The difference is only how many.
+
+   Which is why there are two doors here, not one:
+
+     • ONE entry  -> share it as it is. Text and photo, straight into Messages
+                     or Mail or a post. Nobody wants to open a PDF to read a
+                     paragraph about a golf match.
+
+     • MANY       -> make a document. Cover page, entries in date order, photos
+                     where there are photos, and out to the share sheet where
+                     iOS puts Print next to Save to Files and Mail.
+
+   The layout borrows the recipe card stylesheet on purpose. Same paper, same
+   margins, same footer - so a printed journal and a printed recipe card look
+   like they came from the same place, because they did.
+*/
+
+var _jpPics = true;    /* include photographs */
+var _jpMono = false;   /* print in black and white */
+
+/* Every entry in the open book, newest first - the same order the feed uses. */
+function jpEntries(){
+  return entriesInBook(_curBook).slice().sort(function(a,b){ return b.when - a.when; });
+}
+
+function jpDateLine(ms){
+  try{
+    return new Date(ms).toLocaleDateString(undefined,
+      { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  }catch(e){ return ''; }
+}
+
+/* ── The picker ──────────────────────────────────────────────────────────── */
+function jpOpen(){
+  var all = jpEntries();
+  if(!all.length){ toast("Nothing in this book to print yet."); return; }
+
+  var d=document.createElement('div');
+  d.id='jpBox';
+  d.style.cssText='position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);'+
+    'display:flex;align-items:flex-end;justify-content:center';
+
+  /* Month chips, so a mission trip week or one month of a year-long project
+     can be taken without scrolling past everything else. */
+  var months=[], seen={};
+  all.forEach(function(e){
+    var k=new Date(e.when).toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    if(!seen[k]){ seen[k]=true; months.push(k); }
+  });
+
+  var chips = '<button class="ms-btn sel" data-m="all" onclick="jpMonth(\'all\')">Everything '+all.length+'</button>' +
+    months.map(function(m){
+      var n = all.filter(function(e){
+        return new Date(e.when).toLocaleDateString(undefined,{month:'long',year:'numeric'})===m;
+      }).length;
+      return '<button class="ms-btn" data-m="'+esc(m)+'" onclick="jpMonth(\''+esc(m).replace(/'/g,"\\'")+'\')">'+esc(m)+' '+n+'</button>';
+    }).join('');
+
+  var rows = all.map(function(e,ix){
+    var mk = new Date(e.when).toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    var when = new Date(e.when).toLocaleDateString();
+    var title = e.title || (e.body ? e.body.slice(0,40) : 'Untitled');
+    var pic = (e.photos && e.photos.length) ? ' \u00b7 \ud83d\udcf7' : '';
+    return '<label class="jpRow" data-month="'+esc(mk)+'" '+
+      'style="display:flex;align-items:center;gap:11px;padding:9px 2px;border-bottom:1px solid var(--line)">'+
+      '<input type="checkbox" class="jpPick" value="'+ix+'" style="width:22px;height:22px;flex:0 0 auto">'+
+      '<span style="flex:1;min-width:0">'+
+        '<span style="display:block;font-size:14px;font-weight:600">'+esc(title)+'</span>'+
+        '<span style="display:block;font-size:11.5px;color:var(--muted)">'+esc(when)+pic+'</span>'+
+      '</span></label>';
+  }).join('');
+
+  d.innerHTML =
+    '<div style="background:var(--panel);width:100%;max-width:520px;max-height:88%;'+
+      'border-radius:20px 20px 0 0;padding:18px 16px calc(18px + var(--safe-b));'+
+      'display:flex;flex-direction:column">'+
+      '<p style="font-size:17px;font-weight:700;margin:0 0 3px">\ud83d\udda8\ufe0f Print or send this journal</p>'+
+      '<p style="font-size:12px;color:var(--muted);margin:0 0 6px;line-height:1.5">'+
+        'Tick what you want. You will see it before anything happens \u2014 then you can '+
+        'print it, mail it, or choose \u201cSave to Files\u201d to keep the whole thing as one document.</p>'+
+      '<div class="ft-kind-label">Which part?</div>'+
+      '<div id="jpMonths" class="ft-kind-row">'+chips+'</div>'+
+      '<div style="display:flex;gap:8px;margin-bottom:10px">'+
+        '<button class="home-half" style="flex:1" onclick="jpAll(true)">Select all shown</button>'+
+        '<button class="home-half" style="flex:1" onclick="jpAll(false)">Clear</button>'+
+      '</div>'+
+      '<label style="display:flex;align-items:center;gap:9px;font-size:13px;margin:0 2px 8px">'+
+        '<input type="checkbox" id="jpPics" checked style="width:22px;height:22px" '+
+        'onchange="_jpPics=this.checked">Include photographs</label>'+
+      '<label style="display:flex;align-items:center;gap:9px;font-size:13px;margin:0 2px 10px">'+
+        '<input type="checkbox" id="jpMono" style="width:22px;height:22px" '+
+        'onchange="_jpMono=this.checked">Print in black and white</label>'+
+      '<div id="jpList" style="flex:1;overflow:auto;margin-bottom:12px">'+rows+'</div>'+
+      '<div style="display:flex;gap:8px">'+
+        '<button class="home-half" style="flex:1" onclick="jpClose()">Not now</button>'+
+        '<button class="home-half" style="flex:1;background:var(--gold);color:#1a1405;font-weight:800" '+
+          'onclick="jpPreview()">Look it over</button>'+
+      '</div>'+
+    '</div>';
+  document.body.appendChild(d);
+}
+
+function jpClose(){ var b=document.getElementById('jpBox'); if(b) b.remove(); }
+
+/* Show and hide rather than redraw, so anything already ticked stays ticked
+   while you move between months - the same reasoning as the recipe sheet. */
+function jpMonth(m){
+  try{
+    Array.prototype.forEach.call(document.querySelectorAll('#jpList .jpRow'), function(r){
+      var show = (m==='all') || r.getAttribute('data-month')===m;
+      r.style.display = show ? 'flex' : 'none';
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('#jpMonths button'), function(b){
+      var on = b.getAttribute('data-m')===m;
+      b.classList.toggle('sel', on);
+    });
+  }catch(e){}
+}
+
+function jpAll(on){
+  Array.prototype.forEach.call(document.querySelectorAll('#jpList .jpRow'), function(r){
+    if(r.style.display==='none') return;              /* only what is shown */
+    var cb=r.querySelector('.jpPick'); if(cb) cb.checked=!!on;
+  });
+}
+
+/* ── Build the pages ─────────────────────────────────────────────────────── */
+function jpBuild(picked, all){
+  var who=(S && S.userName) ? S.userName : '';
+  var made=new Date().toLocaleDateString();
+
+  /* Date range on the cover, so a mission trip week says so on the front. */
+  var times = picked.map(function(ix){ return all[ix].when; }).sort();
+  var span = '';
+  if(times.length > 1){
+    var a=new Date(times[0]).toLocaleDateString();
+    var b=new Date(times[times.length-1]).toLocaleDateString();
+    span = (a===b) ? a : a+' \u2013 '+b;
+  } else if(times.length===1){
+    span = new Date(times[0]).toLocaleDateString();
+  }
+
+  var cover = picked.length>1
+    ? '<div class="rc-cover"><h1>'+esc(_curBook)+'</h1><p>'+
+      (who?esc(who)+' \u00b7 ':'')+picked.length+' entries'+
+      (span?' \u00b7 '+esc(span):'')+'</p></div>'
+    : '';
+
+  /* Oldest first inside the document. A journal reads forwards even though
+     the feed shows newest at the top. */
+  var order = picked.slice().sort(function(x,y){ return all[x].when - all[y].when; });
+
+  var lastMonth='';
+  var body = order.map(function(ix){
+    var e=all[ix]; if(!e) return '';
+    var out='';
+
+    var mk = new Date(e.when).toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    if(mk !== lastMonth && picked.length > 1){
+      out += '<p class="jp-month">'+esc(mk)+'</p>';
+      lastMonth = mk;
+    }
+
+    /* Photographs. The entry's own black-and-white setting is respected, and
+       the print sheet's toggle can put the whole book in mono on top of it. */
+    var pics='';
+    if(_jpPics && e.photos && e.photos.length){
+      pics = e.photos.map(function(p,i){
+        var mono = (_jpMono || e.bw) ? 'filter:grayscale(1);' : '';
+        var cls = (i===0 && e.photos.length===1) ? 'rc-img' : 'jp-img';
+        return '<img class="'+cls+'" style="'+mono+'" src="'+p+'" alt="">';
+      }).join('');
+    }
+
+    out += '<div class="rc-card">'+
+      pics+
+      '<p class="rc-title">'+esc(e.title||'Untitled')+'</p>'+
+      '<p class="rc-sub">'+esc(jpDateLine(e.when))+'</p>'+
+      (e.body ? '<p class="rc-steps">'+esc(e.body)+'</p>' : '')+
+      '<p class="rc-foot">'+esc(_curBook)+(who?' \u00b7 '+esc(who):'')+' \u00b7 Tell Me Honey</p>'+
+    '</div>';
+    return out;
+  }).join('');
+
+  return cover + body;
+}
+
+/* ── Look it over first ──────────────────────────────────────────────────── */
+function jpPreview(){
+  var picked=[];
+  Array.prototype.forEach.call(document.querySelectorAll('.jpPick'), function(b){
+    if(b.checked) picked.push(parseInt(b.value,10));
+  });
+  if(!picked.length){ toast("Tick at least one entry."); return; }
+
+  var all=jpEntries();
+  var sheet=document.getElementById('printSheet');
+  if(!sheet){ toast("Couldn't open the printer."); return; }
+  sheet.innerHTML = jpBuild(picked, all);
+  jpClose();
+
+  /* ══════════ SEE IT BEFORE IT GOES ANYWHERE ════════════════════════════
+     The recipe sheet goes straight out. For a journal that is wrong: a year
+     of work deserves a look first, and a document nobody has seen is a
+     document nobody trusts. So the pages are shown on screen exactly as they
+     will print, with one button to send and one to go back. */
+  var d=document.createElement('div');
+  d.id='jpPrev';
+  d.style.cssText='position:fixed;inset:0;z-index:70;background:var(--bg);display:flex;flex-direction:column';
+  d.innerHTML =
+    '<div style="display:flex;align-items:center;gap:10px;padding:14px 14px calc(6px);border-bottom:1px solid var(--line)">'+
+      '<button class="home-half" style="flex:0 0 auto;min-width:74px" onclick="jpPrevClose()">Back</button>'+
+      '<span style="flex:1;font-size:15px;font-weight:700;text-align:center">'+picked.length+
+        (picked.length===1?' entry':' entries')+'</span>'+
+      '<button class="home-half" style="flex:0 0 auto;min-width:74px;background:var(--gold);color:#1a1405;font-weight:800" '+
+        'onclick="jpSend()">Send</button>'+
+    '</div>'+
+    '<div id="jpPaper" style="flex:1;overflow:auto;padding:14px calc(14px) calc(14px + var(--safe-b));background:#8d8d8d"></div>';
+  document.body.appendChild(d);
+
+  /* The preview is the real pages on white paper, scaled to the phone. */
+  var paper=document.getElementById('jpPaper');
+  paper.innerHTML='<div class="jp-paper">'+sheet.innerHTML+'</div>';
+}
+
+function jpPrevClose(){
+  var p=document.getElementById('jpPrev'); if(p) p.remove();
+  var sheet=document.getElementById('printSheet'); if(sheet) sheet.innerHTML='';
+}
+
+/* ── Out to the world ────────────────────────────────────────────────────── */
+function jpSend(){
+  var p=document.getElementById('jpPrev'); if(p) p.remove();
+
+  var native=false;
+  try{ native = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform()); }catch(e){}
+
+  if(!native){
+    /* A real browser has a printer, and its print dialogue already offers
+       Save as PDF. Nothing else needed. */
+    setTimeout(function(){
+      try{ window.print(); }
+      catch(e){ toast("This phone wouldn\u2019t open the printer."); }
+    }, 220);
+    return;
+  }
+
+  /* In the app there is no window.print(), so the pages are handed to the
+     share sheet as a document instead - which is where iOS keeps Print,
+     Mail, Save to Files and AirDrop, all in one place. */
+  jpShareDoc();
+}
+
+function jpShareDoc(){
+  var sheet=document.getElementById('printSheet');
+  var pages = sheet ? sheet.innerHTML : '';
+  if(!pages){ toast("Nothing to send."); return; }
+
+  var doc = jpStandaloneHTML(pages);
+  try{
+    var file = new File([doc], (_curBook||'Journal').replace(/[^\w \-]/g,'')+'.html',
+      { type:'text/html' });
+    if(navigator.share && navigator.canShare && navigator.canShare({ files:[file] })){
+      navigator.share({ files:[file], title:_curBook||'Journal' })
+        .catch(function(){});
+      return;
+    }
+  }catch(e){}
+  toast("Couldn\u2019t open the share sheet on this phone.");
+}
+
+/* The document has to stand on its own once it leaves - so the styles travel
+   with it rather than living back in the app. */
+function jpStandaloneHTML(pages){
+  return '<!doctype html><html><head><meta charset="utf-8">'+
+    '<meta name="viewport" content="width=device-width,initial-scale=1">'+
+    '<title>'+esc(_curBook||'Journal')+'</title><style>'+
+    'body{margin:0;padding:22px;background:#fff;color:#111;'+
+      'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}'+
+    '.rc-card{break-inside:avoid;page-break-inside:avoid;border:1px solid #e6e6e6;'+
+      'border-radius:10px;padding:16px 18px;margin:0 0 16px;overflow:hidden;}'+
+    '.rc-title{font-family:Georgia,serif;font-size:19px;font-weight:700;margin:0 0 2px;}'+
+    '.rc-sub{font-size:11.5px;color:#666;margin:0 0 10px;}'+
+    '.rc-steps{font-size:13px;line-height:1.7;white-space:pre-wrap;margin:0;}'+
+    '.rc-img{max-width:170px;max-height:130px;object-fit:cover;border-radius:6px;'+
+      'float:right;margin:0 0 10px 14px;}'+
+    '.jp-img{max-width:46%;max-height:150px;object-fit:cover;border-radius:6px;'+
+      'margin:0 8px 10px 0;}'+
+    '.rc-foot{font-size:9.5px;color:#888;margin-top:14px;border-top:1px solid #eee;padding-top:6px;}'+
+    '.rc-cover{text-align:center;padding:46px 20px 30px;break-after:page;page-break-after:always;}'+
+    '.rc-cover h1{font-family:Georgia,serif;font-size:32px;margin:0 0 6px;}'+
+    '.rc-cover p{font-size:13px;color:#555;margin:0;}'+
+    '.jp-month{font-family:Georgia,serif;font-size:15px;color:#555;margin:22px 0 8px;'+
+      'border-bottom:1px solid #eee;padding-bottom:4px;}'+
+    '@media print{ body{padding:0;} .rc-card{border:none;padding:0 0 10px;} }'+
+    '</style></head><body>'+pages+'</body></html>';
+}
+
+/* ══════════ ONE ENTRY IS ALREADY HANDLED ═══════════════════════════════════
+   A single entry does not want a document - somebody telling a friend how the
+   golf went should not have to open a PDF to read a paragraph. That is what
+   djShareEntry() above already does: the words and the photograph, straight
+   into Messages or Mail or a post, with the clipboard as a fallback.
+
+   So there is nothing to add here. One entry goes out as a message; a book
+   goes out as a document. The two doors already exist. */
+
 
 /* ── Editor tools: format (size/color) + Honey prompts ── */
 var _djFont=16;
@@ -14079,7 +14531,36 @@ function nudgeSlot(){
 /* Kept inside civilised hours no matter what. */
 function nudgeSafeHour(h){ return Math.min(21, Math.max(8, h)); }
 
+/* ══════════ WHERE A TAPPED HELLO LANDS ═════════════════════════════════════
+   There was no tap handler at all, so tapping the daily hello just reopened
+   the app on whatever screen it had been left on. In testing that happened to
+   be the Store, which read as Honey nudging somebody to buy something - and if
+   the person who built it wondered that, a stranger certainly would.
+
+   The nudge lines all promise a conversation: saved you a good one, been
+   thinking about a joke I want to try on you, sun's up so am I. So a tap
+   should land where the conversation is. Nothing to buy, nothing asked for.
+
+   Registered once, guarded so a second call cannot stack listeners, and
+   silent everywhere the plugin does not exist. */
+var _nudgeTapWired = false;
+function nudgeWireTap(){
+  if(_nudgeTapWired) return;
+  var P = nudgePlugin(); if(!P || !P.addListener) return;
+  _nudgeTapWired = true;
+  try{
+    P.addListener('localNotificationActionPerformed', function(){
+      try{
+        go('chat');
+        /* Straight to the newest line, so she is not halfway up the screen. */
+        setTimeout(function(){ try{ scrollMsgs(); }catch(e){} }, 60);
+      }catch(e){}
+    });
+  }catch(e){ _nudgeTapWired = false; }
+}
+
 function nudgeSchedule(){
+  nudgeWireTap();
   var P=nudgePlugin(); if(!P) return;
   var slot=nudgeSlot();
   var hour=nudgeSafeHour(slot.h);
@@ -15344,13 +15825,18 @@ function audioSessionChatReport(){
   try{ pushThemText(L.join('\n'), true); }catch(e){}
 }
 function sessionToSpeaker(from){
-  /* The report used to print only when the plugin was missing, which made its
-     absence ambiguous - it could mean the plugin registered, or it could mean
-     this code never ran. After a dependency-system conversion that is exactly
-     the thing we cannot afford to guess about, so it prints every launch now,
-     found or not. */
+  /* ══════════ THE REPORT HAS ITS OWN SWITCH NOW ═════════════════════════════
+     This printed a full plugin report into the chat on every launch, riding on
+     __OBDEBUG along with the session toasts. It answered its question — the
+     plugins register, SpeechRecognition is present, CocoaPods was the right
+     call — and then went on sitting at the top of the conversation, which
+     meant onboarding could not be seen at all.
+
+     The toasts are still wanted; the bubble is not. So they are separate
+     switches. To bring the report back for an afternoon, set
+     window.__OBPLUGINREPORT = true near __OBDEBUG. */
   var _dbg = false;
-  try{ _dbg = !!window.__OBDEBUG; }catch(e){}
+  try{ _dbg = !!window.__OBPLUGINREPORT; }catch(e){}
   if(_dbg && !window.__OBREPORTED){
     window.__OBREPORTED = true;
     try{ audioSessionChatReport(); }catch(e){}
@@ -15361,7 +15847,12 @@ function sessionToSpeaker(from){
   try{
     var P = audioSessionPlugin();
     if(!P || !P.toSpeaker){
-      if(dbg && !window.__OBREPORTED){
+      /* This second call site was still riding on __OBDEBUG while the one
+         above had been moved onto its own switch - so the report bubble came
+         back every launch even with __OBPLUGINREPORT set to false, and sat on
+         top of the chat hiding everything. Both call sites now answer to the
+         same switch, which is the whole point of having one. */
+      if(window.__OBPLUGINREPORT && !window.__OBREPORTED){
         window.__OBREPORTED = true;   /* once per launch, not on every line */
         try{ audioSessionChatReport(); }catch(e){}
       }
@@ -15505,9 +15996,34 @@ try{ window.__OBDEBUG = /[?&]obdebug=1/.test(location.search); }catch(e){ window
    build. So the audio-session reporting could never have been seen on the
    phone, which is where the problem is.
 
-   Forced on here so the session toasts show in Xcode. One line, deliberately
-   ugly and easy to find. Delete it once the earpiece question is answered. */
-window.__OBDEBUG = true;
+   That question is answered: the speech plugin was never in the iOS build, and
+   the CocoaPods conversion put it there. So the line is off again. The toasts,
+   the session reporting and the MIC messages all still exist and all still
+   work - they are simply quiet unless ?obdebug=1 is in the address.
+
+   To bring them back on the phone for an afternoon, put
+   window.__OBDEBUG = true; on the line below and rebuild. */
+/* The plugin report bubble is a separate thing and stays OFF. It answered its
+   question and was then permanently parked at the top of the chat, hiding
+   onboarding. Set this to true only when a plugin has gone missing again. */
+window.__OBPLUGINREPORT = false;
+/* The "Replay onboarding" link in Insights rides on __OBDEBUG, so deleting the
+   line above takes it out of the shipped build along with the toasts. */
+try{
+  document.addEventListener('DOMContentLoaded', function(){
+    try{
+      if(window.__OBDEBUG){
+        var l=document.getElementById('obPreviewLink');
+        if(l) l.style.display='block';
+      }
+    }catch(e){}
+    /* Wire the notification tap at launch, not only when the setting is
+       changed. Somebody taps the morning hello on a phone that has been asleep
+       all night - the app cold starts, and the listener has to already exist
+       by the time the tap is delivered or the tap goes nowhere. */
+    try{ nudgeWireTap(); }catch(e){}
+  });
+}catch(e){}
 var HONEY_AUDIO_MAP = {
   "hey. that's real, and i'm not going anywhere. want to just talk, or want me to make you laugh out of it?": "catch_01",
   "i hear you. no fixing, no rushing. i'm right here. say the word and i'll lighten it.": "catch_02",
@@ -22653,6 +23169,22 @@ function refreshFrontCta(){
 
 /* ── gentle onboarding (first launch) ── */
 var obStep=0, OB_TOTAL=2;
+/* ══════════ SEEING ONBOARDING AGAIN WITHOUT LOSING ANYTHING ════════════════
+   Onboarding only ever runs when there are no Honeys at all, so once you have
+   built one there is no way back to it short of deleting the app — which is a
+   terrible way to check the first thing every new user sees.
+
+   Preview mode shows the real screens and then simply closes. It does NOT run
+   createDefaultHoney(), so the Honey you already have is untouched. The link
+   that starts it only appears when __OBDEBUG is on, so it leaves the build
+   with the toasts. */
+var _obPreview = false;
+function previewOnboard(){
+  _obPreview = true;
+  try{ go('chat'); }catch(e){}
+  startOnboard();
+  try{ toast("Preview only — your Honey is safe."); }catch(e){}
+}
 function startOnboard(){
   obStep=0;
   var ob=document.getElementById('onboard'); if(!ob){ newAgentFlow(true); return; }
@@ -22675,6 +23207,9 @@ function obRevealJoke(){
 }
 function finishOnboard(){
   var ob=document.getElementById('onboard'); if(ob) ob.style.display='none';
+  /* Preview closes and changes nothing. Only a real first launch builds the
+     ready-made Honey. */
+  if(_obPreview){ _obPreview=false; return; }
   createDefaultHoney();   // ready-made friend — start chatting right away
 }
 /* Build a warm, ready-made Honey so new users can start talking immediately.
@@ -24870,7 +25405,7 @@ function rangerShowResult(id){
       '<div style="background:rgba(255,255,255,.05);border-radius:11px;padding:11px 12px;margin-top:11px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:var(--muted)">🌿 Nerdy meter</span><b class="rnlab" style="font-size:11px;color:var(--gold)">Just the laugh</b></div>'+
         '<input type="range" min="0" max="3" step="1" value="0" style="width:100%;accent-color:var(--gold)" oninput="rangerTeach(this,\''+id+'\')">'+
         '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted)"><span>breezy</span><span>fact</span><span>teach</span><span>nerd</span></div>'+
-        '<div class="rte" style="background:rgba(0,0,0,.25);border-radius:9px;padding:9px 11px;margin-top:9px;font-size:12.5px;line-height:1.5">'+p.teach[0]+'</div></div>'+
+        '<div class="rte" style="background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;margin-top:9px;font-size:12.5px;line-height:1.5">'+p.teach[0]+'</div></div>'+
       '<button class="home-half" style="width:100%;margin-top:11px" id="bkYard_'+id+'" onclick="bookYardToggle(\''+id+'\')">'+(bookInYard(id)?'✓ Growing at my place':'🌱 This grows in my yard')+'</button>'+
     '<div style="display:flex;gap:6px;margin-top:7px"><button class="home-half" style="flex:1" onclick="plantFindRecipes(\''+id+'\')">🍳 Find recipes</button><button class="home-half" style="flex:1" onclick="rangerAddCook(\''+id+'\',this)">🧺 Cooking list</button></div>'+'<button class="home-half" style="width:100%;margin-top:7px" onclick="rangerShareBook(\''+id+'\')">↗ Share with a friend</button>'+'<div id="plantRecipes_'+id+'"></div>'+
     (_stage.length? rangerRetryPanel() : '')+
@@ -24887,7 +25422,7 @@ function rangerShowNotEdible(id,p){
       '<div style="background:rgba(255,255,255,.05);border-radius:11px;padding:11px 12px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:var(--muted)">🌿 Nerdy meter</span><b class="rnlab" style="font-size:11px;color:var(--gold)">Just the laugh</b></div>'+
         '<input type="range" min="0" max="3" step="1" value="0" style="width:100%;accent-color:var(--gold)" oninput="rangerTeach(this,\''+id+'\')">'+
         '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted)"><span>breezy</span><span>fact</span><span>teach</span><span>nerd</span></div>'+
-        '<div class="rte" style="background:rgba(0,0,0,.25);border-radius:9px;padding:9px 11px;margin-top:9px;font-size:12.5px;line-height:1.5">'+p.teach[0]+'</div></div>'+
+        '<div class="rte" style="background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;margin-top:9px;font-size:12.5px;line-height:1.5">'+p.teach[0]+'</div></div>'+
     '</div></div>'+
     '<p style="font-size:11px;color:var(--muted);margin:10px 2px 0;line-height:1.5">'+p.intro+'</p>';
 }
@@ -25073,11 +25608,11 @@ function rangerYardForm(encName,encPhoto){
     /* show the picture they took, so they can see it's coming with them */
     (photo ? '<img src="'+photo+'" style="width:100%;border-radius:13px;display:block;margin:0 0 12px">' : '')+
     '<label style="font-size:11px;color:var(--muted)">Plant name</label>'+
-    '<input id="myYardName" value="'+name.replace(/"/g,'&quot;')+'" placeholder="What is it?" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 12px">'+
+    '<input id="myYardName" value="'+name.replace(/"/g,'&quot;')+'" placeholder="What is it?" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid var(--line);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 12px">'+
     '<label style="font-size:11px;color:var(--muted)">Your notes</label>'+
-    '<textarea id="myYardNote" rows="3" placeholder="How you use it, where it grows…" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 12px"></textarea>'+
+    '<textarea id="myYardNote" rows="3" placeholder="How you use it, where it grows…" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid var(--line);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 12px"></textarea>'+
     '<label style="font-size:11px;color:var(--muted)">In season for you</label>'+
-    '<input id="myYardSeason" placeholder="e.g. Spring–summer" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 14px">'+
+    '<input id="myYardSeason" placeholder="e.g. Spring–summer" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid var(--line);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 14px">'+
     '<label style="display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink);margin-bottom:14px;cursor:pointer"><input type="checkbox" id="myYardShare" style="width:18px;height:18px;accent-color:var(--gold)"> Share a copy with Sally (helps Ranger grow)</label>'+
     '<button style="width:100%;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:13px;font-size:15px;font-weight:700;cursor:pointer" onclick="rangerYardSave()">🌱 Save to My Yard</button>'+
   '</div>';
@@ -25333,11 +25868,11 @@ function yardEditOpen(id){
     '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px">'+
       '<p style="font-size:15px;font-weight:600;margin:0 0 12px">✎ Edit your plant</p>'+
       '<label style="font-size:11px;color:var(--muted)">Plant name</label>'+
-      '<input id="ydName" value="'+String(e.name||'').replace(/"/g,'&quot;')+'" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 12px">'+
+      '<input id="ydName" value="'+String(e.name||'').replace(/"/g,'&quot;')+'" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid var(--line);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 12px">'+
       '<label style="font-size:11px;color:var(--muted)">In season for you</label>'+
-      '<input id="ydSeason" value="'+String(e.season||'').replace(/"/g,'&quot;')+'" placeholder="e.g. Spring–summer" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 12px">'+
+      '<input id="ydSeason" value="'+String(e.season||'').replace(/"/g,'&quot;')+'" placeholder="e.g. Spring–summer" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid var(--line);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;margin:4px 0 12px">'+
       '<label style="font-size:11px;color:var(--muted)">Your notes</label>'+
-      '<textarea id="ydNote" rows="5" placeholder="How you use it, where it grows…" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;line-height:1.5;margin:4px 0 14px">'+esc(e.note||'')+'</textarea>'+
+      '<textarea id="ydNote" rows="5" placeholder="How you use it, where it grows…" style="width:100%;box-sizing:border-box;background:#FFFDF9;border:1px solid var(--line);border-radius:10px;padding:11px;color:#3a2c08;font-size:14px;line-height:1.5;margin:4px 0 14px">'+esc(e.note||'')+'</textarea>'+
       yardEditPhotosHTML(e)+
       '<button style="width:100%;background:linear-gradient(180deg,#8fe3c0,#5cbf98);color:#0c2018;border:none;border-radius:13px;padding:13px;font-size:15px;font-weight:700;cursor:pointer" onclick="yardEditSave(\''+id+'\')">Save my changes</button>'+
       '<button class="home-half" style="width:100%;margin-top:7px;color:#3a2c08" onclick="openMyYardPlant(\''+id+'\')">Never mind</button>'+
@@ -26618,7 +27153,7 @@ function ftPrintOpen(){
       'border-radius:20px 20px 0 0;padding:18px 16px calc(18px + var(--safe-b));'+
       'display:flex;flex-direction:column">'+
       '<p style="font-size:17px;font-weight:700;margin:0 0 3px">\ud83d\udda8\ufe0f Print recipe cards</p>'+
-      '<p style="font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.5">'+
+      '<p style="font-size:12px;color:var(--muted);margin:0 0 6px;line-height:1.5">'+
         'Tick the ones you want. On the next screen you can print them, or choose '+
         '\u201cSave to Files\u201d to keep them as one document.</p>'+
       /* ══════════ CHOOSE A KIND FIRST ═══════════════════════════════════
@@ -26630,7 +27165,8 @@ function ftPrintOpen(){
          Pick a kind, then Select all takes just that kind. Everything already
          ticked stays ticked when the filter changes, so you can build a
          mixed batch across two or three kinds without losing your place. */
-      '<div id="ftPrintKinds" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:9px;margin-bottom:4px;-webkit-overflow-scrolling:touch">'+
+      '<div class="ft-kind-label">Which kind?</div>'+
+      '<div id="ftPrintKinds" class="ft-kind-row">'+
         ftPrintKindChips(arr)+
       '</div>'+
       '<div style="display:flex;gap:8px;margin-bottom:10px">'+
@@ -26653,7 +27189,17 @@ function ftPrintOpen(){
       '</div>'+
       '<div style="display:flex;gap:8px;margin-top:12px">'+
         '<button class="home-half" style="flex:1" onclick="ftPrintClose()">Not now</button>'+
-        '<button class="home-half" style="flex:1;background:rgba(140,170,120,.20)" '+
+        /* ══════════ THIS BUTTON WENT DARK ON DARK ═══════════════════════
+           It used background:rgba(140,170,120,.20) — a TRANSLUCENT green.
+           .home-half sets a near-white background and dark brown text, and the
+           inline style replaced the background but not the text. Over a pale
+           panel it read fine; over --panel in Honey Dark and Honey Classic the
+           green went almost black while the text stayed dark brown, and the
+           one button you actually need disappeared.
+
+           Solid colour now, not translucent, so it cannot take on whatever is
+           behind it. Dark ink on light green reads on every theme. */
+        '<button class="home-half" style="flex:1;background:#cfe3c2;border-color:#a9c799;color:#25341c" '+
           'onclick="ftPrintGo()">\ud83d\udda8\ufe0f Print these</button>'+
       '</div>'+
     '</div>';
@@ -27179,7 +27725,7 @@ function rangerShowShelfPlant(id, shelf, top){
         ? '<div style="background:rgba(255,255,255,.05);border-radius:11px;padding:11px 12px;margin-top:11px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:var(--muted)">\ud83c\udf3f Nerdy meter</span><span class="rnlab" style="font-size:11px;color:var(--gold);font-weight:700">'+RANGER_NLAB[0]+'</span></div>'+
           '<input type="range" min="0" max="'+(p.teach.length-1)+'" step="1" value="0" style="width:100%;accent-color:var(--gold)" oninput="rangerTeach(this,\''+id+'\')">'+
           '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted)"><span>breezy</span><span>fact</span><span>teach</span><span>nerd</span></div>'+
-          '<div class="rte" style="background:rgba(0,0,0,.25);border-radius:9px;padding:9px 11px;margin-top:9px;font-size:12.5px;line-height:1.5">'+p.teach[0]+'</div></div>'
+          '<div class="rte" style="background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;margin-top:9px;font-size:12.5px;line-height:1.5">'+p.teach[0]+'</div></div>'
         : '')+
       '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:9px 11px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11px;color:#ffcf6b;line-height:1.45">'+p.safety+'</p></div>'+
       '<button class="home-half" style="width:100%" id="shYard_'+id+'" onclick="shelfYardToggle(\''+id+'\')">'+(yardHas(shelf==='garden'?('gd:'+id):id)?'✓ Growing at my place':'🌱 This grows in my yard')+'</button>'+
@@ -28203,7 +28749,7 @@ function yardShow(id){
         ? '<div style="background:rgba(255,255,255,.05);border-radius:11px;padding:11px 12px;margin-top:11px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:var(--muted)">\ud83c\udf3f Nerdy meter</span><span class="rnlab" style="font-size:11px;color:var(--gold);font-weight:700">'+RANGER_NLAB[0]+'</span></div>'+
           '<input type="range" min="0" max="'+(p.teach.length-1)+'" step="1" value="0" style="width:100%;accent-color:var(--gold)" oninput="rangerTeach(this,\''+id+'\')">'+
           '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted)"><span>breezy</span><span>fact</span><span>teach</span><span>nerd</span></div>'+
-          '<div class="rte" style="background:rgba(0,0,0,.25);border-radius:9px;padding:9px 11px;margin-top:9px;font-size:12.5px;line-height:1.5">'+p.teach[0]+'</div></div>'
+          '<div class="rte" style="background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;margin-top:9px;font-size:12.5px;line-height:1.5">'+p.teach[0]+'</div></div>'
         : '')+
       '<div style="background:#2a2310;border:1px solid #4a3d12;border-radius:11px;padding:9px 11px;display:flex;gap:8px;margin:12px 0"><div style="color:#ffcf6b">⚠️</div><p style="margin:0;font-size:11px;color:#ffcf6b;line-height:1.45">'+p.safety+'</p></div>'+
       '<button onclick="yardToggle(\''+id+'\',this);yardShow(\''+id+'\');openYardIndexRefresh()" style="width:100%;background:'+(have?'rgba(255,255,255,.06)':'linear-gradient(180deg,#e7c873,#caa44a)')+';color:'+(have?'var(--muted)':'#1a1405')+';border:'+(have?'1px solid rgba(255,255,255,.12)':'none')+';border-radius:13px;padding:13px;font-size:14.5px;font-weight:700;cursor:pointer">'+(have?'✓ Growing at my place':'＋ This grows at my place')+'</button>'+
